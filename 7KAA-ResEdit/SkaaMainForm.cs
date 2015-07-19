@@ -20,7 +20,7 @@ namespace SkaaEditor
             //ResourceFile resfile = new ResourceFile("i_menu2.res");
             //pictureBox1.Image = resfile.Resources[0].initIMGStream();
 
-            FileStream spritestream = File.OpenRead("sprite/ballista.spr");
+            FileStream spritestream = File.OpenRead("../../data/sprite/ballista.spr");
             //ballista.spr length = 82578 (data_buf_size in init_import()
 
             /************************

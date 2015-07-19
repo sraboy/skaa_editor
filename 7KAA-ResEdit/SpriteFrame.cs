@@ -17,7 +17,7 @@ namespace SkaaEditor
         {
             ColorPalette pal_std = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
 
-            FileStream fs = File.OpenRead("resource/pal_std.res");
+            FileStream fs = File.OpenRead("../../data/resource/pal_std.res");
             fs.Seek(8, SeekOrigin.Begin);
 
             for (int i = 0; i < 256; i++)
