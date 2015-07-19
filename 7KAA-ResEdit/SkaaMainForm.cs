@@ -38,74 +38,48 @@ namespace SkaaEditor
 
 
             List<SpriteFrame> sprFrames = new List<SpriteFrame>();
-            
-            //while(spritestream.Position < spritestream.Length)
-            //{
-                //jump to offset 17537, w=62, h=65 (cur_dir=1). + 4 byte (junk?) header
-                spritestream.Seek(17537+4, SeekOrigin.Begin);
+
+            while (spritestream.Position < spritestream.Length)
+            {
+                ////jump to offset 17537, w=62, h=65 (cur_dir=1) + 4 byte (junk?)
+                //spritestream.Seek(17537+4, SeekOrigin.Begin);
                 Byte[] frame_size_bytes = new Byte[4];
 
                 spritestream.Read(frame_size_bytes, 0, 4);
+
                 short width = BitConverter.ToInt16(frame_size_bytes, 0);// >> 16;
                 short height = BitConverter.ToInt16(frame_size_bytes, 2);// >> 16;
 
                 SpriteFrame frame = new SpriteFrame(width, height);
 
-                GetPixels(frame, spritestream);
+                frame.GetPixels(spritestream);
+
+                //debugging: gives an ASCII representation of image 
+                //(add \n after every 62d character). Verified alignment of pixels as read.
+                //var hex = BitConverter.ToString(frame.FrameData);
+
                 frame.BuildBitmap();
                 sprFrames.Add(frame);
                 pictureBox1.Image = sprFrames[0].Images[0];
+                
+                //end early, just get one to test
                 spritestream.Position = spritestream.Length;
-            //}
+            }
 
 
-            int zoomWidth = sprFrames[0].Images[0].Width * 2;
-            int zoomHeight = sprFrames[0].Images[0].Height * 2;
+
+            int zoomWidth = sprFrames[0].Images[0].Width * 1;
+            int zoomHeight = sprFrames[0].Images[0].Height * 1;
             System.Drawing.Bitmap bmp = 
                 new System.Drawing.Bitmap(sprFrames[0].Images[0], new System.Drawing.Size(zoomWidth, zoomHeight));
-
+            
+            // TODO: Just a hack since we skip pixels that are preset to 0x00.
+            // Will need to write those pixels as the actual Color.Transparent
+            // so we can have black in our images.
+            bmp.MakeTransparent(System.Drawing.Color.Black);
+            
             pictureBox1.Image = bmp; // sprFrames[0].Images[0];
             spritestream.Close();
         }
-
-        void GetPixels(SpriteFrame frame, FileStream stream)
-        {
-            int pixelsToSkip = 0;
-            Byte pixel;
-
-            for (int y = 0; y < frame.Height; ++y)//, destline += pitch)
-            {
-                for (int x = 0; x < frame.Width; ++x)
-                {
-                    if (pixelsToSkip != 0)
-                    {
-                        if (pixelsToSkip >= frame.Width - x)
-                        {
-                            pixelsToSkip -= (frame.Width - x); // skip to next line
-                            break;
-                        }
-
-                        x += pixelsToSkip;
-                        pixelsToSkip = 0;
-                    }
-
-                    try { pixel = Convert.ToByte(stream.ReadByte()); }
-                    catch { return; /*got -1 for EOS*/ }
-
-                    if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
-                    {
-                        frame.FrameData[frame.Width * y + x] = pixel;
-                    }
-                    else if (pixel == 0xf8)//MANY_TRANSPARENT_CODE)
-                    {
-                        pixelsToSkip = stream.ReadByte() -1;
-                    }
-                    else //f9,fa,fb,fc,fd,fe,ff
-                    {
-                        pixelsToSkip = 256 - pixel - 1;	// skip (neg al) pixels
-                    }
-                }//end inner for
-            }//end outer for
-        }//end GetPixels()
     }
 }

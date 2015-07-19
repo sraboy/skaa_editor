@@ -33,6 +33,11 @@ namespace SkaaEditor
         }
     }
 
+    public class Sprite
+    {
+
+    }
+
     public class SpriteFrame
     {
         public int Height
@@ -61,37 +66,65 @@ namespace SkaaEditor
             this.Height = height;
             this.Width = width;
 
-            Images = new List<Bitmap>();// = new System.Windows.Media.Imaging.BitmapImage();
+            Images = new List<Bitmap>();
             FrameData = new Byte[height * width];
-
-            //make all the bytes in our bitmap 0xff, the transparent color
-            //Array.ForEach<Byte>(FrameData, new Action<Byte>(delegate(Byte b) { b = 0xff; }));
-
-            //Array.Clear(FrameData, 0, FrameData.Length);
         }
 
+        public void GetPixels(FileStream stream)
+        {
+            int pixelsToSkip = 0;
+            Byte pixel;
+
+            for (int y = 0; y < this.Height; ++y)
+            {
+                for (int x = 0; x < this.Width; ++x)
+                {
+                    if (pixelsToSkip != 0)
+                    {
+                        if (pixelsToSkip >= this.Width - x)
+                        {
+                            pixelsToSkip -= (this.Width - x); // skip to next line
+                            break;
+                        }
+
+                        x += pixelsToSkip;
+                        pixelsToSkip = 0;
+                    }
+
+                    try { pixel = Convert.ToByte(stream.ReadByte()); }
+                    catch { return; /*got -1 for EOS*/ }
+
+                    if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
+                    {
+                        this.FrameData[this.Width * y + x] = pixel;
+                    }
+                    else if (pixel == 0xf8)//MANY_TRANSPARENT_CODE)
+                    {
+                        pixelsToSkip = stream.ReadByte() - 1;
+                    }
+                    else //f9,fa,fb,fc,fd,fe,ff
+                    {
+                        pixelsToSkip = 256 - pixel - 1;	// skip (neg al) pixels
+                    }
+                }//end inner for
+            }//end outer for
+        }//end GetPixels()
         public void BuildBitmap()
         {
-            var b = new Bitmap(this.Width, this.Height, PixelFormat.Format8bppIndexed);
-            b.Palette = Helper.LoadPalette();
-            //b.MakeTransparent(Color.Transparent);
+            Bitmap bmp = new Bitmap(this.Width, this.Height);//, PixelFormat.Format8bppIndexed);
+            Color[] pal = Helper.LoadPalette().Entries;
 
-            var BoundsRect = new Rectangle(0, 0, this.Width, this.Height);
-            BitmapData bmpData = b.LockBits(BoundsRect,
-                                            ImageLockMode.WriteOnly,
-                                            b.PixelFormat);
-            bmpData.Stride = 1;
-            IntPtr ptr = bmpData.Scan0;
-
-            Marshal.Copy(FrameData, 0, ptr, FrameData.Length);
-            b.UnlockBits(bmpData);
-            Images.Add(b);
-
-            //MemoryStream ms = new System.IO.MemoryStream(FrameData);
-            //Bitmap img = new Bitmap(ms);
-
-            //Images.Add(img);
-        }
-
+            for (int y = 0; y < this.Height; y++)
+            {
+                for (int x = 0; x < this.Width; x++)
+                {                    
+                    Color pixel = pal[FrameData[y * this.Width + x]];
+                    bmp.SetPixel(x, y, pixel);
+                    bmp.SetPixel(x, y, Color.FromArgb(255, pixel));
+                    
+                }
+            }
+            Images.Add(bmp);
+        }//end BuildBitmap()
     }
 }
