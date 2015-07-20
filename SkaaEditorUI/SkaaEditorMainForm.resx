@@ -120,4 +120,11 @@
   <metadata name="mainMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="textBox1.Text" xml:space="preserve">
+    <value>This program is still in testing. Use at your own risk!
+
+Use the left/right mouse buttons to for next/prev frame in the above box. Middle-click to zoom 2x.
+
+First File&gt;&gt;Edit&gt;&gt;Load Palette and choose pal_std.res or pal_win.res. Then load a SPR.</value>
+  </data>
 </root>

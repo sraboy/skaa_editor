@@ -28,15 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SkaaEditorMainForm));
             this.btnLoadSPR = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
             this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
-            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -67,7 +69,7 @@
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(1023, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(1022, 24);
             this.mainMenuStrip.TabIndex = 3;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -85,6 +87,13 @@
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
+            // loadPaletteToolStripMenuItem
+            // 
+            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
+            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.loadPaletteToolStripMenuItem.Text = "Load Palette";
+            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
@@ -96,6 +105,7 @@
             this.multiplePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.multiplePictureBox1.Location = new System.Drawing.Point(893, 27);
             this.multiplePictureBox1.Name = "multiplePictureBox1";
+            this.multiplePictureBox1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.multiplePictureBox1.Size = new System.Drawing.Size(125, 125);
             this.multiplePictureBox1.TabIndex = 4;
             // 
@@ -107,18 +117,26 @@
             this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
             this.skaaColorChooser1.TabIndex = 5;
             // 
-            // loadPaletteToolStripMenuItem
+            // textBox1
             // 
-            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
-            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadPaletteToolStripMenuItem.Text = "Load Palette";
-            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
+            this.textBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox1.Cursor = System.Windows.Forms.Cursors.No;
+            this.textBox1.Enabled = false;
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.ForeColor = System.Drawing.Color.Red;
+            this.textBox1.Location = new System.Drawing.Point(894, 215);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(124, 280);
+            this.textBox1.TabIndex = 6;
+            this.textBox1.Text = resources.GetString("textBox1.Text");
             // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1023, 788);
+            this.ClientSize = new System.Drawing.Size(1022, 788);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.skaaColorChooser1);
             this.Controls.Add(this.multiplePictureBox1);
             this.Controls.Add(this.pictureBox1);
@@ -146,6 +164,7 @@
         private MultiplePictureBox.MultiplePictureBox multiplePictureBox1;
         private SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
         private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

@@ -19,8 +19,22 @@ namespace SkaaColorChooser
             get;
             set;
         }
+        public Color ActiveColor
+        {
+            get;
+            set;
+        }
 
-        List<Button> ColorBoxes;
+        private Button ActiveButton;
+
+        //private struct ButtonProperties
+        //{
+        //    int Width, Height, X, Y;
+        //}; 
+
+        //ButtonProperties bp;
+
+        private List<Button> ColorBoxes;
 
         public SkaaColorChooser()
         {
@@ -67,7 +81,9 @@ namespace SkaaColorChooser
             //}
             #endregion
 
-
+            //disable until a palette is loaded
+            foreach (Button btn in this.Controls)
+                btn.Enabled = false;
         }
 
         public void LoadPalette(String Path)
@@ -87,6 +103,51 @@ namespace SkaaColorChooser
             }
 
             this.Palette = pal;
+
+            SetupColorBoxes();
+        }
+
+        void SetupColorBoxes()
+        {
+            for(int i = 0; i < 256; i++)
+            {
+                Button btn = this.Controls[i] as Button;
+                btn.BackColor = Palette.Entries[i];
+                btn.Enabled = true;
+
+                btn.Click += btnColorBox_Click;
+            }
+        }
+
+        void btnColorBox_Click(object sender, EventArgs e)
+        {
+            int btnSizeOffset = 30;
+            int btnLocOffset = 16;
+
+            Button btn = sender as Button;
+
+            if (btn != ActiveButton)
+            {
+                if(ActiveButton != null) //for the first time
+                { 
+                    //return previous active color button to normal
+                    this.ActiveButton.Size = btn.Size;
+                    this.ActiveButton.Location = new Point(this.ActiveButton.Location.X + btnLocOffset, this.ActiveButton.Location.Y + btnLocOffset);
+                    this.ActiveButton.FlatAppearance.BorderColor = Color.White;
+                    this.ActiveButton.FlatAppearance.BorderSize = 1;
+                    this.ActiveButton.SendToBack();
+                }
+
+                this.ActiveColor = btn.BackColor;
+
+                //set the new button and make it stand out
+                this.ActiveButton = btn;
+                this.ActiveButton.Size = new Size(btn.Size.Height + btnSizeOffset, btn.Size.Width + btnSizeOffset);
+                this.ActiveButton.Location = new Point(btn.Location.X - btnLocOffset, btn.Location.Y - btnLocOffset);
+                this.ActiveButton.FlatAppearance.BorderColor = Color.GreenYellow;
+                this.ActiveButton.FlatAppearance.BorderSize = 3;
+                this.ActiveButton.BringToFront();
+            }
         }
     }
 }
