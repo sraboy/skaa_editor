@@ -41,13 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="buttons.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="buttons.Designer.cs">
-      <DependentUpon>buttons.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkaaColorChooser.cs">
       <SubType>UserControl</SubType>
@@ -57,9 +50,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="buttons.resx">
-      <DependentUpon>buttons.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SkaaColorChooser.resx">
       <DependentUpon>SkaaColorChooser.cs</DependentUpon>
     </EmbeddedResource>

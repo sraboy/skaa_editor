@@ -25,14 +25,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SkaaEditor
 {
-    class Sprite
+    public partial class AboutForm : Form
     {
-        //todo: make this class
+        public AboutForm()
+        {
+            InitializeComponent();
+        }
+
+        private void lklblAuthor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("mailto:steven.lavoiejr@gmail.com");
+        }
     }
 }

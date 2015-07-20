@@ -67,20 +67,10 @@
       <DependentUpon>MultiplePictureBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MultiplePictureBoxCaptioned.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="MultiplePictureBoxCaptioned.Designer.cs">
-      <DependentUpon>MultiplePictureBoxCaptioned.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MultiplePictureBox.resx">
       <DependentUpon>MultiplePictureBox.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MultiplePictureBoxCaptioned.resx">
-      <DependentUpon>MultiplePictureBoxCaptioned.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

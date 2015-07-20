@@ -1,4 +1,39 @@
-|Code=8| Type=1 | Subtype=1 | Need_Turning=1 | turn_resolution=1 | loc_width=2 | loc_height=2 | speed=1 | frames_per_step=1 | max_rain_slowdown=1 | ??max_snow_slowdown=1| lightning_damage=1 | remap_bitmap_flag=1 | first_move_recno=5 | move_count=5
+/********************************************************************************************
+*   This file is part of SkaaEditor, a binary file editor for 7KAA.
+*
+*   Copyright (C) 2015  Steven Lavoie  steven.lavoiejr@gmail.com
+*
+*   This program is free software; you can redistribute it and/or modify
+*   it under the terms of the GNU General Public License as published by
+*   the Free Software Foundation; either version 3 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*
+*   SkaaEditor is capable of viewing and/or editing binary files from 
+*   Enlight Software's Seven Kingdoms: Ancient Adversaries (7KAA). All code
+*  	is licensed under GPLv3, including any code from Enlight Software. For
+*  	information on 7KAA, visit http://www.7kfans.com.
+*
+*
+*   I stumbled upon this in memory while trying to learn about how the images are 
+*   used/displayed. This is essentially what the SpriteInfo class holds for each sprite.
+* 
+*   The line below is in this format: 
+*   | Data_Name = sizeInBytes |
+* 
+*   Some of the Data_Name fields may be incorrect, missing or even extra. The source wasn't com-
+*   pletely clear in the several different spots I came upon and I didn't do much research.
+* 
+* | Code=8 | Type=1 | Subtype=1 | Need_Turning=1 | turn_resolution=1 | loc_width=2 | loc_height=2 | speed=1 | frames_per_step=1 | max_rain_slowdown=1 | ??max_snow_slowdown=1| lightning_damage=1 | remap_bitmap_flag=1 | first_move_recno=5 | move_count=5 |
+********************************************************************************************/
 
 NORMAN  U   8 1 1 4 1 1 1 50     1   41
 MAYA    U   8 1 1 4 1 1 1 50    42   17
