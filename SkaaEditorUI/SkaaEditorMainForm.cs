@@ -92,7 +92,7 @@ namespace SkaaEditor
                 
                 sprite.Frames.Add(frame);
 
-                // TODO: Just a hack since we skip pixels that are preset to 0x00.
+                //todo: Just a hack since we skip pixels that are preset to 0x00.
                 // Will need to write those pixels as the actual Color.Transparent
                 // so we can have black in our images.
                 frame.Image.MakeTransparent(System.Drawing.Color.Black);
@@ -157,11 +157,77 @@ namespace SkaaEditor
                 
                 skaaImageBox1.Image.Save(fs, ImageFormat.Bmp);
                 fs.Close();
-
-                //fs.Write()
-                //Bitmap bmp = skaaImageBox1.Image.Save()
             }
-            
+        }
+
+        private void frameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Byte palColorByte; 
+            Bitmap bmp = skaaImageBox1.Image as Bitmap;
+            SpriteFrame sf = new SpriteFrame(bmp.Width, bmp.Height, skaaColorChooser1.Palette);
+
+            byte transparentByte = 0xf8;
+            int transparentByteCount = 0;
+            bool mustWriteTransparentByte = false; //denotes whether or not 0xf8 has been written before writing the byte-count next
+            int realOffset = 0;
+
+            sf.Height = bmp.Height;
+            sf.Width = bmp.Width;
+
+            //todo: should probably just convert this to a List at the source
+            List<Color> Palette = new List<Color>();
+            foreach(Color c in skaaColorChooser1.Palette.Entries)
+            {
+                Palette.Add(c);
+            }
+
+            //the below is pretty much the same as GetPixel()
+            for (int y = 0; y < bmp.Height; ++y)
+            {
+                for (int x = 0; x < bmp.Width; ++x)
+                {
+                    Color pixel = bmp.GetPixel(x, y);
+
+                    palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(255, pixel)));
+
+                    if(palColorByte == 0)
+                    {
+                        mustWriteTransparentByte = true;
+                        transparentByteCount++;
+                    }
+                    else
+                    {
+                        if (transparentByteCount > 0)
+                        {
+                            if (mustWriteTransparentByte == true)
+                            {
+                                sf.FrameData[realOffset] = transparentByte;
+                                realOffset++;
+                                mustWriteTransparentByte = false;
+                            }
+
+                            sf.FrameData[realOffset] = Convert.ToByte(transparentByteCount);
+                            realOffset++;
+                            x += transparentByteCount;
+                            transparentByteCount = 0;
+
+                            while (x > bmp.Width) //went past the end of the row
+                            {
+                                y++;
+                                x -= bmp.Width;
+                            }
+                        }
+                        else
+                        {
+                            sf.FrameData[realOffset] = palColorByte;
+                            realOffset++;
+                        }
+                    }
+
+                    if (y >= bmp.Height)
+                        break;
+                }//end inner for
+            }//end outer for
         }
     }    
 }

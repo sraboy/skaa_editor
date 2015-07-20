@@ -37,17 +37,6 @@ using System.IO;
 
 namespace SkaaColorChooser
 {
-    public class ActiveColorChangedEventArgs : EventArgs
-    {
-        public Color PreviousColor, NewColor;
-
-        public ActiveColorChangedEventArgs(Color prevColor, Color newColor)
-        {
-            PreviousColor = prevColor;
-            NewColor = newColor;
-        }
-    }
-
     public partial class SkaaColorChooser : UserControl
     {
         private Color _activeColor;// = Color.Black; //todo: have to make the button active

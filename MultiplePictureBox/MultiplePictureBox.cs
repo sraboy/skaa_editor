@@ -86,7 +86,7 @@ namespace MultiplePictureBox
             {
                 int zoomWidth, zoomHeight;
 
-                // TODO: zoom is still a bit wonky. zoom = false above is a temp hack
+                //todo: zoom is still a bit wonky. zoom = false above is a temp hack
                 switch (zoom)
                 {
                     case true:
