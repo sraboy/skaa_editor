@@ -11,28 +11,6 @@ using System.Runtime.InteropServices;
 
 namespace SkaaEditor
 {
-    public static class Helper
-    {
-        public static ColorPalette LoadPalette()
-        {
-            ColorPalette pal_std = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
-
-            FileStream fs = File.OpenRead("../../data/resource/pal_std.res");
-            fs.Seek(8, SeekOrigin.Begin);
-
-            for (int i = 0; i < 256; i++)
-            {
-                int r = fs.ReadByte();
-                int g = fs.ReadByte();
-                int b = fs.ReadByte();
-
-                pal_std.Entries[i] = Color.FromArgb(255, r, g, b);
-            }
-
-            return pal_std;
-        }
-    }
-
     public class Sprite
     {
 
@@ -60,14 +38,20 @@ namespace SkaaEditor
             get;
             set;
         }
+        public Bitmap Image
+        {
+            get;
+            set;
+        }
 
         public SpriteFrame(int width, int height)
         {
             this.Height = height;
             this.Width = width;
 
-            Images = new List<Bitmap>();
-            FrameData = new Byte[height * width];
+            //Images = new List<Bitmap>();
+            
+            this.FrameData = new Byte[height * width];
         }
 
         public void GetPixels(FileStream stream)
@@ -121,10 +105,11 @@ namespace SkaaEditor
                     Color pixel = pal[FrameData[y * this.Width + x]];
                     bmp.SetPixel(x, y, pixel);
                     bmp.SetPixel(x, y, Color.FromArgb(255, pixel));
-                    
                 }
             }
-            Images.Add(bmp);
+
+            Image = bmp;
+            //Images.Add(bmp);
         }//end BuildBitmap()
     }
 }

@@ -30,6 +30,7 @@
         {
             this.btnLoadSPR = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,17 +46,25 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.pictureBox1.Location = new System.Drawing.Point(348, 312);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1004, 677);
+            this.pictureBox1.Size = new System.Drawing.Size(668, 377);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
+            // 
+            // multiplePictureBox1
+            // 
+            this.multiplePictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.multiplePictureBox1.Name = "multiplePictureBox1";
+            this.multiplePictureBox1.Size = new System.Drawing.Size(187, 240);
+            this.multiplePictureBox1.TabIndex = 2;
             // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1028, 758);
+            this.Controls.Add(this.multiplePictureBox1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btnLoadSPR);
             this.Name = "SkaaEditorMainForm";
@@ -69,6 +78,7 @@
 
         private System.Windows.Forms.Button btnLoadSPR;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private MultiplePictureBox.MultiplePictureBox multiplePictureBox1;
     }
 }
 

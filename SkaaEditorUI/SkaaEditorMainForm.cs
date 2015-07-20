@@ -24,20 +24,13 @@ namespace SkaaEditor
             //ballista.spr length = 82578 (data_buf_size in init_import()
 
             /************************
-             * Get sprite header data 
-             ************************/
-            //Byte[] sprite_data_size_bytes = new Byte[4];
-            //spritestream.Read(sprite_data_size_bytes, 0, 4);
-            //int sprite_data_size = BitConverter.ToInt32(sprite_data_size_bytes,0);
-
-            /************************
              * Get all of the frames
              ************************/
             //Byte[] sprite_data = new Byte[spritestream.Length];
             //spritestream.Read(sprite_data, 0, (int) spritestream.Length);
 
 
-            List<SpriteFrame> sprFrames = new List<SpriteFrame>();
+            List<SpriteFrame> spriteFrames = new List<SpriteFrame>();
 
             while (spritestream.Position < spritestream.Length)
             {
@@ -59,26 +52,28 @@ namespace SkaaEditor
                 //var hex = BitConverter.ToString(frame.FrameData);
 
                 frame.BuildBitmap();
-                sprFrames.Add(frame);
-                pictureBox1.Image = sprFrames[0].Images[0];
+                
+                spriteFrames.Add(frame);
+
+                // TODO: Just a hack since we skip pixels that are preset to 0x00.
+                // Will need to write those pixels as the actual Color.Transparent
+                // so we can have black in our images.
+                frame.Image.MakeTransparent(System.Drawing.Color.Black);
+
+                //pictureBox1.Image = frame.Image;
                 
                 //end early, just get one to test
                 //spritestream.Position = spritestream.Length;
             }
 
+            //int zoomWidth = spriteFrames[0].Image.Width * 1;
+            //int zoomHeight = spriteFrames[0].Image.Height * 1;
+            //System.Drawing.Bitmap bmp =
+            //    new System.Drawing.Bitmap(spriteFrames[0].Image, new System.Drawing.Size(zoomWidth, zoomHeight));
 
-
-            int zoomWidth = sprFrames[0].Images[0].Width * 1;
-            int zoomHeight = sprFrames[0].Images[0].Height * 1;
-            System.Drawing.Bitmap bmp = 
-                new System.Drawing.Bitmap(sprFrames[0].Images[0], new System.Drawing.Size(zoomWidth, zoomHeight));
+            foreach(SpriteFrame sf in spriteFrames)
+                multiplePictureBox1.AddImage(sf.Image);
             
-            // TODO: Just a hack since we skip pixels that are preset to 0x00.
-            // Will need to write those pixels as the actual Color.Transparent
-            // so we can have black in our images.
-            bmp.MakeTransparent(System.Drawing.Color.Black);
-            
-            pictureBox1.Image = bmp; // sprFrames[0].Images[0];
             spritestream.Close();
         }
     }
