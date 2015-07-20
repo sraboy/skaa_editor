@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using SkaaColorChooser;
 
 namespace SkaaEditor
 {
@@ -57,6 +58,13 @@ namespace SkaaEditor
                 btnLoadSPR.Enabled = false;
 
             this.sprite = new Sprite();
+
+            skaaColorChooser1.ActiveColorChanged += skaaColorChooser1_ActiveColorChanged;
+        }
+
+        void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
+        {
+            this.imageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
         }
 
         private void btnLoadSPR_Click(object sender, EventArgs e)
@@ -118,7 +126,7 @@ namespace SkaaEditor
             spritestream.Close();
 
             //todo: figure out the UX for editing individual frames
-            editFrame(sprite.Frames[0]);
+            imageBox1.Image = sprite.Frames[0].Image;
         }
 
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -149,29 +157,14 @@ namespace SkaaEditor
             this.GridOn = !this.GridOn;
         }
 
-        private void pbEdit_Paint(object sender, PaintEventArgs e)
+        private void imageBox1_MouseDown(object sender, MouseEventArgs e)
         {
-
-        }
-
-        private void editFrame(SpriteFrame sf)
-        {
-            //int zoomWidth = sf.Image.Width * 10;
-            //int zoomHeight = sf.Image.Height * 10;
             
-            //System.Drawing.Bitmap bmp =
-            //    new System.Drawing.Bitmap(sf.Image, new System.Drawing.Size(zoomWidth, zoomHeight));
-
-            //pbEdit.Image = bmp;
-            //imageBox1.Image = bmp;
-
-            imageBox1.Image = sf.Image;
         }
 
-        private void imageBox1_Click(object sender, EventArgs e)
+        private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {
-            if (this.cbEdit.Checked == true)
-                return;
+            imageBox1.EditMode = !imageBox1.EditMode;
         }
     }
 

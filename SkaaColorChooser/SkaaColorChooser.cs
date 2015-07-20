@@ -12,8 +12,23 @@ using System.IO;
 
 namespace SkaaColorChooser
 {
+    public class ActiveColorChangedEventArgs : EventArgs
+    {
+        public Color PreviousColor, NewColor;
+
+        public ActiveColorChangedEventArgs(Color prevColor, Color newColor)
+        {
+            PreviousColor = prevColor;
+            NewColor = newColor;
+        }
+    }
+
     public partial class SkaaColorChooser : UserControl
     {
+        private Color _activeColor;// = Color.Black; //todo: have to make the button active
+
+        public event EventHandler ActiveColorChanged;
+
         public ColorPalette Palette
         {
             get;
@@ -21,8 +36,30 @@ namespace SkaaColorChooser
         }
         public Color ActiveColor
         {
-            get;
-            set;
+            get
+            {
+                return this._activeColor;
+            }
+            set
+            {
+                if(this._activeColor != value)
+                {
+                    Color prevColor = _activeColor;
+                    this._activeColor = value;
+                    this.OnActiveColorChanged(new ActiveColorChangedEventArgs(prevColor, _activeColor));
+                }
+
+            }
+        }
+
+        protected virtual void OnActiveColorChanged(ActiveColorChangedEventArgs e)
+        {
+            EventHandler handler = ActiveColorChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         private Button ActiveButton;

@@ -165,7 +165,6 @@ namespace SkaaEditor
             // 
             // imageBox1
             // 
-            this.imageBox1.AllowClickZoom = true;
             this.imageBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -176,7 +175,7 @@ namespace SkaaEditor
             this.imageBox1.Size = new System.Drawing.Size(689, 729);
             this.imageBox1.TabIndex = 6;
             this.imageBox1.Zoom = 500;
-            this.imageBox1.Click += new System.EventHandler(this.imageBox1_Click);
+            this.imageBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageBox1_MouseDown);
             // 
             // cbEdit
             // 
@@ -187,6 +186,7 @@ namespace SkaaEditor
             this.cbEdit.TabIndex = 7;
             this.cbEdit.Text = "Edit Mode";
             this.cbEdit.UseVisualStyleBackColor = true;
+            this.cbEdit.CheckedChanged += new System.EventHandler(this.cbEdit_CheckedChanged);
             // 
             // SkaaEditorMainForm
             // 
