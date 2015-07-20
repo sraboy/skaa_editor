@@ -33,6 +33,15 @@ namespace SkaaEditor
 {
     class Sprite
     {
-        //todo: make this class
+        public List<SpriteFrame> Frames
+        {
+            get;
+            set;
+        }
+
+        public Sprite()
+        {
+            this.Frames = new List<SpriteFrame>();
+        }
     }
 }

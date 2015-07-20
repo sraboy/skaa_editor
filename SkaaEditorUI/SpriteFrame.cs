@@ -118,14 +118,14 @@ namespace SkaaEditor
             }//end outer for
         }//end GetPixels()
 
-        public void BuildBitmap()
+        public void BuildBitmap32bpp()
         {
-            Bitmap bmp = new Bitmap(this.Width, this.Height);//, PixelFormat.Format8bppIndexed);
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
 
             for (int y = 0; y < this.Height; y++)
             {
                 for (int x = 0; x < this.Width; x++)
-                {                    
+                {
                     Color pixel = this.Palette.Entries[FrameData[y * this.Width + x]];
                     bmp.SetPixel(x, y, pixel);
                     bmp.SetPixel(x, y, Color.FromArgb(255, pixel));
@@ -134,5 +134,18 @@ namespace SkaaEditor
 
             this.Image = bmp;
         }
+
+        //public void BuildBitmap8bpp()
+        //{
+        //    Bitmap bmp = new Bitmap(this.Width, this.Height, PixelFormat.Format8bppIndexed);
+        //    bmp.Palette = this.Palette;
+        //    BitmapData data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
+        //        ImageLockMode.ReadWrite, bmp.PixelFormat);
+        //    for (int h = 0; h < data.Height; h++)
+        //        Marshal.Copy(FrameData, 0, data.Scan0, FrameData.Length);
+        //    bmp.UnlockBits(data);
+        //    this.Image = bmp.Clone() as Bitmap;
+        //    bmp.Dispose();
+        //}
     }
 }

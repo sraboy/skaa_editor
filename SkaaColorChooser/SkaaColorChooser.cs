@@ -27,13 +27,6 @@ namespace SkaaColorChooser
 
         private Button ActiveButton;
 
-        //private struct ButtonProperties
-        //{
-        //    int Width, Height, X, Y;
-        //}; 
-
-        //ButtonProperties bp;
-
         private List<Button> ColorBoxes;
 
         public SkaaColorChooser()
@@ -107,7 +100,7 @@ namespace SkaaColorChooser
             SetupColorBoxes();
         }
 
-        void SetupColorBoxes()
+        private void SetupColorBoxes()
         {
             for(int i = 0; i < 256; i++)
             {
@@ -119,7 +112,7 @@ namespace SkaaColorChooser
             }
         }
 
-        void btnColorBox_Click(object sender, EventArgs e)
+        private void btnColorBox_Click(object sender, EventArgs e)
         {
             int btnSizeOffset = 30;
             int btnLocOffset = 16;

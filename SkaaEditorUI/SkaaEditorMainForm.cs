@@ -30,11 +30,16 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace SkaaEditor
 {
     public partial class SkaaEditorMainForm : Form
     {
+        private bool GridOn = true;
+        Sprite sprite;
+
         //hack for when I break these projects' builds and lose the DLLs
         //the Designer will freak out
         //SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
@@ -44,13 +49,15 @@ namespace SkaaEditor
         {
             //skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
             //multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
+            //pbEdit = new InterpolatedBox();
 
             InitializeComponent();
 
             if (skaaColorChooser1.Palette == null)
                 btnLoadSPR.Enabled = false;
-        }
 
+            this.sprite = new Sprite();
+        }
 
         private void btnLoadSPR_Click(object sender, EventArgs e)
         {
@@ -70,7 +77,7 @@ namespace SkaaEditor
             //spritestream.Read(sprite_data, 0, (int) spritestream.Length);
 
 
-            List<SpriteFrame> spriteFrames = new List<SpriteFrame>();
+            sprite.Frames = new List<SpriteFrame>();
 
             while (spritestream.Position < spritestream.Length)
             {
@@ -94,35 +101,30 @@ namespace SkaaEditor
                 //(add \n after every 62d character). Verified alignment of pixels as read.
                 //var hex = BitConverter.ToString(frame.FrameData);
 
-                frame.BuildBitmap();
+                frame.BuildBitmap32bpp();
                 
-                spriteFrames.Add(frame);
+                sprite.Frames.Add(frame);
 
                 // TODO: Just a hack since we skip pixels that are preset to 0x00.
                 // Will need to write those pixels as the actual Color.Transparent
                 // so we can have black in our images.
+                // this also has to be removed if we stick with the 8bpp indexed image
                 frame.Image.MakeTransparent(System.Drawing.Color.Black);
-
-                //pictureBox1.Image = frame.Image;
-                
-                //end early, just get one to test
-                //spritestream.Position = spritestream.Length;
             }
 
-            //int zoomWidth = spriteFrames[0].Image.Width * 1;
-            //int zoomHeight = spriteFrames[0].Image.Height * 1;
-            //System.Drawing.Bitmap bmp =
-            //    new System.Drawing.Bitmap(spriteFrames[0].Image, new System.Drawing.Size(zoomWidth, zoomHeight));
-
-            foreach(SpriteFrame sf in spriteFrames)
+            foreach(SpriteFrame sf in sprite.Frames)
                 multiplePictureBox1.AddImage(sf.Image);
             
             spritestream.Close();
+
+            //todo: figure out the UX for editing individual frames
+            editFrame(sprite.Frames[0]);
         }
 
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
+            dlg.FileName = "pal_std.res";
             dlg.DefaultExt = ".res";
             dlg.SupportMultiDottedExtensions = true;
 
@@ -134,7 +136,6 @@ namespace SkaaEditor
 
         private void SkaaEditorMainForm_Load(object sender, EventArgs e)
         {
-
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -142,5 +143,73 @@ namespace SkaaEditor
             AboutForm abt = new AboutForm();
             abt.Show();
         }
+
+        private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.GridOn = !this.GridOn;
+        }
+
+        private void pbEdit_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void editFrame(SpriteFrame sf)
+        {
+            int zoomWidth = sf.Image.Width * 10;
+            int zoomHeight = sf.Image.Height * 10;
+            
+            System.Drawing.Bitmap bmp =
+                new System.Drawing.Bitmap(sf.Image, new System.Drawing.Size(zoomWidth, zoomHeight));
+
+            pbEdit.Image = bmp;
+        }
     }
+
+
+    ///// <summary>
+    ///// A PictureBox control extended to allow a variety of interpolations.
+    ///// </summary>
+    //class InterpolatedBox:PictureBox
+    //{
+    //    #region Interpolation Property
+    //    /// <summary>Backing Field</summary>
+    //    private InterpolationMode interpolation = InterpolationMode.Low;
+
+    //    /// <summary>
+    //    /// The interpolation used to render the image.
+    //    /// </summary>
+    //    [DefaultValue(typeof(InterpolationMode), "Default"),
+    //    Description("The interpolation used to render the image.")]
+    //    public InterpolationMode Interpolation {
+    //        get { return interpolation; }
+    //        set {
+    //            if(value == InterpolationMode.Invalid)
+    //                throw new ArgumentException("\"Invalid\" is not a valid value."); // (Duh!)
+
+    //            interpolation = value;
+    //            Invalidate(); // Image should be redrawn when a different interpolation is selected
+    //        }
+    //    }
+    //    #endregion
+
+    //    /// <summary>
+    //    /// Overridden to modify rendering behavior.
+    //    /// </summary>
+    //    /// <param name="pe">Painting event args.</param>
+    //    protected override void OnPaint(PaintEventArgs pe) {
+    //        // Before the PictureBox renders the image, we modify the
+    //        // graphics object to change the interpolation.
+
+    //        // Set the selected interpolation.
+    //        pe.Graphics.InterpolationMode = interpolation;
+    //        // Certain interpolation modes (such as nearest neighbor) need
+    //        // to be offset by half a pixel to render correctly.
+    //        pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
+
+    //        // Allow the PictureBox to draw.
+    //        base.OnPaint(pe);
+    //    }
+    //}
+    
 }
