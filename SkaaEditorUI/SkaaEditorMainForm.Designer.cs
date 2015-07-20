@@ -63,10 +63,10 @@ namespace SkaaEditor
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
-            this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
-            this.imageBox1 = new Cyotek.Windows.Forms.ImageBox();
             this.cbEdit = new System.Windows.Forms.CheckBox();
+            this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
+            this.multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
+            this.skaaImageBox1 = new SkaaEditor.SkaaImageBox();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -145,38 +145,6 @@ namespace SkaaEditor
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // multiplePictureBox1
-            // 
-            this.multiplePictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.multiplePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.multiplePictureBox1.Location = new System.Drawing.Point(893, 27);
-            this.multiplePictureBox1.Name = "multiplePictureBox1";
-            this.multiplePictureBox1.Size = new System.Drawing.Size(125, 125);
-            this.multiplePictureBox1.TabIndex = 4;
-            // 
-            // skaaColorChooser1
-            // 
-            this.skaaColorChooser1.ActiveColor = System.Drawing.Color.Empty;
-            this.skaaColorChooser1.Location = new System.Drawing.Point(5, 28);
-            this.skaaColorChooser1.Name = "skaaColorChooser1";
-            this.skaaColorChooser1.Palette = null;
-            this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
-            this.skaaColorChooser1.TabIndex = 5;
-            // 
-            // imageBox1
-            // 
-            this.imageBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.imageBox1.Location = new System.Drawing.Point(198, 28);
-            this.imageBox1.Name = "imageBox1";
-            this.imageBox1.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
-            this.imageBox1.ShowPixelGrid = true;
-            this.imageBox1.Size = new System.Drawing.Size(689, 729);
-            this.imageBox1.TabIndex = 6;
-            this.imageBox1.Zoom = 500;
-            this.imageBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageBox1_MouseDown);
-            // 
             // cbEdit
             // 
             this.cbEdit.AutoSize = true;
@@ -188,13 +156,43 @@ namespace SkaaEditor
             this.cbEdit.UseVisualStyleBackColor = true;
             this.cbEdit.CheckedChanged += new System.EventHandler(this.cbEdit_CheckedChanged);
             // 
+            // skaaColorChooser1
+            // 
+            this.skaaColorChooser1.ActiveColor = System.Drawing.Color.Empty;
+            this.skaaColorChooser1.Location = new System.Drawing.Point(5, 28);
+            this.skaaColorChooser1.Name = "skaaColorChooser1";
+            this.skaaColorChooser1.Palette = null;
+            this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
+            this.skaaColorChooser1.TabIndex = 5;
+            // 
+            // multiplePictureBox1
+            // 
+            this.multiplePictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.multiplePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.multiplePictureBox1.Location = new System.Drawing.Point(893, 27);
+            this.multiplePictureBox1.Name = "multiplePictureBox1";
+            this.multiplePictureBox1.Size = new System.Drawing.Size(125, 125);
+            this.multiplePictureBox1.TabIndex = 4;
+            // 
+            // skaaImageBox1
+            // 
+            this.skaaImageBox1.ActiveColor = System.Drawing.Color.Empty;
+            this.skaaImageBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.skaaImageBox1.GridCellSize = 12;
+            this.skaaImageBox1.Location = new System.Drawing.Point(198, 28);
+            this.skaaImageBox1.Name = "skaaImageBox1";
+            this.skaaImageBox1.Size = new System.Drawing.Size(689, 758);
+            this.skaaImageBox1.TabIndex = 8;
+            // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1023, 788);
+            this.Controls.Add(this.skaaImageBox1);
             this.Controls.Add(this.cbEdit);
-            this.Controls.Add(this.imageBox1);
             this.Controls.Add(this.skaaColorChooser1);
             this.Controls.Add(this.multiplePictureBox1);
             this.Controls.Add(this.btnLoadSPR);
@@ -224,7 +222,7 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
-        private Cyotek.Windows.Forms.ImageBox imageBox1;
         private System.Windows.Forms.CheckBox cbEdit;
+        private SkaaImageBox skaaImageBox1;
     }
 }

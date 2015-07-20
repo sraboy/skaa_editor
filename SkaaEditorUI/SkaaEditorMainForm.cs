@@ -38,20 +38,10 @@ namespace SkaaEditor
 {
     public partial class SkaaEditorMainForm : Form
     {
-        private bool GridOn = true;
         Sprite sprite;
-
-        //hack for when I break these projects' builds and lose the DLLs
-        //the Designer will freak out
-        //SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
-        //MultiplePictureBox.MultiplePictureBox multiplePictureBox1;
 
         public SkaaEditorMainForm()
         {
-            //skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
-            //multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
-            //pbEdit = new InterpolatedBox();
-
             InitializeComponent();
 
             if (skaaColorChooser1.Palette == null)
@@ -64,7 +54,8 @@ namespace SkaaEditor
 
         void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
-            this.imageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
+            skaaImageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
+            //this.imageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
         }
 
         private void btnLoadSPR_Click(object sender, EventArgs e)
@@ -76,30 +67,17 @@ namespace SkaaEditor
             //pictureBox1.Image = resfile.Resources[0].initIMGStream();
 
             FileStream spritestream = File.OpenRead("../../data/sprite/ballista.spr");
-            //ballista.spr length = 82578 (data_buf_size in init_import()
-
-            /************************
-             * Get all of the frames
-             ************************/
-            //Byte[] sprite_data = new Byte[spritestream.Length];
-            //spritestream.Read(sprite_data, 0, (int) spritestream.Length);
-
 
             sprite.Frames = new List<SpriteFrame>();
 
             while (spritestream.Position < spritestream.Length)
             {
-                ////jump to offset 17537, w=62, h=65 (cur_dir=1) + 4 byte (junk?)
-                //spritestream.Seek(17537+4, SeekOrigin.Begin);
                 Byte[] frame_size_bytes = new Byte[4];
                 spritestream.Seek(4, SeekOrigin.Current); //skip the 32-bit size value
                 spritestream.Read(frame_size_bytes, 0, 4);
 
-                short width = BitConverter.ToInt16(frame_size_bytes, 0);// >> 16;
-                short height = BitConverter.ToInt16(frame_size_bytes, 2);// >> 16;
-                
-                //Just a cheap hack to get around VS issues with the Designer
-                //SkaaColorChooser.SkaaColorChooser skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
+                short width = BitConverter.ToInt16(frame_size_bytes, 0);
+                short height = BitConverter.ToInt16(frame_size_bytes, 2);
                 
                 SpriteFrame frame = new SpriteFrame(width, height, skaaColorChooser1.Palette);
 
@@ -126,7 +104,8 @@ namespace SkaaEditor
             spritestream.Close();
 
             //todo: figure out the UX for editing individual frames
-            imageBox1.Image = sprite.Frames[0].Image;
+            skaaImageBox1.Image = sprite.Frames[0].Image;
+            //imageBox1.Image = sprite.Frames[0].Image;
         }
 
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -154,64 +133,14 @@ namespace SkaaEditor
 
         private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.GridOn = !this.GridOn;
-        }
-
-        private void imageBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            
+            //this.GridOn = !this.GridOn;
+            this.skaaImageBox1.ShowPixelGrid = !this.skaaImageBox1.ShowPixelGrid;
         }
 
         private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {
-            imageBox1.EditMode = !imageBox1.EditMode;
+            skaaImageBox1.EditMode = !skaaImageBox1.EditMode;
+            //imageBox1.EditMode = !imageBox1.EditMode;
         }
-    }
-
-
-    ///// <summary>
-    ///// A PictureBox control extended to allow a variety of interpolations.
-    ///// </summary>
-    //class InterpolatedBox:PictureBox
-    //{
-    //    #region Interpolation Property
-    //    /// <summary>Backing Field</summary>
-    //    private InterpolationMode interpolation = InterpolationMode.Low;
-
-    //    /// <summary>
-    //    /// The interpolation used to render the image.
-    //    /// </summary>
-    //    [DefaultValue(typeof(InterpolationMode), "Default"),
-    //    Description("The interpolation used to render the image.")]
-    //    public InterpolationMode Interpolation {
-    //        get { return interpolation; }
-    //        set {
-    //            if(value == InterpolationMode.Invalid)
-    //                throw new ArgumentException("\"Invalid\" is not a valid value."); // (Duh!)
-
-    //            interpolation = value;
-    //            Invalidate(); // Image should be redrawn when a different interpolation is selected
-    //        }
-    //    }
-    //    #endregion
-
-    //    /// <summary>
-    //    /// Overridden to modify rendering behavior.
-    //    /// </summary>
-    //    /// <param name="pe">Painting event args.</param>
-    //    protected override void OnPaint(PaintEventArgs pe) {
-    //        // Before the PictureBox renders the image, we modify the
-    //        // graphics object to change the interpolation.
-
-    //        // Set the selected interpolation.
-    //        pe.Graphics.InterpolationMode = interpolation;
-    //        // Certain interpolation modes (such as nearest neighbor) need
-    //        // to be offset by half a pixel to render correctly.
-    //        pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
-
-    //        // Allow the PictureBox to draw.
-    //        base.OnPaint(pe);
-    //    }
-    //}
-    
+    }    
 }

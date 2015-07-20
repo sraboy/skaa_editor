@@ -36,6 +36,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cyotek.Windows.Forms.ImageBox, Version=1.1.5.1, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
+      <HintPath>..\packages\CyotekImageBox.1.1.5.1\lib\net20\Cyotek.Windows.Forms.ImageBox.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -81,6 +85,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -97,10 +102,6 @@
     <Content Include="sprite_db.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cyotek.Windows.Forms.ImageBox\Cyotek.Windows.Forms.ImageBox.csproj">
-      <Project>{4159c8d3-c18d-4bed-8be6-9bad1b0ca4f6}</Project>
-      <Name>Cyotek.Windows.Forms.ImageBox</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MultiplePictureBox\MultiplePictureBox.csproj">
       <Project>{B4F6EA7C-67B1-4062-81CC-202C39881D0A}</Project>
       <Name>MultiplePictureBox</Name>
@@ -108,6 +109,10 @@
     <ProjectReference Include="..\SkaaColorChooser\SkaaColorChooser.csproj">
       <Project>{3f16f961-5140-422d-86a6-40ccea72b495}</Project>
       <Name>SkaaColorChooser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SkaaImageBox\SkaaImageBox.csproj">
+      <Project>{086b66c3-643e-43c5-8ed9-5b8b1397277a}</Project>
+      <Name>SkaaImageBox</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
