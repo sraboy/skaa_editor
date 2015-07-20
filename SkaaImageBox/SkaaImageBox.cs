@@ -3,6 +3,11 @@
 *
 *   Copyright (C) 2015  Steven Lavoie  steven.lavoiejr@gmail.com
 *
+*   Much thanks to the creators of the base class, Cyotek Ltd. The ImageBox
+*   class is licensed under the MIT License. You may find more information
+*   here: http://www.cyotek.com/blog/imagebox-1-1-4-0-update and
+*   here: https://github.com/cyotek/Cyotek.Windows.Forms.ImageBox.
+*
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
 *   the Free Software Foundation; either version 3 of the License, or

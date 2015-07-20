@@ -33,6 +33,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using SkaaColorChooser;
+using System.Drawing.Imaging;
 
 namespace SkaaEditor
 {
@@ -121,6 +122,12 @@ namespace SkaaEditor
 
         private void SkaaEditorMainForm_Load(object sender, EventArgs e)
         {
+            exportAsToolStripMenuItem.Enabled = false;
+
+            skaaImageBox1.ImageChanged += (s, a) => {
+                    exportAsToolStripMenuItem.Enabled = 
+                        (skaaImageBox1.Image == null) ? true : false;
+                };
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -140,16 +147,18 @@ namespace SkaaEditor
             skaaImageBox1.EditMode = !skaaImageBox1.EditMode;
         }
 
-        private void bmpToolStripMenuItem_Click(object sender, EventArgs e)
+        private void bmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog();
 
             if(dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
+                
+                skaaImageBox1.Image.Save(fs, ImageFormat.Bmp);
+                fs.Close();
 
-
-
+                //fs.Write()
                 //Bitmap bmp = skaaImageBox1.Image.Save()
             }
             
