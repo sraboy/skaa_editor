@@ -63,17 +63,16 @@ namespace SkaaEditor
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
             this.multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
-            this.pnlCanvas = new System.Windows.Forms.Panel();
-            this.pbEdit = new System.Windows.Forms.PictureBox();
+            this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
+            this.imageBox1 = new Cyotek.Windows.Forms.ImageBox();
+            this.cbEdit = new System.Windows.Forms.CheckBox();
             this.mainMenuStrip.SuspendLayout();
-            this.pnlCanvas.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbEdit)).BeginInit();
             this.SuspendLayout();
             // 
             // btnLoadSPR
             // 
+            this.btnLoadSPR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLoadSPR.Location = new System.Drawing.Point(893, 158);
             this.btnLoadSPR.Name = "btnLoadSPR";
             this.btnLoadSPR.Size = new System.Drawing.Size(125, 51);
@@ -146,6 +145,15 @@ namespace SkaaEditor
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // multiplePictureBox1
+            // 
+            this.multiplePictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.multiplePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.multiplePictureBox1.Location = new System.Drawing.Point(893, 27);
+            this.multiplePictureBox1.Name = "multiplePictureBox1";
+            this.multiplePictureBox1.Size = new System.Drawing.Size(125, 125);
+            this.multiplePictureBox1.TabIndex = 4;
+            // 
             // skaaColorChooser1
             // 
             this.skaaColorChooser1.ActiveColor = System.Drawing.Color.Empty;
@@ -155,42 +163,38 @@ namespace SkaaEditor
             this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
             this.skaaColorChooser1.TabIndex = 5;
             // 
-            // multiplePictureBox1
+            // imageBox1
             // 
-            this.multiplePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.multiplePictureBox1.Location = new System.Drawing.Point(893, 27);
-            this.multiplePictureBox1.Name = "multiplePictureBox1";
-            this.multiplePictureBox1.Size = new System.Drawing.Size(125, 125);
-            this.multiplePictureBox1.TabIndex = 4;
-            // 
-            // pnlCanvas
-            // 
-            this.pnlCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.imageBox1.AllowClickZoom = true;
+            this.imageBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlCanvas.AutoScroll = true;
-            this.pnlCanvas.Controls.Add(this.pbEdit);
-            this.pnlCanvas.Location = new System.Drawing.Point(198, 28);
-            this.pnlCanvas.Name = "pnlCanvas";
-            this.pnlCanvas.Size = new System.Drawing.Size(689, 729);
-            this.pnlCanvas.TabIndex = 6;
+            this.imageBox1.Location = new System.Drawing.Point(198, 28);
+            this.imageBox1.Name = "imageBox1";
+            this.imageBox1.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
+            this.imageBox1.ShowPixelGrid = true;
+            this.imageBox1.Size = new System.Drawing.Size(689, 729);
+            this.imageBox1.TabIndex = 6;
+            this.imageBox1.Zoom = 500;
+            this.imageBox1.Click += new System.EventHandler(this.imageBox1_Click);
             // 
-            // pbEdit
+            // cbEdit
             // 
-            this.pbEdit.Location = new System.Drawing.Point(3, 3);
-            this.pbEdit.Name = "pbEdit";
-            this.pbEdit.Size = new System.Drawing.Size(156, 149);
-            this.pbEdit.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pbEdit.TabIndex = 2;
-            this.pbEdit.TabStop = false;
-            this.pbEdit.Paint += new System.Windows.Forms.PaintEventHandler(this.pbEdit_Paint);
+            this.cbEdit.AutoSize = true;
+            this.cbEdit.Location = new System.Drawing.Point(893, 216);
+            this.cbEdit.Name = "cbEdit";
+            this.cbEdit.Size = new System.Drawing.Size(74, 17);
+            this.cbEdit.TabIndex = 7;
+            this.cbEdit.Text = "Edit Mode";
+            this.cbEdit.UseVisualStyleBackColor = true;
             // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1023, 788);
-            this.Controls.Add(this.pnlCanvas);
+            this.Controls.Add(this.cbEdit);
+            this.Controls.Add(this.imageBox1);
             this.Controls.Add(this.skaaColorChooser1);
             this.Controls.Add(this.multiplePictureBox1);
             this.Controls.Add(this.btnLoadSPR);
@@ -202,9 +206,6 @@ namespace SkaaEditor
             this.Text = "Skaa Editor for 7KAA";
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
-            this.pnlCanvas.ResumeLayout(false);
-            this.pnlCanvas.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbEdit)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -223,7 +224,7 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
-        private System.Windows.Forms.Panel pnlCanvas;
-        private System.Windows.Forms.PictureBox pbEdit;
+        private Cyotek.Windows.Forms.ImageBox imageBox1;
+        private System.Windows.Forms.CheckBox cbEdit;
     }
 }

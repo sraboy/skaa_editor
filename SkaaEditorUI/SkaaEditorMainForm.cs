@@ -156,13 +156,22 @@ namespace SkaaEditor
 
         private void editFrame(SpriteFrame sf)
         {
-            int zoomWidth = sf.Image.Width * 10;
-            int zoomHeight = sf.Image.Height * 10;
+            //int zoomWidth = sf.Image.Width * 10;
+            //int zoomHeight = sf.Image.Height * 10;
             
-            System.Drawing.Bitmap bmp =
-                new System.Drawing.Bitmap(sf.Image, new System.Drawing.Size(zoomWidth, zoomHeight));
+            //System.Drawing.Bitmap bmp =
+            //    new System.Drawing.Bitmap(sf.Image, new System.Drawing.Size(zoomWidth, zoomHeight));
 
-            pbEdit.Image = bmp;
+            //pbEdit.Image = bmp;
+            //imageBox1.Image = bmp;
+
+            imageBox1.Image = sf.Image;
+        }
+
+        private void imageBox1_Click(object sender, EventArgs e)
+        {
+            if (this.cbEdit.Checked == true)
+                return;
         }
     }
 
