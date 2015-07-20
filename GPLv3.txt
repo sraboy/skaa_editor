@@ -1,3 +1,9 @@
+********************************************************************************
+
+This license applies to all SkaaEditor and 7KAA content, unless otherwise noted.
+
+********************************************************************************
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

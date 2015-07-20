@@ -50,12 +50,12 @@ namespace SkaaEditor
             this.sprite = new Sprite();
 
             skaaColorChooser1.ActiveColorChanged += skaaColorChooser1_ActiveColorChanged;
+            showGridToolStripMenuItem.Checked = skaaImageBox1.ShowPixelGrid;
         }
 
         void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
             skaaImageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
-            //this.imageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
         }
 
         private void btnLoadSPR_Click(object sender, EventArgs e)
@@ -94,7 +94,6 @@ namespace SkaaEditor
                 // TODO: Just a hack since we skip pixels that are preset to 0x00.
                 // Will need to write those pixels as the actual Color.Transparent
                 // so we can have black in our images.
-                // this also has to be removed if we stick with the 8bpp indexed image
                 frame.Image.MakeTransparent(System.Drawing.Color.Black);
             }
 
@@ -105,7 +104,6 @@ namespace SkaaEditor
 
             //todo: figure out the UX for editing individual frames
             skaaImageBox1.Image = sprite.Frames[0].Image;
-            //imageBox1.Image = sprite.Frames[0].Image;
         }
 
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -133,14 +131,28 @@ namespace SkaaEditor
 
         private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //this.GridOn = !this.GridOn;
             this.skaaImageBox1.ShowPixelGrid = !this.skaaImageBox1.ShowPixelGrid;
+            (sender as ToolStripMenuItem).Checked = this.skaaImageBox1.ShowPixelGrid;
         }
 
         private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {
             skaaImageBox1.EditMode = !skaaImageBox1.EditMode;
-            //imageBox1.EditMode = !imageBox1.EditMode;
+        }
+
+        private void bmpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+
+            if(dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
+
+
+
+                //Bitmap bmp = skaaImageBox1.Image.Save()
+            }
+            
         }
     }    
 }
