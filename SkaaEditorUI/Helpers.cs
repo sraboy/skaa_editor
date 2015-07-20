@@ -9,25 +9,29 @@ using System.Threading.Tasks;
 
 namespace SkaaEditor
 {
-    public static class Helper
-    {
-        public static ColorPalette LoadPalette()
-        {
-            ColorPalette pal_std = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
+    //MOVED TO SkaaColorChooser control
 
-            FileStream fs = File.OpenRead("../../data/resource/pal_std.res");
-            fs.Seek(8, SeekOrigin.Begin);
+    //public static class Helper
+    //{
+    //    public static ColorPalette LoadPalette()
+    //    {
+    //        //TODO: string param from OpenFileDlg
 
-            for (int i = 0; i < 256; i++)
-            {
-                int r = fs.ReadByte();
-                int g = fs.ReadByte();
-                int b = fs.ReadByte();
+    //        ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
 
-                pal_std.Entries[i] = Color.FromArgb(255, r, g, b);
-            }
+    //        FileStream fs = File.OpenRead("../../data/resource/pal_std.res");
+    //        fs.Seek(8, SeekOrigin.Begin);
 
-            return pal_std;
-        }
-    }
+    //        for (int i = 0; i < 256; i++)
+    //        {
+    //            int r = fs.ReadByte();
+    //            int g = fs.ReadByte();
+    //            int b = fs.ReadByte();
+
+    //            pal.Entries[i] = Color.FromArgb(255, r, g, b);
+    //        }
+
+    //        return pal;
+    //    }
+    //}
 }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUI", "SkaaEditorU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiplePictureBox", "MultiplePictureBox\MultiplePictureBox.csproj", "{B4F6EA7C-67B1-4062-81CC-202C39881D0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaColorChooser", "SkaaColorChooser\SkaaColorChooser.csproj", "{3F16F961-5140-422D-86A6-40CCEA72B495}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,16 @@ Global
 		{B4F6EA7C-67B1-4062-81CC-202C39881D0A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B4F6EA7C-67B1-4062-81CC-202C39881D0A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B4F6EA7C-67B1-4062-81CC-202C39881D0A}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

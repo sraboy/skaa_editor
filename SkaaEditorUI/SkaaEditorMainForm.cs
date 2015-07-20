@@ -10,13 +10,28 @@ namespace SkaaEditor
 {
     public partial class SkaaEditorMainForm : Form
     {
+        //hack for when I break these projects' builds and lose the DLLs
+        //the Designer will freak out
+        //SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
+        //MultiplePictureBox.MultiplePictureBox multiplePictureBox1;
+
         public SkaaEditorMainForm()
         {
+            //skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
+            //multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
+
             InitializeComponent();
+
+            if (skaaColorChooser1.Palette == null)
+                btnLoadSPR.Enabled = false;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+        private void btnLoadSPR_Click(object sender, EventArgs e)
         {
+            if (skaaColorChooser1.Palette == null)
+                return;
+
             //ResourceFile resfile = new ResourceFile("i_menu2.res");
             //pictureBox1.Image = resfile.Resources[0].initIMGStream();
 
@@ -42,8 +57,11 @@ namespace SkaaEditor
 
                 short width = BitConverter.ToInt16(frame_size_bytes, 0);// >> 16;
                 short height = BitConverter.ToInt16(frame_size_bytes, 2);// >> 16;
-
-                SpriteFrame frame = new SpriteFrame(width, height);
+                
+                //Just a cheap hack to get around VS issues with the Designer
+                //SkaaColorChooser.SkaaColorChooser skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
+                
+                SpriteFrame frame = new SpriteFrame(width, height, skaaColorChooser1.Palette);
 
                 frame.GetPixels(spritestream);
 
@@ -75,6 +93,18 @@ namespace SkaaEditor
                 multiplePictureBox1.AddImage(sf.Image);
             
             spritestream.Close();
+        }
+
+        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.DefaultExt = ".res";
+            dlg.SupportMultiDottedExtensions = true;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+                skaaColorChooser1.LoadPalette(dlg.FileName);
+
+            btnLoadSPR.Enabled = true;
         }
     }
 }

@@ -11,11 +11,6 @@ using System.Runtime.InteropServices;
 
 namespace SkaaEditor
 {
-    public class Sprite
-    {
-
-    }
-
     public class SpriteFrame
     {
         public int Height
@@ -43,15 +38,19 @@ namespace SkaaEditor
             get;
             set;
         }
+        public ColorPalette Palette
+        {
+            get;
+            set;
+        }
 
-        public SpriteFrame(int width, int height)
+        public SpriteFrame(int width, int height, ColorPalette palette)
         {
             this.Height = height;
             this.Width = width;
-
-            //Images = new List<Bitmap>();
-            
             this.FrameData = new Byte[height * width];
+
+            this.Palette = palette;
         }
 
         public void GetPixels(FileStream stream)
@@ -76,7 +75,7 @@ namespace SkaaEditor
                     }
 
                     try { pixel = Convert.ToByte(stream.ReadByte()); }
-                    catch { return; /*got -1 for EOS*/ }
+                    catch { return; /*got -1 for EOF*/ }
 
                     if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
                     {
@@ -93,23 +92,22 @@ namespace SkaaEditor
                 }//end inner for
             }//end outer for
         }//end GetPixels()
+
         public void BuildBitmap()
         {
             Bitmap bmp = new Bitmap(this.Width, this.Height);//, PixelFormat.Format8bppIndexed);
-            Color[] pal = Helper.LoadPalette().Entries;
 
             for (int y = 0; y < this.Height; y++)
             {
                 for (int x = 0; x < this.Width; x++)
                 {                    
-                    Color pixel = pal[FrameData[y * this.Width + x]];
+                    Color pixel = this.Palette.Entries[FrameData[y * this.Width + x]];
                     bmp.SetPixel(x, y, pixel);
                     bmp.SetPixel(x, y, Color.FromArgb(255, pixel));
                 }
             }
 
-            Image = bmp;
-            //Images.Add(bmp);
-        }//end BuildBitmap()
+            this.Image = bmp;
+        }
     }
 }

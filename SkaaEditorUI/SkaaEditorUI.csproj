@@ -56,6 +56,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceClasses.cs" />
+    <Compile Include="Sprite.cs" />
     <Compile Include="SpriteFrame.cs" />
     <EmbeddedResource Include="SkaaEditorMainForm.resx">
       <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
@@ -88,6 +89,10 @@
     <ProjectReference Include="..\MultiplePictureBox\MultiplePictureBox.csproj">
       <Project>{B4F6EA7C-67B1-4062-81CC-202C39881D0A}</Project>
       <Name>MultiplePictureBox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SkaaColorChooser\SkaaColorChooser.csproj">
+      <Project>{3f16f961-5140-422d-86a6-40ccea72b495}</Project>
+      <Name>SkaaColorChooser</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
