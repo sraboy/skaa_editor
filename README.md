@@ -6,5 +6,7 @@ Eventually, I'll merge the bit of work I've got done on the SAV game files with 
 
 Saving isn't yet implemented.
 
+![screenshot](https://github.com/sraboy/skaa_editor/_other/skaa_editor.png)
+
 ---
 Everything of mine is GPLv3; content from 7KAA remains under that license, [http://www.7kfans.com/wiki/index.php/Seven_Kingdoms:Copyrights](mostly all GPL as well).
