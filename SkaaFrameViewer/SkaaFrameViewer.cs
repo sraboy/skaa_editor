@@ -31,79 +31,79 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SkaaGameDataLib;
 
 namespace SkaaFrameViewer
 {
     public partial class SkaaFrameViewer : UserControl
     {
+        Sprite _activeSprite;
+        SpriteFrame _activeFrame;
+        int _activeFrameIndex;
 
-        bool zoom = false;
-        int imageOnDisplay = 0;
-
-        private List<Bitmap> Frames;
+        public Sprite ActiveSprite
+        {
+            get
+            {
+                return this._activeSprite;
+            }
+            set
+            {
+                if(this._activeSprite != value)
+                {
+                    this._activeSprite = value;
+                }
+            }
+        }
+        public SpriteFrame ActiveFrame
+        {
+            get
+            {
+                return this._activeFrame;
+            }
+            set
+            {
+                if (this._activeFrame != value)
+                {
+                    this._activeFrame = value;
+                    this._activeFrameIndex = this._activeSprite.Frames.FindIndex(0, (f => f == _activeFrame));
+                    this.picBoxFrame.Image = this._activeFrame.Image;
+                }
+            }
+        }
 
         public SkaaFrameViewer()
         {
             InitializeComponent();
-            Frames = new List<Bitmap>();
-        }
-
-        public void AddImage(Bitmap bmp)
-        {
-            Frames.Add(bmp);
-
-            if (Frames.Count == 1) //first image
-                picBoxFrame.Image = this.Frames[0];
+            picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
         }
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
         {
-            if (this.Frames.Count == 0)
+            if (ActiveFrame == null)
                 return;
 
             if (e.Button == MouseButtons.Left)
             {
-                //hack to reset zoom
-                zoom = false;
-                picBoxFrame.Image = new Bitmap(picBoxFrame.Image, new Size(Frames[imageOnDisplay].Width, Frames[imageOnDisplay].Height));
-
-                imageOnDisplay++;
-                imageOnDisplay %= (Frames.Count - 1);
-                picBoxFrame.Image = Frames[imageOnDisplay];
+                _activeFrameIndex++;
+                _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
+                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].Image;
             }
             else if (e.Button == MouseButtons.Right)
             {
-                //hack to reset zoom
-                zoom = false;
-                picBoxFrame.Image = new Bitmap(picBoxFrame.Image, new Size(Frames[imageOnDisplay].Width, Frames[imageOnDisplay].Height));
-
-                imageOnDisplay--;
-                imageOnDisplay = (imageOnDisplay % (Frames.Count - 1) + (Frames.Count - 1)) % (Frames.Count - 1);
+                _activeFrameIndex--;
+                _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
                 // special mod() function above to actually cycle negative numbers around. Turns out % isn't 
                 // a real mod() function, just remainder.
-                picBoxFrame.Image = Frames[imageOnDisplay];
+                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].Image;
             }
             else if (e.Button == MouseButtons.Middle)
             {
-                int zoomWidth, zoomHeight;
-
-                //todo: zoom is still a bit wonky. zoom = false above is a temp hack
-                switch (zoom)
-                {
-                    case true:
-                        zoomWidth = Frames[imageOnDisplay].Width;
-                        zoomHeight = Frames[imageOnDisplay].Height;
-                        picBoxFrame.Image = new Bitmap(picBoxFrame.Image, new Size(zoomWidth, zoomHeight));
-                        zoom = false;
-                        break;
-                    case false:
-                        zoomWidth = picBoxFrame.Image.Width * 2;
-                        zoomHeight = picBoxFrame.Image.Height * 2;
-                        picBoxFrame.Image = new Bitmap(picBoxFrame.Image, new Size(zoomWidth, zoomHeight));
-                        zoom = true;
-                        break;
-                }
-
+                //todo: change this to raise an event that a new frame was selected so MainForm can updated the editor with the selected frame
+                if (picBoxFrame.SizeMode == PictureBoxSizeMode.CenterImage)
+                    picBoxFrame.SizeMode = PictureBoxSizeMode.Zoom;
+                else
+                    picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
             }
         }
 

@@ -30,9 +30,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkaaEditor
+namespace SkaaGameDataLib
 {
-    class Sprite
+    public class Sprite
     {
         private ColorPalette _pallet;
 

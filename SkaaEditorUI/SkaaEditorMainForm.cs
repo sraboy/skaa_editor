@@ -34,6 +34,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using SkaaColorChooser;
 using System.Drawing.Imaging;
+using SkaaGameDataLib;
 
 namespace SkaaEditor
 {
@@ -107,14 +108,16 @@ namespace SkaaEditor
                 exportAsToolStripMenuItem.Enabled = true;
             }
 
-            foreach(SpriteFrame sf in activeSprite.Frames)
-                multiplePictureBox1.AddImage(sf.Image);
+            //foreach(SpriteFrame sf in activeSprite.Frames)
+            //    multiplePictureBox1.AddImage(sf.Image);
             
             spritestream.Close();
 
             //todo: figure out the UX for editing individual frames
             activeFrame = activeSprite.Frames[0];
             skaaImageBox1.Image = activeFrame.Image;
+            skaaFrameViewer1.ActiveSprite = this.activeSprite;
+            skaaFrameViewer1.ActiveFrame = this.activeFrame;
         }
         private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {

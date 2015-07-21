@@ -72,7 +72,6 @@ namespace SkaaEditor
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cbEdit = new System.Windows.Forms.CheckBox();
             this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
-            this.multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
             this.skaaImageBox1 = new SkaaEditor.SkaaImageBox();
             this.skaaFrameViewer1 = new SkaaFrameViewer.SkaaFrameViewer();
             this.mainMenuStrip.SuspendLayout();
@@ -81,7 +80,7 @@ namespace SkaaEditor
             // btnLoadSPR
             // 
             this.btnLoadSPR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLoadSPR.Location = new System.Drawing.Point(893, 158);
+            this.btnLoadSPR.Location = new System.Drawing.Point(893, 154);
             this.btnLoadSPR.Name = "btnLoadSPR";
             this.btnLoadSPR.Size = new System.Drawing.Size(125, 51);
             this.btnLoadSPR.TabIndex = 0;
@@ -210,7 +209,7 @@ namespace SkaaEditor
             // cbEdit
             // 
             this.cbEdit.AutoSize = true;
-            this.cbEdit.Location = new System.Drawing.Point(893, 216);
+            this.cbEdit.Location = new System.Drawing.Point(897, 209);
             this.cbEdit.Name = "cbEdit";
             this.cbEdit.Size = new System.Drawing.Size(74, 17);
             this.cbEdit.TabIndex = 7;
@@ -227,15 +226,6 @@ namespace SkaaEditor
             this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
             this.skaaColorChooser1.TabIndex = 5;
             // 
-            // multiplePictureBox1
-            // 
-            this.multiplePictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.multiplePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.multiplePictureBox1.Location = new System.Drawing.Point(893, 27);
-            this.multiplePictureBox1.Name = "multiplePictureBox1";
-            this.multiplePictureBox1.Size = new System.Drawing.Size(125, 125);
-            this.multiplePictureBox1.TabIndex = 4;
-            // 
             // skaaImageBox1
             // 
             this.skaaImageBox1.ActiveColor = System.Drawing.Color.Empty;
@@ -251,8 +241,10 @@ namespace SkaaEditor
             // 
             // skaaFrameViewer1
             // 
+            this.skaaFrameViewer1.ActiveFrame = null;
+            this.skaaFrameViewer1.ActiveSprite = null;
             this.skaaFrameViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.skaaFrameViewer1.Location = new System.Drawing.Point(893, 356);
+            this.skaaFrameViewer1.Location = new System.Drawing.Point(893, 28);
             this.skaaFrameViewer1.Name = "skaaFrameViewer1";
             this.skaaFrameViewer1.Size = new System.Drawing.Size(125, 125);
             this.skaaFrameViewer1.TabIndex = 9;
@@ -266,7 +258,6 @@ namespace SkaaEditor
             this.Controls.Add(this.skaaImageBox1);
             this.Controls.Add(this.cbEdit);
             this.Controls.Add(this.skaaColorChooser1);
-            this.Controls.Add(this.multiplePictureBox1);
             this.Controls.Add(this.btnLoadSPR);
             this.Controls.Add(this.mainMenuStrip);
             this.DoubleBuffered = true;
@@ -289,7 +280,6 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private MultiplePictureBox.MultiplePictureBox multiplePictureBox1;
         private SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
         private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
