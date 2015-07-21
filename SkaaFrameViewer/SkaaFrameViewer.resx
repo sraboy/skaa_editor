@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,28 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="mainMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>44</value>
-  </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAgAIAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgAAAgAAAgICAAMDAwAAAAP8AAP8AAAD//wD/AAAA/wD/AP//
-        AAD///8AxEREREREDEREREREQARERAxLu7szBAxEu7uzMEDEM7QAyLuzMEAAxEu7MwQMQzu0AMS7MwQA
-        AAxLszBAxDO7BAAMizMEAAAMS7MwTEM7sEAADEuDBAAADEuzMEQzuwQAAAxLszBAAAxLszBDO7BAAAAA
-        yLgwQAAMS7MwM7sEAAAAAMS7MwQADEu7MzuwQAAAAAAMizMEAAxLu7O7BAAAAAAADEuDBAAMS7u7swQA
-        AAAAAAxLszBADEu7u7MEAAAAAAAAyLgwQAxLuzuzMEAAAAAAAMS7MEAMS7MwuzMEAADEAAAMi4MEDEuz
-        MEuzMEAAwEAADEuzBAxLszBEuzMEAMAEREQLuDBES7MwTEuzMEDDMAAAM7swR0uzMETEuzMEyzMzMzu7
-        g3t7uzMETEuzNMu7u7u7u7O7g7uzMExLuzTLu7u7u7u4u7O7u7BEu7u0wAAAAAAAC7u4MAAAAAAABMMz
-        MzMzM4u/uzMzMzMzMzTLu7u7u7O7OfuDu7u7u7s0y7u7u7u4s9kfs7u7u7u7NMu7RERES7PZH7gERERE
-        uzTLtMzMzMs9mZH7BMzMzEs0y0wAAGy7PfmR+4BAAADEtMzAAABss93d2Z+wQAAADMzMAAAGy7MzMzM4
-        uAQAAAAAAAAABsu7u7u7u7sEAAAAAAAAAGzMzMzMzMzMzEAAAAAACABggAgAQMAcAIDAPgEA4D4AAeA+
-        AAPgHgAH8B4AD/AOAB/4DgA/+A4AP/gGAD/8BgAf/AYADz4CAAceAgADAAAAAQAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAHwHwAB+D4AAP/+AAD//AAAfw==
-</value>
-  </data>
 </root>

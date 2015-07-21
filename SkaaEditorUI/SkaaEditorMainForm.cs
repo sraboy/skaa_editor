@@ -49,8 +49,6 @@ namespace SkaaEditor
             if (skaaColorChooser1.Palette == null)
                 btnLoadSPR.Enabled = false;
 
-            //this.activeFrame = new SpriteFrame();
-
             skaaColorChooser1.ActiveColorChanged += skaaColorChooser1_ActiveColorChanged;
             showGridToolStripMenuItem.Checked = skaaImageBox1.ShowPixelGrid;
 
@@ -61,7 +59,9 @@ namespace SkaaEditor
         {
             //todo: need to change multiplePictureBox to SpriteFrame instead of image
             //multiplePictureBox1.
-            throw new NotImplementedException();
+
+
+            //throw new NotImplementedException();
         }
 
         private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
@@ -166,52 +166,6 @@ namespace SkaaEditor
         private void saveFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             activeFrame.SaveChanges(skaaImageBox1.Image as Bitmap, activeSprite.Palette);
-
-            //Byte palColorByte; 
-            //Bitmap bmp = skaaImageBox1.Image as Bitmap;
-            //SpriteFrame sf = new SpriteFrame(bmp.Width, bmp.Height, skaaColorChooser1.Palette);
-            //byte transparentByte = 0xf8;
-            //int transparentByteCount = 0;
-            //int realOffset = 0;
-            //sf.Height = bmp.Height;
-            //sf.Width = bmp.Width;
-            ////todo: should probably just convert this to a List at the source
-            //List<Color> Palette = new List<Color>();
-            //foreach(Color c in skaaColorChooser1.Palette.Entries)
-            //{
-            //    Palette.Add(c);
-            //}
-            ////the below is pretty much the same as GetPixel() but reversed(ish)
-            //for (int y = 0; y < bmp.Height; ++y)
-            //{
-            //    for (int x = 0; x < bmp.Width; ++x)
-            //    {
-            //        Color pixel = bmp.GetPixel(x, y);
-            //        palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(255, pixel)));
-            //        if(palColorByte == 0)
-            //        {
-            //            transparentByteCount++;
-            //        }
-            //        else
-            //        {
-            //            if (transparentByteCount > 0)
-            //            {
-            //                    sf.FrameData[realOffset] = transparentByte;
-            //                    realOffset++;
-            //                    sf.FrameData[realOffset] = Convert.ToByte(transparentByteCount);
-            //                    realOffset++;
-            //                    sf.FrameData[realOffset] = palColorByte;
-            //                    realOffset++;
-            //                    transparentByteCount = 0;
-            //            }
-            //            else
-            //            {
-            //                sf.FrameData[realOffset] = palColorByte;
-            //                realOffset++;
-            //            }
-            //        }
-            //    }//end inner for
-            //}//end outer for
         }
     }    
 }

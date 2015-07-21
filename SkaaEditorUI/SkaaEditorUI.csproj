@@ -110,6 +110,10 @@
       <Project>{3f16f961-5140-422d-86a6-40ccea72b495}</Project>
       <Name>SkaaColorChooser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SkaaFrameViewer\SkaaFrameViewer.csproj">
+      <Project>{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}</Project>
+      <Name>SkaaFrameViewer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SkaaImageBox\SkaaImageBox.csproj">
       <Project>{086b66c3-643e-43c5-8ed9-5b8b1397277a}</Project>
       <Name>SkaaImageBox</Name>

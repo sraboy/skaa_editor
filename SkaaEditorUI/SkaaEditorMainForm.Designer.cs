@@ -59,6 +59,9 @@ namespace SkaaEditor
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.frameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wholeSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,9 +74,7 @@ namespace SkaaEditor
             this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
             this.multiplePictureBox1 = new MultiplePictureBox.MultiplePictureBox();
             this.skaaImageBox1 = new SkaaEditor.SkaaImageBox();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.frameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.wholeSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.skaaFrameViewer1 = new SkaaFrameViewer.SkaaFrameViewer();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -124,6 +125,28 @@ namespace SkaaEditor
             this.openToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.frameToolStripMenuItem,
+            this.wholeSpriteToolStripMenuItem});
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.saveToolStripMenuItem.Text = "Save (Native SPR)";
+            // 
+            // frameToolStripMenuItem
+            // 
+            this.frameToolStripMenuItem.Name = "frameToolStripMenuItem";
+            this.frameToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.frameToolStripMenuItem.Text = "Current Frame";
+            this.frameToolStripMenuItem.Click += new System.EventHandler(this.saveFrameToolStripMenuItem_Click);
+            // 
+            // wholeSpriteToolStripMenuItem
+            // 
+            this.wholeSpriteToolStripMenuItem.Name = "wholeSpriteToolStripMenuItem";
+            this.wholeSpriteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.wholeSpriteToolStripMenuItem.Text = "Whole Sprite";
+            // 
             // exportAsToolStripMenuItem
             // 
             this.exportAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -135,7 +158,7 @@ namespace SkaaEditor
             // bmp32bppToolStripMenuItem
             // 
             this.bmp32bppToolStripMenuItem.Name = "bmp32bppToolStripMenuItem";
-            this.bmp32bppToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bmp32bppToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.bmp32bppToolStripMenuItem.Text = "32-bit Bitmap";
             this.bmp32bppToolStripMenuItem.Click += new System.EventHandler(this.exportBmp32bppToolStripMenuItem_Click);
             // 
@@ -220,38 +243,26 @@ namespace SkaaEditor
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.skaaImageBox1.GridCellSize = 12;
+            this.skaaImageBox1.IsDrawing = false;
             this.skaaImageBox1.Location = new System.Drawing.Point(198, 28);
             this.skaaImageBox1.Name = "skaaImageBox1";
             this.skaaImageBox1.Size = new System.Drawing.Size(689, 758);
             this.skaaImageBox1.TabIndex = 8;
             // 
-            // saveToolStripMenuItem
+            // skaaFrameViewer1
             // 
-            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.frameToolStripMenuItem,
-            this.wholeSpriteToolStripMenuItem});
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.saveToolStripMenuItem.Text = "Save (Native SPR)";
-            // 
-            // frameToolStripMenuItem
-            // 
-            this.frameToolStripMenuItem.Name = "frameToolStripMenuItem";
-            this.frameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.frameToolStripMenuItem.Text = "Current Frame";
-            this.frameToolStripMenuItem.Click += new System.EventHandler(this.saveFrameToolStripMenuItem_Click);
-            // 
-            // wholeSpriteToolStripMenuItem
-            // 
-            this.wholeSpriteToolStripMenuItem.Name = "wholeSpriteToolStripMenuItem";
-            this.wholeSpriteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.wholeSpriteToolStripMenuItem.Text = "Whole Sprite";
+            this.skaaFrameViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.skaaFrameViewer1.Location = new System.Drawing.Point(893, 356);
+            this.skaaFrameViewer1.Name = "skaaFrameViewer1";
+            this.skaaFrameViewer1.Size = new System.Drawing.Size(125, 125);
+            this.skaaFrameViewer1.TabIndex = 9;
             // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1023, 788);
+            this.Controls.Add(this.skaaFrameViewer1);
             this.Controls.Add(this.skaaImageBox1);
             this.Controls.Add(this.cbEdit);
             this.Controls.Add(this.skaaColorChooser1);
@@ -293,5 +304,6 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem frameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem wholeSpriteToolStripMenuItem;
+        private SkaaFrameViewer.SkaaFrameViewer skaaFrameViewer1;
     }
 }

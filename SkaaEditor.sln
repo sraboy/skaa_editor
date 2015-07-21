@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ImageB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaImageBox", "SkaaImageBox\SkaaImageBox.csproj", "{086B66C3-643E-43C5-8ED9-5B8B1397277A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaFrameViewer", "SkaaFrameViewer\SkaaFrameViewer.csproj", "{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,16 @@ Global
 		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|x86.ActiveCfg = Release|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
