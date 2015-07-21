@@ -140,7 +140,7 @@ namespace SkaaEditor
                     if (e.Button == MouseButtons.Left)
                         (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this.ActiveColor);
                     if (e.Button == MouseButtons.Right)
-                        (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, Color.White);
+                        (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, Color.Black); //todo:setup secondary color as transparent. will have to update save to convert trans to black
 
                     this.Invalidate(this.ViewPortRectangle);
                     this.Update();

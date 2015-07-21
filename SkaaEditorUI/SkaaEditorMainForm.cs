@@ -168,6 +168,9 @@ namespace SkaaEditor
         }
         private void saveFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (skaaImageBox1.Image == null)
+                return;
+
             activeFrame.SaveChanges(skaaImageBox1.Image as Bitmap, activeSprite.Palette);
         }
     }    

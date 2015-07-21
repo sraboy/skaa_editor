@@ -165,6 +165,7 @@ namespace SkaaGameDataLib
                 for (int x = 0; x < bmp.Width; ++x)
                 {
                     Color pixel = bmp.GetPixel(x, y);
+                    
                     palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(255, pixel)));
 
                     if (palColorByte == 0)
