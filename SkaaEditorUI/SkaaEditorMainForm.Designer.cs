@@ -137,7 +137,7 @@ namespace SkaaEditor
             this.bmp32bppToolStripMenuItem.Name = "bmp32bppToolStripMenuItem";
             this.bmp32bppToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.bmp32bppToolStripMenuItem.Text = "32-bit Bitmap";
-            this.bmp32bppToolStripMenuItem.Click += new System.EventHandler(this.bmp32bppToolStripMenuItem_Click);
+            this.bmp32bppToolStripMenuItem.Click += new System.EventHandler(this.exportBmp32bppToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -239,7 +239,7 @@ namespace SkaaEditor
             this.frameToolStripMenuItem.Name = "frameToolStripMenuItem";
             this.frameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.frameToolStripMenuItem.Text = "Current Frame";
-            this.frameToolStripMenuItem.Click += new System.EventHandler(this.frameToolStripMenuItem_Click);
+            this.frameToolStripMenuItem.Click += new System.EventHandler(this.saveFrameToolStripMenuItem_Click);
             // 
             // wholeSpriteToolStripMenuItem
             // 
@@ -263,7 +263,7 @@ namespace SkaaEditor
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "SkaaEditorMainForm";
             this.Text = "Skaa Editor for 7KAA";
-            this.Load += new System.EventHandler(this.SkaaEditorMainForm_Load);
+            this.Load += new System.EventHandler(this.skaaEditorMainForm_Load);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
             this.ResumeLayout(false);

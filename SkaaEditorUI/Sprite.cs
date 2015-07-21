@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,15 +34,57 @@ namespace SkaaEditor
 {
     class Sprite
     {
+        private ColorPalette _pallet;
+
+        public ColorPalette Palette
+        {
+            get
+            {
+                return this._pallet;
+            }
+            set
+            {
+                if(this._pallet != value)
+                {
+                    this._pallet = value;
+                    UpdateFrames();
+                }
+            }
+        }
         public List<SpriteFrame> Frames
         {
             get;
             set;
         }
 
-        public Sprite()
+        public Sprite(ColorPalette pal)
         {
+            this.Palette = pal;
             this.Frames = new List<SpriteFrame>();
+        }
+
+        public SpriteFrame AddFrame(SpriteFrame sf = null)
+        {
+            if (sf == null)
+            {
+                sf = new SpriteFrame();
+                this.Frames.Add(sf);
+                return sf;
+            }
+
+            this.Frames.Add(sf);
+            return sf;
+        }
+
+        public void UpdateFrames()
+        {
+            if (this.Frames != null)
+            {
+                foreach (SpriteFrame sf in this.Frames)
+                {
+                    sf.Palette = this.Palette;
+                }
+            }
         }
     }
 }

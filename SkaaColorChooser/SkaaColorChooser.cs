@@ -41,8 +41,6 @@ namespace SkaaColorChooser
     {
         private Color _activeColor;// = Color.Black; //todo: have to make the button active
 
-        public event EventHandler ActiveColorChanged;
-
         public ColorPalette Palette
         {
             get;
@@ -66,6 +64,7 @@ namespace SkaaColorChooser
             }
         }
 
+        public event EventHandler ActiveColorChanged;
         protected virtual void OnActiveColorChanged(ActiveColorChangedEventArgs e)
         {
             EventHandler handler = ActiveColorChanged;
@@ -130,7 +129,7 @@ namespace SkaaColorChooser
                 btn.Enabled = false;
         }
 
-        public void LoadPalette(String Path)
+        public ColorPalette LoadPalette(String Path)
         {
             ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
 
@@ -149,6 +148,8 @@ namespace SkaaColorChooser
             this.Palette = pal;
 
             SetupColorBoxes();
+
+            return this.Palette;
         }
 
         private void SetupColorBoxes()

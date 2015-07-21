@@ -44,9 +44,12 @@ namespace SkaaEditor
 {
     public partial class SkaaImageBox : ImageBox
     {
-        private bool _editMode;// = false;
-        private Color _activeColor;// = ;
-
+        #region Private Vars
+        private Boolean _editMode;
+        private Boolean _isDrawing;
+        private Color _activeColor;
+        #endregion
+        #region Accessor Methods
         [DefaultValue(false)]
         [Category("Behavior")]
         public bool EditMode
@@ -61,7 +64,6 @@ namespace SkaaEditor
                 }
             }
         }
-
         [Category("Behavior")]
         public Color ActiveColor
         {
@@ -75,6 +77,32 @@ namespace SkaaEditor
                 }
             }
         }
+        public Boolean IsDrawing
+        {
+            get
+            {
+                return this._isDrawing;
+            }
+            set
+            {
+                if (this._isDrawing != value)
+                {
+                    this._isDrawing = value;
+                }
+            }
+        }
+        #endregion
+
+        public event EventHandler ImageUpdated;
+        protected virtual void OnImageUpdated(EventArgs e)
+        {
+            EventHandler handler = ImageUpdated;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
 
         private void OnEditModeChanged(EventArgs eventArgs)
         {
@@ -82,7 +110,6 @@ namespace SkaaEditor
         private void OnActiveColorChanged(EventArgs eventArgs)
         {
         }
-
         protected override void OnMouseDown(MouseEventArgs e)
         {
             PenDraw(e);
@@ -92,17 +119,16 @@ namespace SkaaEditor
                 this.Focus();
             }
         }
-
         protected override void OnMouseMove(MouseEventArgs e)
         {
             PenDraw(e);
             base.OnMouseMove(e);
         }
-
         private void PenDraw(MouseEventArgs e)
         {
             if (this.EditMode == true && this.Image != null)
             {
+                this.IsDrawing = true;
                 this.IsSelecting = false;
                 this.IsPanning = false;
 
@@ -120,6 +146,15 @@ namespace SkaaEditor
                     this.Update();
                 }
             }
+        }
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            if(this.IsDrawing)
+            {
+                this.IsDrawing = false;
+                OnImageUpdated(null);
+            }
+            base.OnMouseUp(e);
         }
     }
 }

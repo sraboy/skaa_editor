@@ -68,13 +68,16 @@ namespace SkaaEditor
             get;
             set;
         }
+        
+        public SpriteFrame()
+        {
 
+        }
         public SpriteFrame(int width, int height, ColorPalette palette)
         {
             this.Height = height;
             this.Width = width;
             this.FrameData = new Byte[height * width];
-
             this.Palette = palette;
         }
 
@@ -135,17 +138,59 @@ namespace SkaaEditor
             this.Image = bmp;
         }
 
-        //public void BuildBitmap8bpp()
-        //{
-        //    Bitmap bmp = new Bitmap(this.Width, this.Height, PixelFormat.Format8bppIndexed);
-        //    bmp.Palette = this.Palette;
-        //    BitmapData data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
-        //        ImageLockMode.ReadWrite, bmp.PixelFormat);
-        //    for (int h = 0; h < data.Height; h++)
-        //        Marshal.Copy(FrameData, 0, data.Scan0, FrameData.Length);
-        //    bmp.UnlockBits(data);
-        //    this.Image = bmp.Clone() as Bitmap;
-        //    bmp.Dispose();
-        //}
+        public void SaveChanges(Bitmap bmp32bppToWrite, ColorPalette indexedPallet)
+        {
+            Byte palColorByte;
+            Bitmap bmp = bmp32bppToWrite;
+            //SpriteFrame sf = new SpriteFrame(bmp.Width, bmp.Height, indexedPallet);
+            
+            byte transparentByte = 0xf8;
+            int transparentByteCount = 0;
+            int realOffset = 0;
+
+            this.Height = bmp.Height;
+            this.Width = bmp.Width;
+            this.FrameData = new Byte[this.Height * this.Width];
+
+            //todo: should probably just convert this to a List at the source
+            List<Color> Palette = new List<Color>();
+            foreach (Color c in indexedPallet.Entries)
+            {
+                Palette.Add(c);
+            }
+
+            //the below is pretty much the same as GetPixel() but reversed(ish)
+            for (int y = 0; y < bmp.Height; ++y)
+            {
+                for (int x = 0; x < bmp.Width; ++x)
+                {
+                    Color pixel = bmp.GetPixel(x, y);
+                    palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(255, pixel)));
+
+                    if (palColorByte == 0)
+                    {
+                        transparentByteCount++;
+                    }
+                    else
+                    {
+                        if (transparentByteCount > 0)
+                        {
+                            this.FrameData[realOffset] = transparentByte;
+                            realOffset++;
+                            this.FrameData[realOffset] = Convert.ToByte(transparentByteCount);
+                            realOffset++;
+                            this.FrameData[realOffset] = palColorByte;
+                            realOffset++;
+                            transparentByteCount = 0;
+                        }
+                        else
+                        {
+                            this.FrameData[realOffset] = palColorByte;
+                            realOffset++;
+                        }
+                    }
+                }//end inner for
+            }//end outer for
+        }
     }
 }
