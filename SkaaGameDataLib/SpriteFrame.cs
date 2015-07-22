@@ -38,6 +38,11 @@ namespace SkaaGameDataLib
 {
     public class SpriteFrame
     {
+        public int Size
+        {
+            get;
+            set;
+        }
         public int Height
         {
             get;
@@ -49,11 +54,6 @@ namespace SkaaGameDataLib
             set;
         }
         public Byte[] FrameData
-        {
-            get;
-            set;
-        }
-        public List<Bitmap> Images
         {
             get;
             set;
@@ -73,8 +73,9 @@ namespace SkaaGameDataLib
         {
 
         }
-        public SpriteFrame(int width, int height, ColorPalette palette)
+        public SpriteFrame(int size, int width, int height, ColorPalette palette)
         {
+            this.Size = size;
             this.Height = height;
             this.Width = width;
             this.FrameData = new Byte[height * width];
@@ -120,7 +121,6 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
         }//end GetPixels()
-
         public void BuildBitmap32bpp()
         {
             Bitmap bmp = new Bitmap(this.Width, this.Height);
@@ -137,20 +137,19 @@ namespace SkaaGameDataLib
 
             this.Image = bmp;
         }
-
-        public void SaveChanges(Bitmap bmp32bppToWrite, ColorPalette indexedPallet)
+        public Byte[] BuildBitmap8bppIndexed(Bitmap bmp32bppToConvert, ColorPalette indexedPallet)
         {
             Byte palColorByte;
-            Bitmap bmp = bmp32bppToWrite;
-            //SpriteFrame sf = new SpriteFrame(bmp.Width, bmp.Height, indexedPallet);
-            
+            Bitmap bmp = bmp32bppToConvert;
+                        
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
             int realOffset = 0;
 
             this.Height = bmp.Height;
             this.Width = bmp.Width;
-            this.FrameData = new Byte[this.Height * this.Width];
+            Byte[] indexedData = new Byte[this.Size];
+            //this.FrameData = new Byte[this.Height * this.Width];
 
             //todo: should probably just convert this to a List at the source
             List<Color> Palette = new List<Color>();
@@ -176,22 +175,24 @@ namespace SkaaGameDataLib
                     {
                         if (transparentByteCount > 0)
                         {
-                            this.FrameData[realOffset] = transparentByte;
+                            indexedData[realOffset] = transparentByte;
                             realOffset++;
-                            this.FrameData[realOffset] = Convert.ToByte(transparentByteCount);
+                            indexedData[realOffset] = Convert.ToByte(transparentByteCount);
                             realOffset++;
-                            this.FrameData[realOffset] = palColorByte;
+                            indexedData[realOffset] = palColorByte;
                             realOffset++;
                             transparentByteCount = 0;
                         }
                         else
                         {
-                            this.FrameData[realOffset] = palColorByte;
+                            indexedData[realOffset] = palColorByte;
                             realOffset++;
                         }
                     }
                 }//end inner for
             }//end outer for
+
+            return indexedData;
         }
     }
 }

@@ -56,7 +56,6 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-
         public Sprite(ColorPalette pal)
         {
             this.Palette = pal;

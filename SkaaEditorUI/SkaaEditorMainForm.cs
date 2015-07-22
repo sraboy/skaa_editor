@@ -24,17 +24,13 @@
 ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using SkaaColorChooser;
 using System.Drawing.Imaging;
 using SkaaGameDataLib;
+using System.Collections.Generic;
 
 namespace SkaaEditor
 {
@@ -74,21 +70,23 @@ namespace SkaaEditor
             if (skaaColorChooser1.Palette == null)
                 return;
 
-            //ResourceFile resfile = new ResourceFile("i_menu2.res");
-            //pictureBox1.Image = resfile.Resources[0].initIMGStream();
-
             FileStream spritestream = File.OpenRead("../../data/sprite/ballista.spr");
+            activeSprite = new Sprite(skaaColorChooser1.Palette);
+
+
 
             while (spritestream.Position < spritestream.Length)
             {
-                Byte[] frame_size_bytes = new Byte[4];
-                spritestream.Seek(4, SeekOrigin.Current); //skip the 32-bit size value
-                spritestream.Read(frame_size_bytes, 0, 4);
+                Byte[] frame_size_bytes = new Byte[8];
 
-                short width = BitConverter.ToInt16(frame_size_bytes, 0);
-                short height = BitConverter.ToInt16(frame_size_bytes, 2);
-                
-                SpriteFrame frame = new SpriteFrame(width, height, skaaColorChooser1.Palette);
+                //spritestream.Seek(4, SeekOrigin.Current); //skip the 32-bit size value
+                spritestream.Read(frame_size_bytes, 0, 8);
+
+                int size = BitConverter.ToInt32(frame_size_bytes, 0);
+                short width = BitConverter.ToInt16(frame_size_bytes, 4);
+                short height = BitConverter.ToInt16(frame_size_bytes, 6);
+
+                SpriteFrame frame = new SpriteFrame(size, width, height, skaaColorChooser1.Palette);
 
                 frame.GetPixels(spritestream);
 
@@ -97,20 +95,16 @@ namespace SkaaEditor
                 //var hex = BitConverter.ToString(frame.FrameData);
 
                 frame.BuildBitmap32bpp();
-                
+
                 activeSprite.Frames.Add(frame);
 
                 //todo: Just a hack since we skip pixels that are preset to 0x00.
                 // Will need to write those pixels as the actual Color.Transparent
                 // so we can have black in our images.
                 frame.Image.MakeTransparent(System.Drawing.Color.Black);
-
-                exportAsToolStripMenuItem.Enabled = true;
             }
 
-            //foreach(SpriteFrame sf in activeSprite.Frames)
-            //    multiplePictureBox1.AddImage(sf.Image);
-            
+            exportAsToolStripMenuItem.Enabled = true;
             spritestream.Close();
 
             //todo: figure out the UX for editing individual frames
@@ -139,10 +133,9 @@ namespace SkaaEditor
         {
             exportAsToolStripMenuItem.Enabled = false;
 
+            //turn on the Export capability only after the ImageChanged event fires, when an image is (re)loaded
             skaaImageBox1.ImageChanged += (s, a) => {
-                    exportAsToolStripMenuItem.Enabled = 
-                        (skaaImageBox1.Image == null) ? true : false;
-                };
+                    exportAsToolStripMenuItem.Enabled = (skaaImageBox1.Image == null) ? true : false; };
         }
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -171,7 +164,32 @@ namespace SkaaEditor
             if (skaaImageBox1.Image == null)
                 return;
 
-            activeFrame.SaveChanges(skaaImageBox1.Image as Bitmap, activeSprite.Palette);
+            SaveFileDialog dlg = new SaveFileDialog();
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
+
+                Byte[] size = new Byte[4];
+                Byte[] width = new Byte[2];
+                Byte[] height = new Byte[2];
+                Byte[] indexed = activeFrame.BuildBitmap8bppIndexed(skaaImageBox1.Image as Bitmap, activeSprite.Palette);
+                Byte[] save = new Byte[activeFrame.Size + 8]; //+ 8 accomodates header: [ulong total_bytes, short width, short height]
+
+                size = BitConverter.GetBytes(activeFrame.Size);
+                width = BitConverter.GetBytes((short)activeFrame.Width);
+                height = BitConverter.GetBytes((short)activeFrame.Height);
+
+               
+                Buffer.BlockCopy(size, 0, save, 0, Buffer.ByteLength(size));
+                Buffer.BlockCopy(width, 0, save, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
+                Buffer.BlockCopy(height, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
+                Buffer.BlockCopy(indexed, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width) + Buffer.ByteLength(height), Buffer.ByteLength(indexed));
+
+                fs.Write(save, 0, Buffer.ByteLength(save));
+
+                fs.Close();
+            }
         }
     }    
 }
