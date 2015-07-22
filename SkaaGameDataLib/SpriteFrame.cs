@@ -79,11 +79,16 @@ namespace SkaaGameDataLib
             this.Height = height;
             this.Width = width;
             this.FrameData = new Byte[height * width];
+            FrameData = Enumerable.Repeat<byte>(0xff, FrameData.Length).ToArray<byte>();
             this.Palette = palette;
         }
 
         public void GetPixels(FileStream stream)
         {
+            //todo: find the best way to signify transparent pixels
+            //since 0x00 is actually used for black, we need to use one of the 
+            //unused palette entries 0xf8-0xff
+
             int pixelsToSkip = 0;
             Byte pixel;
 
@@ -91,15 +96,15 @@ namespace SkaaGameDataLib
             {
                 for (int x = 0; x < this.Width; ++x)
                 {
-                    if (pixelsToSkip != 0)
+                    if (pixelsToSkip != 0)  //only if we've previous identified transparent bits
                     {
-                        if (pixelsToSkip >= this.Width - x)
+                        if (pixelsToSkip >= this.Width - x) //greater than one line
                         {
                             pixelsToSkip -= (this.Width - x); // skip to next line
                             break;
                         }
 
-                        x += pixelsToSkip;
+                        x += pixelsToSkip;  //skip reading the indicated amount of bytes for transparent pictures
                         pixelsToSkip = 0;
                     }
 
@@ -175,13 +180,30 @@ namespace SkaaGameDataLib
                     {
                         if (transparentByteCount > 0)
                         {
-                            indexedData[realOffset] = transparentByte;
-                            realOffset++;
-                            indexedData[realOffset] = Convert.ToByte(transparentByteCount);
-                            realOffset++;
-                            indexedData[realOffset] = palColorByte;
-                            realOffset++;
-                            transparentByteCount = 0;
+                            if(transparentByteCount > 7) //write 0xf8[dd] where [dd] is transparent byte count
+                            { 
+                                indexedData[realOffset] = transparentByte;
+                                realOffset++;
+                                indexedData[realOffset] = Convert.ToByte(transparentByteCount);
+                                realOffset++;
+                                indexedData[realOffset] = palColorByte;
+                                realOffset++;
+                                transparentByteCount = 0;
+                            }
+                            else
+                            {
+                                //less than six and 7kaa cuts down on file size by just writing one byte
+                                //transparentByteCount = 1: 0xfe
+                                //transparentByteCount = 2: 0xfd
+                                //transparentByteCount = 3: 0xfc
+                                //transparentByteCount = 4: 0xfb
+                                //transparentByteCount = 5: 0xfa
+                                //transparentByteCount = 6: 0xf9
+
+                                indexedData[realOffset] = Convert.ToByte(0xff - transparentByteCount + 1);
+                                realOffset++;
+                                transparentByteCount = 0;
+                            }
                         }
                         else
                         {
