@@ -58,7 +58,7 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-        public Bitmap Image
+        public Bitmap ImageBmp
         {
             get;
             set;
@@ -126,61 +126,86 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
         }//end GetPixels()
-        public void BuildBitmap32bpp()
+        public Bitmap BuildBitmap32bpp()
         {
+            int idx;
             Bitmap bmp = new Bitmap(this.Width, this.Height);
 
             for (int y = 0; y < this.Height; y++)
             {
                 for (int x = 0; x < this.Width; x++)
                 {
-                    Color pixel = this.Palette.Entries[FrameData[y * this.Width + x]];
+                    idx = FrameData[y * this.Width + x];
+                    Color pixel = this.Palette.Entries[idx];
+                    
                     bmp.SetPixel(x, y, pixel);
-                    bmp.SetPixel(x, y, Color.FromArgb(255, pixel));
+                    //bmp.SetPixel(x, y, Color.FromArgb(255, pixel));
                 }
             }
 
-            this.Image = bmp;
+            Color transparentByte = Color.FromArgb(0xff);
+            bmp.MakeTransparent(transparentByte);
+            this.ImageBmp = bmp;
+
+            return this.ImageBmp;
         }
-        public Byte[] BuildBitmap8bppIndexed(Bitmap bmp32bppToConvert, ColorPalette indexedPallet)
+        public Byte[] BuildBitmap8bppIndexed()//Bitmap bmp32bppToConvert, ColorPalette indexedPallet)
         {
+            //todo: verify all changes have been saved
+
             Byte palColorByte;
-            Bitmap bmp = bmp32bppToConvert;
+            //Bitmap bmp = bmp32bppToConvert;
                         
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
-            int realOffset = 0;
+            int realOffset = 8;
 
-            this.Height = bmp.Height;
-            this.Width = bmp.Width;
-            Byte[] indexedData = new Byte[this.Size];
+            Byte[] indexedData = new Byte[this.Size + 4];
+
+            // todo: will have to recalculate size if pixels change because the number of
+            //       ommitted transparent bytes will have changed too
+            Byte[] size = BitConverter.GetBytes(this.Size);
+            Byte[] width = BitConverter.GetBytes((short) this.Width);
+            Byte[] height = BitConverter.GetBytes((short) this.Height);
+
+            Buffer.BlockCopy(size, 0, indexedData, 0, Buffer.ByteLength(size));
+            Buffer.BlockCopy(width, 0, indexedData, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
+            Buffer.BlockCopy(height, 0, indexedData, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
+            //Buffer.BlockCopy(indexed, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width) + Buffer.ByteLength(height), Buffer.ByteLength(indexed));
+
             //this.FrameData = new Byte[this.Height * this.Width];
 
-            //todo: should probably just convert this to a List at the source
             List<Color> Palette = new List<Color>();
-            foreach (Color c in indexedPallet.Entries)
+            foreach (Color c in this.Palette.Entries)
             {
                 Palette.Add(c);
             }
 
             //the below is pretty much the same as GetPixel() but reversed(ish)
-            for (int y = 0; y < bmp.Height; ++y)
+            for (int y = 0; y < ImageBmp.Height; ++y)
             {
-                for (int x = 0; x < bmp.Width; ++x)
+                for (int x = 0; x < this.Width; ++x)
                 {
-                    Color pixel = bmp.GetPixel(x, y);
-                    
-                    palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(255, pixel)));
+                    Color pixel = ImageBmp.GetPixel(x, y);
+                    var pixARGB = pixel.ToArgb();
 
-                    if (palColorByte == 0)
+                    palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(pixARGB)));
+
+                    if (palColorByte > 0xf8) //0xf9 - 0xff are transparent
                     {
                         transparentByteCount++;
                     }
                     else
                     {
-                        if (transparentByteCount > 0)
+                        //Once we hit a non-zero pixel, we need to write out the transparent pixel marker
+                        //and the count of transparent pixels. We then write out the current non-zero pixel.
+                        if (transparentByteCount > 0)  
                         {
-                            if(transparentByteCount > 7) //write 0xf8[dd] where [dd] is transparent byte count
+                            // Write 0xf8[dd] where [dd] is transparent byte count, unless the
+                            // number of transparent bytes is 6 or less, then just use the other
+                            // codes below. Seems like the devs were pretty ruthless in trying to 
+                            // save disk space back in 1997.
+                            if (transparentByteCount > 7) 
                             { 
                                 indexedData[realOffset] = transparentByte;
                                 realOffset++;
@@ -193,14 +218,17 @@ namespace SkaaGameDataLib
                             else
                             {
                                 //less than six and 7kaa cuts down on file size by just writing one byte
-                                //transparentByteCount = 1: 0xfe
-                                //transparentByteCount = 2: 0xfd
-                                //transparentByteCount = 3: 0xfc
-                                //transparentByteCount = 4: 0xfb
-                                //transparentByteCount = 5: 0xfa
-                                //transparentByteCount = 6: 0xf9
+                                
+                                //transparentByteCount = 2: 0xfe
+                                //transparentByteCount = 3: 0xfd
+                                //transparentByteCount = 4: 0xfc
+                                //transparentByteCount = 5: 0xfb
+                                //transparentByteCount = 6: 0xfa
+                                //transparentByteCount = 7: 0xf9
 
-                                indexedData[realOffset] = Convert.ToByte(0xff - transparentByteCount + 1);
+                                indexedData[realOffset] = Convert.ToByte(0xff - (transparentByteCount - 1));
+                                realOffset++;
+                                indexedData[realOffset] = palColorByte;
                                 realOffset++;
                                 transparentByteCount = 0;
                             }

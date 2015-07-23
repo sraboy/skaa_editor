@@ -51,7 +51,6 @@ namespace SkaaEditor
 
             skaaImageBox1.ImageUpdated += skaaImageBox1_ImageUpdated;
         }
-
         void skaaImageBox1_ImageUpdated(object sender, EventArgs e)
         {
             //todo: need to change multiplePictureBox to SpriteFrame instead of image
@@ -60,11 +59,12 @@ namespace SkaaEditor
 
             //throw new NotImplementedException();
         }
-
         private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
             skaaImageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
         }
+
+
         private void btnLoadSPR_Click(object sender, EventArgs e)
         {
             if (skaaColorChooser1.Palette == null)
@@ -73,15 +73,15 @@ namespace SkaaEditor
             FileStream spritestream = File.OpenRead("../../data/sprite/ballista.spr");
             activeSprite = new Sprite(skaaColorChooser1.Palette);
 
+            var x = spritestream.Length;
 
 
             while (spritestream.Position < spritestream.Length)
             {
                 Byte[] frame_size_bytes = new Byte[8];
 
-                //spritestream.Seek(4, SeekOrigin.Current); //skip the 32-bit size value
                 spritestream.Read(frame_size_bytes, 0, 8);
-
+                
                 int size = BitConverter.ToInt32(frame_size_bytes, 0);
                 short width = BitConverter.ToInt16(frame_size_bytes, 4);
                 short height = BitConverter.ToInt16(frame_size_bytes, 6);
@@ -97,11 +97,6 @@ namespace SkaaEditor
                 frame.BuildBitmap32bpp();
 
                 activeSprite.Frames.Add(frame);
-
-                //todo: Just a hack since we skip pixels that are preset to 0x00.
-                // Will need to write those pixels as the actual Color.Transparent
-                // so we can have black in our images.
-                frame.Image.MakeTransparent(System.Drawing.Color.Black);
             }
 
             exportAsToolStripMenuItem.Enabled = true;
@@ -109,7 +104,7 @@ namespace SkaaEditor
 
             //todo: figure out the UX for editing individual frames
             activeFrame = activeSprite.Frames[0];
-            skaaImageBox1.Image = activeFrame.Image;
+            skaaImageBox1.Image = activeFrame.ImageBmp;
             skaaFrameViewer1.ActiveSprite = this.activeSprite;
             skaaFrameViewer1.ActiveFrame = this.activeFrame;
         }
@@ -134,8 +129,10 @@ namespace SkaaEditor
             exportAsToolStripMenuItem.Enabled = false;
 
             //turn on the Export capability only after the ImageChanged event fires, when an image is (re)loaded
-            skaaImageBox1.ImageChanged += (s, a) => {
-                    exportAsToolStripMenuItem.Enabled = (skaaImageBox1.Image == null) ? true : false; };
+            skaaImageBox1.ImageChanged += (s, a) =>
+            {
+                exportAsToolStripMenuItem.Enabled = (skaaImageBox1.Image == null) ? true : false;
+            };
         }
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -151,10 +148,10 @@ namespace SkaaEditor
         {
             SaveFileDialog dlg = new SaveFileDialog();
 
-            if(dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                
+
                 skaaImageBox1.Image.Save(fs, ImageFormat.Bmp);
                 fs.Close();
             }
@@ -164,32 +161,43 @@ namespace SkaaEditor
             if (skaaImageBox1.Image == null)
                 return;
 
+            //todo: need to overwrite entire file if file exists
+            //      right now, it just overwrites by byte so if the
+            //      original is larger than what I'm writing, its
+            //      data will still be there.
             SaveFileDialog dlg = new SaveFileDialog();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
+                    Byte[] save = activeFrame.BuildBitmap8bppIndexed();
+                    fs.Write(save, 0, Buffer.ByteLength(save));
+                    fs.Close();
+                }
+                catch (IOException ioex)
+                {
+                    throw new Exception(ioex.ToString());
+                }
+                
+            }
+        }
 
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        private void saveAllFramesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (skaaImageBox1.Image == null)
+                return;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-
-                Byte[] size = new Byte[4];
-                Byte[] width = new Byte[2];
-                Byte[] height = new Byte[2];
-                Byte[] indexed = activeFrame.BuildBitmap8bppIndexed(skaaImageBox1.Image as Bitmap, activeSprite.Palette);
-                Byte[] save = new Byte[activeFrame.Size + 8]; //+ 8 accomodates header: [ulong total_bytes, short width, short height]
-
-                size = BitConverter.GetBytes(activeFrame.Size);
-                width = BitConverter.GetBytes((short)activeFrame.Width);
-                height = BitConverter.GetBytes((short)activeFrame.Height);
-
-               
-                Buffer.BlockCopy(size, 0, save, 0, Buffer.ByteLength(size));
-                Buffer.BlockCopy(width, 0, save, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
-                Buffer.BlockCopy(height, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
-                Buffer.BlockCopy(indexed, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width) + Buffer.ByteLength(height), Buffer.ByteLength(indexed));
-
+                Byte[] save = activeSprite.BuildSPR();
                 fs.Write(save, 0, Buffer.ByteLength(save));
-
                 fs.Close();
             }
         }
-    }    
+
+
+    }
 }

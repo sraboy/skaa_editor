@@ -142,7 +142,10 @@ namespace SkaaColorChooser
                 int g = fs.ReadByte();
                 int b = fs.ReadByte();
 
-                pal.Entries[i] = Color.FromArgb(255, r, g, b);
+                if(i < 0xf9) //0xf9 is the lowest transparent color byte
+                    pal.Entries[i] = Color.FromArgb(255, r, g, b);
+                else //0xf9 - 0xff
+                    pal.Entries[i] = Color.FromArgb(0, r, g, b);
             }
 
             this.Palette = pal;

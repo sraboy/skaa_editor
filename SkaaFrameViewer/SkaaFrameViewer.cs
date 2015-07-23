@@ -67,7 +67,7 @@ namespace SkaaFrameViewer
                 {
                     this._activeFrame = value;
                     this._activeFrameIndex = this._activeSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-                    this.picBoxFrame.Image = this._activeFrame.Image;
+                    this.picBoxFrame.Image = this._activeFrame.ImageBmp;
                 }
             }
         }
@@ -87,7 +87,7 @@ namespace SkaaFrameViewer
             {
                 _activeFrameIndex++;
                 _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
-                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].Image;
+                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -95,7 +95,7 @@ namespace SkaaFrameViewer
                 _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
                 // special mod() function above to actually cycle negative numbers around. Turns out % isn't 
                 // a real mod() function, just remainder.
-                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].Image;
+                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
             else if (e.Button == MouseButtons.Middle)
             {
