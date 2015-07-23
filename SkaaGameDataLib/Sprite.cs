@@ -25,38 +25,65 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkaaEditor
+namespace SkaaGameDataLib
 {
-    //MOVED TO SkaaColorChooser control
+    public class Sprite
+    {
+        private ColorPalette _pallet;
 
-    //public static class Helper
-    //{
-    //    public static ColorPalette LoadPalette()
-    //    {
-    //        //TODO: string param from OpenFileDlg
+        public ColorPalette Palette
+        {
+            get
+            {
+                return this._pallet;
+            }
+            set
+            {
+                if(this._pallet != value)
+                {
+                    this._pallet = value;
+                    UpdateFrames();
+                }
+            }
+        }
+        public List<SpriteFrame> Frames
+        {
+            get;
+            set;
+        }
+        public Sprite(ColorPalette pal)
+        {
+            this.Palette = pal;
+            this.Frames = new List<SpriteFrame>();
+        }
 
-    //        ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
+        public SpriteFrame AddFrame(SpriteFrame sf = null)
+        {
+            if (sf == null)
+            {
+                sf = new SpriteFrame();
+                this.Frames.Add(sf);
+                return sf;
+            }
 
-    //        FileStream fs = File.OpenRead("../../data/resource/pal_std.res");
-    //        fs.Seek(8, SeekOrigin.Begin);
+            this.Frames.Add(sf);
+            return sf;
+        }
 
-    //        for (int i = 0; i < 256; i++)
-    //        {
-    //            int r = fs.ReadByte();
-    //            int g = fs.ReadByte();
-    //            int b = fs.ReadByte();
-
-    //            pal.Entries[i] = Color.FromArgb(255, r, g, b);
-    //        }
-
-    //        return pal;
-    //    }
-    //}
+        public void UpdateFrames()
+        {
+            if (this.Frames != null)
+            {
+                foreach (SpriteFrame sf in this.Frames)
+                {
+                    sf.Palette = this.Palette;
+                }
+            }
+        }
+    }
 }

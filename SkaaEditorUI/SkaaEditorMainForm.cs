@@ -24,22 +24,20 @@
 ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using SkaaColorChooser;
 using System.Drawing.Imaging;
+using SkaaGameDataLib;
+using System.Collections.Generic;
 
 namespace SkaaEditor
 {
     public partial class SkaaEditorMainForm : Form
     {
-        Sprite sprite;
+        private Sprite activeSprite;
+        private SpriteFrame activeFrame;
 
         public SkaaEditorMainForm()
         {
@@ -48,39 +46,47 @@ namespace SkaaEditor
             if (skaaColorChooser1.Palette == null)
                 btnLoadSPR.Enabled = false;
 
-            this.sprite = new Sprite();
-
             skaaColorChooser1.ActiveColorChanged += skaaColorChooser1_ActiveColorChanged;
             showGridToolStripMenuItem.Checked = skaaImageBox1.ShowPixelGrid;
+
+            skaaImageBox1.ImageUpdated += skaaImageBox1_ImageUpdated;
         }
 
-        void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
+        void skaaImageBox1_ImageUpdated(object sender, EventArgs e)
+        {
+            //todo: need to change multiplePictureBox to SpriteFrame instead of image
+            //multiplePictureBox1.
+
+
+            //throw new NotImplementedException();
+        }
+
+        private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
             skaaImageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
         }
-
         private void btnLoadSPR_Click(object sender, EventArgs e)
         {
             if (skaaColorChooser1.Palette == null)
                 return;
 
-            //ResourceFile resfile = new ResourceFile("i_menu2.res");
-            //pictureBox1.Image = resfile.Resources[0].initIMGStream();
-
             FileStream spritestream = File.OpenRead("../../data/sprite/ballista.spr");
+            activeSprite = new Sprite(skaaColorChooser1.Palette);
 
-            sprite.Frames = new List<SpriteFrame>();
+
 
             while (spritestream.Position < spritestream.Length)
             {
-                Byte[] frame_size_bytes = new Byte[4];
-                spritestream.Seek(4, SeekOrigin.Current); //skip the 32-bit size value
-                spritestream.Read(frame_size_bytes, 0, 4);
+                Byte[] frame_size_bytes = new Byte[8];
 
-                short width = BitConverter.ToInt16(frame_size_bytes, 0);
-                short height = BitConverter.ToInt16(frame_size_bytes, 2);
-                
-                SpriteFrame frame = new SpriteFrame(width, height, skaaColorChooser1.Palette);
+                //spritestream.Seek(4, SeekOrigin.Current); //skip the 32-bit size value
+                spritestream.Read(frame_size_bytes, 0, 8);
+
+                int size = BitConverter.ToInt32(frame_size_bytes, 0);
+                short width = BitConverter.ToInt16(frame_size_bytes, 4);
+                short height = BitConverter.ToInt16(frame_size_bytes, 6);
+
+                SpriteFrame frame = new SpriteFrame(size, width, height, skaaColorChooser1.Palette);
 
                 frame.GetPixels(spritestream);
 
@@ -89,24 +95,28 @@ namespace SkaaEditor
                 //var hex = BitConverter.ToString(frame.FrameData);
 
                 frame.BuildBitmap32bpp();
-                
-                sprite.Frames.Add(frame);
 
-                // TODO: Just a hack since we skip pixels that are preset to 0x00.
+                activeSprite.Frames.Add(frame);
+
+                //todo: Just a hack since we skip pixels that are preset to 0x00.
                 // Will need to write those pixels as the actual Color.Transparent
                 // so we can have black in our images.
                 frame.Image.MakeTransparent(System.Drawing.Color.Black);
             }
 
-            foreach(SpriteFrame sf in sprite.Frames)
-                multiplePictureBox1.AddImage(sf.Image);
-            
+            exportAsToolStripMenuItem.Enabled = true;
             spritestream.Close();
 
             //todo: figure out the UX for editing individual frames
-            skaaImageBox1.Image = sprite.Frames[0].Image;
+            activeFrame = activeSprite.Frames[0];
+            skaaImageBox1.Image = activeFrame.Image;
+            skaaFrameViewer1.ActiveSprite = this.activeSprite;
+            skaaFrameViewer1.ActiveFrame = this.activeFrame;
         }
-
+        private void cbEdit_CheckedChanged(object sender, EventArgs e)
+        {
+            skaaImageBox1.EditMode = !skaaImageBox1.EditMode;
+        }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -115,39 +125,29 @@ namespace SkaaEditor
             dlg.SupportMultiDottedExtensions = true;
 
             if (dlg.ShowDialog() == DialogResult.OK)
-                skaaColorChooser1.LoadPalette(dlg.FileName);
+                this.activeSprite = new Sprite(skaaColorChooser1.LoadPalette(dlg.FileName));
 
             btnLoadSPR.Enabled = true;
         }
-
-        private void SkaaEditorMainForm_Load(object sender, EventArgs e)
+        private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
             exportAsToolStripMenuItem.Enabled = false;
 
+            //turn on the Export capability only after the ImageChanged event fires, when an image is (re)loaded
             skaaImageBox1.ImageChanged += (s, a) => {
-                    exportAsToolStripMenuItem.Enabled = 
-                        (skaaImageBox1.Image == null) ? true : false;
-                };
+                    exportAsToolStripMenuItem.Enabled = (skaaImageBox1.Image == null) ? true : false; };
         }
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutForm abt = new AboutForm();
             abt.Show();
         }
-
         private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.skaaImageBox1.ShowPixelGrid = !this.skaaImageBox1.ShowPixelGrid;
             (sender as ToolStripMenuItem).Checked = this.skaaImageBox1.ShowPixelGrid;
         }
-
-        private void cbEdit_CheckedChanged(object sender, EventArgs e)
-        {
-            skaaImageBox1.EditMode = !skaaImageBox1.EditMode;
-        }
-
-        private void bmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportBmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog();
 
@@ -157,11 +157,39 @@ namespace SkaaEditor
                 
                 skaaImageBox1.Image.Save(fs, ImageFormat.Bmp);
                 fs.Close();
-
-                //fs.Write()
-                //Bitmap bmp = skaaImageBox1.Image.Save()
             }
-            
+        }
+        private void saveFrameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (skaaImageBox1.Image == null)
+                return;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
+
+                Byte[] size = new Byte[4];
+                Byte[] width = new Byte[2];
+                Byte[] height = new Byte[2];
+                Byte[] indexed = activeFrame.BuildBitmap8bppIndexed(skaaImageBox1.Image as Bitmap, activeSprite.Palette);
+                Byte[] save = new Byte[activeFrame.Size + 8]; //+ 8 accomodates header: [ulong total_bytes, short width, short height]
+
+                size = BitConverter.GetBytes(activeFrame.Size);
+                width = BitConverter.GetBytes((short)activeFrame.Width);
+                height = BitConverter.GetBytes((short)activeFrame.Height);
+
+               
+                Buffer.BlockCopy(size, 0, save, 0, Buffer.ByteLength(size));
+                Buffer.BlockCopy(width, 0, save, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
+                Buffer.BlockCopy(height, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
+                Buffer.BlockCopy(indexed, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width) + Buffer.ByteLength(height), Buffer.ByteLength(indexed));
+
+                fs.Write(save, 0, Buffer.ByteLength(save));
+
+                fs.Close();
+            }
         }
     }    
 }

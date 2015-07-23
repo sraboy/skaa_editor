@@ -23,25 +23,24 @@
 *  	information on 7KAA, visit http://www.7kfans.com.
 ***************************************************************************/
 
+
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkaaEditor
+namespace SkaaColorChooser
 {
-    class Sprite
+    public class ActiveColorChangedEventArgs : EventArgs
     {
-        public List<SpriteFrame> Frames
-        {
-            get;
-            set;
-        }
+        public Color PreviousColor, NewColor;
 
-        public Sprite()
+        public ActiveColorChangedEventArgs(Color prevColor, Color newColor)
         {
-            this.Frames = new List<SpriteFrame>();
+            PreviousColor = prevColor;
+            NewColor = newColor;
         }
     }
 }
