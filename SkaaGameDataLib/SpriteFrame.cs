@@ -195,7 +195,8 @@ namespace SkaaGameDataLib
                     // The second expression after || below is to check if we're on the last pixel of the
                     // image. If so, and the final pixels were colored, there won't be a next pixel to be 
                     // below 0xf8 so we need to write it out anyway.
-                    if (palColorByte <= 0xf8 || (x == (this.Width - 1) && (y == (this.Height - 1))))
+                    bool lastByte = (x == (this.Width - 1) && (y == (this.Height - 1)));
+                    if (palColorByte <= 0xf8 || lastByte)
                     {
                         
                         if (transparentByteCount > 0)  
@@ -227,8 +228,12 @@ namespace SkaaGameDataLib
 
                                 indexedData[realOffset] = Convert.ToByte(0xff - (transparentByteCount - 1));
                                 realOffset++;
-                                indexedData[realOffset] = palColorByte;
-                                realOffset++;
+                                if (!lastByte)
+                                {
+                                    indexedData[realOffset] = palColorByte;
+                                    realOffset++;
+                                }
+
                                 transparentByteCount = 0;
                             }
                         }
