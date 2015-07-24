@@ -189,10 +189,15 @@ namespace SkaaGameDataLib
                     {
                         transparentByteCount++;
                     }
-                    else
+
+                    // Once we hit a non-zero pixel, we need to write out the transparent pixel marker
+                    // and the count of transparent pixels. We then write out the current non-zero pixel.
+                    // The second expression after || below is to check if we're on the last pixel of the
+                    // image. If so, and the final pixels were colored, there won't be a next pixel to be 
+                    // below 0xf8 so we need to write it out anyway.
+                    if (palColorByte <= 0xf8 || (x == (this.Width - 1) && (y == (this.Height - 1))))
                     {
-                        //Once we hit a non-zero pixel, we need to write out the transparent pixel marker
-                        //and the count of transparent pixels. We then write out the current non-zero pixel.
+                        
                         if (transparentByteCount > 0)  
                         {
                             // Write 0xf8[dd] where [dd] is transparent byte count, unless the
