@@ -95,10 +95,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\skaa.ico" />
-    <None Include="skaa.ico" />
     <None Include="Resources\skaa_modern.ico" />
     <None Include="Resources\logo_modern.png" />
-    <Content Include="sprite_db.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SkaaColorChooser\SkaaColorChooser.csproj">

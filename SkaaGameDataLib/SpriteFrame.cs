@@ -153,13 +153,10 @@ namespace SkaaGameDataLib
         {
             //todo: verify all changes have been saved
 
-            Byte palColorByte;
-            //Bitmap bmp = bmp32bppToConvert;
-                        
+            Byte palColorByte;                        
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
             int realOffset = 8;
-
             Byte[] indexedData = new Byte[this.Size + 4];
 
             // todo: will have to recalculate size if pixels change because the number of
@@ -171,9 +168,6 @@ namespace SkaaGameDataLib
             Buffer.BlockCopy(size, 0, indexedData, 0, Buffer.ByteLength(size));
             Buffer.BlockCopy(width, 0, indexedData, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
             Buffer.BlockCopy(height, 0, indexedData, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
-            //Buffer.BlockCopy(indexed, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width) + Buffer.ByteLength(height), Buffer.ByteLength(indexed));
-
-            //this.FrameData = new Byte[this.Height * this.Width];
 
             List<Color> Palette = new List<Color>();
             foreach (Color c in this.Palette.Entries)
@@ -241,6 +235,9 @@ namespace SkaaGameDataLib
                     }
                 }//end inner for
             }//end outer for
+
+            //todo: Need to check for the last byte here. A byte is always written after the next byte was read and taken care of
+            //      so we're losing the last byte, which is why we see 0x00 in the last place instead of 0xfa.
 
             return indexedData;
         }
