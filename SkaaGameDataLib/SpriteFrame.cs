@@ -139,7 +139,6 @@ namespace SkaaGameDataLib
                     Color pixel = this.Palette.Entries[idx];
                     
                     bmp.SetPixel(x, y, pixel);
-                    //bmp.SetPixel(x, y, Color.FromArgb(255, pixel));
                 }
             }
 
@@ -149,7 +148,7 @@ namespace SkaaGameDataLib
 
             return this.ImageBmp;
         }
-        public Byte[] BuildBitmap8bppIndexed()//Bitmap bmp32bppToConvert, ColorPalette indexedPallet)
+        public Byte[] BuildBitmap8bppIndexed()
         {
             //todo: verify all changes have been saved
 
