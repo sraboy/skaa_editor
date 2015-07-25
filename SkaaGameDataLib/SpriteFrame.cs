@@ -148,9 +148,15 @@ namespace SkaaGameDataLib
 
             return this.ImageBmp;
         }
+
+        public void VerifySize()
+        {
+
+        }
+
         public Byte[] BuildBitmap8bppIndexed()
         {
-            //todo: verify all changes have been saved
+            VerifySize();
 
             Byte palColorByte;                        
             byte transparentByte = 0xf8;
@@ -177,7 +183,7 @@ namespace SkaaGameDataLib
             //the below is pretty much the same as GetPixel() but reversed(ish)
             for (int y = 0; y < ImageBmp.Height; ++y)
             {
-                for (int x = 0; x < this.Width; ++x)
+                for (int x = 0; x < ImageBmp.Width; ++x)
                 {
                     Color pixel = ImageBmp.GetPixel(x, y);
                     var pixARGB = pixel.ToArgb();

@@ -84,17 +84,16 @@ namespace SkaaEditor
             this.skaaImageBox1.Text = "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com";
             this.saveToolStripMenuItem.Enabled = false;
 
+            this.skaaImageBox1.ImageChanged += skaaImageBox1_ImageChanged;
             this.skaaImageBox1.ImageUpdated += skaaImageBox1_ImageUpdated;
             this.AnimateChanged += SkaaEditorMainForm_AnimateChanged;            
         }
-
-        private void SkaaImageBox1_ImageChanged(object sender, EventArgs e)
+        private void skaaImageBox1_ImageChanged(object sender, EventArgs e)
         {
             this.exportAsToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
             this.saveToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
             this.skaaImageBox1.Text = (this.skaaImageBox1.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
         }
-
         private void SkaaEditorMainForm_AnimateChanged(object sender, EventArgs e)
         {
             // todo: implement animation function in SkaaFrameViewer
@@ -107,7 +106,6 @@ namespace SkaaEditor
 
             //}
         }
-
         void skaaImageBox1_ImageUpdated(object sender, EventArgs e)
         {
             //todo: need to change multiplePictureBox to SpriteFrame instead of image
@@ -134,7 +132,6 @@ namespace SkaaEditor
                 this.activeSprite = new Sprite(this.skaaColorChooser1.LoadPalette(dlg.FileName));
 
             this.openToolStripMenuItem.Enabled = true;
-            //btnLoadSPR.Enabled = true;
         }
         private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
@@ -156,8 +153,10 @@ namespace SkaaEditor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
+                //Assume the user also wants to save this
+                this.activeFrame.ImageBmp = (this.skaaImageBox1.Image as Bitmap);
 
+                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
                 this.skaaImageBox1.Image.Save(fs, ImageFormat.Bmp);
                 fs.Close();
             }
