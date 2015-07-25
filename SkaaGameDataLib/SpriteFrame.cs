@@ -182,13 +182,10 @@ namespace SkaaGameDataLib
                 {
                     Color pixel = ImageBmp.GetPixel(x, y);
                     var pixARGB = pixel.ToArgb();
-
                     palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(pixARGB)));
 
                     if (palColorByte > 0xf8) //0xf9 - 0xff are transparent
-                    {
                         transparentByteCount++;
-                    }
 
                     // Once we hit a non-zero pixel, we need to write out the transparent pixel marker
                     // and the count of transparent pixels. We then write out the current non-zero pixel.
@@ -211,51 +208,29 @@ namespace SkaaGameDataLib
                                 realOffset++;
                                 indexedData[realOffset] = Convert.ToByte(transparentByteCount);
                                 realOffset++;
-
-                                //there is no other byte to write out
-                                if (!lastByte)
-                                {
-                                    indexedData[realOffset] = palColorByte;
-                                    realOffset++;
-                                }
-                                //indexedData[realOffset] = palColorByte;
-                                //realOffset++;
                                 transparentByteCount = 0;
                             }
                             else
                             {
-                                //less than 8 and 7kaa cuts down on file size by just writing one byte
-                                
+                                //less than 8 and 7kaa cuts down on file size by just writing one byte      
                                 //transparentByteCount = 2: 0xfe
                                 //transparentByteCount = 3: 0xfd
                                 //transparentByteCount = 4: 0xfc
                                 //transparentByteCount = 5: 0xfb
                                 //transparentByteCount = 6: 0xfa
                                 //transparentByteCount = 7: 0xf9
-
                                 indexedData[realOffset] = Convert.ToByte(0xff - (transparentByteCount - 1));
                                 realOffset++;
-
-                                //there is no other byte to write out
-                                if (!lastByte)
-                                {
-                                    indexedData[realOffset] = palColorByte;
-                                    realOffset++;
-                                }
-
                                 transparentByteCount = 0;
                             }
                         }
-                        else
+                        
+                        //there is no other byte to write out
+                        if (!lastByte)
                         {
                             indexedData[realOffset] = palColorByte;
                             realOffset++;
                         }
-                        //if (!lastByte)
-                        //{
-                        //    indexedData[realOffset] = palColorByte;
-                        //    realOffset++;
-                        //}
                     }
                 }//end inner for
             }//end outer for

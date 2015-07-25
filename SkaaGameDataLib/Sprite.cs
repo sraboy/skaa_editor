@@ -96,10 +96,9 @@ namespace SkaaGameDataLib
             foreach (SpriteFrame sf in this.Frames)
             {
                 SPRArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.Size + 4); //add another four for the size
+                initSize += (sf.Size + 4); //add another four for ulong size
             }
 
-            
             int lastSize = 0;
             Byte[] save = new Byte[initSize];
 
@@ -110,22 +109,6 @@ namespace SkaaGameDataLib
             }
 
             return save;
-
-            //Byte[] save = new Byte[frame.Size + 8]; //+ 8 accomodates header: [ulong total_bytes, short width, short height]
-
-            // todo: will have to recalculate size if pixels change because the number of
-            //       ommitted transparent bytes will have changed too
-            //size = BitConverter.GetBytes(activeFrame.Size);
-            //width = BitConverter.GetBytes((short) activeFrame.Width);
-            //height = BitConverter.GetBytes((short) activeFrame.Height);
-
-
-            //Buffer.BlockCopy(size, 0, save, 0, Buffer.ByteLength(size));
-            //Buffer.BlockCopy(width, 0, save, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
-            //Buffer.BlockCopy(height, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
-            //Buffer.BlockCopy(indexed, 0, save, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width) + Buffer.ByteLength(height), Buffer.ByteLength(indexed));
-
-            //return save;
         }
     }
 }
