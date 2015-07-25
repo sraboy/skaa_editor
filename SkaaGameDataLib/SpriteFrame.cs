@@ -196,9 +196,9 @@ namespace SkaaGameDataLib
                     // image. If so, and the final pixels were colored, there won't be a next pixel to be 
                     // below 0xf8 so we need to write it out anyway.
                     bool lastByte = (x == (this.Width - 1) && (y == (this.Height - 1)));
+
                     if (palColorByte <= 0xf8 || lastByte)
-                    {
-                        
+                    { 
                         if (transparentByteCount > 0)  
                         {
                             // Write 0xf8[dd] where [dd] is transparent byte count, unless the
@@ -211,13 +211,20 @@ namespace SkaaGameDataLib
                                 realOffset++;
                                 indexedData[realOffset] = Convert.ToByte(transparentByteCount);
                                 realOffset++;
-                                indexedData[realOffset] = palColorByte;
-                                realOffset++;
+
+                                //there is no other byte to write out
+                                if (!lastByte)
+                                {
+                                    indexedData[realOffset] = palColorByte;
+                                    realOffset++;
+                                }
+                                //indexedData[realOffset] = palColorByte;
+                                //realOffset++;
                                 transparentByteCount = 0;
                             }
                             else
                             {
-                                //less than six and 7kaa cuts down on file size by just writing one byte
+                                //less than 8 and 7kaa cuts down on file size by just writing one byte
                                 
                                 //transparentByteCount = 2: 0xfe
                                 //transparentByteCount = 3: 0xfd
@@ -228,6 +235,8 @@ namespace SkaaGameDataLib
 
                                 indexedData[realOffset] = Convert.ToByte(0xff - (transparentByteCount - 1));
                                 realOffset++;
+
+                                //there is no other byte to write out
                                 if (!lastByte)
                                 {
                                     indexedData[realOffset] = palColorByte;
@@ -242,12 +251,14 @@ namespace SkaaGameDataLib
                             indexedData[realOffset] = palColorByte;
                             realOffset++;
                         }
+                        //if (!lastByte)
+                        //{
+                        //    indexedData[realOffset] = palColorByte;
+                        //    realOffset++;
+                        //}
                     }
                 }//end inner for
             }//end outer for
-
-            //todo: Need to check for the last byte here. A byte is always written after the next byte was read and taken care of
-            //      so we're losing the last byte, which is why we see 0x00 in the last place instead of 0xfa.
 
             return indexedData;
         }

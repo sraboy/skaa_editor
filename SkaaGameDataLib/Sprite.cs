@@ -96,7 +96,7 @@ namespace SkaaGameDataLib
             foreach (SpriteFrame sf in this.Frames)
             {
                 SPRArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += sf.Size;
+                initSize += (sf.Size + 4); //add another four for the size
             }
 
             
@@ -106,7 +106,7 @@ namespace SkaaGameDataLib
             foreach (Byte[] ba in SPRArrays)
             {
                 Buffer.BlockCopy(ba, 0, save, lastSize, Buffer.ByteLength(ba));
-                lastSize = ba.Length;
+                lastSize += ba.Length;
             }
 
             return save;
