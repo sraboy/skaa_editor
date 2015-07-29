@@ -37,6 +37,17 @@ namespace SkaaFrameViewer
 {
     public partial class SkaaFrameViewer : UserControl
     {
+        public event EventHandler ActiveFrameChanged;
+        protected virtual void OnActiveFrameChanged(EventArgs e)
+        {
+            EventHandler handler = ActiveFrameChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
         Sprite _activeSprite;
         SpriteFrame _activeFrame;
         int _activeFrameIndex;
@@ -68,6 +79,7 @@ namespace SkaaFrameViewer
                     this._activeFrame = value;
                     this._activeFrameIndex = this._activeSprite.Frames.FindIndex(0, (f => f == _activeFrame));
                     this.picBoxFrame.Image = this._activeFrame.ImageBmp;
+                    this.OnActiveFrameChanged(null);
                 }
             }
         }
@@ -87,7 +99,8 @@ namespace SkaaFrameViewer
             {
                 _activeFrameIndex++;
                 _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
-                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
+                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+                //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -95,7 +108,8 @@ namespace SkaaFrameViewer
                 _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
                 // special mod() function above to actually cycle negative numbers around. Turns out % isn't 
                 // a real mod() function, just remainder.
-                picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
+                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+                //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
             else if (e.Button == MouseButtons.Middle)
             {

@@ -66,6 +66,21 @@ namespace SkaaEditor
                 }
             }
         }
+        public SpriteFrame ActiveFrame
+        {
+            get
+            {
+                return this.activeFrame;
+            }
+            set
+            {
+                if(this.activeFrame != value)
+                {
+                    this.activeFrame = value;
+                    this.skaaImageBox1.Image = ActiveFrame.ImageBmp;
+                }
+            }
+        }
 
         public SkaaEditorMainForm()
         {
@@ -86,8 +101,17 @@ namespace SkaaEditor
 
             this.skaaImageBox1.ImageChanged += skaaImageBox1_ImageChanged;
             this.skaaImageBox1.ImageUpdated += skaaImageBox1_ImageUpdated;
-            this.AnimateChanged += SkaaEditorMainForm_AnimateChanged;            
+            this.AnimateChanged += SkaaEditorMainForm_AnimateChanged;
+
+            this.skaaFrameViewer1.ActiveFrameChanged += skaaFrameViewer1_ActiveFrameChanged;      
         }
+
+        private void skaaFrameViewer1_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            //todo: save/cache changes to current frame
+            this.ActiveFrame = skaaFrameViewer1.ActiveFrame;
+        }
+
         private void skaaImageBox1_ImageChanged(object sender, EventArgs e)
         {
             this.exportAsToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
@@ -113,6 +137,10 @@ namespace SkaaEditor
 
             //throw new NotImplementedException();
         }
+        private void skaaEditorMainForm_Load(object sender, EventArgs e)
+        {
+
+        }
         private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
             this.skaaImageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
@@ -133,10 +161,6 @@ namespace SkaaEditor
 
             this.openToolStripMenuItem.Enabled = true;
         }
-        private void skaaEditorMainForm_Load(object sender, EventArgs e)
-        {
-            
-        }
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutForm abt = new AboutForm();
@@ -153,7 +177,7 @@ namespace SkaaEditor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                //Assume the user also wants to save this
+                //todo: Verify the user wants to save this
                 this.activeFrame.ImageBmp = (this.skaaImageBox1.Image as Bitmap);
 
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
@@ -176,7 +200,7 @@ namespace SkaaEditor
                 try
                 {
                     FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                    Byte[] save = activeFrame.BuildBitmap8bppIndexed();
+                    Byte[] save = ActiveFrame.BuildBitmap8bppIndexed();
                     fs.Write(save, 0, Buffer.ByteLength(save));
                     fs.Close();
                 }
@@ -242,8 +266,8 @@ namespace SkaaEditor
                 spritestream.Close();
 
                 //todo: figure out the UX for editing individual frames
-                activeFrame = activeSprite.Frames[0];
-                this.skaaImageBox1.Image = activeFrame.ImageBmp;
+                ActiveFrame = activeSprite.Frames[0];
+                //this.skaaImageBox1.Image = activeFrame.ImageBmp;
                 skaaFrameViewer1.ActiveSprite = this.activeSprite;
                 skaaFrameViewer1.ActiveFrame = this.activeFrame;
             }
