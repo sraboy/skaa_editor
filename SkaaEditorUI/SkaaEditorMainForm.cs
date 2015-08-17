@@ -276,5 +276,11 @@ namespace SkaaEditor
         {
             Animate = !Animate;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
+            savEditor.Show();
+        }
     }
 }
