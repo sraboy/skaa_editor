@@ -54,8 +54,10 @@ namespace Timeline
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.picBoxFrame = new System.Windows.Forms.PictureBox();
             this.frameSlider = new System.Windows.Forms.TrackBar();
+            this.animationTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.picBoxFrame)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.frameSlider)).BeginInit();
             this.SuspendLayout();
@@ -67,6 +69,8 @@ namespace Timeline
             this.picBoxFrame.Size = new System.Drawing.Size(121, 121);
             this.picBoxFrame.TabIndex = 4;
             this.picBoxFrame.TabStop = false;
+            this.picBoxFrame.DoubleClick += new System.EventHandler(this.picBoxFrame_DoubleClick);
+            this.picBoxFrame.MouseClick += new System.Windows.Forms.MouseEventHandler(this.picBoxFrame_Click);
             // 
             // frameSlider
             // 
@@ -95,5 +99,6 @@ namespace Timeline
         #endregion
         private PictureBox picBoxFrame;
         private TrackBar frameSlider;
+        private Timer animationTimer;
     }
 }

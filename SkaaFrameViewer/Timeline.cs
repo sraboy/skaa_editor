@@ -51,8 +51,8 @@ namespace Timeline
         Sprite _activeSprite;
         SpriteFrame _activeFrame;
         int _activeFrameIndex;
+        int _preAnimateActiveFrameIndex;
 
-        
 
         public Sprite ActiveSprite
         {
@@ -72,7 +72,10 @@ namespace Timeline
         {
             get
             {
-                return this._activeFrame;
+                if (!this.animationTimer.Enabled)
+                    return this._activeFrame;
+                else
+                    return this._activeSprite.Frames[_preAnimateActiveFrameIndex];
             }
             set
             {
@@ -81,7 +84,10 @@ namespace Timeline
                     this._activeFrame = value;
                     this._activeFrameIndex = this._activeSprite.Frames.FindIndex(0, (f => f == _activeFrame));
                     this.picBoxFrame.Image = this._activeFrame.ImageBmp;
-                    this.OnActiveFrameChanged(null);
+                    this.frameSlider.Value = this._activeFrameIndex;
+
+                    if(!this.animationTimer.Enabled)
+                        this.OnActiveFrameChanged(null);
                 }
             }
         }
@@ -89,8 +95,12 @@ namespace Timeline
         public TimelineControl()
         {
             InitializeComponent();
-            picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
-            SetSliderEnable(false);
+
+            this.picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
+            this.SetSliderEnable(false);
+            this.animationTimer.Enabled = false;
+            this.animationTimer.Tick += AnimationTimer_Tick;
+            this.animationTimer.Interval = 150;
         }
 
         public void SetMaxFrames(int frameCount)
@@ -108,7 +118,7 @@ namespace Timeline
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
         {
-            if (ActiveFrame == null)
+            if (ActiveFrame == null || this.animationTimer.Enabled)
                 return;
 
             if (e.Button == MouseButtons.Left)
@@ -141,6 +151,55 @@ namespace Timeline
         {
             _activeFrameIndex = (sender as TrackBar).Value;
             this.ActiveFrame = (this.ActiveSprite == null) ? null : this.ActiveSprite.Frames[_activeFrameIndex];
+        }
+        //private void pnlNavigateFrameNext_Click(object sender, EventArgs e)
+        //{
+        //    if (ActiveFrame == null || this.animationTimer.Enabled)
+        //        return;
+
+        //    _activeFrameIndex++;
+        //    _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
+        //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+        //}
+        //private void pnlNavigateFrameBack_Click(object sender, EventArgs e)
+        //{
+        //    if (ActiveFrame == null || this.animationTimer.Enabled)
+        //        return;
+
+        //    _activeFrameIndex--;
+        //    _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
+        //    // Special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
+        //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+        //}
+        private void picBoxFrame_DoubleClick(object sender, EventArgs e)
+        {
+            if (ActiveFrame == null)
+                return;
+
+
+            if (this.animationTimer.Enabled) //currently animating
+            {
+                this.animationTimer.Stop();
+                this.frameSlider.Enabled = true;
+
+                //reset to the currently-displayed frame
+                this._activeFrameIndex = this._preAnimateActiveFrameIndex;
+                this._preAnimateActiveFrameIndex = 0;
+                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+            }
+            else //start animating
+            {
+                this.frameSlider.Enabled = false;
+                this._preAnimateActiveFrameIndex = this._activeFrameIndex;
+                this.animationTimer.Start();
+            }
+        }
+
+        private void AnimationTimer_Tick(object sender, EventArgs e)
+        {
+            _activeFrameIndex++;
+            _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
+            this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
         }
     }
 }
