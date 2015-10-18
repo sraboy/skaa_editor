@@ -53,7 +53,7 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-        public Byte[] FrameData
+        public byte[] FrameData
         {
             get;
             set;
@@ -78,7 +78,7 @@ namespace SkaaGameDataLib
             this.Size = size;
             this.Height = height;
             this.Width = width;
-            this.FrameData = new Byte[height * width];
+            this.FrameData = new byte[height * width];
             FrameData = Enumerable.Repeat<byte>(0xff, FrameData.Length).ToArray<byte>();
             this.Palette = palette;
         }
@@ -90,7 +90,7 @@ namespace SkaaGameDataLib
             //unused palette entries 0xf8-0xff
 
             int pixelsToSkip = 0;
-            Byte pixel;
+            byte pixel;
 
             for (int y = 0; y < this.Height; ++y)
             {
@@ -154,21 +154,21 @@ namespace SkaaGameDataLib
 
         }
 
-        public Byte[] BuildBitmap8bppIndexed()
+        public byte[] BuildBitmap8bppIndexed()
         {
             VerifySize();
 
-            Byte palColorByte;                        
+            byte palColorByte;                        
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
             int realOffset = 8;
-            Byte[] indexedData = new Byte[this.Size + 4];
+            byte[] indexedData = new byte[this.Size + 4];
 
             // todo: will have to recalculate size if pixels change because the number of
             //       ommitted transparent bytes will have changed too
-            Byte[] size = BitConverter.GetBytes(this.Size);
-            Byte[] width = BitConverter.GetBytes((short) this.Width);
-            Byte[] height = BitConverter.GetBytes((short) this.Height);
+            byte[] size = BitConverter.GetBytes(this.Size);
+            byte[] width = BitConverter.GetBytes((short) this.Width);
+            byte[] height = BitConverter.GetBytes((short) this.Height);
 
             Buffer.BlockCopy(size, 0, indexedData, 0, Buffer.ByteLength(size));
             Buffer.BlockCopy(width, 0, indexedData, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));

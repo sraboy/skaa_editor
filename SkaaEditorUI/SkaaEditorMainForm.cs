@@ -180,7 +180,7 @@ namespace SkaaEditor
 
                 while (spritestream.Position < spritestream.Length)
                 {
-                    Byte[] frame_size_bytes = new Byte[8];
+                    byte[] frame_size_bytes = new byte[8];
 
                     spritestream.Read(frame_size_bytes, 0, 8);
 
@@ -240,7 +240,31 @@ namespace SkaaEditor
                 try
                 {
                     FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                    Byte[] save = ActiveFrame.BuildBitmap8bppIndexed();
+                    byte[] raw_pixels = ActiveFrame.BuildBitmap8bppIndexed();
+
+                    /*
+                     * BitConverter is required (rather than Convert.ToByte()) so we can get
+                     * the full 16- or 32-bit representation. This is also why ActiveFrame's
+                     * Height and Width are both cast to short, to ensure we get a 16-bit
+                     * representation to match the binary's file format of:
+                     * | 4 byte Size | 2 byte Height | 2 byte Width |
+                     */
+                    byte[] size = BitConverter.GetBytes(ActiveFrame.Size);
+                    byte[] height = BitConverter.GetBytes((short) ActiveFrame.Height);
+                    byte[] width = BitConverter.GetBytes((short) ActiveFrame.Width);
+                    byte[] save = new byte[size.Length + height.Length + width.Length + raw_pixels.Length];
+
+                    int seek_pos = 0; //makes the below lines easier to follow and edit
+
+                    Buffer.BlockCopy(size, 0, save, seek_pos, size.Length);
+                    seek_pos += size.Length;
+                    Buffer.BlockCopy(width, 0, save, seek_pos, width.Length);
+                    seek_pos += width.Length;
+                    Buffer.BlockCopy(height, 0, save, seek_pos, height.Length);
+                    seek_pos += height.Length;
+                    Buffer.BlockCopy(raw_pixels, 0, save, seek_pos, raw_pixels.Length);
+                    seek_pos += raw_pixels.Length;
+
                     fs.Write(save, 0, Buffer.ByteLength(save));
                     fs.Close();
                 }
@@ -259,7 +283,7 @@ namespace SkaaEditor
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                Byte[] save = activeSprite.BuildSPR();
+                byte[] save = activeSprite.BuildSPR();
                 fs.Write(save, 0, Buffer.ByteLength(save));
                 fs.Close();
             }

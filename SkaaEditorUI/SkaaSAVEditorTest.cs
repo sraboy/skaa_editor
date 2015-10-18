@@ -67,9 +67,9 @@ namespace SkaaEditor
 
                 FileStream savfile_stream = File.OpenRead(dlg.FileName);
 
-                Byte[] header = new Byte[304]; 
-                Byte[] duo = new Byte[2];       //for getting sizes and bookmarks
-                Byte[] config = new Byte[144];
+                byte[] header = new byte[304];
+                byte[] duo = new byte[2];       //for getting sizes and bookmarks
+                byte[] config = new byte[144];
                 //Byte[] sys = new Byte[];
                 //Byte[] info = new Byte[];
                 //Byte[] power = new Byte[];
