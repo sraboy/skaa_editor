@@ -71,7 +71,9 @@ namespace SkaaEditor
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
             this.cbEdit = new System.Windows.Forms.CheckBox();
+            this.skaaImageBox1 = new SkaaEditor.SkaaImageBox();
             this.button1 = new System.Windows.Forms.Button();
             this.timelineControl1 = new Timeline.TimelineControl();
             this.mainMenuStrip.SuspendLayout();
@@ -86,7 +88,7 @@ namespace SkaaEditor
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(1026, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(1023, 24);
             this.mainMenuStrip.TabIndex = 3;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -207,9 +209,18 @@ namespace SkaaEditor
             // 
             this.statusStrip1.Location = new System.Drawing.Point(0, 788);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1026, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1023, 22);
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "SkaaEditor ALPHA v0.1";
+            // 
+            // skaaColorChooser1
+            // 
+            this.skaaColorChooser1.ActiveColor = System.Drawing.Color.Empty;
+            this.skaaColorChooser1.Location = new System.Drawing.Point(5, 28);
+            this.skaaColorChooser1.Name = "skaaColorChooser1";
+            this.skaaColorChooser1.Palette = null;
+            this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
+            this.skaaColorChooser1.TabIndex = 5;
             // 
             // cbEdit
             // 
@@ -221,6 +232,20 @@ namespace SkaaEditor
             this.cbEdit.Text = "Edit Mode";
             this.cbEdit.UseVisualStyleBackColor = true;
             this.cbEdit.CheckedChanged += new System.EventHandler(this.cbEdit_CheckedChanged);
+            // 
+            // skaaImageBox1
+            // 
+            this.skaaImageBox1.ActiveColor = System.Drawing.Color.Empty;
+            this.skaaImageBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.skaaImageBox1.Font = new System.Drawing.Font("Calibri", 12.75F);
+            this.skaaImageBox1.GridCellSize = 12;
+            this.skaaImageBox1.IsDrawing = false;
+            this.skaaImageBox1.Location = new System.Drawing.Point(198, 28);
+            this.skaaImageBox1.Name = "skaaImageBox1";
+            this.skaaImageBox1.Size = new System.Drawing.Size(689, 780);
+            this.skaaImageBox1.TabIndex = 8;
             // 
             // button1
             // 
@@ -236,7 +261,7 @@ namespace SkaaEditor
             // 
             this.timelineControl1.ActiveFrame = null;
             this.timelineControl1.ActiveSprite = null;
-            this.timelineControl1.Location = new System.Drawing.Point(897, 27);
+            this.timelineControl1.Location = new System.Drawing.Point(888, 27);
             this.timelineControl1.Name = "timelineControl1";
             this.timelineControl1.Size = new System.Drawing.Size(129, 172);
             this.timelineControl1.TabIndex = 12;
@@ -247,7 +272,14 @@ namespace SkaaEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1026, 810);
+            this.ClientSize = new System.Drawing.Size(1023, 810);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.timelineControl1);
+            this.Controls.Add(this.skaaImageBox1);
+            this.Controls.Add(this.cbEdit);
+            this.Controls.Add(this.skaaColorChooser1);
+            this.Controls.Add(this.mainMenuStrip);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenuStrip;
