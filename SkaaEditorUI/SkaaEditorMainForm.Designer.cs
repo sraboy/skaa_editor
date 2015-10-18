@@ -71,11 +71,9 @@ namespace SkaaEditor
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
             this.cbEdit = new System.Windows.Forms.CheckBox();
-            this.skaaImageBox1 = new SkaaEditor.SkaaImageBox();
-            this.skaaFrameViewer1 = new SkaaFrameViewer.SkaaFrameViewer();
             this.button1 = new System.Windows.Forms.Button();
+            this.timelineControl1 = new Timeline.TimelineControl();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -88,7 +86,7 @@ namespace SkaaEditor
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(1023, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(1026, 24);
             this.mainMenuStrip.TabIndex = 3;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -106,13 +104,13 @@ namespace SkaaEditor
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.newToolStripMenuItem.Text = "New";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -123,7 +121,7 @@ namespace SkaaEditor
             this.toolStripSeparator1,
             this.saveAllFramesToolStripMenuItem});
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.saveToolStripMenuItem.Text = "Save SPR";
             // 
             // saveFrameToolStripMenuItem
@@ -150,7 +148,7 @@ namespace SkaaEditor
             this.exportAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bmp32bppToolStripMenuItem});
             this.exportAsToolStripMenuItem.Name = "exportAsToolStripMenuItem";
-            this.exportAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAsToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.exportAsToolStripMenuItem.Text = "Export As";
             // 
             // bmp32bppToolStripMenuItem
@@ -186,7 +184,7 @@ namespace SkaaEditor
             // showGridToolStripMenuItem
             // 
             this.showGridToolStripMenuItem.Name = "showGridToolStripMenuItem";
-            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.showGridToolStripMenuItem.Text = "Show Grid";
             this.showGridToolStripMenuItem.Click += new System.EventHandler(this.showGridToolStripMenuItem_Click);
             // 
@@ -201,7 +199,7 @@ namespace SkaaEditor
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -209,23 +207,14 @@ namespace SkaaEditor
             // 
             this.statusStrip1.Location = new System.Drawing.Point(0, 788);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1023, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1026, 22);
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "SkaaEditor ALPHA v0.1";
-            // 
-            // skaaColorChooser1
-            // 
-            this.skaaColorChooser1.ActiveColor = System.Drawing.Color.Empty;
-            this.skaaColorChooser1.Location = new System.Drawing.Point(5, 28);
-            this.skaaColorChooser1.Name = "skaaColorChooser1";
-            this.skaaColorChooser1.Palette = null;
-            this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
-            this.skaaColorChooser1.TabIndex = 5;
             // 
             // cbEdit
             // 
             this.cbEdit.AutoSize = true;
-            this.cbEdit.Location = new System.Drawing.Point(893, 159);
+            this.cbEdit.Location = new System.Drawing.Point(895, 205);
             this.cbEdit.Name = "cbEdit";
             this.cbEdit.Size = new System.Drawing.Size(74, 17);
             this.cbEdit.TabIndex = 7;
@@ -233,34 +222,9 @@ namespace SkaaEditor
             this.cbEdit.UseVisualStyleBackColor = true;
             this.cbEdit.CheckedChanged += new System.EventHandler(this.cbEdit_CheckedChanged);
             // 
-            // skaaImageBox1
-            // 
-            this.skaaImageBox1.ActiveColor = System.Drawing.Color.Empty;
-            this.skaaImageBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.skaaImageBox1.Font = new System.Drawing.Font("Calibri", 12.75F);
-            this.skaaImageBox1.GridCellSize = 12;
-            this.skaaImageBox1.IsDrawing = false;
-            this.skaaImageBox1.Location = new System.Drawing.Point(198, 28);
-            this.skaaImageBox1.Name = "skaaImageBox1";
-            this.skaaImageBox1.Size = new System.Drawing.Size(689, 780);
-            this.skaaImageBox1.TabIndex = 8;
-            // 
-            // skaaFrameViewer1
-            // 
-            this.skaaFrameViewer1.ActiveFrame = null;
-            this.skaaFrameViewer1.ActiveSprite = null;
-            this.skaaFrameViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.skaaFrameViewer1.Location = new System.Drawing.Point(893, 28);
-            this.skaaFrameViewer1.Name = "skaaFrameViewer1";
-            this.skaaFrameViewer1.Size = new System.Drawing.Size(125, 125);
-            this.skaaFrameViewer1.TabIndex = 9;
-            this.skaaFrameViewer1.DoubleClick += new System.EventHandler(this.skaaFrameViewer1_DoubleClick);
-            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(918, 244);
+            this.button1.Location = new System.Drawing.Point(895, 306);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 11;
@@ -268,18 +232,22 @@ namespace SkaaEditor
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // timelineControl1
+            // 
+            this.timelineControl1.ActiveFrame = null;
+            this.timelineControl1.ActiveSprite = null;
+            this.timelineControl1.Location = new System.Drawing.Point(897, 27);
+            this.timelineControl1.Name = "timelineControl1";
+            this.timelineControl1.Size = new System.Drawing.Size(129, 172);
+            this.timelineControl1.TabIndex = 12;
+            this.timelineControl1.Load += new System.EventHandler(this.timelineControl1_Load);
+            this.timelineControl1.DoubleClick += new System.EventHandler(this.timelineControl1_DoubleClick);
+            // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1023, 810);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.skaaFrameViewer1);
-            this.Controls.Add(this.skaaImageBox1);
-            this.Controls.Add(this.cbEdit);
-            this.Controls.Add(this.skaaColorChooser1);
-            this.Controls.Add(this.mainMenuStrip);
+            this.ClientSize = new System.Drawing.Size(1026, 810);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenuStrip;
@@ -314,7 +282,7 @@ namespace SkaaEditor
         private SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
         private System.Windows.Forms.CheckBox cbEdit;
         private SkaaImageBox skaaImageBox1;
-        private SkaaFrameViewer.SkaaFrameViewer skaaFrameViewer1;
         private System.Windows.Forms.Button button1;
+        private Timeline.TimelineControl timelineControl1;
     }
 }

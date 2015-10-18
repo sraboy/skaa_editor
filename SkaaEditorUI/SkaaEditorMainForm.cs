@@ -86,69 +86,71 @@ namespace SkaaEditor
         {
             InitializeComponent();
 
+            //disallow opening sprites until a palette is loaded
             if (this.skaaColorChooser1.Palette == null)
                 this.openToolStripMenuItem.Enabled = false;
 
+            //disable export until a sprite is loaded
             if (this.skaaImageBox1.Image == null)
                 this.exportAsToolStripMenuItem.Enabled = false;
 
+            //set up initial UI
+            this.SetupUI();
+            //this.exportAsToolStripMenuItem.Enabled = false;
+            //this.skaaImageBox1.Text = "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com";
+            //this.saveToolStripMenuItem.Enabled = false;
+
+            //event subscriptions
             this.skaaColorChooser1.ActiveColorChanged += this.skaaColorChooser1_ActiveColorChanged;
-            this.showGridToolStripMenuItem.Checked = this.skaaImageBox1.ShowPixelGrid;
-
-            this.exportAsToolStripMenuItem.Enabled = false;
-            this.skaaImageBox1.Text = "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com";
-            this.saveToolStripMenuItem.Enabled = false;
-
             this.skaaImageBox1.ImageChanged += skaaImageBox1_ImageChanged;
             this.skaaImageBox1.ImageUpdated += skaaImageBox1_ImageUpdated;
             this.AnimateChanged += SkaaEditorMainForm_AnimateChanged;
-
-            this.skaaFrameViewer1.ActiveFrameChanged += skaaFrameViewer1_ActiveFrameChanged;      
+            //this.skaaFrameViewer1.ActiveFrameChanged += skaaFrameViewer1_ActiveFrameChanged;
+            this.timelineControl1.ActiveFrameChanged += skaaFrameViewer1_ActiveFrameChanged;
+            
         }
-
-        private void skaaFrameViewer1_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            //todo: save/cache changes to current frame
-            this.ActiveFrame = skaaFrameViewer1.ActiveFrame;
-        }
-
-        private void skaaImageBox1_ImageChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Sets up the UI based on the state of the program (sprite loaded or not, etc).
+        /// </summary>
+        private void SetupUI()
         {
             this.exportAsToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
             this.saveToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
             this.skaaImageBox1.Text = (this.skaaImageBox1.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
+            this.showGridToolStripMenuItem.Checked = this.skaaImageBox1.ShowPixelGrid;
+            this.timelineControl1.SetSliderEnable((this.skaaImageBox1.Image == null) ? false : true);
         }
-        private void SkaaEditorMainForm_AnimateChanged(object sender, EventArgs e)
-        {
-            // todo: implement animation function in SkaaFrameViewer
-            //if(Animate)
-            //{
-                
-            //}
-            //else
-            //{
 
-            //}
-        }
-        void skaaImageBox1_ImageUpdated(object sender, EventArgs e)
-        {
-            //todo: need to change multiplePictureBox to SpriteFrame instead of image
-            //multiplePictureBox1.
-
-            //throw new NotImplementedException();
-        }
-        private void skaaEditorMainForm_Load(object sender, EventArgs e)
-        {
-
-        }
+        private void skaaEditorMainForm_Load(object sender, EventArgs e) { }
         private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
             this.skaaImageBox1.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
         }
+        private void skaaFrameViewer1_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            //todo: save/cache changes to current frame
+            //this.ActiveFrame = skaaFrameViewer1.ActiveFrame;
+            this.ActiveFrame = timelineControl1.ActiveFrame;
+        }        
+        private void skaaImageBox1_ImageChanged(object sender, EventArgs e)
+        {
+           SetupUI();
+        }
+        private void SkaaEditorMainForm_AnimateChanged(object sender, EventArgs e) { } //todo: start/stop animating
+        private void skaaImageBox1_ImageUpdated(object sender, EventArgs e) { } //todo: update timeline with edits
+
+        //UI item events
         private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {
             this.skaaImageBox1.EditMode = !this.skaaImageBox1.EditMode;
         }
+        private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.skaaImageBox1.ShowPixelGrid = !this.skaaImageBox1.ShowPixelGrid;
+            (sender as ToolStripMenuItem).Checked = this.skaaImageBox1.ShowPixelGrid;
+        }
+
+        //Menu item events
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -161,15 +163,53 @@ namespace SkaaEditor
 
             this.openToolStripMenuItem.Enabled = true;
         }
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AboutForm abt = new AboutForm();
-            abt.Show();
-        }
-        private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.skaaImageBox1.ShowPixelGrid = !this.skaaImageBox1.ShowPixelGrid;
-            (sender as ToolStripMenuItem).Checked = this.skaaImageBox1.ShowPixelGrid;
+            if (this.skaaColorChooser1.Palette == null)
+                return;
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.DefaultExt = ".spr";
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                FileStream spritestream = File.OpenRead(dlg.FileName);
+                activeSprite = new Sprite(this.skaaColorChooser1.Palette);
+
+                var x = spritestream.Length;
+
+                while (spritestream.Position < spritestream.Length)
+                {
+                    Byte[] frame_size_bytes = new Byte[8];
+
+                    spritestream.Read(frame_size_bytes, 0, 8);
+
+                    int size = BitConverter.ToInt32(frame_size_bytes, 0);
+                    short width = BitConverter.ToInt16(frame_size_bytes, 4);
+                    short height = BitConverter.ToInt16(frame_size_bytes, 6);
+
+                    SpriteFrame frame = new SpriteFrame(size, width, height, this.skaaColorChooser1.Palette);
+
+                    frame.GetPixels(spritestream);
+
+                    //debugging: gives an ASCII representation of image 
+                    //(add \n after every 62d character). Verified alignment of pixels as read.
+                    //var hex = BitConverter.ToString(frame.FrameData);
+
+                    frame.BuildBitmap32bpp();
+
+                    activeSprite.Frames.Add(frame);
+                }
+
+                this.exportAsToolStripMenuItem.Enabled = true;
+                spritestream.Close();
+
+                ActiveFrame = activeSprite.Frames[0];
+
+                timelineControl1.ActiveSprite = this.activeSprite;
+                timelineControl1.ActiveFrame = this.activeFrame;
+                this.timelineControl1.SetMaxFrames(this.activeSprite.Frames.Count - 1); //-1 for 0-index
+            }
         }
         private void exportBmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -224,63 +264,29 @@ namespace SkaaEditor
                 fs.Close();
             }
         }
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.skaaColorChooser1.Palette == null)
-                return;
-
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.DefaultExt = ".spr";
-            
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                FileStream spritestream = File.OpenRead(dlg.FileName);
-                activeSprite = new Sprite(this.skaaColorChooser1.Palette);
-
-                var x = spritestream.Length;
-
-                while (spritestream.Position < spritestream.Length)
-                {
-                    Byte[] frame_size_bytes = new Byte[8];
-
-                    spritestream.Read(frame_size_bytes, 0, 8);
-
-                    int size = BitConverter.ToInt32(frame_size_bytes, 0);
-                    short width = BitConverter.ToInt16(frame_size_bytes, 4);
-                    short height = BitConverter.ToInt16(frame_size_bytes, 6);
-
-                    SpriteFrame frame = new SpriteFrame(size, width, height, this.skaaColorChooser1.Palette);
-
-                    frame.GetPixels(spritestream);
-
-                    //debugging: gives an ASCII representation of image 
-                    //(add \n after every 62d character). Verified alignment of pixels as read.
-                    //var hex = BitConverter.ToString(frame.FrameData);
-
-                    frame.BuildBitmap32bpp();
-
-                    activeSprite.Frames.Add(frame);
-                }
-
-                this.exportAsToolStripMenuItem.Enabled = true;
-                spritestream.Close();
-
-                //todo: figure out the UX for editing individual frames
-                ActiveFrame = activeSprite.Frames[0];
-                //this.skaaImageBox1.Image = activeFrame.ImageBmp;
-                skaaFrameViewer1.ActiveSprite = this.activeSprite;
-                skaaFrameViewer1.ActiveFrame = this.activeFrame;
-            }
+            AboutForm abt = new AboutForm();
+            abt.Show();
         }
-        private void skaaFrameViewer1_DoubleClick(object sender, EventArgs e)
-        {
-            Animate = !Animate;
-        }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
             SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
             savEditor.Show();
+        }
+
+       
+
+        private void timelineControl1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timelineControl1_DoubleClick(object sender, EventArgs e)
+        {
+
         }
     }
 }
