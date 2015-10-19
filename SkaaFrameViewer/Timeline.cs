@@ -132,14 +132,12 @@ namespace Timeline
             {
                 _activeFrameIndex--;
                 _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
-                // special mod() function above to actually cycle negative numbers around. Turns out % isn't 
-                // a real mod() function, just remainder.
+                // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
+
                 this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-                //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
             else if (e.Button == MouseButtons.Middle)
             {
-                //todo: change this to raise an event that a new frame was selected so MainForm can updated the editor with the selected frame
                 if (picBoxFrame.SizeMode == PictureBoxSizeMode.CenterImage)
                     picBoxFrame.SizeMode = PictureBoxSizeMode.Zoom;
                 else
@@ -152,30 +150,11 @@ namespace Timeline
             _activeFrameIndex = (sender as TrackBar).Value;
             this.ActiveFrame = (this.ActiveSprite == null) ? null : this.ActiveSprite.Frames[_activeFrameIndex];
         }
-        //private void pnlNavigateFrameNext_Click(object sender, EventArgs e)
-        //{
-        //    if (ActiveFrame == null || this.animationTimer.Enabled)
-        //        return;
-
-        //    _activeFrameIndex++;
-        //    _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
-        //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-        //}
-        //private void pnlNavigateFrameBack_Click(object sender, EventArgs e)
-        //{
-        //    if (ActiveFrame == null || this.animationTimer.Enabled)
-        //        return;
-
-        //    _activeFrameIndex--;
-        //    _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
-        //    // Special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
-        //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-        //}
+        
         private void picBoxFrame_DoubleClick(object sender, EventArgs e)
         {
             if (ActiveFrame == null)
                 return;
-
 
             if (this.animationTimer.Enabled) //currently animating
             {
@@ -189,9 +168,8 @@ namespace Timeline
             }
             else //start animating
             {
-                this.frameSlider.Enabled = false;
                 this._preAnimateActiveFrameIndex = this._activeFrameIndex;
-                this.animationTimer.Start();
+                this.animationTimer.Start(); 
             }
         }
 
