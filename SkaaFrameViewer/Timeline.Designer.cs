@@ -24,9 +24,9 @@
 ***************************************************************************/
 
 using System.Windows.Forms;
-namespace SkaaFrameViewer
+namespace Timeline
 {
-    partial class SkaaFrameViewer
+    partial class TimelineControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -54,8 +54,12 @@ namespace SkaaFrameViewer
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.picBoxFrame = new System.Windows.Forms.PictureBox();
+            this.frameSlider = new System.Windows.Forms.TrackBar();
+            this.animationTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.picBoxFrame)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.frameSlider)).BeginInit();
             this.SuspendLayout();
             // 
             // picBoxFrame
@@ -63,24 +67,38 @@ namespace SkaaFrameViewer
             this.picBoxFrame.Location = new System.Drawing.Point(3, 3);
             this.picBoxFrame.Name = "picBoxFrame";
             this.picBoxFrame.Size = new System.Drawing.Size(121, 121);
-            this.picBoxFrame.TabIndex = 3;
+            this.picBoxFrame.TabIndex = 4;
             this.picBoxFrame.TabStop = false;
+            this.picBoxFrame.DoubleClick += new System.EventHandler(this.picBoxFrame_DoubleClick);
             this.picBoxFrame.MouseClick += new System.Windows.Forms.MouseEventHandler(this.picBoxFrame_Click);
             // 
-            // SkaaFrameViewer
+            // frameSlider
+            // 
+            this.frameSlider.LargeChange = 4;
+            this.frameSlider.Location = new System.Drawing.Point(4, 131);
+            this.frameSlider.Name = "frameSlider";
+            this.frameSlider.Size = new System.Drawing.Size(120, 45);
+            this.frameSlider.TabIndex = 5;
+            this.frameSlider.ValueChanged += new System.EventHandler(this.frameSlider_ValueChanged);
+            // 
+            // TimelineControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.frameSlider);
             this.Controls.Add(this.picBoxFrame);
-            this.Name = "SkaaFrameViewer";
-            this.Size = new System.Drawing.Size(125, 125);
+            this.Name = "TimelineControl";
+            this.Size = new System.Drawing.Size(128, 172);
             ((System.ComponentModel.ISupportInitialize)(this.picBoxFrame)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.frameSlider)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.PictureBox picBoxFrame;
+        private PictureBox picBoxFrame;
+        private TrackBar frameSlider;
+        private Timer animationTimer;
     }
 }

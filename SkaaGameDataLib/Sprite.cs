@@ -88,7 +88,7 @@ namespace SkaaGameDataLib
             }
         }
 
-        public Byte[] BuildSPR()
+        public byte[] BuildSPR()
         {
             List<byte[]> SPRArrays = new List<byte[]>();
             int initSize = 0;
@@ -100,9 +100,9 @@ namespace SkaaGameDataLib
             }
 
             int lastSize = 0;
-            Byte[] save = new Byte[initSize];
+            byte[] save = new byte[initSize];
 
-            foreach (Byte[] ba in SPRArrays)
+            foreach (byte[] ba in SPRArrays)
             {
                 Buffer.BlockCopy(ba, 0, save, lastSize, Buffer.ByteLength(ba));
                 lastSize += ba.Length;

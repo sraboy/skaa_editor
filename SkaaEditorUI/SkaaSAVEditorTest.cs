@@ -68,11 +68,18 @@ namespace SkaaEditor
                  */
 
                 FileStream savfile_stream = File.OpenRead(dlg.FileName);
-
+// Maintained the Byte[] config line from the old branch.
+// hadn't yet merged that into master.
+// <<<<<<< HEAD
                 Byte[] header = new Byte[302]; 
                 Byte[] duo = new Byte[2];       //for getting sizes and bookmarks
                 Byte[] config = new Byte[144];
                 Byte[] game_dot_read_file = new Byte[2060];
+// =======
+                // byte[] header = new byte[304];
+                // byte[] duo = new byte[2];       //for getting sizes and bookmarks
+                // byte[] config = new byte[144];
+// >>>>>>> master
                 //Byte[] sys = new Byte[];
                 //Byte[] info = new Byte[];
                 //Byte[] power = new Byte[];

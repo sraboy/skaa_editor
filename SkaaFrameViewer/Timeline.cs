@@ -33,9 +33,9 @@ using System.Text;
 using System.Windows.Forms;
 using SkaaGameDataLib;
 
-namespace SkaaFrameViewer
+namespace Timeline
 {
-    public partial class SkaaFrameViewer : UserControl
+    public partial class TimelineControl : UserControl
     {
         public event EventHandler ActiveFrameChanged;
         protected virtual void OnActiveFrameChanged(EventArgs e)
@@ -51,6 +51,8 @@ namespace SkaaFrameViewer
         Sprite _activeSprite;
         SpriteFrame _activeFrame;
         int _activeFrameIndex;
+        int _preAnimateActiveFrameIndex;
+
 
         public Sprite ActiveSprite
         {
@@ -70,7 +72,10 @@ namespace SkaaFrameViewer
         {
             get
             {
-                return this._activeFrame;
+                if (!this.animationTimer.Enabled)
+                    return this._activeFrame;
+                else
+                    return this._activeSprite.Frames[_preAnimateActiveFrameIndex];
             }
             set
             {
@@ -79,15 +84,36 @@ namespace SkaaFrameViewer
                     this._activeFrame = value;
                     this._activeFrameIndex = this._activeSprite.Frames.FindIndex(0, (f => f == _activeFrame));
                     this.picBoxFrame.Image = this._activeFrame.ImageBmp;
-                    this.OnActiveFrameChanged(null);
+                    this.frameSlider.Value = this._activeFrameIndex;
+
+                    if(!this.animationTimer.Enabled)
+                        this.OnActiveFrameChanged(null);
                 }
             }
         }
 
-        public SkaaFrameViewer()
+        public TimelineControl()
         {
             InitializeComponent();
-            picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
+
+            this.picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
+            this.SetSliderEnable(false);
+            this.animationTimer.Enabled = false;
+            this.animationTimer.Tick += AnimationTimer_Tick;
+            this.animationTimer.Interval = 150;
+        }
+
+        public void SetMaxFrames(int frameCount)
+        {
+            this.frameSlider.Maximum = frameCount;
+        }
+        public int GetMaxFrames(int frameCount)
+        {
+            return this.frameSlider.Maximum;
+        }
+        public void SetSliderEnable(bool enabled = true)
+        {
+            this.frameSlider.Enabled = enabled;
         }
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
@@ -95,25 +121,23 @@ namespace SkaaFrameViewer
             if (ActiveFrame == null)
                 return;
 
-            if (e.Button == MouseButtons.Left)
+            if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
             {
                 _activeFrameIndex++;
                 _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
                 this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
                 //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
-            else if (e.Button == MouseButtons.Right)
+            else if (!this.animationTimer.Enabled && e.Button == MouseButtons.Right)
             {
                 _activeFrameIndex--;
                 _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
-                // special mod() function above to actually cycle negative numbers around. Turns out % isn't 
-                // a real mod() function, just remainder.
+                // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
+
                 this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-                //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
             else if (e.Button == MouseButtons.Middle)
             {
-                //todo: change this to raise an event that a new frame was selected so MainForm can updated the editor with the selected frame
                 if (picBoxFrame.SizeMode == PictureBoxSizeMode.CenterImage)
                     picBoxFrame.SizeMode = PictureBoxSizeMode.Zoom;
                 else
@@ -121,6 +145,39 @@ namespace SkaaFrameViewer
             }
         }
 
+        private void frameSlider_ValueChanged(object sender, EventArgs e)
+        {
+            _activeFrameIndex = (sender as TrackBar).Value;
+            this.ActiveFrame = (this.ActiveSprite == null) ? null : this.ActiveSprite.Frames[_activeFrameIndex];
+        }
         
+        private void picBoxFrame_DoubleClick(object sender, EventArgs e)
+        {
+            if (ActiveFrame == null)
+                return;
+
+            if (this.animationTimer.Enabled) //currently animating
+            {
+                this.animationTimer.Stop();
+                this.frameSlider.Enabled = true;
+
+                //reset to the currently-displayed frame
+                this._activeFrameIndex = this._preAnimateActiveFrameIndex;
+                this._preAnimateActiveFrameIndex = 0;
+                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+            }
+            else //start animating
+            {
+                this._preAnimateActiveFrameIndex = this._activeFrameIndex;
+                this.animationTimer.Start(); 
+            }
+        }
+
+        private void AnimationTimer_Tick(object sender, EventArgs e)
+        {
+            _activeFrameIndex++;
+            _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
+            this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+        }
     }
 }
