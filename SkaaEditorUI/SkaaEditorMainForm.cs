@@ -288,26 +288,23 @@ namespace SkaaEditor
             {
                 //updates this frame's ImageBmp based on changes
                 this.activeFrame.ImageBmp = (this.skaaImageBox1.Image as Bitmap);
-
-                int spriteWidth = 0, spriteHeight = 0;
                 int totalFrames = this.activeSprite.Frames.Count;
-                double sqrt = 0.0;
-                int high = 0, low = 0;
+                int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
 
-                sqrt = Math.Sqrt((double) totalFrames);
-                
+                double sqrt = Math.Sqrt((double) totalFrames);
 
-                if (totalFrames % 1 == 0) //totalFrames is a perfect square
+                if (totalFrames % 1 != 0) //totalFrames is a perfect square
                 {
                     low = (int) sqrt;
                     high = (int) sqrt;
                 }
                 else
                 {
-                    low = (int) Math.Floor(sqrt);
+                    low = (int) Math.Floor(sqrt) + 1; //adds an additional row
                     high = (int) Math.Ceiling(sqrt);
                 }
 
+                //need the largest height and width to tile the export
                 foreach (SpriteFrame sp in this.activeSprite.Frames)
                 {
                     if (sp.Width > spriteWidth)
@@ -316,7 +313,10 @@ namespace SkaaEditor
                         spriteHeight = sp.Height;
                 }
 
-                int exportWidth = high * spriteWidth, exportHeight = low * spriteHeight;
+                //calculated height and width of the bitmap
+                //based on tiles of the largest possible size
+                int exportWidth = high * spriteWidth, 
+                    exportHeight = low * spriteHeight;
                 Bitmap bitmap = new Bitmap(exportWidth, exportHeight);
 
                 using (Graphics g = Graphics.FromImage(bitmap))
@@ -325,7 +325,8 @@ namespace SkaaEditor
 
                     for (int y = 0; y < exportHeight; y += spriteHeight)
                     {
-                        for (int x = 0; x < exportWidth; x += spriteWidth)
+                        //once we hit the max frames, just break
+                        for (int x = 0; x < exportWidth && frameIndex < this.activeSprite.Frames.Count; x += spriteWidth)
                         {
                             g.DrawImage(this.activeSprite.Frames[frameIndex].BuildBitmap32bpp(), new Point(x, y));
                             frameIndex++;
