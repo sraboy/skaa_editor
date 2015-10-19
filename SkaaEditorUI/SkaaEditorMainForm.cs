@@ -287,17 +287,5 @@ namespace SkaaEditor
             SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
             savEditor.Show();
         }
-
-       
-
-        private void timelineControl1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void timelineControl1_DoubleClick(object sender, EventArgs e)
-        {
-
-        }
     }
 }

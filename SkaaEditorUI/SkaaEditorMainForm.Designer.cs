@@ -267,8 +267,6 @@ namespace SkaaEditor
             this.timelineControl1.Name = "timelineControl1";
             this.timelineControl1.Size = new System.Drawing.Size(129, 172);
             this.timelineControl1.TabIndex = 12;
-            this.timelineControl1.Load += new System.EventHandler(this.timelineControl1_Load);
-            this.timelineControl1.DoubleClick += new System.EventHandler(this.timelineControl1_DoubleClick);
             // 
             // SkaaEditorMainForm
             // 
