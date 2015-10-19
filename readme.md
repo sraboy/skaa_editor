@@ -1,7 +1,7 @@
 # skaa_editor
 SkaaEditor seeks to provide non-technical users (e.g., non-programmers) the ability to re-skin the game to their liking. The project is currently in its infancy and battles three other projects that vie for my time.
 
-![screenshot](https://github.com/sraboy/skaa_editor/blob/native_sav/_other/skaa_editor.png)
+![screenshot](https://github.com/sraboy/skaa_editor/blob/master/_other/skaa_editor.png)
 
 ## status
 You can load most (all?) unit-type sprites (ballista, catapult, etc). Submit an issue via the GitHub tracker if you encounter an SPR file that does not open properly.
@@ -13,7 +13,7 @@ The "Edit Mode" checkbox enables editing. By default, left-click is "erase" and 
 Use the tracking bar on the top-right to navigate frames. This is how you change the "active frame," the one which you're editing. Double-click on the mini-viewer to animate by cycing through all the frames in the sprite; double-click again to stop. Middle-clicking zooms in.
 
 ## getting started
-You may download the current ALPHA release [https://github.com/sraboy/skaa_editor/blob/native_sav/_other/SkaaEditor_x86_201510181815HST.zip](here). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
+You may download the current ALPHA release [https://github.com/sraboy/skaa_editor/blob/master/_other/SkaaEditor_x86_201510181815HST.zip](here). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
 
 ## the future
 Eventually, I plan to merge some of my other work on 7KAA's data files into this, as a monolithic trainer/game-editor. I'd also like to port the map generation code and add the ability to create custom maps and custom scenarios.
