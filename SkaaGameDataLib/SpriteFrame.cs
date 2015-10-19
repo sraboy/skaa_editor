@@ -68,11 +68,26 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-        
-        public SpriteFrame()
-        {
 
-        }
+        #region Constructors
+        /// <summary>
+        /// Default constructor, required for some functions.
+        /// </summary>
+        internal SpriteFrame() { }
+
+        /// <summary>
+        /// Initializes the new sprite frame of the specified size pre-filled with 0xff (transparent byte).
+        /// </summary>
+        /// <param name="size">The size in bytes of the frame, including 2 bytes each for height and width</param>
+        /// <param name="width">The width of the frame in pixels</param>
+        /// <param name="height">The height of the frame in pixels</param>
+        /// <param name="palette">The ColorPalette to associate with this frame</param>
+        /// <remarks> 
+        /// We preset all bytes to 0xff, an unused palette entry that signifies a 
+        /// transparent pixel.The default is 0x00, but that's actually used for 
+        /// black.This is required due to the manual compression the 7KAA developers
+        /// used in the SPR files. See <see cref="GetPixels(FileStream)"/> for the implementation.
+        /// </remarks>
         public SpriteFrame(int size, int width, int height, ColorPalette palette)
         {
             this.Size = size;
@@ -82,14 +97,26 @@ namespace SkaaGameDataLib
             FrameData = Enumerable.Repeat<byte>(0xff, FrameData.Length).ToArray<byte>();
             this.Palette = palette;
         }
+        #endregion
 
+        /// <summary>
+        /// Fills this frame's <see cref="FrameData"/> byte array with the colors specifed in the <paramref name="stream"/> parameter.
+        /// </summary>
+        /// <param name="stream">
+        /// A <see cref="FileStream"/> of 8bpp-indexed SPR data. The object must either have its pixel data beginning at [0] 
+        /// or already have its <see cref="FileStream.Position"/> set past any header, like the SPR's size, width and height.
+        /// </param>
+        /// <remarks>
+        /// Note: <see cref="FrameData"/> is pre-filled with 0xff bytes. See the class constructors for details. 
+        /// Simply put, since 0x00 is actually used for black, we need to use one of the palette entries that 
+        /// signifies transparency. In pal_std.res, this is 0xf8-0xff; 0xff was chosen because it does not appear 
+        /// to be used at all. 
+        /// </remarks>
         public void GetPixels(FileStream stream)
         {
-            //todo: find the best way to signify transparent pixels
-            //since 0x00 is actually used for black, we need to use one of the 
-            //unused palette entries 0xf8-0xff
+            //todo:documentation: Verify 0xff is/isn't used and update explanation.
 
-            int pixelsToSkip = 0;
+           int pixelsToSkip = 0;
             byte pixel;
 
             for (int y = 0; y < this.Height; ++y)
@@ -153,6 +180,7 @@ namespace SkaaGameDataLib
         {
 
         }
+
         /// <summary>
         /// Supplies an SPR-formatted version of this frame.
         /// </summary>
