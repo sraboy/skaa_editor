@@ -15,6 +15,8 @@ Use the tracking bar on the top-right to navigate frames. This is how you change
 ## getting started
 You may download the current ALPHA release [here](https://github.com/sraboy/skaa_editor/blob/master/_other/SkaaEditor_x86_201510181815HST.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
 
+The ZIP file includes debug information to help you help me fix bugs.
+
 ## the future
 Eventually, I plan to merge some of my other work on 7KAA's data files into this, as a monolithic trainer/game-editor. I'd also like to port the map generation code and add the ability to create custom maps and custom scenarios.
 
