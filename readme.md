@@ -26,7 +26,7 @@ On my lazier coding days, I go through and properly document/comment the code.
 ## credits
 Obviously, this project wouldn't be possible without [Enlight Software](http://www.enlight.com/)'s release of the game's source code -- not to mention Trevor Chan's brilliant ideas for this game to begin with. My personal fork, with Visual Studio project/solution files, can be found [here](https://github.com/sraboy/7kaa). 
 
-Thanks to everyong at http://http://7kfans.com/, the new home of Seven Kingdoms and its open source project, for keeping 7KAA awesome and up-to-date. I'd also like to give a shoutout to [http://www.cyotek.com/](Cyotek)'s awesome [ImageBox control](https://github.com/cyotek/Cyotek.Windows.Forms.ImageBox) which saved me quite a bit of pain and could very well have prevented me from just dumping the project from day one.
+Thanks to everyone at [7kfans.com/](http://www.7kfans.com/), the new home of Seven Kingdoms and its open source project, for keeping 7KAA awesome and up-to-date. I'd also like to give a shoutout to [Cyotek](http://www.cyotek.com/)'s awesome [ImageBox control](https://github.com/cyotek/Cyotek.Windows.Forms.ImageBox) which saved me quite a bit of pain and could very well have prevented me from just dumping the project from day one.
 
 ## license
 Everything of mine is GPLv3; content from 7KAA remains under that project's license, [http://www.7kfans.com/wiki/index.php/Seven_Kingdoms:Copyrights](mostly all GPL as well).
