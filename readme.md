@@ -4,16 +4,16 @@ SkaaEditor seeks to provide non-technical users (e.g., non-programmers) the abil
 ![screenshot](https://github.com/sraboy/skaa_editor/blob/master/_other/skaa_editor.png)
 
 ## status
-You can load most (all?) unit-type sprites (ballista, catapult, etc). Submit an issue via the GitHub tracker if you encounter an SPR file that does not open properly.
-
-Editing is still very buggy. Currently, any edit that results in a change to the location or count of transparent pixels will fail. This is due to a manual compression technique used by the original developers. Work is ongoing to resolve this. Otherwise, you can save either all the frames or just the current frame in the 7KAA SPR file format. Same goes for exporting to a 32-bit BMP. Note that yellow is the default color. 7KAA automatically replaces this yellow with the proper team color in-game.
+You can load most (all?) unit-type sprites (ballista, catapult, etc). Submit an issue via the GitHub tracker if you encounter an SPR file that does not open properly. Editing may still be buggy. You can save either all the frames or just the current frame in the 7KAA SPR file format. Same goes for exporting to a 32-bit BMP. Note that yellow is the default color. 7KAA automatically replaces this yellow with the proper team color while in-game.
 
 The "Edit Mode" checkbox enables editing. By default, left-click is "erase" and replaces the underlying pixel with a transparent color. Right-clicking changes it to black. Select colors (only changing the left-click is currently supported) but choosing them from the palette on the left.
 
 Use the tracking bar on the top-right to navigate frames. This is how you change the "active frame," the one which you're editing. Double-click on the mini-viewer to animate by cycing through all the frames in the sprite; double-click again to stop. Middle-clicking zooms in.
 
+There is currently no undo/redo nor copy/paste. Ensure you're making backups of your game data.
+
 ## getting started
-You may download the current ALPHA release [here](https://github.com/sraboy/skaa_editor/blob/master/_other/SkaaEditor_x86_201510181815HST.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
+You may download the current ALPHA release [here](https://github.com/sraboy/skaa_editor/blob/master/_other/SkaaEditor_x86_2015102138.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
 
 The ZIP file includes debug information to help you help me fix bugs.
 

@@ -48,11 +48,22 @@ namespace Timeline
             }
         }
 
-        Sprite _activeSprite;
-        SpriteFrame _activeFrame;
-        int _activeFrameIndex;
-        int _preAnimateActiveFrameIndex;
-
+        private Sprite _activeSprite;
+        private SpriteFrame _activeFrame;
+        private int _activeFrameIndex;
+        private int _preAnimateActiveFrameIndex;
+        public PictureBox PictureBoxImageFrame
+        {
+            get
+            {
+                return this.picBoxFrame;
+            }
+            set
+            {
+                if (this.picBoxFrame != value)
+                    this.picBoxFrame = value;
+            }
+        }
 
         public Sprite ActiveSprite
         {

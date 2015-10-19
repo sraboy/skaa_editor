@@ -38,10 +38,38 @@ namespace SkaaGameDataLib
 {
     public class SpriteFrame
     {
-        public int Size
+        private int _sprSize, _pixelSize, _height, _width;
+
+        /// <summary>
+        /// The size, in pixels, of the frame. Simple height * width.
+        /// </summary>
+        public int PixelSize
         {
-            get;
-            set;
+            get
+            {
+                return this._pixelSize;
+            }
+            set
+            {
+                if (this._pixelSize != value)
+                    this._pixelSize = value;
+            }
+        }       
+        /// <summary>
+        /// The size, in bytes, of the SPR data, not counting the four bytes used to represent this value.
+        /// This value needs to be recalculated if the frame is edited due to the transparency compression.
+        /// </summary>
+        public int SprSize
+        {
+            get
+            {
+                return this._sprSize;
+            }
+            set
+            {
+                if (this._sprSize != value)
+                    this._sprSize = value;
+            }
         }
         public int Height
         {
@@ -78,7 +106,7 @@ namespace SkaaGameDataLib
         /// <summary>
         /// Initializes the new sprite frame of the specified size pre-filled with 0xff (transparent byte).
         /// </summary>
-        /// <param name="size">The size in bytes of the frame, including 2 bytes each for height and width</param>
+        /// <param name="sizeOfSPR">The size in bytes of the frame, including 2 bytes each for height and width</param>
         /// <param name="width">The width of the frame in pixels</param>
         /// <param name="height">The height of the frame in pixels</param>
         /// <param name="palette">The ColorPalette to associate with this frame</param>
@@ -86,15 +114,17 @@ namespace SkaaGameDataLib
         /// We preset all bytes to 0xff, an unused palette entry that signifies a 
         /// transparent pixel.The default is 0x00, but that's actually used for 
         /// black.This is required due to the manual compression the 7KAA developers
-        /// used in the SPR files. See <see cref="GetPixels(FileStream)"/> for the implementation.
+        /// used in the SPR files. See <see cref="SetPixels(FileStream)"/> for the implementation.
         /// </remarks>
-        public SpriteFrame(int size, int width, int height, ColorPalette palette)
+        public SpriteFrame(int sizeOfSPR, int width, int height, ColorPalette palette)
         {
-            this.Size = size;
+            this.SprSize = sizeOfSPR;
             this.Height = height;
             this.Width = width;
-            this.FrameData = new byte[height * width];
-            FrameData = Enumerable.Repeat<byte>(0xff, FrameData.Length).ToArray<byte>();
+
+            this.PixelSize = this.Height * this.Width;
+            this.FrameData = new byte[PixelSize];
+            FrameData = Enumerable.Repeat<byte>(0xff, PixelSize).ToArray();
             this.Palette = palette;
         }
         #endregion
@@ -103,8 +133,8 @@ namespace SkaaGameDataLib
         /// Fills this frame's <see cref="FrameData"/> byte array with the colors specifed in the <paramref name="stream"/> parameter.
         /// </summary>
         /// <param name="stream">
-        /// A <see cref="FileStream"/> of 8bpp-indexed SPR data. The object must either have its pixel data beginning at [0] 
-        /// or already have its <see cref="FileStream.Position"/> set past any header, like the SPR's size, width and height.
+        /// A <see cref="Stream"/> of 8bpp-indexed SPR data. The object must either have its pixel data beginning at [0] 
+        /// or already have its <see cref="Stream.Position"/> set past any header, like the SPR's size, width and height.
         /// </param>
         /// <remarks>
         /// Note: <see cref="FrameData"/> is pre-filled with 0xff bytes. See the class constructors for details. 
@@ -112,11 +142,11 @@ namespace SkaaGameDataLib
         /// signifies transparency. In pal_std.res, this is 0xf8-0xff; 0xff was chosen because it does not appear 
         /// to be used at all. 
         /// </remarks>
-        public void GetPixels(FileStream stream)
+        public void SetPixels(Stream stream)
         {
             //todo:documentation: Verify 0xff is/isn't used and update explanation.
 
-           int pixelsToSkip = 0;
+            int pixelsToSkip = 0;
             byte pixel;
 
             for (int y = 0; y < this.Height; ++y)
@@ -152,9 +182,10 @@ namespace SkaaGameDataLib
                     }
                 }//end inner for
             }//end outer for
-        }//end GetPixels()
+        }//end SetPixels()
         public Bitmap BuildBitmap32bpp()
         {
+            //this.FrameData = this.BuildBitmap8bppIndexed();
             int idx;
             Bitmap bmp = new Bitmap(this.Width, this.Height);
 
@@ -176,10 +207,10 @@ namespace SkaaGameDataLib
             return this.ImageBmp;
         }
 
-        public void VerifySize()
-        {
-
-        }
+        //public void VerifySize(byte[] data)
+        //{
+        //    //todo: check for garbage at the end
+        //}
 
         /// <summary>
         /// Supplies an SPR-formatted version of this frame.
@@ -188,17 +219,15 @@ namespace SkaaGameDataLib
         /// SPR format: int32 size, int16 width, int16 height, byte[] data.</returns>
         public byte[] BuildBitmap8bppIndexed()
         {
-            VerifySize();
-
             byte palColorByte;                        
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
-            int realOffset = 8;
-            byte[] indexedData = new byte[this.Size + 4];
+            int realOffset = 8; //since our array offset is unaware of the header
+            byte[] indexedData = new byte[this.PixelSize + 4];
 
             // todo: will have to recalculate size if pixels change because the number of
             //       ommitted transparent bytes will have changed too
-            byte[] size = BitConverter.GetBytes(this.Size);
+            //byte[] size = BitConverter.GetBytes(this.SprSize);
             byte[] width = BitConverter.GetBytes((short) this.Width);
             byte[] height = BitConverter.GetBytes((short) this.Height);
 
@@ -210,9 +239,9 @@ namespace SkaaGameDataLib
             *  ____________________________________________________________ 
             *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
             **************************************************************************/
-            int seek_pos = 0; //makes the below lines easier to follow and edit
-            Buffer.BlockCopy(size, 0, indexedData, seek_pos, size.Length);
-            seek_pos += size.Length;
+            int seek_pos = 4; //first four bytes are for SprSize, at the end of the function
+            //Buffer.BlockCopy(size, 0, indexedData, seek_pos, size.Length);
+            //seek_pos += size.Length;
             Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
             seek_pos += width.Length;
             Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
@@ -283,6 +312,14 @@ namespace SkaaGameDataLib
                     }
                 }//end inner for
             }//end outer for
+
+            //VerifySize(indexedData);
+
+            this.SprSize = realOffset - 4;
+            byte[] size = BitConverter.GetBytes(this.SprSize);
+            if (size.Length > 4) throw new Exception("SPR cannot contain more than 32-bits worth of data!");
+            Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
+            Array.Resize<byte>(ref indexedData, realOffset);
 
             return indexedData;
         }

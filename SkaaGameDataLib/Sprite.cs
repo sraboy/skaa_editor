@@ -96,7 +96,7 @@ namespace SkaaGameDataLib
             foreach (SpriteFrame sf in this.Frames)
             {
                 SPRArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.Size + 4); //add another four for ulong size
+                initSize += (sf.SprSize + 4); //add another four for ulong size
             }
 
             int lastSize = 0;

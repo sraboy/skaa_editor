@@ -73,7 +73,7 @@ namespace SkaaEditor
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
             this.cbEdit = new System.Windows.Forms.CheckBox();
-            this.skaaImageBox1 = new SkaaEditor.SkaaImageBox();
+            this.imageEditorBox = new SkaaEditor.SkaaImageBox();
             this.button1 = new System.Windows.Forms.Button();
             this.timelineControl1 = new Timeline.TimelineControl();
             this.allFramesTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -237,19 +237,19 @@ namespace SkaaEditor
             this.cbEdit.UseVisualStyleBackColor = true;
             this.cbEdit.CheckedChanged += new System.EventHandler(this.cbEdit_CheckedChanged);
             // 
-            // skaaImageBox1
+            // imageEditorBox
             // 
-            this.skaaImageBox1.ActiveColor = System.Drawing.Color.Empty;
-            this.skaaImageBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.imageEditorBox.ActiveColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.skaaImageBox1.Font = new System.Drawing.Font("Calibri", 12.75F);
-            this.skaaImageBox1.GridCellSize = 12;
-            this.skaaImageBox1.IsDrawing = false;
-            this.skaaImageBox1.Location = new System.Drawing.Point(198, 28);
-            this.skaaImageBox1.Name = "skaaImageBox1";
-            this.skaaImageBox1.Size = new System.Drawing.Size(689, 780);
-            this.skaaImageBox1.TabIndex = 8;
+            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
+            this.imageEditorBox.GridCellSize = 12;
+            this.imageEditorBox.IsDrawing = false;
+            this.imageEditorBox.Location = new System.Drawing.Point(198, 28);
+            this.imageEditorBox.Name = "imageEditorBox";
+            this.imageEditorBox.Size = new System.Drawing.Size(689, 780);
+            this.imageEditorBox.TabIndex = 8;
             // 
             // button1
             // 
@@ -292,7 +292,7 @@ namespace SkaaEditor
             this.Controls.Add(this.button1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.timelineControl1);
-            this.Controls.Add(this.skaaImageBox1);
+            this.Controls.Add(this.imageEditorBox);
             this.Controls.Add(this.cbEdit);
             this.Controls.Add(this.skaaColorChooser1);
             this.Controls.Add(this.mainMenuStrip);
@@ -329,7 +329,7 @@ namespace SkaaEditor
         private System.Windows.Forms.StatusStrip statusStrip1;
         private SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
         private System.Windows.Forms.CheckBox cbEdit;
-        private SkaaImageBox skaaImageBox1;
+        private SkaaImageBox imageEditorBox;
         private System.Windows.Forms.Button button1;
         private Timeline.TimelineControl timelineControl1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
