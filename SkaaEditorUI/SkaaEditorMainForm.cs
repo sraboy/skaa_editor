@@ -92,7 +92,7 @@ namespace SkaaEditor
 
             //disable export until a sprite is loaded
             if (this.skaaImageBox1.Image == null)
-                this.exportAsToolStripMenuItem.Enabled = false;
+                this.exportBmpToolStripMenuItem.Enabled = false;
 
             //set up initial UI
             this.SetupUI();
@@ -114,7 +114,7 @@ namespace SkaaEditor
         /// </summary>
         private void SetupUI()
         {
-            this.exportAsToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
+            this.exportBmpToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
             this.saveToolStripMenuItem.Enabled = (this.skaaImageBox1.Image == null) ? false : true;
             this.skaaImageBox1.Text = (this.skaaImageBox1.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
             this.showGridToolStripMenuItem.Checked = this.skaaImageBox1.ShowPixelGrid;
@@ -211,7 +211,7 @@ namespace SkaaEditor
                     activeSprite.Frames.Add(frame);
                 }
 
-                this.exportAsToolStripMenuItem.Enabled = true;
+                this.exportBmpToolStripMenuItem.Enabled = true;
                 spritestream.Close();
 
                 ActiveFrame = activeSprite.Frames[0];
@@ -219,20 +219,6 @@ namespace SkaaEditor
                 timelineControl1.ActiveSprite = this.activeSprite;
                 timelineControl1.ActiveFrame = this.activeFrame;
                 this.timelineControl1.SetMaxFrames(this.activeSprite.Frames.Count - 1); //-1 for 0-index
-            }
-        }
-        private void exportBmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog dlg = new SaveFileDialog();
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                //todo: Verify the user wants to save this
-                this.activeFrame.ImageBmp = (this.skaaImageBox1.Image as Bitmap);
-
-                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                this.skaaImageBox1.Image.Save(fs, ImageFormat.Bmp);
-                fs.Close();
             }
         }
         private void saveFrameToolStripMenuItem_Click(object sender, EventArgs e)
@@ -280,8 +266,78 @@ namespace SkaaEditor
             AboutForm abt = new AboutForm();
             abt.Show();
         }
+        private void currentFrameTobmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
 
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                //updates this frame's ImageBmp based on changes
+                this.activeFrame.ImageBmp = (this.skaaImageBox1.Image as Bitmap);
+                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
 
+                this.skaaImageBox1.Image.Save(fs, ImageFormat.Bmp);
+                fs.Close();
+            }
+        }
+        private void allFramesTobmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                //updates this frame's ImageBmp based on changes
+                this.activeFrame.ImageBmp = (this.skaaImageBox1.Image as Bitmap);
+
+                int spriteWidth = 0, spriteHeight = 0;
+                int totalFrames = this.activeSprite.Frames.Count;
+                double sqrt = 0.0;
+                int high = 0, low = 0;
+
+                sqrt = Math.Sqrt((double) totalFrames);
+                
+
+                if (totalFrames % 1 == 0) //totalFrames is a perfect square
+                {
+                    low = (int) sqrt;
+                    high = (int) sqrt;
+                }
+                else
+                {
+                    low = (int) Math.Floor(sqrt);
+                    high = (int) Math.Ceiling(sqrt);
+                }
+
+                foreach (SpriteFrame sp in this.activeSprite.Frames)
+                {
+                    if (sp.Width > spriteWidth)
+                        spriteWidth = sp.Width;
+                    if (sp.Height > spriteHeight)
+                        spriteHeight = sp.Height;
+                }
+
+                int exportWidth = high * spriteWidth, exportHeight = low * spriteHeight;
+                Bitmap bitmap = new Bitmap(exportWidth, exportHeight);
+
+                using (Graphics g = Graphics.FromImage(bitmap))
+                {
+                    int frameIndex = 0;
+
+                    for (int y = 0; y < exportHeight; y += spriteHeight)
+                    {
+                        for (int x = 0; x < exportWidth; x += spriteWidth)
+                        {
+                            g.DrawImage(this.activeSprite.Frames[frameIndex].BuildBitmap32bpp(), new Point(x, y));
+                            frameIndex++;
+                        }
+                    }
+                }
+
+                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
+                bitmap.Save(fs, ImageFormat.Bmp);
+                fs.Close();
+            }
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
