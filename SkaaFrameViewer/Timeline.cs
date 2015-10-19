@@ -121,22 +121,23 @@ namespace Timeline
             if (ActiveFrame == null)
                 return;
 
-            if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
-            {
-                _activeFrameIndex++;
-                _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
-                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-                //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
-            }
-            else if (!this.animationTimer.Enabled && e.Button == MouseButtons.Right)
-            {
-                _activeFrameIndex--;
-                _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
-                // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
+            //if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
+            //{
+            //    _activeFrameIndex++;
+            //    _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
+            //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+            //    //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
+            //}
+            //else if (!this.animationTimer.Enabled && e.Button == MouseButtons.Right)
+            //{
+            //    _activeFrameIndex--;
+            //    _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
+            //    // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
 
-                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-            }
-            else if (e.Button == MouseButtons.Middle)
+            //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+            //}
+            //else 
+            if (e.Button == MouseButtons.Middle)
             {
                 if (picBoxFrame.SizeMode == PictureBoxSizeMode.CenterImage)
                     picBoxFrame.SizeMode = PictureBoxSizeMode.Zoom;
