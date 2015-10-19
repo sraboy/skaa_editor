@@ -165,6 +165,16 @@ namespace SkaaEditor
         }
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /* To see SPR loading in action, view ResourceDb::init_imported() 
+            *  in ORESDB.cpp around line 72. The resName will be "sprite\\NAME.SPR".
+            * 
+            *  No need to follow its call into File::file_open() in OFILE.cpp at 
+            *  line 53. Though the files are well-structured, they are considered 
+            *  FLAT by 7KAA.
+            *
+            *  data_buf_size is set to the actual size of the entire file.
+            */
+
             if (this.skaaColorChooser1.Palette == null)
                 return;
 
@@ -180,10 +190,10 @@ namespace SkaaEditor
 
                 while (spritestream.Position < spritestream.Length)
                 {
-                    Byte[] frame_size_bytes = new Byte[8];
+                    byte[] frame_size_bytes = new byte[8];
 
                     spritestream.Read(frame_size_bytes, 0, 8);
-
+                    
                     int size = BitConverter.ToInt32(frame_size_bytes, 0);
                     short width = BitConverter.ToInt16(frame_size_bytes, 4);
                     short height = BitConverter.ToInt16(frame_size_bytes, 6);
@@ -239,9 +249,10 @@ namespace SkaaEditor
             {
                 try
                 {
-                    FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                    Byte[] save = ActiveFrame.BuildBitmap8bppIndexed();
-                    fs.Write(save, 0, Buffer.ByteLength(save));
+                    FileStream fs = new FileStream(dlg.FileName, FileMode.Create); //truncates the current file if it exists already
+
+                    byte[] spr_data = ActiveFrame.BuildBitmap8bppIndexed();
+                    fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     fs.Close();
                 }
                 catch (IOException ioex)
@@ -259,7 +270,7 @@ namespace SkaaEditor
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                Byte[] save = activeSprite.BuildSPR();
+                byte[] save = activeSprite.BuildSPR();
                 fs.Write(save, 0, Buffer.ByteLength(save));
                 fs.Close();
             }

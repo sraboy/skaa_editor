@@ -53,7 +53,7 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-        public Byte[] FrameData
+        public byte[] FrameData
         {
             get;
             set;
@@ -68,29 +68,56 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-        
-        public SpriteFrame()
-        {
 
-        }
+        #region Constructors
+        /// <summary>
+        /// Default constructor, required for some functions.
+        /// </summary>
+        internal SpriteFrame() { }
+
+        /// <summary>
+        /// Initializes the new sprite frame of the specified size pre-filled with 0xff (transparent byte).
+        /// </summary>
+        /// <param name="size">The size in bytes of the frame, including 2 bytes each for height and width</param>
+        /// <param name="width">The width of the frame in pixels</param>
+        /// <param name="height">The height of the frame in pixels</param>
+        /// <param name="palette">The ColorPalette to associate with this frame</param>
+        /// <remarks> 
+        /// We preset all bytes to 0xff, an unused palette entry that signifies a 
+        /// transparent pixel.The default is 0x00, but that's actually used for 
+        /// black.This is required due to the manual compression the 7KAA developers
+        /// used in the SPR files. See <see cref="GetPixels(FileStream)"/> for the implementation.
+        /// </remarks>
         public SpriteFrame(int size, int width, int height, ColorPalette palette)
         {
             this.Size = size;
             this.Height = height;
             this.Width = width;
-            this.FrameData = new Byte[height * width];
+            this.FrameData = new byte[height * width];
             FrameData = Enumerable.Repeat<byte>(0xff, FrameData.Length).ToArray<byte>();
             this.Palette = palette;
         }
+        #endregion
 
+        /// <summary>
+        /// Fills this frame's <see cref="FrameData"/> byte array with the colors specifed in the <paramref name="stream"/> parameter.
+        /// </summary>
+        /// <param name="stream">
+        /// A <see cref="FileStream"/> of 8bpp-indexed SPR data. The object must either have its pixel data beginning at [0] 
+        /// or already have its <see cref="FileStream.Position"/> set past any header, like the SPR's size, width and height.
+        /// </param>
+        /// <remarks>
+        /// Note: <see cref="FrameData"/> is pre-filled with 0xff bytes. See the class constructors for details. 
+        /// Simply put, since 0x00 is actually used for black, we need to use one of the palette entries that 
+        /// signifies transparency. In pal_std.res, this is 0xf8-0xff; 0xff was chosen because it does not appear 
+        /// to be used at all. 
+        /// </remarks>
         public void GetPixels(FileStream stream)
         {
-            //todo: find the best way to signify transparent pixels
-            //since 0x00 is actually used for black, we need to use one of the 
-            //unused palette entries 0xf8-0xff
+            //todo:documentation: Verify 0xff is/isn't used and update explanation.
 
-            int pixelsToSkip = 0;
-            Byte pixel;
+           int pixelsToSkip = 0;
+            byte pixel;
 
             for (int y = 0; y < this.Height; ++y)
             {
@@ -154,25 +181,42 @@ namespace SkaaGameDataLib
 
         }
 
-        public Byte[] BuildBitmap8bppIndexed()
+        /// <summary>
+        /// Supplies an SPR-formatted version of this frame.
+        /// </summary>
+        /// <returns>Returns a byte array containing the frame data in 7KAA's 
+        /// SPR format: int32 size, int16 width, int16 height, byte[] data.</returns>
+        public byte[] BuildBitmap8bppIndexed()
         {
             VerifySize();
 
-            Byte palColorByte;                        
+            byte palColorByte;                        
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
             int realOffset = 8;
-            Byte[] indexedData = new Byte[this.Size + 4];
+            byte[] indexedData = new byte[this.Size + 4];
 
             // todo: will have to recalculate size if pixels change because the number of
             //       ommitted transparent bytes will have changed too
-            Byte[] size = BitConverter.GetBytes(this.Size);
-            Byte[] width = BitConverter.GetBytes((short) this.Width);
-            Byte[] height = BitConverter.GetBytes((short) this.Height);
+            byte[] size = BitConverter.GetBytes(this.Size);
+            byte[] width = BitConverter.GetBytes((short) this.Width);
+            byte[] height = BitConverter.GetBytes((short) this.Height);
 
-            Buffer.BlockCopy(size, 0, indexedData, 0, Buffer.ByteLength(size));
-            Buffer.BlockCopy(width, 0, indexedData, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
-            Buffer.BlockCopy(height, 0, indexedData, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
+            /**************************************************************************
+            *  BitConverter is required, rather than Convert.ToByte(), so we can 
+            *  get the full 16- or 32-bit representations of the values. This is also  
+            *  why Height and Width are both cast to short, to ensure we get a 16-bit
+            *  representation of each value to match the binary's file format of:
+            *  ____________________________________________________________ 
+            *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
+            **************************************************************************/
+            int seek_pos = 0; //makes the below lines easier to follow and edit
+            Buffer.BlockCopy(size, 0, indexedData, seek_pos, size.Length);
+            seek_pos += size.Length;
+            Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
+            seek_pos += width.Length;
+            Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
+            seek_pos += height.Length;
 
             List<Color> Palette = new List<Color>();
             foreach (Color c in this.Palette.Entries)
