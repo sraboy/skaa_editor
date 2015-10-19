@@ -13,7 +13,7 @@ The "Edit Mode" checkbox enables editing. By default, left-click is "erase" and 
 Use the tracking bar on the top-right to navigate frames. This is how you change the "active frame," the one which you're editing. Double-click on the mini-viewer to animate by cycing through all the frames in the sprite; double-click again to stop. Middle-clicking zooms in.
 
 ## getting started
-You may download the current ALPHA release [https://github.com/sraboy/skaa_editor/blob/master/_other/SkaaEditor_x86_201510181815HST.zip](here). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
+You may download the current ALPHA release [here](https://github.com/sraboy/skaa_editor/blob/master/_other/SkaaEditor_x86_201510181815HST.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
 
 ## the future
 Eventually, I plan to merge some of my other work on 7KAA's data files into this, as a monolithic trainer/game-editor. I'd also like to port the map generation code and add the ability to create custom maps and custom scenarios.
@@ -24,7 +24,7 @@ Fork the code and take a whack. Most of the code is self-explanatory and quite a
 On my lazier coding days, I go through and properly document/comment the code.
 
 ## credits
-Obviously, this project wouldn't be possible without [http://www.enlight.com/](Enlight Software)'s release of the game's source code -- not to mention Trevor Chan's brilliant ideas for this game to begin with. My personal fork, with Visual Studio project/solution files, can be found [https://github.com/sraboy/7kaa](here). 
+Obviously, this project wouldn't be possible without [Enlight Software](http://www.enlight.com/)'s release of the game's source code -- not to mention Trevor Chan's brilliant ideas for this game to begin with. My personal fork, with Visual Studio project/solution files, can be found [here](https://github.com/sraboy/7kaa). 
 
 Thanks to everyong at http://http://7kfans.com/, the new home of Seven Kingdoms and its open source project, for keeping 7KAA awesome and up-to-date. I'd also like to give a shoutout to [http://www.cyotek.com/](Cyotek)'s awesome [ImageBox control](https://github.com/cyotek/Cyotek.Windows.Forms.ImageBox) which saved me quite a bit of pain and could very well have prevented me from just dumping the project from day one.
 
