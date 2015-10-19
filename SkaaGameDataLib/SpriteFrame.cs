@@ -153,7 +153,11 @@ namespace SkaaGameDataLib
         {
 
         }
-
+        /// <summary>
+        /// Supplies an SPR-formatted version of this frame.
+        /// </summary>
+        /// <returns>Returns a byte array containing the frame data in 7KAA's 
+        /// SPR format: int32 size, int16 width, int16 height, byte[] data.</returns>
         public byte[] BuildBitmap8bppIndexed()
         {
             VerifySize();
@@ -170,9 +174,21 @@ namespace SkaaGameDataLib
             byte[] width = BitConverter.GetBytes((short) this.Width);
             byte[] height = BitConverter.GetBytes((short) this.Height);
 
-            Buffer.BlockCopy(size, 0, indexedData, 0, Buffer.ByteLength(size));
-            Buffer.BlockCopy(width, 0, indexedData, 0 + Buffer.ByteLength(size), Buffer.ByteLength(width));
-            Buffer.BlockCopy(height, 0, indexedData, 0 + Buffer.ByteLength(size) + Buffer.ByteLength(width), Buffer.ByteLength(width));
+            /**************************************************************************
+            *  BitConverter is required, rather than Convert.ToByte(), so we can 
+            *  get the full 16- or 32-bit representations of the values. This is also  
+            *  why Height and Width are both cast to short, to ensure we get a 16-bit
+            *  representation of each value to match the binary's file format of:
+            *  ____________________________________________________________ 
+            *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
+            **************************************************************************/
+            int seek_pos = 0; //makes the below lines easier to follow and edit
+            Buffer.BlockCopy(size, 0, indexedData, seek_pos, size.Length);
+            seek_pos += size.Length;
+            Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
+            seek_pos += width.Length;
+            Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
+            seek_pos += height.Length;
 
             List<Color> Palette = new List<Color>();
             foreach (Color c in this.Palette.Entries)

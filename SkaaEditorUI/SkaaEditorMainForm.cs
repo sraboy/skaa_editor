@@ -165,6 +165,16 @@ namespace SkaaEditor
         }
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /* To see SPR loading in action, view ResourceDb::init_imported() 
+            *  in ORESDB.cpp around line 72. The resName will be "sprite\\NAME.SPR".
+            * 
+            *  No need to follow its call into File::file_open() in OFILE.cpp at 
+            *  line 53. Though the files are well-structured, they are considered 
+            *  FLAT by 7KAA.
+            *
+            *  data_buf_size is set to the actual size of the entire file.
+            */
+
             if (this.skaaColorChooser1.Palette == null)
                 return;
 
@@ -183,7 +193,7 @@ namespace SkaaEditor
                     byte[] frame_size_bytes = new byte[8];
 
                     spritestream.Read(frame_size_bytes, 0, 8);
-
+                    
                     int size = BitConverter.ToInt32(frame_size_bytes, 0);
                     short width = BitConverter.ToInt16(frame_size_bytes, 4);
                     short height = BitConverter.ToInt16(frame_size_bytes, 6);
@@ -239,33 +249,10 @@ namespace SkaaEditor
             {
                 try
                 {
-                    FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                    byte[] raw_pixels = ActiveFrame.BuildBitmap8bppIndexed();
+                    FileStream fs = new FileStream(dlg.FileName, FileMode.Create); //truncates the current file if it exists already
 
-                    /*
-                     * BitConverter is required (rather than Convert.ToByte()) so we can get
-                     * the full 16- or 32-bit representation. This is also why ActiveFrame's
-                     * Height and Width are both cast to short, to ensure we get a 16-bit
-                     * representation to match the binary's file format of:
-                     * | 4 byte Size | 2 byte Height | 2 byte Width |
-                     */
-                    byte[] size = BitConverter.GetBytes(ActiveFrame.Size);
-                    byte[] height = BitConverter.GetBytes((short) ActiveFrame.Height);
-                    byte[] width = BitConverter.GetBytes((short) ActiveFrame.Width);
-                    byte[] save = new byte[size.Length + height.Length + width.Length + raw_pixels.Length];
-
-                    int seek_pos = 0; //makes the below lines easier to follow and edit
-
-                    Buffer.BlockCopy(size, 0, save, seek_pos, size.Length);
-                    seek_pos += size.Length;
-                    Buffer.BlockCopy(width, 0, save, seek_pos, width.Length);
-                    seek_pos += width.Length;
-                    Buffer.BlockCopy(height, 0, save, seek_pos, height.Length);
-                    seek_pos += height.Length;
-                    Buffer.BlockCopy(raw_pixels, 0, save, seek_pos, raw_pixels.Length);
-                    seek_pos += raw_pixels.Length;
-
-                    fs.Write(save, 0, Buffer.ByteLength(save));
+                    byte[] spr_data = ActiveFrame.BuildBitmap8bppIndexed();
+                    fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     fs.Close();
                 }
                 catch (IOException ioex)
