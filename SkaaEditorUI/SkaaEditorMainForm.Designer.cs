@@ -262,6 +262,7 @@ namespace SkaaEditor
             // 
             this.timelineControl1.ActiveFrame = null;
             this.timelineControl1.ActiveSprite = null;
+            this.timelineControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.timelineControl1.Location = new System.Drawing.Point(888, 27);
             this.timelineControl1.Name = "timelineControl1";
             this.timelineControl1.Size = new System.Drawing.Size(129, 172);
