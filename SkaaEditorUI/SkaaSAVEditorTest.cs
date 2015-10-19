@@ -50,6 +50,8 @@ namespace SkaaEditor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                //follow GameFile::read_file_2() in OGFILE2.cpp @ line 532
+
                 /* BOOKMARK = 4096
                  * + 101 = 4197
                  * -- read file size
@@ -66,28 +68,42 @@ namespace SkaaEditor
                  */
 
                 FileStream savfile_stream = File.OpenRead(dlg.FileName);
-
-                byte[] header = new byte[304];
-                byte[] duo = new byte[2];       //for getting sizes and bookmarks
-                byte[] config = new byte[144];
+// Maintained the Byte[] config line from the old branch.
+// hadn't yet merged that into master.
+// <<<<<<< HEAD
+                Byte[] header = new Byte[302]; 
+                Byte[] duo = new Byte[2];       //for getting sizes and bookmarks
+                Byte[] config = new Byte[144];
+                Byte[] game_dot_read_file = new Byte[2060];
+// =======
+                // byte[] header = new byte[304];
+                // byte[] duo = new byte[2];       //for getting sizes and bookmarks
+                // byte[] config = new byte[144];
+// >>>>>>> master
                 //Byte[] sys = new Byte[];
                 //Byte[] info = new Byte[];
                 //Byte[] power = new Byte[];
                 //Byte[] weather = new Byte[];
 
+                // *** Read header ***
                 savfile_stream.Read(duo, 0, 2);  //read header size        (0x012e = 302)
                 savfile_stream.Read(header, 0, 302);
 
+                // *** Read version ***
                 savfile_stream.Read(duo, 0, 2);  //read game version       (0x00d4 = 212)
                 game.Version = BitConverter.ToInt16(duo, 0);
-                savfile_stream.Read(duo, 0, 2);  //read bookmark           (0x1065 = 4197)
+                savfile_stream.Read(duo, 0, 2);  //read bookmark+101           (0x1065 = 4197)
 
-                //savfile_stream.Read();    //read color remap table
-                savfile_stream.Read(duo, 0, 2);  //read bookmark           (0x1066 = 4198)
+                // *** Read GameFile ***
+                savfile_stream.Read(duo, 0, 2);  //GameFile object's size      (0x80c0 = 2060d)
+                savfile_stream.Read(game_dot_read_file, 0, BitConverter.ToInt16(duo, 0));
+                savfile_stream.Read(duo, 0, 2);  //read bookmark+102           (0x1066 = 4198)
 
-                savfile_stream.Read(duo, 0, 2);  //read config record size (0x0090 = 144)
-                savfile_stream.Read(config, 0, 144);
+                // *** Read config ***
+                savfile_stream.Read(duo, 0, 2);  //read config recordSize  (0x0090 = 144)
+                savfile_stream.Read(config, 0, BitConverter.ToInt16(duo, 0));
                 savfile_stream.Read(duo, 0, 2);  //read bookmark           (0x1067 = 4199)
+
 
                 savfile_stream.Close();
 
