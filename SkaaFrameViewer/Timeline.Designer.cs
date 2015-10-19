@@ -88,7 +88,7 @@ namespace Timeline
             this.Controls.Add(this.frameSlider);
             this.Controls.Add(this.picBoxFrame);
             this.Name = "TimelineControl";
-            this.Size = new System.Drawing.Size(129, 172);
+            this.Size = new System.Drawing.Size(128, 172);
             ((System.ComponentModel.ISupportInitialize)(this.picBoxFrame)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.frameSlider)).EndInit();
             this.ResumeLayout(false);
