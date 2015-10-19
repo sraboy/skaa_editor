@@ -118,17 +118,17 @@ namespace Timeline
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
         {
-            if (ActiveFrame == null || this.animationTimer.Enabled)
+            if (ActiveFrame == null)
                 return;
 
-            if (e.Button == MouseButtons.Left)
+            if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
             {
                 _activeFrameIndex++;
                 _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
                 this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
                 //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
             }
-            else if (e.Button == MouseButtons.Right)
+            else if (!this.animationTimer.Enabled && e.Button == MouseButtons.Right)
             {
                 _activeFrameIndex--;
                 _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
