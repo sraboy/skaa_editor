@@ -37,6 +37,7 @@ using System.Data;
 
 namespace SkaaGameDataLib
 {
+    [Serializable]
     public class SpriteFrame
     {
         private int _sprSize, _pixelSize, _height, _width;

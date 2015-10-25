@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
+    [Serializable]
     public class GameSet
     {
+        [Serializable]
         private struct ResIndex
         {
             //Lifted from ORESX.h, except string vs char[9]
@@ -41,7 +43,7 @@ namespace SkaaGameDataLib
         }
 
         //dBase III header = 03 62 03 12 58 23 00 00 61 01 29 (??)
-
+        public GameSet() { }
         public GameSet(byte[] setData = null, string path = null)
         {
             this._databaseRows = new List<ResIndex>(_recordCount);

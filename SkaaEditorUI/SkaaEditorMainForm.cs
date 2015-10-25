@@ -33,6 +33,7 @@ using SkaaGameDataLib;
 using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Data;
+using System.IO.Compression;
 
 namespace SkaaEditor
 {
@@ -277,7 +278,6 @@ namespace SkaaEditor
                 fs.Close();
             }
         }
-
         private void allFramesTobmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog();
@@ -337,12 +337,25 @@ namespace SkaaEditor
                 fs.Close();
             }
         }
+        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.DefaultExt = ".skp";
+            dlg.FileName = "SKAA Editor Project.skp";
+            
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                MemoryStream ms = this._activeProject.SaveProject() as MemoryStream;
+                var array = ms.ToArray();
+
+                var fileStream = new FileStream(dlg.FileName, FileMode.Create);
+                fileStream.Write(array, 0, array.Length);
+            }
+        }
         #endregion
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
-
             SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
             savEditor.Show();
         }

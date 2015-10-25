@@ -8,13 +8,15 @@ using System.Xml;
 using System.Xml.Serialization;
 using SkaaGameDataLib;
 using System.IO.Compression;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace SkaaEditor
 {
     [Serializable]
     public class Project
     {
-        
+        [field: NonSerialized]
         public event EventHandler ActiveFrameChanged;
         protected virtual void OnActiveFrameChanged(EventArgs e)
         {
@@ -79,24 +81,58 @@ namespace SkaaEditor
 
         }
 
-        private string Serialize()
+        public Stream SaveProject()
         {
-            XmlSerializer xs = new XmlSerializer(typeof(Project));
-            using (StringWriter sw = new StringWriter())
-            {
-                using (XmlWriter xw = XmlWriter.Create(sw))
+            return Serialization.Serialize(this);//ZipProject(this);
+        }
+    }
+
+    public static class Serialization
+    {
+        public static ZipArchive ZipProject(object o)
+        {
+            ZipArchive zip;
+
+            using (FileStream fs = new FileStream(@"E:\test.skp", FileMode.Create))
+            { 
+                using (MemoryStream ms = Serialize(o) as MemoryStream)
                 {
-                    xs.Serialize(xw, this);
-                    return sw.ToString();
+                    //fs.Write(ms.ToArray(), 0, (int) ms.Length);
+                    zip = new ZipArchive(fs, ZipArchiveMode.Update);
+                    //{
+                    ZipArchiveEntry entry = zip.CreateEntry("project");
+                    
+                    //}
                 }
             }
+            //ZipArchive zip = new ZipArchive(Serialization.Serialize(o), ZipArchiveMode.Update);
+            return zip;
         }
 
-        public ZipArchive SaveProject()
+        internal static Stream Serialize(object o)
         {
-            ZipArchive zip = new ZipArchive(new MemoryStream());
+            MemoryStream ms = new MemoryStream();
+            IFormatter fm = new BinaryFormatter();
+            fm.Serialize(ms, o);
+            return ms;
+          
 
-            return zip;
+            //using (MemoryStream ms = new MemoryStream())
+            //{
+            //    new BinaryFormatter().Serialize(ms, this);
+            //    Convert.ToBase64String(ms.ToArray());
+            //    return ms;
+            //}
+
+            //XmlSerializer xs = new XmlSerializer(typeof(Project));
+            //using (MemoryStream ms = new MemoryStream())
+            //{
+            //    using (XmlWriter xw = XmlWriter.Create(ms))
+            //    {
+            //        xs.Serialize(xw, this);
+            //        return ms;
+            //    }
+            //}
         }
     }
 }

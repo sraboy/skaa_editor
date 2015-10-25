@@ -68,6 +68,7 @@ namespace SkaaEditor
             this.allFramesTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,7 +79,7 @@ namespace SkaaEditor
             this.imageEditorBox = new SkaaEditor.SkaaImageBox();
             this.button1 = new System.Windows.Forms.Button();
             this.timelineControl1 = new Timeline.TimelineControl();
-            this.loadSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,6 +101,7 @@ namespace SkaaEditor
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.saveProjectToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.exportBmpToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -189,9 +191,16 @@ namespace SkaaEditor
             // loadPaletteToolStripMenuItem
             // 
             this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
-            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.loadPaletteToolStripMenuItem.Text = "Load Palette";
             this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
+            // 
+            // loadSetToolStripMenuItem
+            // 
+            this.loadSetToolStripMenuItem.Name = "loadSetToolStripMenuItem";
+            this.loadSetToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.loadSetToolStripMenuItem.Text = "Load Set";
+            this.loadSetToolStripMenuItem.Click += new System.EventHandler(this.loadSetToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -286,12 +295,12 @@ namespace SkaaEditor
             this.timelineControl1.Size = new System.Drawing.Size(129, 172);
             this.timelineControl1.TabIndex = 12;
             // 
-            // loadSetToolStripMenuItem
+            // saveProjectToolStripMenuItem
             // 
-            this.loadSetToolStripMenuItem.Name = "loadSetToolStripMenuItem";
-            this.loadSetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadSetToolStripMenuItem.Text = "Load Set";
-            this.loadSetToolStripMenuItem.Click += new System.EventHandler(this.loadSetToolStripMenuItem_Click);
+            this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.saveProjectToolStripMenuItem.Text = "Save Project";
+            this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
             // SkaaEditorMainForm
             // 
@@ -344,5 +353,6 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem allFramesTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
     }
 }

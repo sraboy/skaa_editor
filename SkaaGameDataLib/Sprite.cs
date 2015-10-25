@@ -34,10 +34,12 @@ using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
+    [Serializable]
     public class Sprite
     {
+        [NonSerialized]
         private ColorPalette _pallet;
-
+        
         public ColorPalette Palette
         {
             get
@@ -58,6 +60,8 @@ namespace SkaaGameDataLib
             get;
             set;
         }
+
+        public Sprite() { }
         public Sprite(ColorPalette pal)
         {
             this.Palette = pal;
