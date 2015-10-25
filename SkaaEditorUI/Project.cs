@@ -37,7 +37,7 @@ namespace SkaaEditor
         private SpriteFrame _activeFrame;
         private GameSet _activeGameSet;
         private ColorPalette _palette;
-        private DataSet _spriteTables;
+        private DataSet _spriteTables = new DataSet("sprites");
 
         public Sprite ActiveSprite
         {
@@ -94,47 +94,43 @@ namespace SkaaEditor
                     this._palette = value;
             }
         }
+
         public Project(string path)
         {
             this.WorkingFolder = path;
             LoadGameSet(WorkingFolder);
             LoadPalette(WorkingFolder);
-
-            List<DataTable> tables = BreakSFRAME();
-            foreach (DataTable dt in tables)
-                _spriteTables.Tables.Add(dt);
+            this._spriteTables = BreakSFRAME();   
         }
 
-        public List<DataTable> BreakSFRAME()
+        public DataSet BreakSFRAME()
         {
             DataTable sframeTable = this.ActiveGameSet.Databases.Tables["SFRAME"];
-            string prevName = null;
             List<string> spriteNames = new List<string>();
-            List<DataTable> tables = new  List<DataTable>();
+            DataSet allSpritesSet = new DataSet("sprites");
 
-            foreach(DataRow r in sframeTable.Rows)
+            foreach (DataRow r in sframeTable.Rows)
             {
-                if(tables.Find(t => t.TableName == r[0].ToString()) != null)
+                DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
+
+                if (curTable != null)//.Find(t => t.TableName == r[0].ToString()) != null)
                 {
-                    DataTable tbl = tables.Find(t => t.TableName == r[0].ToString());
+                    DataTable tbl = curTable;
                     tbl.ImportRow(r);
                 }
                 else
                 {
                     DataTable tbl = sframeTable.Clone();
                     tbl.TableName = r[0].ToString();
-                    spriteNames.Add(r[0].ToString());                 
+                    spriteNames.Add(r[0].ToString());
                     tbl.ImportRow(r);
-                    tables.Add(tbl);
+                    allSpritesSet.Tables.Add(tbl);
                 }
             }
 
-            return tables;       
+            return allSpritesSet;
         }
-        //private DataTable BuildTable(string name, DataTable template)
-        //{
-            
-        //}
+
         public void LoadGameSet(string filepath)
         {
             byte[] setData;
