@@ -55,16 +55,13 @@ namespace SkaaEditor
 
         public SkaaEditorMainForm()
         {
-            this._activeProject = new Project();
+            string workingFolder = @"E:\Programming\GitHubVisualStudio\skaa_editor\_other\working";
+            this._activeProject = new Project(workingFolder);//, this.skaaColorChooser1.LoadPalette());
             this._activeProject.ActiveFrameChanged += _activeProject_ActiveFrameChanged;
+            
 
             InitializeComponent();
             this.SetupUI(); //set up initial UI
-        }
-
-        private void _activeProject_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            UpdateImageEditorBoxImage();
         }
 
         /// <summary>
@@ -72,17 +69,20 @@ namespace SkaaEditor
         /// </summary>
         private void SetupUI()
         {
+            this.skaaColorChooser1.Palette = this._activeProject.Palette;
             //disallow opening sprites until a palette is loaded
             this.openToolStripMenuItem.Enabled = (this.skaaColorChooser1.Palette == null) ? false : true;
             //disable export until a sprite is loaded
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //enable loading a set. once a set is loaded, don't allow loading a new one
-            //todo: the GameSet should go with a SkaaEditor project
             this.loadSetToolStripMenuItem.Enabled = (this._activeProject.ActiveGameSet == null) ? true : false;
+            //enable loading a palette. once a palette is loaded, don't allow loading a new one
+            this.loadPaletteToolStripMenuItem.Enabled = (this._activeProject.Palette == null) ? true : false;
             //disable saving until a sprite is loaded
             this.saveToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //some help text until a sprite is loaded
-            this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
+            //this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
+            this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "File >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
             //disable the slider until a sprite is loaded
             this.timelineControl1.SetSliderEnable((this.imageEditorBox.Image == null) ? false : true);
 
@@ -107,6 +107,7 @@ namespace SkaaEditor
             this.imageEditorBox.Image = this._activeProject.ActiveFrame.ImageBmp;
         }
         private void skaaEditorMainForm_Load(object sender, EventArgs e) { }
+
         private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
             this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
@@ -144,6 +145,11 @@ namespace SkaaEditor
         {
             this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
         }
+        private void _activeProject_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            UpdateImageEditorBoxImage();
+        }
+
         private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.imageEditorBox.ShowPixelGrid = !this.imageEditorBox.ShowPixelGrid;
@@ -157,7 +163,7 @@ namespace SkaaEditor
             dlg.SupportMultiDottedExtensions = true;
 
             if (dlg.ShowDialog() == DialogResult.OK)
-                this._activeProject.ActiveSprite = new Sprite(this.skaaColorChooser1.LoadPalette(dlg.FileName));
+                this._activeProject.LoadPalette(Path.GetDirectoryName(dlg.FileName));// this.skaaColorChooser1.LoadPalette(dlg.FileName));// .ActiveSprite = new Sprite();
 
             this.openToolStripMenuItem.Enabled = true;
         }
@@ -222,6 +228,37 @@ namespace SkaaEditor
         {
             AboutForm abt = new AboutForm();
             abt.Show();
+        }
+        private void loadSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /* Load the standard set, std.set, and open the SFRAME database. The SFRAME DB is 
+             * at offset 0x1FA55-0x7afce. Fittingly, we're using a 15yr old database engine to
+             * get at our >15yr old data.
+             * 
+             * Courtesy to multiple StackOverlow threads for clearing up some issues for me here.
+            */
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.FileName = "std.set";
+            dlg.DefaultExt = ".set";
+            dlg.SupportMultiDottedExtensions = true;
+
+            byte[] setData;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                string stdset = dlg.FileName;
+                string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
+                string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                    path + ";Extended Properties=dBase III";
+
+                FileStream fs = new FileStream(dlg.FileName, FileMode.Open);
+
+                setData = new byte[fs.Length];
+                fs.Read(setData, 0, setData.Length);
+
+                this._activeProject.ActiveGameSet = new GameSet(setData, path);
+            }
         }
 
         #region Saving Events
@@ -360,36 +397,5 @@ namespace SkaaEditor
             savEditor.Show();
         }
 
-        private void loadSetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            /* Load the standard set, std.set, and open the SFRAME database. The SFRAME DB is 
-             * at offset 0x1FA55-0x7afce. Fittingly, we're using a 15yr old database engine to
-             * get at our >15yr old data.
-             * 
-             * Courtesy to multiple StackOverlow threads for clearing up some issues for me here.
-            */
-
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.FileName = "std.set";
-            dlg.DefaultExt = ".set";
-            dlg.SupportMultiDottedExtensions = true;
-
-            byte[] setData;
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                string stdset = dlg.FileName;
-                string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
-                string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + 
-                    path + ";Extended Properties=dBase III";
-
-                FileStream fs = new FileStream(dlg.FileName, FileMode.Open);
-
-                setData = new byte[fs.Length];
-                fs.Read(setData, 0, setData.Length);
-
-                this._activeProject.ActiveGameSet = new GameSet(setData, path);
-            }
-        }
     }
 }

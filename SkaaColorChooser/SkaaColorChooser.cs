@@ -40,11 +40,24 @@ namespace SkaaColorChooser
     public partial class SkaaColorChooser : UserControl
     {
         private Color _activeColor;// = Color.Black; //todo: have to make the button active
+        private ColorPalette _palette;
+
+        
 
         public ColorPalette Palette
         {
-            get;
-            set;
+            get
+            {
+                return this._palette;
+            }
+            set
+            {
+                if (this._palette != value)
+                { 
+                    this._palette = value;
+                    OnPaletteChanged(new EventArgs());
+                }
+            }
         }
         public Color ActiveColor
         {
@@ -74,6 +87,16 @@ namespace SkaaColorChooser
                 handler(this, e);
             }
         }
+        public event EventHandler PaletteChanged;
+        public virtual void OnPaletteChanged(EventArgs e)
+        {
+            EventHandler handler = PaletteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
 
         private Button ActiveButton;
 
@@ -84,6 +107,8 @@ namespace SkaaColorChooser
             InitializeComponent();
 
             ColorBoxes = new List<Button>();
+
+            this.PaletteChanged += SkaaColorChooser_PaletteChanged;
 
             #region Dynamic Button Creation
             //I've gone math retarded and can't get the locations right
@@ -129,31 +154,36 @@ namespace SkaaColorChooser
                 btn.Enabled = false;
         }
 
-        public ColorPalette LoadPalette(String Path)
+        private void SkaaColorChooser_PaletteChanged(object sender, EventArgs e)
         {
-            ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
-
-            FileStream fs = File.OpenRead(Path);
-            fs.Seek(8, SeekOrigin.Begin);
-
-            for (int i = 0; i < 256; i++)
-            {
-                int r = fs.ReadByte();
-                int g = fs.ReadByte();
-                int b = fs.ReadByte();
-
-                if(i < 0xf9) //0xf9 is the lowest transparent color byte
-                    pal.Entries[i] = Color.FromArgb(255, r, g, b);
-                else //0xf9 - 0xff
-                    pal.Entries[i] = Color.FromArgb(0, r, g, b);
-            }
-
-            this.Palette = pal;
-
             SetupColorBoxes();
-
-            return this.Palette;
         }
+
+        //public ColorPalette LoadPalette(String Path)
+        //{
+        //    ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
+
+        //    FileStream fs = File.OpenRead(Path);
+        //    fs.Seek(8, SeekOrigin.Begin);
+
+        //    for (int i = 0; i < 256; i++)
+        //    {
+        //        int r = fs.ReadByte();
+        //        int g = fs.ReadByte();
+        //        int b = fs.ReadByte();
+
+        //        if(i < 0xf9) //0xf9 is the lowest transparent color byte
+        //            pal.Entries[i] = Color.FromArgb(255, r, g, b);
+        //        else //0xf9 - 0xff
+        //            pal.Entries[i] = Color.FromArgb(0, r, g, b);
+        //    }
+
+        //    this.Palette = pal;
+
+        //    SetupColorBoxes();
+
+        //    return this.Palette;
+        //}
 
         private void SetupColorBoxes()
         {

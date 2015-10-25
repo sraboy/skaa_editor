@@ -41,7 +41,6 @@ namespace SkaaGameDataLib
     public class SpriteFrame
     {
         private int _sprSize, _pixelSize, _height, _width;
-        public DataTable GameSetData;
 
         /// <summary>
         /// The size, in pixels, of the frame. Simple height * width.

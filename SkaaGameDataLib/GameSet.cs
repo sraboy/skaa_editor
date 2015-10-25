@@ -84,7 +84,6 @@ namespace SkaaGameDataLib
                 }//end while
             }//end using MemoryStream
         }//end ReadRawData()
-
         public void BuildDataSet(byte[] setData)
         {
             if (setData == null)

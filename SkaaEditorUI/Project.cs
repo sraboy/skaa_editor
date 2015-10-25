@@ -10,6 +10,9 @@ using SkaaGameDataLib;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using System.Data;
+using System.Drawing.Imaging;
+using System.Drawing;
 
 namespace SkaaEditor
 {
@@ -28,9 +31,13 @@ namespace SkaaEditor
             }
         }
 
+        private string WorkingFolder;
+
         private Sprite _activeSprite;
         private SpriteFrame _activeFrame;
         private GameSet _activeGameSet;
+        private ColorPalette _palette;
+        private DataSet _spriteTables;
 
         public Sprite ActiveSprite
         {
@@ -75,12 +82,103 @@ namespace SkaaEditor
                 }
             }
         }
-
-        public Project()
+        public ColorPalette Palette
         {
+            get
+            {
+                return this._palette;
+            }
+            set
+            {
+                if (this._palette != value)
+                    this._palette = value;
+            }
+        }
+        public Project(string path)
+        {
+            this.WorkingFolder = path;
+            LoadGameSet(WorkingFolder);
+            LoadPalette(WorkingFolder);
 
+            List<DataTable> tables = BreakSFRAME();
+            foreach (DataTable dt in tables)
+                _spriteTables.Tables.Add(dt);
         }
 
+        public List<DataTable> BreakSFRAME()
+        {
+            DataTable sframeTable = this.ActiveGameSet.Databases.Tables["SFRAME"];
+            string prevName = null;
+            List<string> spriteNames = new List<string>();
+            List<DataTable> tables = new  List<DataTable>();
+
+            foreach(DataRow r in sframeTable.Rows)
+            {
+                if(tables.Find(t => t.TableName == r[0].ToString()) != null)
+                {
+                    DataTable tbl = tables.Find(t => t.TableName == r[0].ToString());
+                    tbl.ImportRow(r);
+                }
+                else
+                {
+                    DataTable tbl = sframeTable.Clone();
+                    tbl.TableName = r[0].ToString();
+                    spriteNames.Add(r[0].ToString());                 
+                    tbl.ImportRow(r);
+                    tables.Add(tbl);
+                }
+            }
+
+            return tables;       
+        }
+        //private DataTable BuildTable(string name, DataTable template)
+        //{
+            
+        //}
+        public void LoadGameSet(string filepath)
+        {
+            byte[] setData;
+            
+            //string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
+            string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                filepath + ";Extended Properties=dBase III";
+
+            FileStream fs = new FileStream(filepath + "\\std.set", FileMode.Open);
+
+            setData = new byte[fs.Length];
+            fs.Read(setData, 0, setData.Length);
+
+            this.ActiveGameSet = new GameSet(setData, filepath);
+        }
+        public ColorPalette LoadPalette(String Path)
+        {
+            ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
+
+            FileStream fs = File.OpenRead(Path + "\\pal_std.res");
+            fs.Seek(8, SeekOrigin.Begin);
+
+            for (int i = 0; i < 256; i++)
+            {
+                int r = fs.ReadByte();
+                int g = fs.ReadByte();
+                int b = fs.ReadByte();
+
+                if (i < 0xf9) //0xf9 is the lowest transparent color byte
+                    pal.Entries[i] = Color.FromArgb(255, r, g, b);
+                else //0xf9 - 0xff
+                    pal.Entries[i] = Color.FromArgb(0, r, g, b);
+            }
+
+            this.Palette = pal;
+
+            
+
+            return this.Palette;
+        }
+        //public void LoadPalette(ColorPalette pal)
+        //{
+        //    this.ActiveSprite = new Sprite(pal);
+        //}
         public Stream SaveProject()
         {
             return Serialization.Serialize(this);//ZipProject(this);
