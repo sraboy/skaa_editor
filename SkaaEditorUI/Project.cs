@@ -20,10 +20,49 @@ namespace SkaaEditor
     public class Project
     {
         [field: NonSerialized]
-        public event EventHandler ActiveFrameChanged;
+        private EventHandler _activeFrameChanged;
+        public event EventHandler ActiveFrameChanged
+        {
+            add
+            {
+                if (_activeFrameChanged == null || !_activeFrameChanged.GetInvocationList().Contains(value))
+                {
+                    _activeFrameChanged += value;
+                }
+            }
+            remove
+            {
+                _activeFrameChanged -= value;
+            }
+        }
         protected virtual void OnActiveFrameChanged(EventArgs e)
         {
-            EventHandler handler = ActiveFrameChanged;
+            EventHandler handler = _activeFrameChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        [field: NonSerialized]
+        private EventHandler _paletteChanged;
+        public event EventHandler PaletteChanged
+        {
+            add
+            {
+                if (_paletteChanged == null || !_paletteChanged.GetInvocationList().Contains(value))
+                {
+                    _paletteChanged += value;
+                }
+            }
+            remove
+            {
+                _paletteChanged -= value;
+            }
+        }
+        protected virtual void OnPaletteChanged(EventArgs e)
+        {
+            EventHandler handler = _paletteChanged;
 
             if (handler != null)
             {
@@ -92,22 +131,28 @@ namespace SkaaEditor
             set
             {
                 if (this._palette != value)
+                { 
                     this._palette = value;
+                    OnPaletteChanged(new EventArgs());
+                }
             }
         }
 
+        //todo: save the palette's name since we can't serialize it
+
         public Project ()
         {
-            //todo: save the palette's name since we can't serialize it
-            LoadPalette(WorkingFolder);
         }
 
-        public Project(string path)
+        public Project(string path, bool loadDefaults)
         {
             this.WorkingFolder = path;
-            LoadGameSet(WorkingFolder);
-            LoadPalette(WorkingFolder);
-            this._spriteTables = BreakSFRAME();   
+
+            if (loadDefaults)
+            {
+                LoadPalette(WorkingFolder);
+                LoadGameSet(WorkingFolder);
+            }
         }
 
         public DataSet BreakSFRAME()
@@ -167,6 +212,8 @@ namespace SkaaEditor
                 fs.Read(setData, 0, setData.Length);
                 this.ActiveGameSet = new GameSet(setData, filepath);
             }
+
+            this._spriteTables = BreakSFRAME();
         }
 
         public ColorPalette LoadPalette(string filepath = null)
