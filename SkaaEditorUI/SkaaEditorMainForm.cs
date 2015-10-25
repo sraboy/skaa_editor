@@ -31,6 +31,8 @@ using SkaaColorChooser;
 using System.Drawing.Imaging;
 using SkaaGameDataLib;
 using System.Collections.Generic;
+using System.Data.OleDb;
+using System.Data;
 
 namespace SkaaEditor
 {
@@ -50,7 +52,7 @@ namespace SkaaEditor
         private Sprite activeSprite;
         private SpriteFrame activeFrame;
         private bool _awaitingEdits = false;
-
+        private GameSet _activeGameSet;
         public SpriteFrame ActiveFrame
         {
             get
@@ -78,18 +80,21 @@ namespace SkaaEditor
         private void SetupUI()
         {
             //disallow opening sprites until a palette is loaded
-            if (this.skaaColorChooser1.Palette == null)
-                this.openToolStripMenuItem.Enabled = false;
-
+            this.openToolStripMenuItem.Enabled = (this.skaaColorChooser1.Palette == null) ? false : true;
             //disable export until a sprite is loaded
-            if (this.imageEditorBox.Image == null)
-                this.exportBmpToolStripMenuItem.Enabled = false;
-
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
+            //enable loading a set. once a set is loaded, don't allow loading a new one
+            //todo: the GameSet should go with a SkaaEditor project
+            this.loadSetToolStripMenuItem.Enabled = (this._activeGameSet == null) ? true : false;
+            //disable saving until a sprite is loaded
             this.saveToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
+            //some help text until a sprite is loaded
             this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
-            this.showGridToolStripMenuItem.Checked = this.imageEditorBox.ShowPixelGrid;
+            //disable the slider until a sprite is loaded
             this.timelineControl1.SetSliderEnable((this.imageEditorBox.Image == null) ? false : true);
+
+            this.showGridToolStripMenuItem.Checked = this.imageEditorBox.ShowPixelGrid;
+            
 
             //event subscriptions
             this.skaaColorChooser1.ActiveColorChanged += skaaColorChooser1_ActiveColorChanged;
@@ -103,7 +108,6 @@ namespace SkaaEditor
             //todo: implement Undo/Redo from here with pairs of old/new frames
             this.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
             this.ActiveFrame.FrameData = this.ActiveFrame.BuildBitmap8bppIndexed();
-            
         }
 
 
@@ -346,6 +350,43 @@ namespace SkaaEditor
         {
             SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
             savEditor.Show();
+        }
+
+        private void loadSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /* Load the standard set, std.set, and open the SFRAME database. The SFRAME DB is 
+             * at offset 0x1FA55-0x7afce. Fittingly, we're using a 15yr old database engine to
+             * get at our >15yr old data.
+             * 
+             * Courtesy to multiple StackOverlow threads for clearing up some issues for me here.
+            */
+
+            
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.FileName = "std.set";
+            dlg.DefaultExt = ".set";
+            dlg.SupportMultiDottedExtensions = true;
+
+            byte[] setData;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                string stdset = dlg.FileName;
+                string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
+                string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + 
+                    path + ";Extended Properties=dBase III";
+
+                FileStream fs = new FileStream(dlg.FileName, FileMode.Open);
+
+                setData = new byte[fs.Length];
+                fs.Read(setData, 0, setData.Length);
+
+                _activeGameSet = new GameSet(setData, path);
+            }
+
+            
+
         }
     }
 }

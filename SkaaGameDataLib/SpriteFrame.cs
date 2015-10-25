@@ -33,12 +33,14 @@ using System.IO;
 
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Data;
 
 namespace SkaaGameDataLib
 {
     public class SpriteFrame
     {
         private int _sprSize, _pixelSize, _height, _width;
+        public DataTable GameSetData;
 
         /// <summary>
         /// The size, in pixels, of the frame. Simple height * width.
@@ -73,13 +75,31 @@ namespace SkaaGameDataLib
         }
         public int Height
         {
-            get;
-            set;
+            get
+            {
+                return this._height;
+            }
+            set
+            {
+                if(this._height != value)
+                {
+                    this._height = value;
+                }
+            }
         }
         public int Width
         {
-            get;
-            set;
+            get
+            {
+                return this._width;
+            }
+            set
+            {
+                if (this._width != value)
+                {
+                    this._width = value;
+                }
+            }
         }
         public byte[] FrameData
         {
