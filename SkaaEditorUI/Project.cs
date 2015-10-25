@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 using SkaaGameDataLib;
+using System.IO.Compression;
 
 namespace SkaaEditor
 {
+    [Serializable]
     public class Project
     {
+        
         public event EventHandler ActiveFrameChanged;
         protected virtual void OnActiveFrameChanged(EventArgs e)
         {
@@ -71,6 +77,26 @@ namespace SkaaEditor
         public Project()
         {
 
+        }
+
+        private string Serialize()
+        {
+            XmlSerializer xs = new XmlSerializer(typeof(Project));
+            using (StringWriter sw = new StringWriter())
+            {
+                using (XmlWriter xw = XmlWriter.Create(sw))
+                {
+                    xs.Serialize(xw, this);
+                    return sw.ToString();
+                }
+            }
+        }
+
+        public ZipArchive SaveProject()
+        {
+            ZipArchive zip = new ZipArchive(new MemoryStream());
+
+            return zip;
         }
     }
 }
