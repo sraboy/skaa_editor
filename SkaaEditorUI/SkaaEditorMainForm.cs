@@ -172,21 +172,30 @@ namespace SkaaEditor
             this.imageEditorBox.ShowPixelGrid = !this.imageEditorBox.ShowPixelGrid;
             (sender as ToolStripMenuItem).Checked = this.imageEditorBox.ShowPixelGrid;
         }
-        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+
+        #region Loading Events
+        private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.ActiveProject != null)
+            {
+                if (!Confirm())
+                    return;
+            }
+
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
-                dlg.FileName = "pal_std.res";
-                dlg.DefaultExt = ".res";
-                dlg.SupportMultiDottedExtensions = true;
-
-                if (dlg.ShowDialog() == DialogResult.OK)
-                    this.ActiveProject.LoadPalette(Path.GetDirectoryName(dlg.FileName));
-
-                this.openToolStripMenuItem.Enabled = true;
+                dlg.DefaultExt = ".skp";
+                if(dlg.ShowDialog() == DialogResult.OK)
+                { 
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Open))
+                        this.ActiveProject = Project.LoadProject(fs);
+                }
             }
+            
         }
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private bool Confirm() { return true; } //todo: work on Confirm() after figuring out opening UI
+        private void openSPRToolStripMenuItem_Click(object sender, EventArgs e)
         {
             /* To see SPR loading in action, view ResourceDb::init_imported() 
             *  in ORESDB.cpp around line 72. The resName will be "sprite\\NAME.SPR".
@@ -201,52 +210,63 @@ namespace SkaaEditor
             if (this.skaaColorChooser.Palette == null)
                 return;
 
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.DefaultExt = ".spr";
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            { 
+                dlg.DefaultExt = ".spr";
 
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                FileStream spritestream = File.OpenRead(dlg.FileName);
-                this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
-
-                var x = spritestream.Length;
-
-                while (spritestream.Position < spritestream.Length)
+                if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    byte[] frame_size_bytes = new byte[8];
+                    FileStream spritestream = File.OpenRead(dlg.FileName);
+                    this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
 
-                    spritestream.Read(frame_size_bytes, 0, 8);
+                    var x = spritestream.Length;
+
+                    while (spritestream.Position < spritestream.Length)
+                    {
+                        byte[] frame_size_bytes = new byte[8];
+
+                        spritestream.Read(frame_size_bytes, 0, 8);
                     
-                    int size = BitConverter.ToInt32(frame_size_bytes, 0);
-                    short width = BitConverter.ToInt16(frame_size_bytes, 4);
-                    short height = BitConverter.ToInt16(frame_size_bytes, 6);
+                        int size = BitConverter.ToInt32(frame_size_bytes, 0);
+                        short width = BitConverter.ToInt16(frame_size_bytes, 4);
+                        short height = BitConverter.ToInt16(frame_size_bytes, 6);
 
-                    SpriteFrame frame = new SpriteFrame(size, width, height, this.skaaColorChooser.Palette);
+                        SpriteFrame frame = new SpriteFrame(size, width, height, this.skaaColorChooser.Palette);
 
-                    frame.SetPixels(spritestream);
+                        frame.SetPixels(spritestream);
 
-                    //debugging: gives an ASCII representation of image 
-                    //(add \n after every 62d character). Verified alignment of pixels as read.
-                    //var hex = BitConverter.ToString(frame.FrameData);
+                        //debugging: gives an ASCII representation of image 
+                        //(add \n after every 62d character). Verified alignment of pixels as read.
+                        //var hex = BitConverter.ToString(frame.FrameData);
 
-                    frame.BuildBitmap32bpp();
+                        frame.BuildBitmap32bpp();
 
-                    this.ActiveProject.ActiveSprite.Frames.Add(frame);
+                        this.ActiveProject.ActiveSprite.Frames.Add(frame);
+                    }
+
+                    this.exportBmpToolStripMenuItem.Enabled = true;
+                    spritestream.Close();
+
+                    this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
+                    this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                    this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                    this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
                 }
-
-                this.exportBmpToolStripMenuItem.Enabled = true;
-                spritestream.Close();
-
-                this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
-                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-                this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
             }
         }
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AboutForm abt = new AboutForm();
-            abt.Show();
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.FileName = "pal_std.res";
+                dlg.DefaultExt = ".res";
+                dlg.SupportMultiDottedExtensions = true;
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                    this.ActiveProject.LoadPalette(Path.GetDirectoryName(dlg.FileName));
+
+                this.openToolStripMenuItem.Enabled = true;
+            }
         }
         private void loadSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -258,35 +278,19 @@ namespace SkaaEditor
             */
 
             using (OpenFileDialog dlg = new OpenFileDialog())
-            { 
+            {
                 dlg.FileName = "std.set";
                 dlg.DefaultExt = ".set";
                 dlg.SupportMultiDottedExtensions = true;
                 ActiveProject.LoadGameSet(dlg.FileName);
-
-
-                //byte[] setData;
-
-                //if (dlg.ShowDialog() == DialogResult.OK)
-                //{
-                //    string stdset = dlg.FileName;
-                //    string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
-                //    string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                //        path + ";Extended Properties=dBase III";
-
-                //    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Open))
-                //    { 
-                //        setData = new byte[fs.Length];
-                //        fs.Read(setData, 0, setData.Length);
-                //        this._activeProject.ActiveGameSet = new GameSet(setData, path);
-                //    }
-                //}
             }
-            
+
         }
+        #endregion
+
 
         #region Saving Events
-        private void saveFrameToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveSPRFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
                 throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
@@ -303,7 +307,7 @@ namespace SkaaEditor
                 }
             }
         }
-        private void saveAllFramesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveSPRAllFramesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
                 throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
@@ -320,7 +324,29 @@ namespace SkaaEditor
                 }
             }
         }
-        private void currentFrameTobmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ActiveProject == null)
+                throw new ArgumentNullException("There is no ActiveProject! How'd you even do that?");
+
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.DefaultExt = ".skp";
+                dlg.FileName = "SKAA Editor Project.skp";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    using (MemoryStream ms = this.ActiveProject.SaveProject() as MemoryStream)
+                    {
+                        byte[] array = ms.ToArray();
+
+                        using (FileStream fileStream = new FileStream(dlg.FileName, FileMode.Create))
+                            fileStream.Write(array, 0, array.Length);
+                    }
+                }
+            }
+        }
+        private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
                 throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
@@ -337,7 +363,7 @@ namespace SkaaEditor
                 }
             }
         }
-        private void allFramesTobmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
                 throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
@@ -400,36 +426,20 @@ namespace SkaaEditor
                     }
                 }//end if
             }//end using SaveFileDialog
-        }
-        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (this.ActiveProject == null)
-                throw new ArgumentNullException("There is no ActiveProject! How'd you even do that?");
-
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            { 
-                dlg.DefaultExt = ".skp";
-                dlg.FileName = "SKAA Editor Project.skp";
-            
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    using (MemoryStream ms = this.ActiveProject.SaveProject() as MemoryStream)
-                    { 
-                        byte[] array = ms.ToArray();
-                
-                        using (FileStream fileStream = new FileStream(dlg.FileName, FileMode.Create))
-                            fileStream.Write(array, 0, array.Length);
-                    }
-                }
-            }
-        }
+        }    
         #endregion
 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (AboutForm abt = new AboutForm())
+                abt.Show();
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
             savEditor.Show();
         }
+
 
     }
 }

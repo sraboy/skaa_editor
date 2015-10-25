@@ -96,6 +96,12 @@ namespace SkaaEditor
             }
         }
 
+        public Project ()
+        {
+            //todo: save the palette's name since we can't serialize it
+            LoadPalette(WorkingFolder);
+        }
+
         public Project(string path)
         {
             this.WorkingFolder = path;
@@ -199,10 +205,22 @@ namespace SkaaEditor
             }
             return this.Palette;
         }
-
+        /// <summary>
+        /// Serializes the project with a BinaryFormatter
+        /// </summary>
+        /// <returns>A MemoryStream containing the serialized project data</returns>
         public Stream SaveProject()
         {
             return Serialization.Serialize(this);
+        }
+        /// <summary>
+        /// Deserializes the stream into a <see cref="Project"/> object
+        /// </summary>
+        /// <param name="str">The stream of the <see cref="Project"/> object</param>
+        /// <returns>A project object with the deserialized data</returns>
+        public static Project LoadProject(Stream str)
+        {
+            return (Project) Serialization.Deserialize(str);
         }
     }
 
@@ -210,11 +228,13 @@ namespace SkaaEditor
     {
         internal static Stream Serialize(object o)
         {
-            MemoryStream ms = new MemoryStream();
-            IFormatter fm = new BinaryFormatter();
-            fm.Serialize(ms, o);
-            return ms;
-          
+            using (MemoryStream ms = new MemoryStream())
+            {
+                IFormatter fm = new BinaryFormatter();
+                fm.Serialize(ms, o);
+                return ms;
+            }
+
             //todo: implement XmlSerializer with Base64-encoded binary blobs, or refs to files in archive
             //XmlSerializer xs = new XmlSerializer(typeof(Project));
             //using (MemoryStream ms = new MemoryStream())
@@ -225,6 +245,11 @@ namespace SkaaEditor
             //        return ms;
             //    }
             //}
+        }
+
+        internal static object Deserialize(Stream str)
+        {
+            return new BinaryFormatter().Deserialize(str);// as MemoryStream;
         }
     }
 }
