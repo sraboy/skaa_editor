@@ -89,25 +89,25 @@ namespace SkaaEditor
 
     public static class Serialization
     {
-        public static ZipArchive ZipProject(object o)
-        {
-            ZipArchive zip;
+        //public static ZipArchive ZipProject(object o)
+        //{
+        //    ZipArchive zip;
 
-            using (FileStream fs = new FileStream(@"E:\test.skp", FileMode.Create))
-            { 
-                using (MemoryStream ms = Serialize(o) as MemoryStream)
-                {
-                    //fs.Write(ms.ToArray(), 0, (int) ms.Length);
-                    zip = new ZipArchive(fs, ZipArchiveMode.Update);
-                    //{
-                    ZipArchiveEntry entry = zip.CreateEntry("project");
+        //    using (FileStream fs = new FileStream(@"E:\test.skp", FileMode.Create))
+        //    { 
+        //        using (MemoryStream ms = Serialize(o) as MemoryStream)
+        //        {
+        //            //fs.Write(ms.ToArray(), 0, (int) ms.Length);
+        //            zip = new ZipArchive(fs, ZipArchiveMode.Update);
+        //            //{
+        //            ZipArchiveEntry entry = zip.CreateEntry("project");
                     
-                    //}
-                }
-            }
-            //ZipArchive zip = new ZipArchive(Serialization.Serialize(o), ZipArchiveMode.Update);
-            return zip;
-        }
+        //            //}
+        //        }
+        //    }
+        //    //ZipArchive zip = new ZipArchive(Serialization.Serialize(o), ZipArchiveMode.Update);
+        //    return zip;
+        //}
 
         internal static Stream Serialize(object o)
         {
