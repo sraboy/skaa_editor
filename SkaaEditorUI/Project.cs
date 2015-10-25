@@ -36,6 +36,7 @@ namespace SkaaEditor
         private Sprite _activeSprite;
         private SpriteFrame _activeFrame;
         private GameSet _activeGameSet;
+        [NonSerialized]
         private ColorPalette _palette;
         private DataSet _spriteTables = new DataSet("sprites");
 
@@ -113,7 +114,7 @@ namespace SkaaEditor
             {
                 DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
 
-                if (curTable != null)//.Find(t => t.TableName == r[0].ToString()) != null)
+                if (curTable != null)
                 {
                     DataTable tbl = curTable;
                     tbl.ImportRow(r);
@@ -131,78 +132,82 @@ namespace SkaaEditor
             return allSpritesSet;
         }
 
-        public void LoadGameSet(string filepath)
+        public void LoadGameSet(string filepath = null)
         {
-            byte[] setData;
-            
-            //string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
+            if (filepath == null)
+                filepath = this.WorkingFolder;
+
+            // If a set is chosen by the user, we'll get a full
+            // file path. The 'connex' string below can't have
+            // a file name, just a path. This is because the path 
+            // is considered the 'database' and the file is a 'table'
+            // as far as OLEDB/Jet is concerned.
+            FileAttributes attr = File.GetAttributes(filepath);
+            string filename;
+            if (attr.HasFlag(FileAttributes.Directory))
+                filename = "std.set";
+            else
+            {
+                filename = Path.GetFileName(filepath);
+                filepath = Path.GetDirectoryName(filepath);
+            }
+
             string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
                 filepath + ";Extended Properties=dBase III";
 
-            FileStream fs = new FileStream(filepath + "\\std.set", FileMode.Open);
-
-            setData = new byte[fs.Length];
-            fs.Read(setData, 0, setData.Length);
-
-            this.ActiveGameSet = new GameSet(setData, filepath);
+            using (FileStream fs = new FileStream(filepath + '\\' + filename, FileMode.Open))
+            { 
+                byte[] setData = new byte[fs.Length];
+                fs.Read(setData, 0, setData.Length);
+                this.ActiveGameSet = new GameSet(setData, filepath);
+            }
         }
-        public ColorPalette LoadPalette(String Path)
+
+        public ColorPalette LoadPalette(string filepath = null)
         {
-            ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;// = new ColorPalette();
+            if (filepath == null)
+                filepath = this.WorkingFolder;
 
-            FileStream fs = File.OpenRead(Path + "\\pal_std.res");
-            fs.Seek(8, SeekOrigin.Begin);
-
-            for (int i = 0; i < 256; i++)
+            FileAttributes attr = File.GetAttributes(filepath);
+            string filename;
+            if (attr.HasFlag(FileAttributes.Directory))
+                filename = "pal_std.res";
+            else
             {
-                int r = fs.ReadByte();
-                int g = fs.ReadByte();
-                int b = fs.ReadByte();
-
-                if (i < 0xf9) //0xf9 is the lowest transparent color byte
-                    pal.Entries[i] = Color.FromArgb(255, r, g, b);
-                else //0xf9 - 0xff
-                    pal.Entries[i] = Color.FromArgb(0, r, g, b);
+                filename = Path.GetFileName(filepath);
+                filepath = Path.GetDirectoryName(filepath);
             }
 
-            this.Palette = pal;
 
-            
+            this.Palette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;          
 
+            using (FileStream fs = File.OpenRead(filepath + '\\' + filename))
+            { 
+                fs.Seek(8, SeekOrigin.Begin);
+
+                for (int i = 0; i < 256; i++)
+                {
+                    int r = fs.ReadByte();
+                    int g = fs.ReadByte();
+                    int b = fs.ReadByte();
+
+                    if (i < 0xf9) //0xf9 is the lowest transparent color byte
+                        this.Palette.Entries[i] = Color.FromArgb(255, r, g, b);
+                    else          //0xf9 - 0xff
+                        this.Palette.Entries[i] = Color.FromArgb(0, r, g, b);
+                }
+            }
             return this.Palette;
         }
-        //public void LoadPalette(ColorPalette pal)
-        //{
-        //    this.ActiveSprite = new Sprite(pal);
-        //}
+
         public Stream SaveProject()
         {
-            return Serialization.Serialize(this);//ZipProject(this);
+            return Serialization.Serialize(this);
         }
     }
 
     public static class Serialization
     {
-        //public static ZipArchive ZipProject(object o)
-        //{
-        //    ZipArchive zip;
-
-        //    using (FileStream fs = new FileStream(@"E:\test.skp", FileMode.Create))
-        //    { 
-        //        using (MemoryStream ms = Serialize(o) as MemoryStream)
-        //        {
-        //            //fs.Write(ms.ToArray(), 0, (int) ms.Length);
-        //            zip = new ZipArchive(fs, ZipArchiveMode.Update);
-        //            //{
-        //            ZipArchiveEntry entry = zip.CreateEntry("project");
-                    
-        //            //}
-        //        }
-        //    }
-        //    //ZipArchive zip = new ZipArchive(Serialization.Serialize(o), ZipArchiveMode.Update);
-        //    return zip;
-        //}
-
         internal static Stream Serialize(object o)
         {
             MemoryStream ms = new MemoryStream();
@@ -210,14 +215,7 @@ namespace SkaaEditor
             fm.Serialize(ms, o);
             return ms;
           
-
-            //using (MemoryStream ms = new MemoryStream())
-            //{
-            //    new BinaryFormatter().Serialize(ms, this);
-            //    Convert.ToBase64String(ms.ToArray());
-            //    return ms;
-            //}
-
+            //todo: implement XmlSerializer with Base64-encoded binary blobs, or refs to files in archive
             //XmlSerializer xs = new XmlSerializer(typeof(Project));
             //using (MemoryStream ms = new MemoryStream())
             //{

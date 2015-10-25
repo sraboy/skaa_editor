@@ -41,6 +41,8 @@ namespace SkaaGameDataLib
     public class SpriteFrame
     {
         private int _sprSize, _pixelSize, _height, _width;
+        [NonSerialized]
+        private ColorPalette _palette;
 
         /// <summary>
         /// The size, in pixels, of the frame. Simple height * width.
@@ -113,8 +115,17 @@ namespace SkaaGameDataLib
         }
         public ColorPalette Palette
         {
-            get;
-            set;
+            get
+            {
+                return this._palette;
+            }
+            set
+            {
+                if(this._palette != value)
+                {
+                    this._palette = value;
+                }
+            }
         }
 
         #region Constructors
@@ -202,10 +213,9 @@ namespace SkaaGameDataLib
                     }
                 }//end inner for
             }//end outer for
-        }//end SetPixels()
+        }
         public Bitmap BuildBitmap32bpp()
         {
-            //this.FrameData = this.BuildBitmap8bppIndexed();
             int idx;
             Bitmap bmp = new Bitmap(this.Width, this.Height);
 
@@ -227,11 +237,6 @@ namespace SkaaGameDataLib
             return this.ImageBmp;
         }
 
-        //public void VerifySize(byte[] data)
-        //{
-        //    //todo: check for garbage at the end
-        //}
-
         /// <summary>
         /// Supplies an SPR-formatted version of this frame.
         /// </summary>
@@ -247,7 +252,6 @@ namespace SkaaGameDataLib
 
             // todo: will have to recalculate size if pixels change because the number of
             //       ommitted transparent bytes will have changed too
-            //byte[] size = BitConverter.GetBytes(this.SprSize);
             byte[] width = BitConverter.GetBytes((short) this.Width);
             byte[] height = BitConverter.GetBytes((short) this.Height);
 
@@ -260,8 +264,6 @@ namespace SkaaGameDataLib
             *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
             **************************************************************************/
             int seek_pos = 4; //first four bytes are for SprSize, at the end of the function
-            //Buffer.BlockCopy(size, 0, indexedData, seek_pos, size.Length);
-            //seek_pos += size.Length;
             Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
             seek_pos += width.Length;
             Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
@@ -333,11 +335,9 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
 
-            //VerifySize(indexedData);
-
             this.SprSize = realOffset - 4;
             byte[] size = BitConverter.GetBytes(this.SprSize);
-            if (size.Length > 4) throw new Exception("SPR cannot contain more than 32-bits worth of data!");
+            if (size.Length > 4) throw new Exception("SPR size must be Int32!");
             Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
             Array.Resize<byte>(ref indexedData, realOffset);
 

@@ -51,14 +51,29 @@ namespace SkaaEditor
             }
         }
 
-        private bool _awaitingEdits = false;
         private Project _activeProject;
+        private bool _awaitingEdits = false;
+
+        public Project ActiveProject
+        {
+            get
+            {
+                return this._activeProject;
+            }
+            set
+            {
+                if(this._activeProject != value)
+                {
+                    this._activeProject = value;
+                }
+            }
+        }
 
         public SkaaEditorMainForm()
         {
             string workingFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\..\..\..\_other\working";
-            this._activeProject = new Project(workingFolder);//, this.skaaColorChooser1.LoadPalette());
-            this._activeProject.ActiveFrameChanged += _activeProject_ActiveFrameChanged;
+            this.ActiveProject = new Project(workingFolder);//, this.skaaColorChooser1.LoadPalette());
+            this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
             
 
             InitializeComponent();
@@ -66,33 +81,33 @@ namespace SkaaEditor
         }
 
         /// <summary>
-        /// Sets up the UI based on the state of the program (sprite loaded or not, etc).
+        /// Sets/Resets UI items based on the state of the program (sprite loaded or not, etc).
         /// </summary>
         private void SetupUI()
         {
-            this.skaaColorChooser1.Palette = this._activeProject.Palette;
+            this.skaaColorChooser.Palette = this.ActiveProject.Palette;
             //disallow opening sprites until a palette is loaded
-            this.openToolStripMenuItem.Enabled = (this.skaaColorChooser1.Palette == null) ? false : true;
+            this.openToolStripMenuItem.Enabled = (this.skaaColorChooser.Palette == null) ? false : true;
             //disable export until a sprite is loaded
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //enable loading a set. once a set is loaded, don't allow loading a new one
-            this.loadSetToolStripMenuItem.Enabled = (this._activeProject.ActiveGameSet == null) ? true : false;
+            this.loadSetToolStripMenuItem.Enabled = (this.ActiveProject.ActiveGameSet == null) ? true : false;
             //enable loading a palette. once a palette is loaded, don't allow loading a new one
-            this.loadPaletteToolStripMenuItem.Enabled = (this._activeProject.Palette == null) ? true : false;
+            this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject.Palette == null) ? true : false;
             //disable saving until a sprite is loaded
             this.saveToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //some help text until a sprite is loaded
             //this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
             this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "File >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
             //disable the slider until a sprite is loaded
-            this.timelineControl1.SetSliderEnable((this.imageEditorBox.Image == null) ? false : true);
+            this.timelineControl.SetSliderEnable((this.imageEditorBox.Image == null) ? false : true);
 
             this.showGridToolStripMenuItem.Checked = this.imageEditorBox.ShowPixelGrid;
             
 
             //event subscriptions
-            this.skaaColorChooser1.ActiveColorChanged += skaaColorChooser1_ActiveColorChanged;
-            this.timelineControl1.ActiveFrameChanged += timelineControl1_ActiveFrameChanged;
+            this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
+            this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
             this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
             this.imageEditorBox.MouseUp += imageEditorBox_MouseUp;
@@ -100,24 +115,25 @@ namespace SkaaEditor
         private void SaveActiveFrame()
         {
             //todo: implement Undo/Redo from here with pairs of old/new frames
-            this._activeProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
-            this._activeProject.ActiveFrame.FrameData = this._activeProject.ActiveFrame.BuildBitmap8bppIndexed();
+            this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
+            this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
         }
         private void UpdateImageEditorBoxImage()
         { 
-            this.imageEditorBox.Image = this._activeProject.ActiveFrame.ImageBmp;
+            this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
         }
+
         private void skaaEditorMainForm_Load(object sender, EventArgs e) { }
 
-        private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
+        private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
         {
             this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
         }
-        private void timelineControl1_ActiveFrameChanged(object sender, EventArgs e)
+        private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
             //todo: save/cache changes to current frame
             this.SaveActiveFrame();
-            this._activeProject.ActiveFrame = timelineControl1.ActiveFrame;
+            this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
         }        
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
@@ -130,7 +146,7 @@ namespace SkaaEditor
             if (this.cbEdit.Checked)
             {
                 this._awaitingEdits = true;
-                this.timelineControl1.PictureBoxImageFrame.Image = imageEditorBox.Image;
+                this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
             }                       
         }
         private void imageEditorBox_MouseUp(object sender, MouseEventArgs e)
@@ -146,7 +162,7 @@ namespace SkaaEditor
         {
             this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
         }
-        private void _activeProject_ActiveFrameChanged(object sender, EventArgs e)
+        private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
         {
             UpdateImageEditorBoxImage();
         }
@@ -158,15 +174,17 @@ namespace SkaaEditor
         }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.FileName = "pal_std.res";
-            dlg.DefaultExt = ".res";
-            dlg.SupportMultiDottedExtensions = true;
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.FileName = "pal_std.res";
+                dlg.DefaultExt = ".res";
+                dlg.SupportMultiDottedExtensions = true;
 
-            if (dlg.ShowDialog() == DialogResult.OK)
-                this._activeProject.LoadPalette(Path.GetDirectoryName(dlg.FileName));// this.skaaColorChooser1.LoadPalette(dlg.FileName));// .ActiveSprite = new Sprite();
+                if (dlg.ShowDialog() == DialogResult.OK)
+                    this.ActiveProject.LoadPalette(Path.GetDirectoryName(dlg.FileName));
 
-            this.openToolStripMenuItem.Enabled = true;
+                this.openToolStripMenuItem.Enabled = true;
+            }
         }
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -180,7 +198,7 @@ namespace SkaaEditor
             *  data_buf_size is set to the actual size of the entire file.
             */
 
-            if (this.skaaColorChooser1.Palette == null)
+            if (this.skaaColorChooser.Palette == null)
                 return;
 
             OpenFileDialog dlg = new OpenFileDialog();
@@ -189,7 +207,7 @@ namespace SkaaEditor
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileStream spritestream = File.OpenRead(dlg.FileName);
-                this._activeProject.ActiveSprite = new Sprite(this.skaaColorChooser1.Palette);
+                this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
 
                 var x = spritestream.Length;
 
@@ -203,7 +221,7 @@ namespace SkaaEditor
                     short width = BitConverter.ToInt16(frame_size_bytes, 4);
                     short height = BitConverter.ToInt16(frame_size_bytes, 6);
 
-                    SpriteFrame frame = new SpriteFrame(size, width, height, this.skaaColorChooser1.Palette);
+                    SpriteFrame frame = new SpriteFrame(size, width, height, this.skaaColorChooser.Palette);
 
                     frame.SetPixels(spritestream);
 
@@ -213,16 +231,16 @@ namespace SkaaEditor
 
                     frame.BuildBitmap32bpp();
 
-                    this._activeProject.ActiveSprite.Frames.Add(frame);
+                    this.ActiveProject.ActiveSprite.Frames.Add(frame);
                 }
 
                 this.exportBmpToolStripMenuItem.Enabled = true;
                 spritestream.Close();
 
-                this._activeProject.ActiveFrame = this._activeProject.ActiveSprite.Frames[0];
-                this.timelineControl1.ActiveSprite = this._activeProject.ActiveSprite;
-                this.timelineControl1.ActiveFrame = this._activeProject.ActiveFrame;
-                this.timelineControl1.SetMaxFrames(this._activeProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
+                this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
+                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
             }
         }
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -239,155 +257,170 @@ namespace SkaaEditor
              * Courtesy to multiple StackOverlow threads for clearing up some issues for me here.
             */
 
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.FileName = "std.set";
-            dlg.DefaultExt = ".set";
-            dlg.SupportMultiDottedExtensions = true;
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            { 
+                dlg.FileName = "std.set";
+                dlg.DefaultExt = ".set";
+                dlg.SupportMultiDottedExtensions = true;
+                ActiveProject.LoadGameSet(dlg.FileName);
 
-            byte[] setData;
 
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                string stdset = dlg.FileName;
-                string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
-                string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                    path + ";Extended Properties=dBase III";
+                //byte[] setData;
 
-                FileStream fs = new FileStream(dlg.FileName, FileMode.Open);
+                //if (dlg.ShowDialog() == DialogResult.OK)
+                //{
+                //    string stdset = dlg.FileName;
+                //    string path = Path.GetDirectoryName(stdset); //E:\Documents\Visual Studio 2015\Projects\skaa_editor\_other\working\;"
+                //    string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                //        path + ";Extended Properties=dBase III";
 
-                setData = new byte[fs.Length];
-                fs.Read(setData, 0, setData.Length);
-
-                this._activeProject.ActiveGameSet = new GameSet(setData, path);
+                //    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Open))
+                //    { 
+                //        setData = new byte[fs.Length];
+                //        fs.Read(setData, 0, setData.Length);
+                //        this._activeProject.ActiveGameSet = new GameSet(setData, path);
+                //    }
+                //}
             }
+            
         }
 
         #region Saving Events
         private void saveFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                return;
+                throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
 
-            //todo: need to overwrite entire file if file exists
-            //      right now, it just overwrites by byte so if the
-            //      original is larger than what I'm writing, its
-            //      data will still be there.
-            SaveFileDialog dlg = new SaveFileDialog();
-            if (dlg.ShowDialog() == DialogResult.OK)
+            using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                try
+                if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    FileStream fs = new FileStream(dlg.FileName, FileMode.Create); //truncates the current file if it exists already
-
-                    byte[] spr_data = this._activeProject.ActiveFrame.BuildBitmap8bppIndexed();
-                    fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
-                    fs.Close();
-                }
-                catch (IOException ioex)
-                {
-                    throw new Exception(ioex.ToString());
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create)) //truncates the current file if it exists already
+                    { 
+                        byte[] spr_data = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
+                        fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+                    }
                 }
             }
         }
         private void saveAllFramesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                return;
+                throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
 
-            SaveFileDialog dlg = new SaveFileDialog();
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                byte[] save = this._activeProject.ActiveSprite.BuildSPR();
-                fs.Write(save, 0, Buffer.ByteLength(save));
-                fs.Close();
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            { 
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
+                    {
+                        byte[] save = this.ActiveProject.ActiveSprite.BuildSPR();
+                        fs.Write(save, 0, Buffer.ByteLength(save));
+                    }
+                }
             }
         }
         private void currentFrameTobmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
+            if (this.imageEditorBox.Image == null)
+                throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
 
-            if (dlg.ShowDialog() == DialogResult.OK)
+            using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                //updates this frame's ImageBmp based on changes
-                this._activeProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
-                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                this.imageEditorBox.Image.Save(fs, ImageFormat.Bmp);
-                fs.Close();
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    //updates this frame's ImageBmp based on changes
+                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
+                        this.imageEditorBox.Image.Save(fs, ImageFormat.Bmp);
+                }
             }
         }
         private void allFramesTobmp32bppToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
+            if (this.imageEditorBox.Image == null)
+                throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
 
-            if (dlg.ShowDialog() == DialogResult.OK)
+            using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                //updates this frame's ImageBmp based on changes
-                this._activeProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
-                int totalFrames = this._activeProject.ActiveSprite.Frames.Count;
-                int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
-
-                double sqrt = Math.Sqrt((double) totalFrames);
-
-                if (totalFrames % 1 != 0) //totalFrames is a perfect square
+                if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    low = (int) sqrt;
-                    high = (int) sqrt;
-                }
-                else
-                {
-                    low = (int) Math.Floor(sqrt) + 1; //adds an additional row
-                    high = (int) Math.Ceiling(sqrt);
-                }
+                    //updates this frame's ImageBmp based on changes
+                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+                    int totalFrames = this.ActiveProject.ActiveSprite.Frames.Count;
+                    int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
 
-                //need the largest height and width to tile the export
-                foreach (SpriteFrame sp in this._activeProject.ActiveSprite.Frames)
-                {
-                    if (sp.Width > spriteWidth)
-                        spriteWidth = sp.Width;
-                    if (sp.Height > spriteHeight)
-                        spriteHeight = sp.Height;
-                }
+                    double sqrt = Math.Sqrt((double) totalFrames);
 
-                //calculated height and width of the bitmap
-                //based on tiles of the largest possible size
-                int exportWidth = high * spriteWidth, 
-                    exportHeight = low * spriteHeight;
-                Bitmap bitmap = new Bitmap(exportWidth, exportHeight);
-
-                using (Graphics g = Graphics.FromImage(bitmap))
-                {
-                    int frameIndex = 0;
-                    
-                    for (int y = 0; y < exportHeight; y += spriteHeight)
+                    if (totalFrames % 1 != 0) //totalFrames is a perfect square
                     {
-                        //once we hit the max frames, just break
-                        for (int x = 0; x < exportWidth && frameIndex < this._activeProject.ActiveSprite.Frames.Count; x += spriteWidth)
-                        {
-                            g.DrawImage(this._activeProject.ActiveSprite.Frames[frameIndex].ImageBmp, new Point(x, y));
-                            frameIndex++;
-                        }
+                        low = (int) sqrt;
+                        high = (int) sqrt;
                     }
-                }
+                    else
+                    {
+                        low = (int) Math.Floor(sqrt) + 1; //adds an additional row
+                        high = (int) Math.Ceiling(sqrt);
+                    }
 
-                FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                bitmap.Save(fs, ImageFormat.Bmp);
-                fs.Close();
-            }
+                    //need the largest height and width to tile the export
+                    foreach (SpriteFrame sp in this.ActiveProject.ActiveSprite.Frames)
+                    {
+                        if (sp.Width > spriteWidth)
+                            spriteWidth = sp.Width;
+                        if (sp.Height > spriteHeight)
+                            spriteHeight = sp.Height;
+                    }
+
+                    //calculated height and width of the bitmap
+                    //based on tiles of the largest possible size
+                    int exportWidth = high * spriteWidth,
+                        exportHeight = low * spriteHeight;
+
+                    using (Bitmap bitmap = new Bitmap(exportWidth, exportHeight))
+                    { 
+                        using (Graphics g = Graphics.FromImage(bitmap))
+                        {
+                            int frameIndex = 0;
+
+                            for (int y = 0; y < exportHeight; y += spriteHeight)
+                            {
+                                //once we hit the max frames, just break
+                                for (int x = 0; x < exportWidth && frameIndex < this.ActiveProject.ActiveSprite.Frames.Count; x += spriteWidth)
+                                {
+                                    g.DrawImage(this.ActiveProject.ActiveSprite.Frames[frameIndex].ImageBmp, new Point(x, y));
+                                    frameIndex++;
+                                }
+                            }
+                        }
+
+                        using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
+                            bitmap.Save(fs, ImageFormat.Bmp);
+                    }
+                }//end if
+            }//end using SaveFileDialog
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.DefaultExt = ".skp";
-            dlg.FileName = "SKAA Editor Project.skp";
-            
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                MemoryStream ms = this._activeProject.SaveProject() as MemoryStream;
-                var array = ms.ToArray();
+            if (this.ActiveProject == null)
+                throw new ArgumentNullException("There is no ActiveProject! How'd you even do that?");
 
-                var fileStream = new FileStream(dlg.FileName, FileMode.Create);
-                fileStream.Write(array, 0, array.Length);
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            { 
+                dlg.DefaultExt = ".skp";
+                dlg.FileName = "SKAA Editor Project.skp";
+            
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    using (MemoryStream ms = this.ActiveProject.SaveProject() as MemoryStream)
+                    { 
+                        byte[] array = ms.ToArray();
+                
+                        using (FileStream fileStream = new FileStream(dlg.FileName, FileMode.Create))
+                            fileStream.Write(array, 0, array.Length);
+                    }
+                }
             }
         }
         #endregion

@@ -74,11 +74,11 @@ namespace SkaaEditor
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.skaaColorChooser1 = new SkaaColorChooser.SkaaColorChooser();
+            this.skaaColorChooser = new SkaaColorChooser.SkaaColorChooser();
             this.cbEdit = new System.Windows.Forms.CheckBox();
             this.imageEditorBox = new SkaaEditor.SkaaImageBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.timelineControl1 = new Timeline.TimelineControl();
+            this.timelineControl = new Timeline.TimelineControl();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -242,12 +242,12 @@ namespace SkaaEditor
             // 
             // skaaColorChooser1
             // 
-            this.skaaColorChooser1.ActiveColor = System.Drawing.Color.Empty;
-            this.skaaColorChooser1.Location = new System.Drawing.Point(5, 28);
-            this.skaaColorChooser1.Name = "skaaColorChooser1";
-            this.skaaColorChooser1.Palette = null;
-            this.skaaColorChooser1.Size = new System.Drawing.Size(186, 758);
-            this.skaaColorChooser1.TabIndex = 5;
+            this.skaaColorChooser.ActiveColor = System.Drawing.Color.Empty;
+            this.skaaColorChooser.Location = new System.Drawing.Point(5, 28);
+            this.skaaColorChooser.Name = "skaaColorChooser1";
+            this.skaaColorChooser.Palette = null;
+            this.skaaColorChooser.Size = new System.Drawing.Size(186, 758);
+            this.skaaColorChooser.TabIndex = 5;
             // 
             // cbEdit
             // 
@@ -287,13 +287,13 @@ namespace SkaaEditor
             // 
             // timelineControl1
             // 
-            this.timelineControl1.ActiveFrame = null;
-            this.timelineControl1.ActiveSprite = null;
-            this.timelineControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.timelineControl1.Location = new System.Drawing.Point(888, 27);
-            this.timelineControl1.Name = "timelineControl1";
-            this.timelineControl1.Size = new System.Drawing.Size(129, 172);
-            this.timelineControl1.TabIndex = 12;
+            this.timelineControl.ActiveFrame = null;
+            this.timelineControl.ActiveSprite = null;
+            this.timelineControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.timelineControl.Location = new System.Drawing.Point(888, 27);
+            this.timelineControl.Name = "timelineControl1";
+            this.timelineControl.Size = new System.Drawing.Size(129, 172);
+            this.timelineControl.TabIndex = 12;
             // 
             // saveProjectToolStripMenuItem
             // 
@@ -309,10 +309,10 @@ namespace SkaaEditor
             this.ClientSize = new System.Drawing.Size(1023, 810);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.timelineControl1);
+            this.Controls.Add(this.timelineControl);
             this.Controls.Add(this.imageEditorBox);
             this.Controls.Add(this.cbEdit);
-            this.Controls.Add(this.skaaColorChooser1);
+            this.Controls.Add(this.skaaColorChooser);
             this.Controls.Add(this.mainMenuStrip);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -345,11 +345,11 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem saveAllFramesToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private SkaaColorChooser.SkaaColorChooser skaaColorChooser1;
+        private SkaaColorChooser.SkaaColorChooser skaaColorChooser;
         private System.Windows.Forms.CheckBox cbEdit;
         private SkaaImageBox imageEditorBox;
         private System.Windows.Forms.Button button1;
-        private Timeline.TimelineControl timelineControl1;
+        private Timeline.TimelineControl timelineControl;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem allFramesTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSetToolStripMenuItem;
