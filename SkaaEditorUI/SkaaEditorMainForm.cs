@@ -49,31 +49,23 @@ namespace SkaaEditor
             }
         }
 
-        private Sprite activeSprite;
-        private SpriteFrame activeFrame;
         private bool _awaitingEdits = false;
-        private GameSet _activeGameSet;
-        public SpriteFrame ActiveFrame
-        {
-            get
-            {
-                return this.activeFrame;
-            }
-            set
-            {
-                if(this.activeFrame != value)
-                {
-                    this.activeFrame = value;
-                    this.imageEditorBox.Image = ActiveFrame.ImageBmp;
-                }
-            }
-        }
+        private Project _activeProject;
 
         public SkaaEditorMainForm()
         {
+            this._activeProject = new Project();
+            this._activeProject.ActiveFrameChanged += _activeProject_ActiveFrameChanged;
+
             InitializeComponent();
             this.SetupUI(); //set up initial UI
         }
+
+        private void _activeProject_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            UpdateImageEditorBoxImage();
+        }
+
         /// <summary>
         /// Sets up the UI based on the state of the program (sprite loaded or not, etc).
         /// </summary>
@@ -85,7 +77,7 @@ namespace SkaaEditor
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //enable loading a set. once a set is loaded, don't allow loading a new one
             //todo: the GameSet should go with a SkaaEditor project
-            this.loadSetToolStripMenuItem.Enabled = (this._activeGameSet == null) ? true : false;
+            this.loadSetToolStripMenuItem.Enabled = (this._activeProject.ActiveGameSet == null) ? true : false;
             //disable saving until a sprite is loaded
             this.saveToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //some help text until a sprite is loaded
@@ -106,12 +98,13 @@ namespace SkaaEditor
         private void SaveActiveFrame()
         {
             //todo: implement Undo/Redo from here with pairs of old/new frames
-            this.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
-            this.ActiveFrame.FrameData = this.ActiveFrame.BuildBitmap8bppIndexed();
+            this._activeProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
+            this._activeProject.ActiveFrame.FrameData = this._activeProject.ActiveFrame.BuildBitmap8bppIndexed();
         }
-
-
-
+        private void UpdateImageEditorBoxImage()
+        { 
+            this.imageEditorBox.Image = this._activeProject.ActiveFrame.ImageBmp;
+        }
         private void skaaEditorMainForm_Load(object sender, EventArgs e) { }
         private void skaaColorChooser1_ActiveColorChanged(object sender, EventArgs e)
         {
@@ -121,7 +114,7 @@ namespace SkaaEditor
         {
             //todo: save/cache changes to current frame
             this.SaveActiveFrame();
-            this.ActiveFrame = timelineControl1.ActiveFrame;
+            this._activeProject.ActiveFrame = timelineControl1.ActiveFrame;
         }        
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
@@ -163,7 +156,7 @@ namespace SkaaEditor
             dlg.SupportMultiDottedExtensions = true;
 
             if (dlg.ShowDialog() == DialogResult.OK)
-                this.activeSprite = new Sprite(this.skaaColorChooser1.LoadPalette(dlg.FileName));
+                this._activeProject.ActiveSprite = new Sprite(this.skaaColorChooser1.LoadPalette(dlg.FileName));
 
             this.openToolStripMenuItem.Enabled = true;
         }
@@ -188,7 +181,7 @@ namespace SkaaEditor
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileStream spritestream = File.OpenRead(dlg.FileName);
-                activeSprite = new Sprite(this.skaaColorChooser1.Palette);
+                this._activeProject.ActiveSprite = new Sprite(this.skaaColorChooser1.Palette);
 
                 var x = spritestream.Length;
 
@@ -212,16 +205,16 @@ namespace SkaaEditor
 
                     frame.BuildBitmap32bpp();
 
-                    activeSprite.Frames.Add(frame);
+                    this._activeProject.ActiveSprite.Frames.Add(frame);
                 }
 
                 this.exportBmpToolStripMenuItem.Enabled = true;
                 spritestream.Close();
 
-                this.ActiveFrame = activeSprite.Frames[0];
-                this.timelineControl1.ActiveSprite = this.activeSprite;
-                this.timelineControl1.ActiveFrame = this.activeFrame;
-                this.timelineControl1.SetMaxFrames(this.activeSprite.Frames.Count - 1); //-1 for 0-index
+                this._activeProject.ActiveFrame = this._activeProject.ActiveSprite.Frames[0];
+                this.timelineControl1.ActiveSprite = this._activeProject.ActiveSprite;
+                this.timelineControl1.ActiveFrame = this._activeProject.ActiveFrame;
+                this.timelineControl1.SetMaxFrames(this._activeProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
             }
         }
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -247,7 +240,7 @@ namespace SkaaEditor
                 {
                     FileStream fs = new FileStream(dlg.FileName, FileMode.Create); //truncates the current file if it exists already
 
-                    byte[] spr_data = ActiveFrame.BuildBitmap8bppIndexed();
+                    byte[] spr_data = this._activeProject.ActiveFrame.BuildBitmap8bppIndexed();
                     fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     fs.Close();
                 }
@@ -266,7 +259,7 @@ namespace SkaaEditor
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
-                byte[] save = activeSprite.BuildSPR();
+                byte[] save = this._activeProject.ActiveSprite.BuildSPR();
                 fs.Write(save, 0, Buffer.ByteLength(save));
                 fs.Close();
             }
@@ -278,7 +271,7 @@ namespace SkaaEditor
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 //updates this frame's ImageBmp based on changes
-                this.activeFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+                this._activeProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
                 FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate);
                 this.imageEditorBox.Image.Save(fs, ImageFormat.Bmp);
                 fs.Close();
@@ -292,8 +285,8 @@ namespace SkaaEditor
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 //updates this frame's ImageBmp based on changes
-                this.activeFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
-                int totalFrames = this.activeSprite.Frames.Count;
+                this._activeProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+                int totalFrames = this._activeProject.ActiveSprite.Frames.Count;
                 int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
 
                 double sqrt = Math.Sqrt((double) totalFrames);
@@ -310,7 +303,7 @@ namespace SkaaEditor
                 }
 
                 //need the largest height and width to tile the export
-                foreach (SpriteFrame sp in this.activeSprite.Frames)
+                foreach (SpriteFrame sp in this._activeProject.ActiveSprite.Frames)
                 {
                     if (sp.Width > spriteWidth)
                         spriteWidth = sp.Width;
@@ -331,9 +324,9 @@ namespace SkaaEditor
                     for (int y = 0; y < exportHeight; y += spriteHeight)
                     {
                         //once we hit the max frames, just break
-                        for (int x = 0; x < exportWidth && frameIndex < this.activeSprite.Frames.Count; x += spriteWidth)
+                        for (int x = 0; x < exportWidth && frameIndex < this._activeProject.ActiveSprite.Frames.Count; x += spriteWidth)
                         {
-                            g.DrawImage(this.activeSprite.Frames[frameIndex].ImageBmp, new Point(x, y));
+                            g.DrawImage(this._activeProject.ActiveSprite.Frames[frameIndex].ImageBmp, new Point(x, y));
                             frameIndex++;
                         }
                     }
@@ -361,8 +354,6 @@ namespace SkaaEditor
              * Courtesy to multiple StackOverlow threads for clearing up some issues for me here.
             */
 
-            
-
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.FileName = "std.set";
             dlg.DefaultExt = ".set";
@@ -382,11 +373,8 @@ namespace SkaaEditor
                 setData = new byte[fs.Length];
                 fs.Read(setData, 0, setData.Length);
 
-                _activeGameSet = new GameSet(setData, path);
+                this._activeProject.ActiveGameSet = new GameSet(setData, path);
             }
-
-            
-
         }
     }
 }
