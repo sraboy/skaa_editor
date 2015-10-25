@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Data;
 using System.IO.Compression;
+using System.Reflection;
 
 namespace SkaaEditor
 {
@@ -55,7 +56,7 @@ namespace SkaaEditor
 
         public SkaaEditorMainForm()
         {
-            string workingFolder = @"E:\Programming\GitHubVisualStudio\skaa_editor\_other\working";
+            string workingFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\..\..\..\_other\working";
             this._activeProject = new Project(workingFolder);//, this.skaaColorChooser1.LoadPalette());
             this._activeProject.ActiveFrameChanged += _activeProject_ActiveFrameChanged;
             
