@@ -162,6 +162,8 @@ namespace SkaaColorChooser
         }
         private void TearDownColorBoxes()
         {
+            this._activeButton = null;
+
             for (int i = 0; i < 256; i++)
             {
                 Button btn = this.Controls[i] as Button;

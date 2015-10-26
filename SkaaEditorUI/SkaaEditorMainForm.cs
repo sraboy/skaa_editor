@@ -171,24 +171,31 @@ namespace SkaaEditor
         { 
             this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
         }
-        private void NewProject()
+        private void NewProject(bool loadDefaults = false)
         {
             string workingFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 #if DEBUG
             workingFolder += @"\..\..\..\_other\working";
-            if (this.ActiveProject == null)
-                this.ActiveProject = new Project(workingFolder, true); //auto-loads pal_std.res and std.set
+
 #else
             workingFolder += "working";
-            if(this.ActiveProject == null)
-                this.ActiveProject = new Project(workingFolder, false); //does not load default palette and GameSet
+            //if(this.ActiveProject == null)
+            //    this.ActiveProject = new Project(workingFolder, loadDefaults); //does not load default palette and GameSet
 #endif
+            if (this.ActiveProject == null)
+                this.ActiveProject = new Project(workingFolder, loadDefaults);
+            else
+                closeProjectToolStripMenuItem_Click(null, null);
+
+            ActiveProject_PaletteChanged(null, null);
+            //this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
+            SetupUI();
         }
 
         private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
-            SetupUI();
-            NewProject();
+            NewProject(true);
+            //SetupUI();
         }
 
         private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
@@ -220,10 +227,14 @@ namespace SkaaEditor
             //sets the palette which causes the color chooser's buttons to be filled
             if (this.ActiveProject != null)
                 this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
-            else
+            else //user has closed the project (it is now null)
+            { 
+                this.imageEditorBox.Image = null;
                 this.skaaColorChooser.Palette = null;
+            }
 
-            SetupUI();
+
+            //SetupUI(); //called by imageEditorBox_ImageChanged()
         }
         private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {
@@ -262,16 +273,14 @@ namespace SkaaEditor
                 dlg.DefaultExt = ".skp";
                 if(dlg.ShowDialog() == DialogResult.OK)
                 { 
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Open))
-                        this.ActiveProject = Project.LoadProject(fs);
-
+                    this.ActiveProject = Project.LoadProject(dlg.FileName);
                     SetupUI();
                 }
             }
             
         }
-
-        private bool Confirm() { return true; } //todo: work on Confirm() after figuring out opening UI
+        //todo: Confirm and maybe save any open project
+        private bool Confirm() { return true; } 
         private void openSPRToolStripMenuItem_Click(object sender, EventArgs e)
         {
             /* To see SPR loading in action, view ResourceDb::init_imported() 
@@ -293,38 +302,10 @@ namespace SkaaEditor
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    using (FileStream spritestream = File.OpenRead(dlg.FileName))
-                    { 
-                        this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
-                        long x = spritestream.Length;
-
-                        while (spritestream.Position < spritestream.Length)
-                        {
-                            byte[] frame_size_bytes = new byte[8];
-
-                            spritestream.Read(frame_size_bytes, 0, 8);
+                    this.ActiveProject.ActiveSprite = this.ActiveProject.LoadSprite(dlg.FileName);
+                    //this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
                     
-                            int size = BitConverter.ToInt32(frame_size_bytes, 0);
-                            short width = BitConverter.ToInt16(frame_size_bytes, 4);
-                            short height = BitConverter.ToInt16(frame_size_bytes, 6);
-
-                            SpriteFrame frame = new SpriteFrame(size, width, height, this.skaaColorChooser.Palette);
-
-                            frame.SetPixels(spritestream);
-
-                            //todo: add export ASCII art
-                            //With ballista adds \n after every 62d character). 
-                            //Verified alignment of pixels as read.
-                            //var hex = BitConverter.ToString(frame.FrameData);
-
-                            frame.BuildBitmap32bpp();
-
-                            this.ActiveProject.ActiveSprite.Frames.Add(frame);
-                        }
-
-                        this.exportBmpToolStripMenuItem.Enabled = true;
-                    }
-
+                    this.exportBmpToolStripMenuItem.Enabled = true;
                     this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
                     this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                     this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
@@ -341,7 +322,11 @@ namespace SkaaEditor
                 dlg.SupportMultiDottedExtensions = true;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    if (this.ActiveProject == null)
+                        NewProject(false);
                     this.ActiveProject.LoadPalette(Path.GetDirectoryName(dlg.FileName));
+                }
 
                 this.openToolStripMenuItem.Enabled = true;
             }
@@ -359,8 +344,11 @@ namespace SkaaEditor
             {
                 dlg.FileName = "std.set";
                 dlg.DefaultExt = ".set";
-                dlg.SupportMultiDottedExtensions = true;
-                ActiveProject.LoadGameSet(dlg.FileName);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    dlg.SupportMultiDottedExtensions = true;
+                    ActiveProject.LoadGameSet(dlg.FileName);
+                }
             }
 
         }
@@ -369,6 +357,11 @@ namespace SkaaEditor
         #region Saving Events
         private void saveSPRFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //todo: add export ASCII art
+            //With ballista adds \n after every 62d character). 
+            //Verified alignment of pixels as read.
+            //var hex = BitConverter.ToString(frame.FrameData);
+
             if (this.imageEditorBox.Image == null)
                 throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
 
@@ -409,17 +402,22 @@ namespace SkaaEditor
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.DefaultExt = ".skp";
-                dlg.FileName = "SKAA Editor Project.skp";
+                dlg.FileName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHMM") + ".skp";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    using (MemoryStream ms = this.ActiveProject.SaveProject() as MemoryStream)
-                    {
-                        byte[] array = ms.ToArray();
+                { 
+                    var result = this.ActiveProject.SaveProject(dlg.FileName);
 
-                        using (FileStream fileStream = new FileStream(dlg.FileName, FileMode.Create))
-                            fileStream.Write(array, 0, array.Length);
-                    }
+                    if (result.GetType() == typeof(Exception))
+                        throw (Exception) result;
+
+                    //using (MemoryStream ms = this.ActiveProject.SaveProject() as MemoryStream)
+                    //{
+                    //    byte[] array = ms.ToArray();
+
+                    //    using (FileStream fileStream = new FileStream(dlg.FileName, FileMode.Create))
+                    //        fileStream.Write(array, 0, array.Length);
+                    //}
                 }
             }
         }
@@ -513,7 +511,7 @@ namespace SkaaEditor
         }
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            closeProjectToolStripMenuItem_Click(sender, e);
+            NewProject(false);
         }
         private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {

@@ -46,27 +46,12 @@ namespace SkaaGameDataLib
         //dBase III header = 03 62 03 12 58 23 00 00 61 01 29 (??)
         public GameSet(string filepath)
         {
-            string filename;
+            this._workingPath = Path.GetDirectoryName(filepath);
 
-            // If a set is chosen by the user, we'll get a full file path. The 'connex' string below can't have
-            // a file name, just a path. This is because the path is considered the 'database' and the file is
-            // a 'table' as far as OLEDB/Jet is concerned.
-            FileAttributes attr = File.GetAttributes(filepath);
-            if (attr.HasFlag(FileAttributes.Directory))
-                filename = "std.set";
-            else
-            {
-                filename = Path.GetFileName(filepath);
-                filepath = Path.GetDirectoryName(filepath);
-            }
-
-            this._workingPath = filepath;
-
-            string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                filepath + ";Extended Properties=dBase III";
-
-            
-            using (FileStream fs = new FileStream(filepath + '\\' + filename, FileMode.Open))
+            //string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+            //    filepath + ";Extended Properties=dBase III";
+        
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
                 this._rawData = new byte[fs.Length];
                 fs.Read(this._rawData, 0, this._rawData.Length);
@@ -78,16 +63,22 @@ namespace SkaaGameDataLib
 
             List < ResIndex > databaseRows = new List<ResIndex>(_recordCount);
             this.Databases = new DataSet("skaa_dbs");
-            
-            //todo: save the List<ResIndex> from GetGameSetRows() to parse the other tables
-            BuildSFRAMEDataSet(GetGameSetRows());
+
+            BuildSframeTable();
         }
         public Stream GetRawDataStream()
         {
             //todo: fix this cheap hack
             return this._rawDataStream;
         }
-        public DataSet GetSpritesDataSet()
+        /// <summary>
+        /// Breaks up the SFRAME DataTable into individual DataTables, one for each sprite in the SFRAME DataTable
+        /// </summary>
+        /// <returns>
+        /// A DataSet object, named "sprites", containing a separate table for each sprite in 
+        /// the SFRAME DataTable, each named by the SpriteId from the original dBase object
+        /// </returns>
+        public DataSet GetSpriteTablesInDataSet()
         {
             DataTable sframeTable = this.Databases.Tables["SFRAME"];
             List<string> spriteNames = new List<string>();
@@ -114,8 +105,12 @@ namespace SkaaGameDataLib
             
             return allSpritesSet;
         }
-        private void BuildSFRAMEDataSet(List<ResIndex> dataRows)
+
+        private void BuildSframeTable()
         {
+            //todo: abstract this out so it can build any named row
+            List<ResIndex> dataRows = GetGameSetRows();
+
             ResIndex row = dataRows.Find(r => r.name == "SFRAME");
             int idx = dataRows.FindIndex(r => r.name == "SFRAME");
             int dataSize = dataRows[idx + 1].offset - row.offset;
@@ -143,7 +138,10 @@ namespace SkaaGameDataLib
 
             this.Databases.Tables.Add(table);
         }
-
+        /// <summary>
+        /// Reads all the <see cref="ResIndex"/> rows from <see cref="_rawData"/>, a .set file.
+        /// </summary>
+        /// <returns>A List of <see cref="ResIndex"/> objects</returns>
         private List<ResIndex> GetGameSetRows()
         {
             List<ResIndex> dataRows = new List<ResIndex>();
