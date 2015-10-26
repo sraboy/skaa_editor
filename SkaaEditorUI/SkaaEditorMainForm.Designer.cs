@@ -125,7 +125,7 @@ namespace SkaaEditor
             // newProjectToolStripMenuItem
             // 
             this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.newProjectToolStripMenuItem.Text = "Project";
             this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
@@ -137,19 +137,18 @@ namespace SkaaEditor
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "Open / Import";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openSPRToolStripMenuItem_Click);
             // 
             // openProjectToolStripMenuItem
             // 
             this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openProjectToolStripMenuItem.Text = "Open Project";
             this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
             // 
             // openSPRToolStripMenuItem
             // 
             this.openSPRToolStripMenuItem.Name = "openSPRToolStripMenuItem";
-            this.openSPRToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.openSPRToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openSPRToolStripMenuItem.Text = "Open SPR";
             this.openSPRToolStripMenuItem.Click += new System.EventHandler(this.openSPRToolStripMenuItem_Click);
             // 

@@ -70,8 +70,8 @@ namespace SkaaEditor
             }
         }
 
-        private string WorkingFolder;
-
+        private string _workingFolder;
+        private MemoryStream _paletteFileMemoryStream;
         private Sprite _activeSprite;
         private SpriteFrame _activeFrame;
         private GameSet _activeGameSet;
@@ -137,8 +137,21 @@ namespace SkaaEditor
                 }
             }
         }
-
-        //todo: save the palette's name since we can't serialize it
+        public MemoryStream PaletteFileMemoryStream
+        {
+            get
+            {
+                return this._paletteFileMemoryStream;
+            }
+            set
+            {
+                if(this._paletteFileMemoryStream != value)
+                {
+                    this._paletteFileMemoryStream = value;
+                }
+            }
+        }
+        public string PaletteFileName;
 
         public Project ()
         {
@@ -146,12 +159,12 @@ namespace SkaaEditor
 
         public Project(string path, bool loadDefaults)
         {
-            this.WorkingFolder = path;
+            this._workingFolder = path;
 
             if (loadDefaults)
             {
-                LoadPalette(WorkingFolder);
-                LoadGameSet(WorkingFolder);
+                LoadPalette(_workingFolder);
+                LoadGameSet(_workingFolder);
             }
         }
 
@@ -186,7 +199,7 @@ namespace SkaaEditor
         public void LoadGameSet(string filepath = null)
         {
             if (filepath == null)
-                filepath = this.WorkingFolder;
+                filepath = this._workingFolder;
 
             // If a set is chosen by the user, we'll get a full
             // file path. The 'connex' string below can't have
@@ -215,26 +228,26 @@ namespace SkaaEditor
 
             this._spriteTables = BreakSFRAME();
         }
-
         public ColorPalette LoadPalette(string filepath = null)
         {
+            
             if (filepath == null)
-                filepath = this.WorkingFolder;
+                filepath = this._workingFolder;
 
             FileAttributes attr = File.GetAttributes(filepath);
-            string filename;
+            //string filename;
             if (attr.HasFlag(FileAttributes.Directory))
-                filename = "pal_std.res";
+                this.PaletteFileName = "pal_std.res";
             else
             {
-                filename = Path.GetFileName(filepath);
+                this.PaletteFileName = Path.GetFileName(filepath);
                 filepath = Path.GetDirectoryName(filepath);
             }
 
 
             this.Palette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;          
 
-            using (FileStream fs = File.OpenRead(filepath + '\\' + filename))
+            using (FileStream fs = File.OpenRead(filepath + '\\' + this.PaletteFileName))
             { 
                 fs.Seek(8, SeekOrigin.Begin);
 
@@ -249,7 +262,11 @@ namespace SkaaEditor
                     else          //0xf9 - 0xff
                         this.Palette.Entries[i] = Color.FromArgb(0, r, g, b);
                 }
+                this.PaletteFileMemoryStream = new MemoryStream();//FileStream(filepath + '\\' + this.PaletteFileName, FileMode.Open, FileAccess.Read);
+                fs.Position = 0;
+                fs.CopyTo(this.PaletteFileMemoryStream);
             }
+
             return this.Palette;
         }
         /// <summary>
@@ -258,6 +275,8 @@ namespace SkaaEditor
         /// <returns>A MemoryStream containing the serialized project data</returns>
         public Stream SaveProject()
         {
+            Serialization.ZipProjectDir(this, this._workingFolder + '\\' + "project.zip");
+
             return Serialization.Serialize(this);
         }
         /// <summary>
@@ -298,5 +317,66 @@ namespace SkaaEditor
         {
             return new BinaryFormatter().Deserialize(str);// as MemoryStream;
         }
+
+        internal static void ZipProjectDir(Project p, string filePath)
+        {
+            /*
+                projectDir\
+                    palettes\
+                        pal_std.res
+                    gamesets\
+                        std.set
+                    sprites\
+                        ballista.spr
+             */
+
+            using (FileStream zipStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite)) 
+            {
+                using (ZipArchive arch = new ZipArchive(zipStream, ZipArchiveMode.Update))
+                {
+                    ZipArchiveEntry paletteEntry = arch.CreateEntry("palettes\\" + p.PaletteFileName);
+                    //using (StreamWriter sw = new StreamWriter(paletteEntry.Open()))
+                    //{
+                    //    //sw.Write(Convert.ToBase64CharArray(p.PaletteFileMemoryStream.ToArray(), 0, (int) p.PaletteFileMemoryStream.Length, );
+                    //    sw.WriteLine("Information about this package.");
+                    //    sw.WriteLine("========================");
+                    //}
+                    p.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
+                }
+            }
+
+        }
+        //internal static MemoryStream ZipProject(Project p)
+        //{
+        //    byte[] zipStream;
+
+        //    string filename = p.PaletteFileName;
+
+        //    //using (MemoryStream os = new MemoryStream())
+        //    //{
+        //    MemoryStream os = new MemoryStream();
+        //    GZipStream gz = new GZipStream(os, CompressionLevel.Fastest);
+        //    p.PaletteFileMemoryStream.CopyTo(gz);
+
+        //    using (var arch = new ZipArchive(os, ZipArchiveMode.Create, true))
+        //    {
+        //        var fileInArchive = arch.CreateEntry(filename, CompressionLevel.Optimal);
+
+        //        using (var entryStream = fileInArchive.Open())
+        //        {
+                        
+        //            using (var fileToCompressStream = new MemoryStream())
+        //            {
+        //                p.PaletteFileMemoryStream.CopyTo(entryStream);
+        //                //fileToCompressStream.CopyTo(entryStream);
+        //            }
+        //        }
+                    
+        //        //}
+        //        //zipStream = os.ToArray();
+        //        return os;
+        //    }
+            
+        //}
     }
 }
