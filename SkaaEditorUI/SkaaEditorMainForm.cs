@@ -129,7 +129,9 @@ namespace SkaaEditor
             //enable loading a set. once a set is loaded, don't allow loading a new one
             this.loadSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
             //enable loading a palette. once a palette is loaded, don't allow loading a new one
-            this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.Palette == null) ? true : false;
+
+            this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.PalStruct.ActivePalette == null) ? true : false;
+
             //disable saving until a sprite is loaded
             this.saveSPRToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //some help text until a sprite is loaded
@@ -156,7 +158,7 @@ namespace SkaaEditor
 
         private void ActiveProject_PaletteChanged(object sender, EventArgs e)
         {
-            this.skaaColorChooser.Palette = this.ActiveProject.Palette;
+            this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
         }
 
         private void SaveActiveFrame()
@@ -217,7 +219,7 @@ namespace SkaaEditor
         {
             //sets the palette which causes the color chooser's buttons to be filled
             if (this.ActiveProject != null)
-                this.skaaColorChooser.Palette = this.ActiveProject.Palette;
+                this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
             else
                 this.skaaColorChooser.Palette = null;
 

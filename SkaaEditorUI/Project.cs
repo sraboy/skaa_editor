@@ -19,6 +19,28 @@ namespace SkaaEditor
     [Serializable]
     public class Project
     {
+        [Serializable]
+        public struct SuperPalette
+        {
+            public string PaletteFileName;
+            public MemoryStream PaletteFileMemoryStream;
+            [NonSerialized]
+            public ColorPalette ActivePalette;
+
+        }
+        [field: NonSerialized]
+        public struct SuperGameSet
+        {
+            public string GameSetFileName;
+            public MemoryStream GameSetFileMemoryStream;
+            public GameSet ActiveGameSet;
+
+        }
+        [NonSerialized]
+        public SuperPalette PalStruct;
+        [NonSerialized]
+        public SuperGameSet SetStruct;
+
         [field: NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
@@ -74,9 +96,9 @@ namespace SkaaEditor
         private MemoryStream _paletteFileMemoryStream;
         private Sprite _activeSprite;
         private SpriteFrame _activeFrame;
-        private GameSet _activeGameSet;
+        //private GameSet _activeGameSet;
         [NonSerialized]
-        private ColorPalette _palette;
+        //private ColorPalette _palette;
         private DataSet _spriteTables = new DataSet("sprites");
 
         public Sprite ActiveSprite
@@ -93,20 +115,20 @@ namespace SkaaEditor
                 }
             }
         }
-        public GameSet ActiveGameSet
-        {
-            get
-            {
-                return this._activeGameSet;
-            }
-            set
-            {
-                if (this._activeGameSet != value)
-                {
-                    this._activeGameSet = value;
-                }
-            }
-        }
+        //public GameSet ActiveGameSet
+        //{
+        //    get
+        //    {
+        //        return this._activeGameSet;
+        //    }
+        //    set
+        //    {
+        //        if (this._activeGameSet != value)
+        //        {
+        //            this._activeGameSet = value;
+        //        }
+        //    }
+        //}
         public SpriteFrame ActiveFrame
         {
             get
@@ -122,36 +144,66 @@ namespace SkaaEditor
                 }
             }
         }
-        public ColorPalette Palette
+
+        public ColorPalette ActivePalette
         {
             get
             {
-                return this._palette;
+                return this.PalStruct.ActivePalette;
             }
             set
             {
-                if (this._palette != value)
-                { 
-                    this._palette = value;
+                if (this.PalStruct.ActivePalette != value)
+                {
+                    this.PalStruct.ActivePalette = value;
                     OnPaletteChanged(new EventArgs());
                 }
             }
         }
-        public MemoryStream PaletteFileMemoryStream
+        public GameSet ActiveGameSet
         {
             get
             {
-                return this._paletteFileMemoryStream;
+                return this.SetStruct.ActiveGameSet;
             }
             set
             {
-                if(this._paletteFileMemoryStream != value)
+                if (this.SetStruct.ActiveGameSet != value)
                 {
-                    this._paletteFileMemoryStream = value;
+                    this.SetStruct.ActiveGameSet = value;
                 }
             }
         }
-        public string PaletteFileName;
+        //public ColorPalette Palette
+        //{
+        //    get
+        //    {
+        //        return this._palette;
+        //    }
+        //    set
+        //    {
+        //        if (this._palette != value)
+        //        { 
+        //            this._palette = value;
+        //            OnPaletteChanged(new EventArgs());
+        //        }
+        //    }
+        //}
+        //public MemoryStream PaletteFileMemoryStream
+        //{
+        //    get
+        //    {
+        //        return this._paletteFileMemoryStream;
+        //    }
+        //    set
+        //    {
+        //        if(this._paletteFileMemoryStream != value)
+        //        {
+        //            this._paletteFileMemoryStream = value;
+        //        }
+        //    }
+        //}
+        //public string PaletteFileName;
 
         public Project ()
         {
@@ -168,65 +220,46 @@ namespace SkaaEditor
             }
         }
 
-        public DataSet BreakSFRAME()
-        {
-            DataTable sframeTable = this.ActiveGameSet.Databases.Tables["SFRAME"];
-            List<string> spriteNames = new List<string>();
-            DataSet allSpritesSet = new DataSet("sprites");
 
-            foreach (DataRow r in sframeTable.Rows)
-            {
-                DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
-
-                if (curTable != null)
-                {
-                    DataTable tbl = curTable;
-                    tbl.ImportRow(r);
-                }
-                else
-                {
-                    DataTable tbl = sframeTable.Clone();
-                    tbl.TableName = r[0].ToString();
-                    spriteNames.Add(r[0].ToString());
-                    tbl.ImportRow(r);
-                    allSpritesSet.Tables.Add(tbl);
-                }
-            }
-
-            return allSpritesSet;
-        }
-
+        /// <summary>
+        /// This function will open a file containing multiple dBase III databases, like 7KAA's std.set. 
+        /// </summary>
+        /// <param name="filepath"></param>
         public void LoadGameSet(string filepath = null)
         {
             if (filepath == null)
                 filepath = this._workingFolder;
 
-            // If a set is chosen by the user, we'll get a full
-            // file path. The 'connex' string below can't have
-            // a file name, just a path. This is because the path 
-            // is considered the 'database' and the file is a 'table'
-            // as far as OLEDB/Jet is concerned.
-            FileAttributes attr = File.GetAttributes(filepath);
-            string filename;
-            if (attr.HasFlag(FileAttributes.Directory))
-                filename = "std.set";
-            else
-            {
-                filename = Path.GetFileName(filepath);
-                filepath = Path.GetDirectoryName(filepath);
-            }
+            //// If a set is chosen by the user, we'll get a full
+            //// file path. The 'connex' string below can't have
+            //// a file name, just a path. This is because the path 
+            //// is considered the 'database' and the file is a 'table'
+            //// as far as OLEDB/Jet is concerned.
+            //FileAttributes attr = File.GetAttributes(filepath);
+            //if (attr.HasFlag(FileAttributes.Directory))
+            //    this.SetStruct.GameSetFileName = "std.set";
+            //else
+            //{
+            //    this.SetStruct.GameSetFileName = Path.GetFileName(filepath);
+            //    filepath = Path.GetDirectoryName(filepath);
+            //}
 
-            string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                filepath + ";Extended Properties=dBase III";
+            //string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+            //    filepath + ";Extended Properties=dBase III";
 
-            using (FileStream fs = new FileStream(filepath + '\\' + filename, FileMode.Open))
-            { 
-                byte[] setData = new byte[fs.Length];
-                fs.Read(setData, 0, setData.Length);
-                this.ActiveGameSet = new GameSet(setData, filepath);
-            }
+            ////open & read the file
+            //using (FileStream fs = new FileStream(filepath + '\\' + this.SetStruct.GameSetFileName, FileMode.Open))
+            //{ 
+            //    byte[] setData = new byte[fs.Length];
+            //    fs.Read(setData, 0, setData.Length);
 
-            this._spriteTables = BreakSFRAME();
+            //    this.ActiveGameSet = new GameSet(setData, filepath);
+            //}
+            this.ActiveGameSet = new GameSet(filepath);
+            //todo: fix this cheap hack
+            this.SetStruct.GameSetFileMemoryStream = this.ActiveGameSet.GetRawDataStream() as MemoryStream;
+            this.SetStruct.GameSetFileName = filepath;
+            this._spriteTables = this.ActiveGameSet.GetSpritesDataSet();
         }
         public ColorPalette LoadPalette(string filepath = null)
         {
@@ -237,17 +270,17 @@ namespace SkaaEditor
             FileAttributes attr = File.GetAttributes(filepath);
             //string filename;
             if (attr.HasFlag(FileAttributes.Directory))
-                this.PaletteFileName = "pal_std.res";
+                this.PalStruct.PaletteFileName = "pal_std.res";
             else
             {
-                this.PaletteFileName = Path.GetFileName(filepath);
+                this.PalStruct.PaletteFileName = Path.GetFileName(filepath);
                 filepath = Path.GetDirectoryName(filepath);
             }
 
 
-            this.Palette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;          
+            this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;          
 
-            using (FileStream fs = File.OpenRead(filepath + '\\' + this.PaletteFileName))
+            using (FileStream fs = File.OpenRead(filepath + '\\' + this.PalStruct.PaletteFileName))
             { 
                 fs.Seek(8, SeekOrigin.Begin);
 
@@ -258,16 +291,16 @@ namespace SkaaEditor
                     int b = fs.ReadByte();
 
                     if (i < 0xf9) //0xf9 is the lowest transparent color byte
-                        this.Palette.Entries[i] = Color.FromArgb(255, r, g, b);
+                        this.ActivePalette.Entries[i] = Color.FromArgb(255, r, g, b);
                     else          //0xf9 - 0xff
-                        this.Palette.Entries[i] = Color.FromArgb(0, r, g, b);
+                        this.ActivePalette.Entries[i] = Color.FromArgb(0, r, g, b);
                 }
-                this.PaletteFileMemoryStream = new MemoryStream();//FileStream(filepath + '\\' + this.PaletteFileName, FileMode.Open, FileAccess.Read);
+                this.PalStruct.PaletteFileMemoryStream = new MemoryStream();//FileStream(filepath + '\\' + this.PaletteFileName, FileMode.Open, FileAccess.Read);
                 fs.Position = 0;
-                fs.CopyTo(this.PaletteFileMemoryStream);
+                fs.CopyTo(this.PalStruct.PaletteFileMemoryStream);
             }
 
-            return this.Palette;
+            return this.ActivePalette;
         }
         /// <summary>
         /// Serializes the project with a BinaryFormatter
@@ -334,14 +367,17 @@ namespace SkaaEditor
             {
                 using (ZipArchive arch = new ZipArchive(zipStream, ZipArchiveMode.Update))
                 {
-                    ZipArchiveEntry paletteEntry = arch.CreateEntry("palettes\\" + p.PaletteFileName);
+                    ZipArchiveEntry paletteEntry = arch.CreateEntry("palettes\\" + p.PalStruct.PaletteFileName);
+                    p.PalStruct.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
+                    ZipArchiveEntry setEntry = arch.CreateEntry("gamesets\\" + p.SetStruct.GameSetFileName);
+                    p.SetStruct.GameSetFileMemoryStream.WriteTo(setEntry.Open());
                     //using (StreamWriter sw = new StreamWriter(paletteEntry.Open()))
                     //{
                     //    //sw.Write(Convert.ToBase64CharArray(p.PaletteFileMemoryStream.ToArray(), 0, (int) p.PaletteFileMemoryStream.Length, );
                     //    sw.WriteLine("Information about this package.");
                     //    sw.WriteLine("========================");
                     //}
-                    p.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
+
                 }
             }
 
