@@ -40,12 +40,12 @@ using System.Globalization;
 
 namespace MultiColumnComboBoxControl
 {
-    public class MultiColumnComboBox : ComboBox
+    public partial class MultiColumnComboBox : ComboBox
     {
-        public MultiColumnComboBox()
-        {
-            DrawMode = DrawMode.OwnerDrawVariable;
-        }
+        //public MultiColumnComboBox()
+        //{
+        //    DrawMode = DrawMode.OwnerDrawVariable;
+        //}
 
         public new DrawMode DrawMode
         {

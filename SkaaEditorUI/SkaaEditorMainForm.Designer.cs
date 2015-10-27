@@ -86,6 +86,7 @@ namespace SkaaEditor
             this.imageEditorBox = new SkaaEditor.SkaaImageBox();
             this.button1 = new System.Windows.Forms.Button();
             this.timelineControl = new Timeline.TimelineControl();
+            this.cbMultiColumn = new MultiColumnComboBoxControl.MultiColumnComboBox();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -119,7 +120,7 @@ namespace SkaaEditor
             this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newProjectToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.newToolStripMenuItem.Text = "New";
             // 
             // newProjectToolStripMenuItem
@@ -135,20 +136,20 @@ namespace SkaaEditor
             this.openProjectToolStripMenuItem,
             this.openSPRToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.openToolStripMenuItem.Text = "Open / Import";
             // 
             // openProjectToolStripMenuItem
             // 
             this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.openProjectToolStripMenuItem.Text = "Open Project";
             this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
             // 
             // openSPRToolStripMenuItem
             // 
             this.openSPRToolStripMenuItem.Name = "openSPRToolStripMenuItem";
-            this.openSPRToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openSPRToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.openSPRToolStripMenuItem.Text = "Open SPR";
             this.openSPRToolStripMenuItem.Click += new System.EventHandler(this.openSPRToolStripMenuItem_Click);
             // 
@@ -159,7 +160,7 @@ namespace SkaaEditor
             this.saveSPRToolStripMenuItem,
             this.saveProjectToolStripMenuItem});
             this.saveExportToolStripMenuItem.Name = "saveExportToolStripMenuItem";
-            this.saveExportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveExportToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.saveExportToolStripMenuItem.Text = "Save / Export";
             // 
             // exportBmpToolStripMenuItem
@@ -230,14 +231,14 @@ namespace SkaaEditor
             // closeProjectToolStripMenuItem
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.closeProjectToolStripMenuItem.Text = "Close Project";
             this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -357,11 +358,20 @@ namespace SkaaEditor
             this.timelineControl.Size = new System.Drawing.Size(129, 172);
             this.timelineControl.TabIndex = 12;
             // 
+            // mccbSprites
+            // 
+            this.cbMultiColumn.FormattingEnabled = true;
+            this.cbMultiColumn.Location = new System.Drawing.Point(198, 3);
+            this.cbMultiColumn.Name = "mccbSprites";
+            this.cbMultiColumn.Size = new System.Drawing.Size(689, 21);
+            this.cbMultiColumn.TabIndex = 13;
+            // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1023, 810);
+            this.Controls.Add(this.cbMultiColumn);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.timelineControl);
@@ -415,5 +425,6 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
+        private MultiColumnComboBoxControl.MultiColumnComboBox cbMultiColumn;
     }
 }

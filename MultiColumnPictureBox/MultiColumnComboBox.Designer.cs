@@ -1,8 +1,6 @@
-﻿using System.Windows.Forms;
-
-namespace MultiColumnComboBox
+﻿namespace MultiColumnComboBoxControl
 {
-    partial class MultiColumnComboBox : ComboBox
+    partial class MultiColumnComboBox
     {
         /// <summary> 
         /// Required designer variable.

@@ -104,7 +104,19 @@ namespace SkaaEditor
         //private GameSet _activeGameSet;
         [NonSerialized]
         //private ColorPalette _palette;
-        private DataSet _spriteTables = new DataSet("sprites");
+        private DataSet _spriteTablesDataSet = new DataSet("sprites");
+        public DataSet SpriteTablesDataSet
+        {
+            get
+            {
+                return this._spriteTablesDataSet;
+            }
+            set
+            {
+                if (this._spriteTablesDataSet != value)
+                    this._spriteTablesDataSet = value;
+            }
+        }
 
         public Sprite ActiveSprite
         {
@@ -213,7 +225,6 @@ namespace SkaaEditor
         public Project ()
         {
         }
-
         public Project(string path, bool loadDefaults)
         {
             this._workingFolder = path;
@@ -224,7 +235,6 @@ namespace SkaaEditor
                 LoadGameSet(_workingFolder);
             }
         }
-
 
         /// <summary>
         /// This function will open a file containing multiple dBase III databases, like 7KAA's std.set. 
@@ -255,7 +265,7 @@ namespace SkaaEditor
             //todo: fix this cheap hack
             this.SetStruct.GameSetFileMemoryStream = this.ActiveGameSet.GetRawDataStream() as MemoryStream;
             this.SetStruct.GameSetFileName = filename;
-            this._spriteTables = this.ActiveGameSet.GetSpriteTablesInDataSet();
+            this.SpriteTablesDataSet = this.ActiveGameSet.GetSpriteTablesInDataSet();
         }
         public ColorPalette LoadPalette(string filepath = null)
         {

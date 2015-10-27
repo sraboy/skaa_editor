@@ -32,6 +32,8 @@ using System.Drawing.Imaging;
 using SkaaGameDataLib;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Generic;
+using System.Data;
 
 namespace SkaaEditor
 {
@@ -190,8 +192,22 @@ namespace SkaaEditor
             ActiveProject_PaletteChanged(null, null);
             //this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
             SetupUI();
-        }
 
+            if (this.ActiveProject.ActiveGameSet != null)
+                PopulateSpriteList();
+        }
+        private void PopulateSpriteList()
+        {
+            //column names:
+            //SPRITE ACTION DIR FRAME OFFSET_X OFFSET_Y WIDTH HEIGHT FILENAME BITMAPPTR
+            this.cbMultiColumn.DrawMode = DrawMode.OwnerDrawVariable;
+            this.cbMultiColumn.DataSource = this.ActiveProject.SpriteTablesDataSet.Tables["BALLISTA"];
+            List<String> cols = new List<string>();
+            foreach (DataColumn c in (this.cbMultiColumn.DataSource as DataTable).Columns)
+                cols.Add(c.ColumnName);
+            this.cbMultiColumn.DisplayMember = "SPRITE";
+            this.cbMultiColumn.ValueMember = "ACTION";
+        }
         private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
             NewProject(true);
