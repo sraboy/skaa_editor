@@ -38,7 +38,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 
-namespace MultiColumnCombo
+namespace MultiColumnComboBoxControl
 {
     public class MultiColumnComboBox : ComboBox
     {
