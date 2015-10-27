@@ -432,7 +432,6 @@ namespace SkaaEditor
             //{
             //    string[] name;
             //    name = ent.Name.Split( new char[]{'.'} );
-
             //    switch(name[1])
             //    {
             //        case "res":
