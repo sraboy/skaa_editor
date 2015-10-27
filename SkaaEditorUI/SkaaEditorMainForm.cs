@@ -39,7 +39,6 @@ namespace SkaaEditor
 {
     public partial class SkaaEditorMainForm : Form
     {
-        [field: NonSerialized]
         private EventHandler _animateChanged;
         public event EventHandler AnimateChanged
         {
@@ -207,6 +206,15 @@ namespace SkaaEditor
                 cols.Add(c.ColumnName);
             this.cbMultiColumn.DisplayMember = "SPRITE";
             this.cbMultiColumn.ValueMember = "ACTION";
+
+            // todo: try a GetRow(DataTable dt) to SpriteFrame
+            // it can iterate through the rows and look for 
+            // a matching offset, which needs to be calc'd/stored
+            // from the SPR file during reading. If there's no
+            // match, go through all the others first, then find
+            // the closest one and use that offset difference to 
+            // guess for the user, in case they open a previously
+            // edited sprite without having saved a GameSet.
         }
         private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
