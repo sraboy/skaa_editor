@@ -64,7 +64,7 @@ namespace SkaaGameDataLib
             List < ResIndex > databaseRows = new List<ResIndex>(_recordCount);
             this.Databases = new DataSet("skaa_dbs");
 
-            BuildSframeTable();
+            ReadSetFileToDataSet();
         }
         public Stream GetRawDataStream()
         {
@@ -106,37 +106,46 @@ namespace SkaaGameDataLib
             return allSpritesSet;
         }
 
-        private void BuildSframeTable()
+        private void ReadSetFileToDataSet()
         {
             //todo: abstract this out so it can build any named row
             List<ResIndex> dataRows = GetGameSetRows();
 
-            ResIndex row = dataRows.Find(r => r.name == "SFRAME");
-            int idx = dataRows.FindIndex(r => r.name == "SFRAME");
-            int dataSize = dataRows[idx + 1].offset - row.offset;
-            byte[] sframeData;   
-
-            sframeData = new ArraySegment<byte>(this._rawData, row.offset, dataSize).ToArray();
-
-            string tempFile = "sframe.dbf";
-
-            using (FileStream wfs = new FileStream(tempFile, FileMode.Create))
+            for(int i = 0; i < dataRows.Count; i++)
             {
-                wfs.Write(sframeData, 0, dataSize);
+                ResIndex r = dataRows[i];
+                //ResIndex row = dataRows.Find(r => r.name == "SFRAME");
+                //int next_idx = dataRows.FindIndex(i => i.name == r.name) + 1;
+                int dataSize;
+
+                if (i + 1 >= dataRows.Count) //last one
+                    dataSize = this._rawData.Length - r.offset;
+                else
+                    dataSize = dataRows[i + 1].offset - r.offset;
+
+
+                byte[] sframeData;
+                sframeData = new ArraySegment<byte>(this._rawData, r.offset, dataSize).ToArray();
+                string tempFile = r.name + ".dbf";
+
+                using (FileStream wfs = new FileStream(this._workingPath + "\\dbf\\" + tempFile, FileMode.Create))
+                    wfs.Write(sframeData, 0, dataSize);
+
+                string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                    this._workingPath + "\\dbf" + ";Extended Properties=dBase III";
+
+                using (OleDbConnection dbfFile = new OleDbConnection(connex))
+                { 
+                    OleDbCommand cmd = new OleDbCommand("SELECT * FROM [" + tempFile + ']', dbfFile);
+                    using (OleDbDataAdapter adapter = new OleDbDataAdapter(cmd))
+                    { 
+                        DataTable table = new DataTable(r.name);
+                        dbfFile.Open();
+                        adapter.Fill(table);
+                        this.Databases.Tables.Add(table);
+                    }
+                }
             }
-
-            string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                    this._workingPath + ";Extended Properties=dBase III";
-
-            OleDbConnection sframeDBF = new OleDbConnection(connex);
-            OleDbCommand cmd = new OleDbCommand("SELECT * FROM [" + tempFile + ']', sframeDBF);
-            OleDbDataAdapter adapter = new OleDbDataAdapter(cmd);
-            DataTable table = new DataTable("SFRAME");
-
-            sframeDBF.Open();
-            adapter.Fill(table);
-
-            this.Databases.Tables.Add(table);
         }
         /// <summary>
         /// Reads all the <see cref="ResIndex"/> rows from <see cref="_rawData"/>, a .set file.
