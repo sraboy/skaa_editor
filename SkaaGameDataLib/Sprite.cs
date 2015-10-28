@@ -40,6 +40,30 @@ namespace SkaaGameDataLib
         [NonSerialized]
         private ColorPalette _pallet;
         
+        [field: NonSerialized]
+        private EventHandler _paletteUpdated;
+        public event EventHandler PaletteUpdated
+        {
+            add
+            {
+                if (_paletteUpdated == null || !_paletteUpdated.GetInvocationList().Contains(value))
+                {
+                    _paletteUpdated += value;
+                }
+            }
+            remove
+            {
+                _paletteUpdated -= value;
+            }
+        }
+        protected virtual void OnPaletteUpdated(EventArgs e)
+        {
+            EventHandler handler = _paletteUpdated;
+
+            if (handler != null)
+                handler(this, e);
+        }
+
         public ColorPalette Palette
         {
             get
@@ -51,7 +75,7 @@ namespace SkaaGameDataLib
                 if(this._pallet != value)
                 {
                     this._pallet = value;
-                    UpdateFrames();
+                    OnPaletteUpdated(new EventArgs());
                 }
             }
         }
@@ -61,13 +85,44 @@ namespace SkaaGameDataLib
             set;
         }
 
-        public Sprite() { }
+        /// <summary>
+        /// A default constructor which performs no initialization or setup except an internal event subscription <see cref="PaletteUpdated"/>
+        /// </summary>
+        public Sprite()
+        {
+            this.PaletteUpdated += Sprite_PaletteUpdated;
+        }
+
+        /// <summary>
+        /// Creates a new Sprite object with the specified ColorPalette and instantiates an empty List of SpriteFrames in <see cref="Frames"/>.
+        /// </summary>
+        /// <param name="pal">The palette to use for this sprite. Accessible via <see cref="Palette"/></param>
         public Sprite(ColorPalette pal)
         {
+            this.PaletteUpdated += Sprite_PaletteUpdated;
             this.Palette = pal;
             this.Frames = new List<SpriteFrame>();
         }
 
+        /// <summary>
+        /// Updates all this sprite's frames' palettes.
+        /// </summary>
+        private void Sprite_PaletteUpdated(object sender, EventArgs e)
+        {
+            if (this.Frames != null)
+            {
+                foreach (SpriteFrame sf in this.Frames)
+                {
+                    sf.Palette = this.Palette;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds either a new frame or, if provided, the specified frame to the <see cref="Frames"/> List
+        /// </summary>
+        /// <param name="sf">A particular frame to add</param>
+        /// <returns>The new frame</returns>
         public SpriteFrame AddFrame(SpriteFrame sf = null)
         {
             if (sf == null)
@@ -79,17 +134,6 @@ namespace SkaaGameDataLib
 
             this.Frames.Add(sf);
             return sf;
-        }
-
-        public void UpdateFrames()
-        {
-            if (this.Frames != null)
-            {
-                foreach (SpriteFrame sf in this.Frames)
-                {
-                    sf.Palette = this.Palette;
-                }
-            }
         }
 
         public byte[] BuildSPR()
