@@ -42,7 +42,7 @@ namespace SkaaGameDataLib
     {
         private int _sprSize, _pixelSize, _height, _width;
         [NonSerialized]
-        private ColorPalette _palette;
+        private Sprite _parentSprite;
 
         /// <summary>
         /// The size, in pixels, of the frame. Simple height * width.
@@ -63,7 +63,7 @@ namespace SkaaGameDataLib
         /// The size, in bytes, of the SPR data, not counting the four bytes used to represent this value.
         /// This value needs to be recalculated if the frame is edited due to the transparency compression.
         /// </summary>
-        public int SprSize
+        public int SprFrameRawDataSize
         {
             get
             {
@@ -113,19 +113,31 @@ namespace SkaaGameDataLib
             get;
             set;
         }
+        public Sprite ParentSprite
+        {
+            get
+            {
+                return this._parentSprite;
+            }
+            set
+            {
+                if (this._parentSprite != value)
+                    this._parentSprite = value;
+            }
+        }
         public ColorPalette Palette
         {
             get
             {
-                return this._palette;
+                return this.ParentSprite.Palette;
             }
-            set
-            {
-                if(this._palette != value)
-                {
-                    this._palette = value;
-                }
-            }
+            //set
+            //{
+            //    if(this._palette != value)
+            //    {
+            //        this._palette = value;
+            //    }
+            //}
         }
 
         #region Constructors
@@ -137,26 +149,26 @@ namespace SkaaGameDataLib
         /// <summary>
         /// Initializes the new sprite frame of the specified size pre-filled with 0xff (transparent byte).
         /// </summary>
-        /// <param name="sizeOfSPR">The size in bytes of the frame, including 2 bytes each for height and width</param>
+        /// <param name="sizeOfFrame">The size in bytes of the frame, including 2 bytes each for height and width</param>
         /// <param name="width">The width of the frame in pixels</param>
         /// <param name="height">The height of the frame in pixels</param>
-        /// <param name="palette">The ColorPalette to associate with this frame</param>
+        /// <param name="parent">The Sprite to which this frame belongs</param>
         /// <remarks> 
         /// We preset all bytes to 0xff, an unused palette entry that signifies a 
         /// transparent pixel.The default is 0x00, but that's actually used for 
         /// black.This is required due to the manual compression the 7KAA developers
         /// used in the SPR files. See <see cref="SetPixels(FileStream)"/> for the implementation.
         /// </remarks>
-        public SpriteFrame(int sizeOfSPR, int width, int height, ColorPalette palette)
+        public SpriteFrame(int sizeOfFrame, int width, int height, Sprite parent)
         {
-            this.SprSize = sizeOfSPR;
+            this.ParentSprite = parent;
+            this.SprFrameRawDataSize = sizeOfFrame;
             this.Height = height;
             this.Width = width;
 
             this.PixelSize = this.Height * this.Width;
             this.FrameData = new byte[PixelSize];
             FrameData = Enumerable.Repeat<byte>(0xff, PixelSize).ToArray();
-            this.Palette = palette;
         }
         #endregion
 
@@ -335,8 +347,8 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
 
-            this.SprSize = realOffset - 4;
-            byte[] size = BitConverter.GetBytes(this.SprSize);
+            this.SprFrameRawDataSize = realOffset - 4;
+            byte[] size = BitConverter.GetBytes(this.SprFrameRawDataSize);
             if (size.Length > 4) throw new Exception("SPR size must be Int32!");
             Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
             Array.Resize<byte>(ref indexedData, realOffset);

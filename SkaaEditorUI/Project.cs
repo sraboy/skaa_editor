@@ -329,7 +329,7 @@ namespace SkaaEditor
                     short width = BitConverter.ToInt16(frame_size_bytes, 4);
                     short height = BitConverter.ToInt16(frame_size_bytes, 6);
 
-                    SpriteFrame frame = new SpriteFrame(size, width, height, this.ActivePalette);
+                    SpriteFrame frame = new SpriteFrame(size, width, height, spr);
 
                     frame.SetPixels(spritestream);
                     frame.BuildBitmap32bpp();

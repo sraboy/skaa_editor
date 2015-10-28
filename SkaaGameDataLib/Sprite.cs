@@ -104,18 +104,15 @@ namespace SkaaGameDataLib
             this.Frames = new List<SpriteFrame>();
         }
 
-        /// <summary>
-        /// Updates all this sprite's frames' palettes.
-        /// </summary>
         private void Sprite_PaletteUpdated(object sender, EventArgs e)
         {
-            if (this.Frames != null)
-            {
-                foreach (SpriteFrame sf in this.Frames)
-                {
-                    sf.Palette = this.Palette;
-                }
-            }
+            //if (this.Frames != null)
+            //{
+            //    foreach (SpriteFrame sf in this.Frames)
+            //    {
+            //        sf.Palette = this.Palette;
+            //    }
+            //}
         }
 
         /// <summary>
@@ -144,7 +141,7 @@ namespace SkaaGameDataLib
             foreach (SpriteFrame sf in this.Frames)
             {
                 SPRArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.SprSize + 4); //add another four for ulong size
+                initSize += (sf.SprFrameRawDataSize + 4); //add another four for ulong size
             }
 
             int lastSize = 0;
