@@ -25,12 +25,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+//todo: replace default parameters with overloads to reduce issues with reflection and calling from other languages
 
 namespace SkaaGameDataLib
 {
@@ -85,6 +88,18 @@ namespace SkaaGameDataLib
             set;
         }
 
+        public string SpriteId
+        {
+            get;
+            set;
+        }
+        public DataTable GameSetDataTable
+        {
+            get;
+            set;
+        }
+
+        #region Constructors
         /// <summary>
         /// A default constructor which performs no initialization or setup except an internal event subscription <see cref="PaletteUpdated"/>
         /// </summary>
@@ -92,7 +107,6 @@ namespace SkaaGameDataLib
         {
             this.PaletteUpdated += Sprite_PaletteUpdated;
         }
-
         /// <summary>
         /// Creates a new Sprite object with the specified ColorPalette and instantiates an empty List of SpriteFrames in <see cref="Frames"/>.
         /// </summary>
@@ -103,17 +117,7 @@ namespace SkaaGameDataLib
             this.Palette = pal;
             this.Frames = new List<SpriteFrame>();
         }
-
-        private void Sprite_PaletteUpdated(object sender, EventArgs e)
-        {
-            //if (this.Frames != null)
-            //{
-            //    foreach (SpriteFrame sf in this.Frames)
-            //    {
-            //        sf.Palette = this.Palette;
-            //    }
-            //}
-        }
+        #endregion
 
         /// <summary>
         /// Adds either a new frame or, if provided, the specified frame to the <see cref="Frames"/> List
@@ -132,7 +136,10 @@ namespace SkaaGameDataLib
             this.Frames.Add(sf);
             return sf;
         }
-
+        /// <summary>
+        /// Builds a 7KAA-formatted SPR containing all of this sprite's frames
+        /// </summary>
+        /// <returns>A byte array containing the SPR data that can be written directly to a file</returns>
         public byte[] BuildSPR()
         {
             List<byte[]> SPRArrays = new List<byte[]>();
@@ -155,5 +162,25 @@ namespace SkaaGameDataLib
 
             return save;
         }
+
+        public void SetupTable(DataSet ds)
+        {
+            this.GameSetDataTable = ds.Tables[this.SpriteId];
+            int c = 0;
+
+            foreach(DataRow dr in this.GameSetDataTable.Rows)
+            { 
+                int offset = Convert.ToInt32(dr.ItemArray[9]);
+                SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
+
+                if (sf != null)
+                { 
+                    sf.GameSetDataRow = dr;
+                    c++; //only 22 of 41 frames in Ballista get a match due to poor file reading by the Jet DB engine
+                }
+            }
+        }
+
+        private void Sprite_PaletteUpdated(object sender, EventArgs e) { }
     }
 }

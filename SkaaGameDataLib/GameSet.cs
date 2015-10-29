@@ -1,9 +1,34 @@
-﻿using System;
+﻿/****************************************************************************
+*   Copyright (C) 2015  Steven Lavoie  steven.lavoiejr@gmail.com
+*
+*   This program is free software; you can redistribute it and/or modify
+*   it under the terms of the GNU General Public License as published by
+*   the Free Software Foundation; either version 3 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*
+*   SkaaEditor is capable of viewing and/or editing binary files from 
+*   Enlight Software's Seven Kingdoms: Ancient Adversaries (7KAA). All code
+*  	is licensed under GPLv3, including any code from Enlight Software. For
+*  	information on 7KAA, visit http://www.7kfans.com.
+****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -87,20 +112,26 @@ namespace SkaaGameDataLib
             foreach (DataRow r in sframeTable.Rows)
             {
                 DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
+                DataTable tbl;
 
                 if (curTable != null)
                 {
-                    DataTable tbl = curTable;
+                    tbl = curTable;
                     tbl.ImportRow(r);
                 }
                 else
                 {
-                    DataTable tbl = sframeTable.Clone();
+                    tbl = sframeTable.Clone();
                     tbl.TableName = r[0].ToString();
                     spriteNames.Add(r[0].ToString());
                     tbl.ImportRow(r);
                     allSpritesSet.Tables.Add(tbl);
                 }
+
+                //DataColumn bitmapPtr = tbl.Columns[tbl.Columns.Count - 1]; //new DataColumn();
+                //bitmapPtr.DataType = typeof(ushort);
+                //bitmapPtr = tbl.Columns[tbl.Columns.Count - 1];
+                //tbl.PrimaryKey = new DataColumn[] { bitmapPtr };
             }
             
             return allSpritesSet;
@@ -111,7 +142,7 @@ namespace SkaaGameDataLib
             //todo: abstract this out so it can build any named row
             List<ResIndex> dataRows = GetGameSetRows();
 
-            for(int i = 0; i < dataRows.Count; i++)
+            for (int i = 0; i < dataRows.Count; i++)
             {
                 ResIndex r = dataRows[i];
                 //ResIndex row = dataRows.Find(r => r.name == "SFRAME");
@@ -135,14 +166,172 @@ namespace SkaaGameDataLib
                     this._workingPath + "\\dbf" + ";Extended Properties=dBase III";
 
                 using (OleDbConnection dbfFile = new OleDbConnection(connex))
-                { 
+                {
                     OleDbCommand cmd = new OleDbCommand("SELECT * FROM [" + tempFile + ']', dbfFile);
+
+                    #region sframe
+                    //if (r.name == "SFRAME") //special reading of this file to read BITMAPPTR properly
+                    //{
+                    //    /* We don't use an OleDbDataAdapter here because the adapter
+                    //     * gives us no control over the data; it's read-in en masse.
+                    //     * Unfortunately, the Jet DB engine does not allow SQL CONVERT()
+                    //     * nor are we able to just convert it after because 
+                    //     */
+
+                    //    dbfFile.Open();
+                    //    OleDbDataReader dr = cmd.ExecuteReader();
+                    //    DataTable table = new DataTable("SFRAME");
+
+                    //    // SPRITE  ACTION  DIR  FRAME  OFFSET_X  OFFSET_Y  WIDTH  HEIGHT FILENAME  BITMAPPTR
+                    //    table.Columns.Add(new DataColumn("SPRITE"));
+                    //    table.Columns.Add(new DataColumn("ACTION"));
+                    //    table.Columns.Add(new DataColumn("DIR"));
+                    //    table.Columns.Add(new DataColumn("FRAME"));
+                    //    table.Columns.Add(new DataColumn("OFFSET_X"));
+                    //    table.Columns.Add(new DataColumn("OFFSET_Y"));
+                    //    table.Columns.Add(new DataColumn("WIDTH"));
+                    //    table.Columns.Add(new DataColumn("HEIGHT"));
+                    //    table.Columns.Add(new DataColumn("FILENAME"));
+                    //    table.Columns.Add(new DataColumn("BITMAPPTR"));
+
+                    //    table.Columns["BITMAPPTR"].DataType = typeof(short);
+
+                    //    while (dr.Read())
+                    //    {
+                    //        short savePtr = 0;
+                    //        var spr = dr[0];
+                    //        //if ((string) spr == "PERSIAN")
+                    //        //{
+                    //        var act = dr[1];
+                    //        var dir = dr[2];
+                    //        var frame = dr[3];
+                    //        var offx = dr[4];
+                    //        var offy = dr[5];
+                    //        var width = dr[6];
+                    //        var height = dr[7];
+                    //        var filename = dr[8];
+                    //        var bitmapptr = dr[9];
+                    //        var type = bitmapptr.GetType();
+
+                    //        byte[] p = new byte[2];
+                    //        short ptr;
+
+                    //        if (dr[9].GetType() == typeof(DBNull))
+                    //        {
+                    //            ptr = 0;
+                    //        }
+                    //        else
+                    //        {
+                    //            p = Encoding.Unicode.GetBytes((string) dr[9]);
+
+                    //            if (((string) dr[9]).Length == 1)
+                    //            {
+                    //                byte[] bytes = Encoding.ASCII.GetBytes((string) dr[9]);
+                    //                ptr = (short) bytes[0];
+
+                    //            }
+                    //            else
+                    //                ptr = BitConverter.ToInt16(p, 0);
+                    //        }
+                    //        savePtr = ptr;
+                    //        //}
+
+                    //        DataRow cv = table.NewRow();
+                    //        cv[0] = dr[0];
+                    //        cv[1] = dr[1];
+                    //        cv[2] = dr[2];
+                    //        cv[3] = dr[3];
+                    //        cv[4] = dr[4];
+                    //        cv[5] = dr[5];
+                    //        cv[6] = dr[6];
+                    //        cv[7] = dr[7];
+                    //        cv[8] = dr[8];
+                    //        cv[9] = savePtr;
+
+                    //        table.ImportRow(cv);
+                    //    }
+                    //    this.Databases.Tables.Add(table);
+                    //}
+                    //else
+                    //{
+                    #endregion
                     using (OleDbDataAdapter adapter = new OleDbDataAdapter(cmd))
                     { 
                         DataTable table = new DataTable(r.name);
                         dbfFile.Open();
                         adapter.Fill(table);
+
+                        #region sframe
+                        if (r.name == "SFRAME") //special reading of this file to read BITMAPPTR properly
+                        {
+                            DataTable conv = table.Clone();
+                            conv.Columns["BITMAPPTR"].DataType = typeof(ushort);
+
+                            foreach (DataRow dr in table.Rows)
+                            {
+                                byte[] p = new byte[2];
+                                ushort ptr;
+
+                                if (dr[9].GetType() == typeof(DBNull))
+                                {
+                                    ptr = 0;
+                                }
+                                else
+                                {
+                                    p = Encoding.UTF8.GetBytes((string) dr[9]);
+
+                                    //if (((string) dr[9]).Length == 1)
+                                    //{
+                                    //    var t = Encoding.ASCII.GetBytes((string) dr[9]);
+                                    //    Array ar = dr.ItemArray;
+                                    //    //p[1] = 0;
+                                    //}
+                                    if (p.Length > 1)
+                                        ptr = BitConverter.ToUInt16(p, 0);
+                                    else
+                                        ptr = ushort.MaxValue;
+                                }
+                                //dr.BeginEdit();
+                                //dr.SetField("BITMAPPTR", ptr);
+                                //dr.EndEdit();
+                                //DataRow cvdr;
+                                //cvdr.SetField(0, dr[0]);
+                                //DataTable dt = new DataTable();
+                                //dt.Columns.Add(new DataColumn("SPRITE"));
+                                //dt.Columns.Add(new DataColumn("ACTION"));
+                                //dt.Columns.Add(new DataColumn("DIR"));
+                                //dt.Columns.Add(new DataColumn("FRAME"));
+                                //dt.Columns.Add(new DataColumn("OFFSET_X"));
+                                //dt.Columns.Add(new DataColumn("OFFSET_Y"));
+                                //dt.Columns.Add(new DataColumn("WIDTH"));
+                                //dt.Columns.Add(new DataColumn("HEIGHT"));
+                                //dt.Columns.Add(new DataColumn("FILENAME"));
+                                //dt.Columns.Add(new DataColumn("BITMAPPTR"));
+                                //dt.Columns["BITMAPPTR"].DataType = typeof(ushort);
+
+                                DataRow cv = conv.NewRow();
+                                cv[0] = dr[0];
+                                cv[1] = dr[1];
+                                cv[2] = dr[2];
+                                cv[3] = dr[3];
+                                cv[4] = dr[4];
+                                cv[5] = dr[5];
+                                cv[6] = dr[6];
+                                cv[7] = dr[7];
+                                cv[8] = dr[8];
+                                cv[9] = ptr;
+                                conv.Rows.Add(cv);
+                                //var dest = conv.NewRow();
+                                //dest.ItemArray = cv.ItemArray.Clone() as object[];
+                                //conv.Rows.Add(dest);
+                            }
+
+                            table = conv.Copy();
+                        }
+                        #endregion
+
                         this.Databases.Tables.Add(table);
+                        //}
                     }
                 }
             }
@@ -174,7 +363,6 @@ namespace SkaaGameDataLib
                         dataRows.Add(row);
                     else
                         break;
-
                 }//end while
             }//end using MemoryStream
 

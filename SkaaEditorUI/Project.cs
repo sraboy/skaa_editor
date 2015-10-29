@@ -331,6 +331,8 @@ namespace SkaaEditor
 
                     SpriteFrame frame = new SpriteFrame(size, width, height, spr);
 
+                    frame.SprBitmapOffset = spritestream.Position - 8;
+
                     frame.SetPixels(spritestream);
                     frame.BuildBitmap32bpp();
                     spr.Frames.Add(frame);
@@ -341,6 +343,9 @@ namespace SkaaEditor
                 spritestream.CopyTo(this.SprStruct.SpriteFileMemoryStream);
                 this.SprStruct.SpriteFileName = Path.GetFileName(filepath);
             }
+
+            spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
+            spr.SetupTable(this.ActiveGameSet.GetSpriteTablesInDataSet());
 
             return spr;
         }

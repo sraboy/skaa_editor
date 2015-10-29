@@ -40,8 +40,7 @@ namespace SkaaGameDataLib
     [Serializable]
     public class SpriteFrame
     {
-        private int _sprSize, _pixelSize, _height, _width;
-        [NonSerialized]
+        private int _sprFrameRawDataSize, _pixelSize, _height, _width;
         private Sprite _parentSprite;
 
         /// <summary>
@@ -67,12 +66,12 @@ namespace SkaaGameDataLib
         {
             get
             {
-                return this._sprSize;
+                return this._sprFrameRawDataSize;
             }
             set
             {
-                if (this._sprSize != value)
-                    this._sprSize = value;
+                if (this._sprFrameRawDataSize != value)
+                    this._sprFrameRawDataSize = value;
             }
         }
         public int Height
@@ -131,13 +130,13 @@ namespace SkaaGameDataLib
             {
                 return this.ParentSprite.Palette;
             }
-            //set
-            //{
-            //    if(this._palette != value)
-            //    {
-            //        this._palette = value;
-            //    }
-            //}
+        }
+
+        public long SprBitmapOffset;
+        public DataRow GameSetDataRow
+        {
+            get;
+            set;
         }
 
         #region Constructors
