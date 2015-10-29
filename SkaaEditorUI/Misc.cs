@@ -28,9 +28,52 @@ namespace SkaaEditor
     }
     public struct SuperSprite
     {
-        public string SpriteFileName;
-        public MemoryStream SpriteFileMemoryStream;
-        public Sprite ActiveSprite;
+        private Sprite _activeSprite;
+        private string _spriteFileName;
+        private MemoryStream _spriteFileMemoryStream;
+
+        public string SpriteFileName
+        {
+            get
+            {
+                return this._spriteFileName;
+            }
+            set
+            {
+                if (this._spriteFileName != value)
+                {
+                    this._spriteFileName = value;
+                }
+            }
+        }
+        public MemoryStream SpriteFileMemoryStream
+        {
+            get
+            {
+                return this._spriteFileMemoryStream;
+            }
+            set
+            {
+                if (this._spriteFileMemoryStream != value)
+                {
+                    this._spriteFileMemoryStream = value;
+                }
+            }
+        }
+        public Sprite ActiveSprite
+        {
+            get
+            {
+                return this._activeSprite;
+            }
+            set
+            {
+                if(this._activeSprite != value)
+                {
+                    this._activeSprite = value;
+                }
+            }
+        }
     }
 
     public static class Extensions

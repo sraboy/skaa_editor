@@ -314,8 +314,9 @@ namespace SkaaEditor
             // 
             // cbEdit
             // 
+            this.cbEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbEdit.AutoSize = true;
-            this.cbEdit.Location = new System.Drawing.Point(895, 205);
+            this.cbEdit.Location = new System.Drawing.Point(919, 205);
             this.cbEdit.Name = "cbEdit";
             this.cbEdit.Size = new System.Drawing.Size(74, 17);
             this.cbEdit.TabIndex = 7;

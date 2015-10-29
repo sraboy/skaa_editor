@@ -10,17 +10,25 @@ using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
-        /// <summary>
-        /// [DEPRECATED] Sprite can now properly convert BITMAPPTR in <see cref="Sprite.MatchFrameOffsets()"/>.
-        /// [INCOMPLETE] Does not yet read the data from the file, only the table's schema data in the header.
-        /// Represents a dBase III (not to be confused with dBase III+ or FoxPro) file and makes it manipulable via a DataTable.
-        /// </summary>
-        /// <remarks>
-        /// Constructed with help from: 
-        /// http://www.clicketyclick.dk/databases/xbase/format/dbf.html 
-        /// http://www.digitalpreservation.gov/formats/fdd/fdd000325.shtml
-        /// </remarks>
-        [Serializable]
+    [Serializable]
+    public struct ResIndex
+    {
+        //Lifted from ORESX.h, except string vs char[9]
+        public string name;
+        public int offset;
+    };
+
+    /// <summary>
+    /// [DEPRECATED] Sprite can now properly convert BITMAPPTR in <see cref="Sprite.MatchFrameOffsets()"/>.
+    /// [INCOMPLETE] Does not yet read the data from the file, only the table's schema data in the header.
+    /// Represents a dBase III (not to be confused with dBase III+ or FoxPro) file and makes it manipulable via a DataTable.
+    /// </summary>
+    /// <remarks>
+    /// Constructed with help from: 
+    /// http://www.clicketyclick.dk/databases/xbase/format/dbf.html 
+    /// http://www.digitalpreservation.gov/formats/fdd/fdd000325.shtml
+    /// </remarks>
+    [Serializable]
         public class DbfFile
         {
             public struct DbfPreHeader

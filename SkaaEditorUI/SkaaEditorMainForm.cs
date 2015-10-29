@@ -404,6 +404,9 @@ namespace SkaaEditor
             {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
+                    //get this before SaveActiveFrameChanges() changes it
+                    bool needToSaveSet = this._awaitingEdits;
+                    SaveActiveFrameChanges();
                     //updates this frame's ImageBmp based on changes
                     this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
                     int totalFrames = this.ActiveProject.ActiveSprite.Frames.Count;
@@ -456,6 +459,12 @@ namespace SkaaEditor
                         using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
                             bitmap.Save(fs, ImageFormat.Bmp);
                     }
+
+                    if(needToSaveSet)
+                    {
+                        
+                    }
+
                 }//end if
             }//end using SaveFileDialog
         }
@@ -471,17 +480,20 @@ namespace SkaaEditor
         {
             this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
         }
-        //private void SaveActiveFrame()
-        //{
-        //    //todo: implement Undo/Redo from here with pairs of old/new frames
-        //    if (this.ActiveProject.ActiveFrame != null
-        //        && this.ActiveProject.ActiveFrame.ImageBmp != null
-        //        && this.imageEditorBox != null)
-        //    {
-        //        this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
-        //        this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
-        //    }
-        //}
+        private void SaveActiveFrameChanges()
+        {
+            //todo: implement Undo/Redo from here with pairs of old/new frames
+            if (this._awaitingEdits &&
+                this.ActiveProject.ActiveFrame != null
+                && this.ActiveProject.ActiveFrame.ImageBmp != null
+                && this.imageEditorBox != null)
+            {
+                this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
+                this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
+                this.ActiveProject.ActiveFrame.PendingRawChanges = false;
+                this._awaitingEdits = false;
+            }
+        }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
@@ -575,6 +587,7 @@ namespace SkaaEditor
             if (this.cbEdit.Checked)
             {
                 this._awaitingEdits = true;
+                this.ActiveProject.ActiveFrame.PendingRawChanges = true;
                 this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
             }
         }

@@ -375,15 +375,11 @@ namespace SkaaGameDataLib
 
             return dataRows;
         }
+
+        public void SaveDataSetToSetFile(string filepath, DataTable tableToMerge)
+        {
+
+        }
+
     }//end GameSet
-
-    [Serializable]
-    public struct ResIndex
-    {
-        //Lifted from ORESX.h, except string vs char[9]
-        public string name;
-        public int offset;
-    };
-
- 
 }

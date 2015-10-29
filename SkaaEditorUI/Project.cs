@@ -336,21 +336,12 @@ namespace SkaaEditor
         {
             return Serialization.Serialize(this);
         }
-        public object SaveProject(string filepath)
+        public void SaveProject(string filepath)
         {
-            try
-            { 
-                if(filepath == null)
-                    ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
-                else
-                    ProjectZipper.ZipProject(this, filepath);
-            }
-            catch(Exception ex)
-            {
-                return ex;
-            }
-
-            return true;
+            if(filepath == null)
+                ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
+            else
+                ProjectZipper.ZipProject(this, filepath);
         }
 
         public static Project LoadProject(Stream str)

@@ -131,13 +131,13 @@ namespace SkaaGameDataLib
                 return this.ParentSprite.Palette;
             }
         }
-
-        public uint? SprBitmapOffset;
         public DataRow GameSetDataRow
         {
             get;
             set;
         }
+        public uint? SprBitmapOffset;
+        public bool PendingRawChanges;
 
         #region Constructors
         /// <summary>
