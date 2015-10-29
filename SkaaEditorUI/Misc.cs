@@ -20,7 +20,7 @@ namespace SkaaEditor
         public ColorPalette ActivePalette;
 
     }
-    //public class SuperGameSet
+    //public struct SuperGameSet
     //{
     //    public string GameSetFileName;
     //    public MemoryStream GameSetFileMemoryStream;
@@ -28,52 +28,9 @@ namespace SkaaEditor
     //}
     public class SuperSprite
     {
-        private Sprite _activeSprite;
-        private string _spriteFileName;
-        private MemoryStream _spriteFileMemoryStream;
-
-        public string SpriteFileName
-        {
-            get
-            {
-                return this._spriteFileName;
-            }
-            set
-            {
-                if (this._spriteFileName != value)
-                {
-                    this._spriteFileName = value;
-                }
-            }
-        }
-        public MemoryStream SpriteFileMemoryStream
-        {
-            get
-            {
-                return this._spriteFileMemoryStream;
-            }
-            set
-            {
-                if (this._spriteFileMemoryStream != value)
-                {
-                    this._spriteFileMemoryStream = value;
-                }
-            }
-        }
-        public Sprite ActiveSprite
-        {
-            get
-            {
-                return this._activeSprite;
-            }
-            set
-            {
-                if(this._activeSprite != value)
-                {
-                    this._activeSprite = value;
-                }
-            }
-        }
+        public string SpriteFileName;
+        public MemoryStream SpriteFileMemoryStream;
+        public Sprite ActiveSprite;
     }
 
     public static class Extensions
@@ -157,8 +114,8 @@ namespace SkaaEditor
             {
                 using (ZipArchive arch = new ZipArchive(zipStream, ZipArchiveMode.Create))
                 {
-                    ZipArchiveEntry paletteEntry = arch.CreateEntry(Path.GetFileName(p.PalStruct.PaletteFileName));
-                    p.PalStruct.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
+                    ZipArchiveEntry paletteEntry = arch.CreateEntry(Path.GetFileName(p.SuperPal.PaletteFileName));
+                    p.SuperPal.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
                     ZipArchiveEntry setEntry = arch.CreateEntry(Path.GetFileName(p.ActiveGameSet.FileName));
                     p.ActiveGameSet.RawDataStream.WriteTo(setEntry.Open());
                     ZipArchiveEntry spriteEntry = arch.CreateEntry(Path.GetFileName(p.SuperSpr.SpriteFileName));

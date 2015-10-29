@@ -133,7 +133,7 @@ namespace SkaaEditor
             this.loadSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
             //enable loading a palette. once a palette is loaded, don't allow loading a new one
 
-            this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.PalStruct.ActivePalette == null) ? true : false;
+            this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.SuperPal.ActivePalette == null) ? true : false;
 
             //disable saving until a sprite is loaded
             this.saveSPRToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
@@ -175,7 +175,7 @@ namespace SkaaEditor
                 closeProjectToolStripMenuItem_Click(null, null);
 
             ActiveProject_PaletteChanged(null, null);
-            //this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
+            //this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
             SetupUI();
 
             //if (this.ActiveProject.ActiveGameSet != null)
@@ -260,7 +260,7 @@ namespace SkaaEditor
                     //this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
                     
                     this.exportBmpToolStripMenuItem.Enabled = true;
-                    this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
+                    //this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
                     this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                     this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
                     this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
@@ -360,10 +360,9 @@ namespace SkaaEditor
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 { 
-                    var result = this.ActiveProject.SaveProject(dlg.FileName);
+                    this.ActiveProject.SaveProject(dlg.FileName);
 
-                    if (result.GetType() == typeof(Exception))
-                        throw (Exception) result;
+                    
 
                     //using (MemoryStream ms = this.ActiveProject.SaveProject() as MemoryStream)
                     //{
@@ -592,7 +591,7 @@ namespace SkaaEditor
         {
             //sets the palette which causes the color chooser's buttons to be filled
             if (this.ActiveProject != null)
-                this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
+                this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
             else //user has closed the project (it is now null)
             {
                 this.imageEditorBox.Image = null;
@@ -622,7 +621,7 @@ namespace SkaaEditor
         }
         private void ActiveProject_PaletteChanged(object sender, EventArgs e)
         {
-            this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
+            this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
         }
     }
 }

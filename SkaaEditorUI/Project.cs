@@ -113,7 +113,7 @@ namespace SkaaEditor
         private GameSet _activeGameSet;
 
         [NonSerialized]
-        public SuperPalette PalStruct;
+        public SuperPalette SuperPal;
         //[NonSerialized]
         //public SuperGameSet SuperSet;
         [NonSerialized]
@@ -152,13 +152,13 @@ namespace SkaaEditor
         {
             get
             {
-                return this.PalStruct.ActivePalette;
+                return this.SuperPal.ActivePalette;
             }
             set
             {
-                if (this.PalStruct.ActivePalette != value)
+                if (this.SuperPal.ActivePalette != value)
                 {
-                    this.PalStruct.ActivePalette = value;
+                    this.SuperPal.ActivePalette = value;
                     OnPaletteChanged(null);
                 }
             }
@@ -181,9 +181,9 @@ namespace SkaaEditor
         public Project ()
         {
         }
-        public Project(string path, bool loadDefaults)
+        public Project(string workingFolder, bool loadDefaults)
         {
-            this._workingFolder = Path.GetDirectoryName(path);
+            this._workingFolder = workingFolder;
             this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
             this.ActiveFrameChanged += Project_ActiveFrameChanged;
 
@@ -251,19 +251,20 @@ namespace SkaaEditor
                 filepath = this._workingFolder;
 
             FileAttributes attr = File.GetAttributes(filepath);
-            //string filename;
+            this.SuperPal = new SuperPalette();
+
             if (attr.HasFlag(FileAttributes.Directory))
-                this.PalStruct.PaletteFileName = "pal_std.res";
+                this.SuperPal.PaletteFileName = "pal_std.res";
             else
             {
-                this.PalStruct.PaletteFileName = Path.GetFileName(filepath);
+                this.SuperPal.PaletteFileName = Path.GetFileName(filepath);
                 filepath = Path.GetDirectoryName(filepath);
             }
 
 
             this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;          
 
-            using (FileStream fs = File.OpenRead(filepath + '\\' + this.PalStruct.PaletteFileName))
+            using (FileStream fs = File.OpenRead(filepath + '\\' + this.SuperPal.PaletteFileName))
             { 
                 fs.Seek(8, SeekOrigin.Begin);
 
@@ -278,9 +279,9 @@ namespace SkaaEditor
                     else          //0xf9 - 0xff
                         this.ActivePalette.Entries[i] = Color.FromArgb(0, r, g, b);
                 }
-                this.PalStruct.PaletteFileMemoryStream = new MemoryStream();//FileStream(filepath + '\\' + this.PaletteFileName, FileMode.Open, FileAccess.Read);
+                this.SuperPal.PaletteFileMemoryStream = new MemoryStream();//FileStream(filepath + '\\' + this.PaletteFileName, FileMode.Open, FileAccess.Read);
                 fs.Position = 0;
-                fs.CopyTo(this.PalStruct.PaletteFileMemoryStream);
+                fs.CopyTo(this.SuperPal.PaletteFileMemoryStream);
             }
 
             return this.ActivePalette;
