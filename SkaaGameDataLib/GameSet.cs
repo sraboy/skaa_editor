@@ -42,7 +42,6 @@ namespace SkaaGameDataLib
         private short _recordCount;
         private byte[] _rawData;
         //private List<ResIndex> _databaseRows;
-        private MemoryStream _rawDataStream;
         private DataSet _databases;
         private string _workingPath;
 
@@ -60,11 +59,13 @@ namespace SkaaGameDataLib
                 }
             }
         }
+        public MemoryStream RawDataStream;
+        public string FileName;
 
         public GameSet(string filepath)
         {
             this._workingPath = Path.GetDirectoryName(filepath);
-
+            this.FileName = Path.GetFileName(filepath);
             //string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
             //    filepath + ";Extended Properties=dBase III";
         
@@ -73,10 +74,10 @@ namespace SkaaGameDataLib
                 this._rawData = new byte[fs.Length];
                 fs.Read(this._rawData, 0, this._rawData.Length);
                 //todo: fix this cheap hack
-                this._rawDataStream = new MemoryStream();
+                this.RawDataStream = new MemoryStream();
                 fs.Position = 0;
-                fs.CopyTo(this._rawDataStream);
-                this._rawDataStream.Position = 0;
+                fs.CopyTo(this.RawDataStream);
+                this.RawDataStream.Position = 0;
             }
 
             List < ResIndex > databaseRows = new List<ResIndex>(_recordCount);
@@ -84,11 +85,12 @@ namespace SkaaGameDataLib
 
             ReadSetFileToDataSet();
         }
-        public Stream GetRawDataStream()
-        {
-            //todo: fix this cheap hack
-            return this._rawDataStream;
-        }
+        //public Stream GetRawDataStream()
+        //{
+        //    //todo: fix this cheap hack
+        //    this.RawDataStream.Position = 0;
+        //    return this.RawDataStream;
+        //}
         /// <summary>
         /// Breaks up the SFRAME DataTable into individual DataTables, one for each sprite in the SFRAME DataTable
         /// </summary>
@@ -349,19 +351,19 @@ namespace SkaaGameDataLib
         {
             List<ResIndex> dataRows = new List<ResIndex>();
             byte[] recCount = new byte[2];
-            this._rawDataStream.Read(recCount, 0, 2);
+            this.RawDataStream.Read(recCount, 0, 2);
             this._recordCount = BitConverter.ToInt16(recCount, 0);
             //this._recordCount = (short) (this._rawDataStream.ReadByte() + (this._rawDataStream.ReadByte() * 256));
                 
             //need (this._recordCount + 1) because there's always an extra (empty) row/record at the end of the header
-            while (this._rawDataStream.Position < (this._recordCount + 1) * _resIndexSize)
+            while (this.RawDataStream.Position < (this._recordCount + 1) * _resIndexSize)
             {
                 ResIndex row;
                 byte[] name = new byte[_rowNameSize];
                 byte[] offset = new byte[sizeof(int)];
 
-                this._rawDataStream.Read(name, 0, _rowNameSize); //offset is 0 from ms.Position
-                this._rawDataStream.Read(offset, 0, sizeof(int));
+                this.RawDataStream.Read(name, 0, _rowNameSize); //offset is 0 from ms.Position
+                this.RawDataStream.Read(offset, 0, sizeof(int));
 
                 row.name = Encoding.UTF8.GetString(name).Trim('\0');
                 row.offset = BitConverter.ToInt32(offset, 0);
@@ -378,7 +380,12 @@ namespace SkaaGameDataLib
 
         public void SaveDataSetToSetFile(string filepath, DataTable tableToMerge)
         {
+            DataTable newDataTable;// = new DataTable();
+            //newDataTable = tableToMerge.Clone();
+            newDataTable = this.Databases.Tables[tableToMerge.TableName];
+            newDataTable.Merge(tableToMerge, true, MissingSchemaAction.Add);
 
+            //this.Databases.Tables[tableToMerge.TableName].Merge(tableToMerge, true, MissingSchemaAction.Add);
         }
 
     }//end GameSet

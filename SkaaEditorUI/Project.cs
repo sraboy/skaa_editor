@@ -110,24 +110,25 @@ namespace SkaaEditor
                     this._spriteTablesDataSet = value;
             }
         }
+        private GameSet _activeGameSet;
 
         [NonSerialized]
         public SuperPalette PalStruct;
+        //[NonSerialized]
+        //public SuperGameSet SuperSet;
         [NonSerialized]
-        public SuperGameSet SetStruct;
-        [NonSerialized]
-        public SuperSprite SprStruct;
+        public SuperSprite SuperSpr;
         public Sprite ActiveSprite
         {
             get
             {
-                return this.SprStruct.ActiveSprite;
+                return this.SuperSpr.ActiveSprite;
             }
             set
             {
-                if (this.SprStruct.ActiveSprite != value)
+                if (this.SuperSpr.ActiveSprite != value)
                 {
-                    this.SprStruct.ActiveSprite = value;
+                    this.SuperSpr.ActiveSprite = value;
                     OnActiveSpriteChanged(null);
                 }
             }
@@ -166,13 +167,13 @@ namespace SkaaEditor
         {
             get
             {
-                return this.SetStruct.ActiveGameSet;
+                return this._activeGameSet;
             }
             set
             {
-                if (this.SetStruct.ActiveGameSet != value)
+                if (this._activeGameSet != value)
                 {
-                    this.SetStruct.ActiveGameSet = value;
+                    this._activeGameSet = value;
                 }
             }
         }
@@ -182,7 +183,7 @@ namespace SkaaEditor
         }
         public Project(string path, bool loadDefaults)
         {
-            this._workingFolder = path;
+            this._workingFolder = Path.GetDirectoryName(path);
             this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
             this.ActiveFrameChanged += Project_ActiveFrameChanged;
 
@@ -239,9 +240,8 @@ namespace SkaaEditor
             }
 
             this.ActiveGameSet = new GameSet(filepath);
-            //todo: fix this cheap hack
-            this.SetStruct.GameSetFileMemoryStream = this.ActiveGameSet.GetRawDataStream() as MemoryStream;
-            this.SetStruct.GameSetFileName = filename;
+            //this.SuperSet.GameSetFileMemoryStream = this.ActiveGameSet.GetRawDataStream() as MemoryStream;
+            //this.SuperSet.GameSetFileName = filename;
             this.SpriteTablesDataSet = this.ActiveGameSet.GetSpriteTablesInDataSet();
         }
         public ColorPalette LoadPalette(string filepath = null)
@@ -291,6 +291,7 @@ namespace SkaaEditor
             if (this.ActivePalette == null)
                 return null;
 
+            SuperSprite ssp = new SuperSprite();
             Sprite spr = new Sprite(this.ActivePalette);
 
             using (FileStream spritestream = File.OpenRead(filepath))
@@ -316,10 +317,18 @@ namespace SkaaEditor
                     spr.Frames.Add(frame);
                 }
 
-                this.SprStruct.SpriteFileMemoryStream = new MemoryStream();
+                ssp.ActiveSprite = spr;
+                ssp.SpriteFileName = Path.GetFileName(filepath);
+                ssp.SpriteFileMemoryStream = new MemoryStream();
                 spritestream.Position = 0;
-                spritestream.CopyTo(this.SprStruct.SpriteFileMemoryStream);
-                this.SprStruct.SpriteFileName = Path.GetFileName(filepath);
+                spritestream.CopyTo(ssp.SpriteFileMemoryStream);
+                spritestream.Position = 0;
+                this.SuperSpr = ssp;
+
+                //this.SprStruct.SpriteFileMemoryStream = new MemoryStream();
+                //spritestream.Position = 0;
+                //spritestream.CopyTo(this.SprStruct.SpriteFileMemoryStream);
+                //this.SprStruct.SpriteFileName = Path.GetFileName(filepath);
             }
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);

@@ -13,20 +13,20 @@ using SkaaGameDataLib;
 
 namespace SkaaEditor
 {
-    public struct SuperPalette
+    public class SuperPalette
     {
         public string PaletteFileName;
         public MemoryStream PaletteFileMemoryStream;
         public ColorPalette ActivePalette;
 
     }
-    public struct SuperGameSet
-    {
-        public string GameSetFileName;
-        public MemoryStream GameSetFileMemoryStream;
-        public GameSet ActiveGameSet;
-    }
-    public struct SuperSprite
+    //public class SuperGameSet
+    //{
+    //    public string GameSetFileName;
+    //    public MemoryStream GameSetFileMemoryStream;
+    //    public GameSet ActiveGameSet;
+    //}
+    public class SuperSprite
     {
         private Sprite _activeSprite;
         private string _spriteFileName;
@@ -159,10 +159,10 @@ namespace SkaaEditor
                 {
                     ZipArchiveEntry paletteEntry = arch.CreateEntry(Path.GetFileName(p.PalStruct.PaletteFileName));
                     p.PalStruct.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
-                    ZipArchiveEntry setEntry = arch.CreateEntry(Path.GetFileName(p.SetStruct.GameSetFileName));
-                    p.SetStruct.GameSetFileMemoryStream.WriteTo(setEntry.Open());
-                    ZipArchiveEntry spriteEntry = arch.CreateEntry(Path.GetFileName(p.SprStruct.SpriteFileName));
-                    p.SprStruct.SpriteFileMemoryStream.WriteTo(spriteEntry.Open());
+                    ZipArchiveEntry setEntry = arch.CreateEntry(Path.GetFileName(p.ActiveGameSet.FileName));
+                    p.ActiveGameSet.RawDataStream.WriteTo(setEntry.Open());
+                    ZipArchiveEntry spriteEntry = arch.CreateEntry(Path.GetFileName(p.SuperSpr.SpriteFileName));
+                    p.SuperSpr.SpriteFileMemoryStream.WriteTo(spriteEntry.Open());
 
                     //using (StreamWriter sw = new StreamWriter(paletteEntry.Open()))
                     //{
