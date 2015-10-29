@@ -347,12 +347,16 @@ namespace SkaaEditor
         }
         public void SaveProject(string filepath)
         {
-            if(filepath == null)
-                ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
-            else
-                ProjectZipper.ZipProject(this, filepath);
-        }
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BuildNewSet().CopyTo(ms);
+            }
 
+            if (filepath == null)
+                    ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
+                else
+                    ProjectZipper.ZipProject(this, filepath);
+        }
         public static Project LoadProject(Stream str)
         {
             return (Project) Serialization.Deserialize(str);
@@ -360,6 +364,15 @@ namespace SkaaEditor
         public static Project LoadProject(string filePath)
         {
             return ProjectZipper.LoadZipProject(filePath);
+        }
+        public MemoryStream BuildNewSet()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+
+
+                return ms;
+            }
         }
     }
 }

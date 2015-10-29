@@ -87,13 +87,12 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-
-        public string SpriteId
+        public DataTable GameSetDataTable
         {
             get;
             set;
         }
-        public DataTable GameSetDataTable
+        public string SpriteId
         {
             get;
             set;

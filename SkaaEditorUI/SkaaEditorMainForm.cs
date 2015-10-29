@@ -160,7 +160,6 @@ namespace SkaaEditor
             this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
             this.imageEditorBox.MouseUp += imageEditorBox_MouseUp;
         }
-
         private void NewProject(bool loadDefaults = false)
         {
             string workingFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -168,9 +167,7 @@ namespace SkaaEditor
             workingFolder += @"\..\..\..\_other\working";
 
 #else
-            workingFolder += "working";
-            //if(this.ActiveProject == null)
-            //    this.ActiveProject = new Project(workingFolder, loadDefaults); //does not load default palette and GameSet
+            workingFolder += "data";
 #endif
             if (this.ActiveProject == null)
                 this.ActiveProject = new Project(workingFolder, loadDefaults);
@@ -627,6 +624,5 @@ namespace SkaaEditor
         {
             this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
         }
-
     }
 }
