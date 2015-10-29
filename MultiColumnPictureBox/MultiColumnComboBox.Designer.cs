@@ -1,6 +1,6 @@
-﻿namespace MultiColumnComboBoxControl
+﻿namespace MultiColumnComboBox
 {
-    partial class MultiColumnComboBox
+    partial class MultiColumnComboBoxControl
     {
         /// <summary> 
         /// Required designer variable.

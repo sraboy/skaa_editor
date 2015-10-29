@@ -132,7 +132,7 @@ namespace SkaaGameDataLib
             }
         }
 
-        public long SprBitmapOffset;
+        public uint? SprBitmapOffset;
         public DataRow GameSetDataRow
         {
             get;
@@ -286,12 +286,20 @@ namespace SkaaGameDataLib
                 Palette.Add(c);
             }
 
+            //This function may be called to save the current
+            //image before making changes. So we need to build
+            //a 32-bit BMP with current FrameData and then build
+            //this SPR to return to the caller. This ensures the
+            //caller has an original as a runtime backup for undo.
+            if (this.ImageBmp == null)
+                BuildBitmap32bpp();
+
             //the below is pretty much the same as GetPixel() but reversed(ish)
-            for (int y = 0; y < ImageBmp.Height; ++y)
+            for (int y = 0; y < this.ImageBmp.Height; ++y)
             {
-                for (int x = 0; x < ImageBmp.Width; ++x)
+                for (int x = 0; x < this.ImageBmp.Width; ++x)
                 {
-                    Color pixel = ImageBmp.GetPixel(x, y);
+                    Color pixel = this.ImageBmp.GetPixel(x, y);
                     var pixARGB = pixel.ToArgb();
                     palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(pixARGB)));
 

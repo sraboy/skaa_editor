@@ -37,10 +37,60 @@ namespace Timeline
 {
     public partial class TimelineControl : UserControl
     {
-        public event EventHandler ActiveFrameChanged;
+        [field: NonSerialized]
+        private EventHandler _activeFrameChanged;
+        public event EventHandler ActiveFrameChanged
+        {
+            add
+            {
+                if (_activeFrameChanged == null || !_activeFrameChanged.GetInvocationList().Contains(value))
+                {
+                    _activeFrameChanged += value;
+                }
+            }
+            remove
+            {
+                _activeFrameChanged -= value;
+            }
+        }
         protected virtual void OnActiveFrameChanged(EventArgs e)
         {
-            EventHandler handler = ActiveFrameChanged;
+            EventHandler handler = _activeFrameChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        //public event EventHandler ActiveFrameChanged;
+        //protected virtual void OnActiveFrameChanged(EventArgs e)
+        //{
+        //    EventHandler handler = ActiveFrameChanged;
+
+        //    if (handler != null)
+        //    {
+        //        handler(this, e);
+        //    }
+        //}
+        [field: NonSerialized]
+        private EventHandler _activeSpriteChanged;
+        public event EventHandler ActiveSpriteChanged
+        {
+            add
+            {
+                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
+                {
+                    _activeSpriteChanged += value;
+                }
+            }
+            remove
+            {
+                _activeSpriteChanged -= value;
+            }
+        }
+        protected virtual void OnActiveSpriteChanged(EventArgs e)
+        {
+            EventHandler handler = _activeSpriteChanged;
 
             if (handler != null)
             {
@@ -52,6 +102,7 @@ namespace Timeline
         private SpriteFrame _activeFrame;
         private int _activeFrameIndex;
         private int _preAnimateActiveFrameIndex;
+
         public PictureBox PictureBoxImageFrame
         {
             get
@@ -76,6 +127,7 @@ namespace Timeline
                 if(this._activeSprite != value)
                 {
                     this._activeSprite = value;
+                    OnActiveSpriteChanged(null);
                 }
             }
         }
@@ -93,12 +145,14 @@ namespace Timeline
                 if (this._activeFrame != value)
                 {
                     this._activeFrame = value;
-                    this._activeFrameIndex = this._activeSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-                    this.picBoxFrame.Image = this._activeFrame.ImageBmp;
-                    this.frameSlider.Value = this._activeFrameIndex;
+                    //this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
+                    //this.picBoxFrame.Image = this._activeFrame.ImageBmp;
+                    //this.frameSlider.Value = this._activeFrameIndex;
 
-                    if(!this.animationTimer.Enabled)
+                    if (!this.animationTimer.Enabled)
                         this.OnActiveFrameChanged(null);
+                    else
+                        TimelineControl_ActiveFrameChanged(null, null);
                 }
             }
         }
@@ -106,12 +160,27 @@ namespace Timeline
         public TimelineControl()
         {
             InitializeComponent();
+            this.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
+            this.ActiveFrameChanged += TimelineControl_ActiveFrameChanged;
 
             this.picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
             this.SetSliderEnable(false);
             this.animationTimer.Enabled = false;
             this.animationTimer.Tick += AnimationTimer_Tick;
             this.animationTimer.Interval = 150;
+        }
+
+        private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
+        {
+            //if (this.ActiveSprite != null && this.ActiveSprite.Frames.Count > 0)
+            //    this.ActiveFrame = this.ActiveSprite.Frames[0];
+        }
+
+        private void TimelineControl_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
+            this.picBoxFrame.Image = this._activeFrame.ImageBmp;
+            this.frameSlider.Value = this._activeFrameIndex;
         }
 
         public void SetMaxFrames(int frameCount)
@@ -156,7 +225,6 @@ namespace Timeline
                     picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
             }
         }
-
         private void frameSlider_ValueChanged(object sender, EventArgs e)
         {
             _activeFrameIndex = (sender as TrackBar).Value;
@@ -180,8 +248,9 @@ namespace Timeline
             }
             else //start animating
             {
+                this.frameSlider.Enabled = false;
                 this._preAnimateActiveFrameIndex = this._activeFrameIndex;
-                this.animationTimer.Start(); 
+                this.animationTimer.Start();
             }
         }
 

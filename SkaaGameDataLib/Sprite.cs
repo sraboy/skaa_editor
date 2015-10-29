@@ -188,7 +188,7 @@ namespace SkaaGameDataLib
             //counts how many frames find matches for offsets
             int frameOffsetMatches = 0; 
             //a list that can be copy/pasted to Excel and compared against a manual DBF dump
-            List<long> offsets = new List<long>();
+            List<uint?> offsets = new List<uint?>();
             foreach (SpriteFrame s in this.Frames)
                 offsets.Add(s.SprBitmapOffset);
 #endif

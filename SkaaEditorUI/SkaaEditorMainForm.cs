@@ -34,6 +34,8 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 using System.Data;
+using MultiColumnComboBox;
+using System.Text;
 
 namespace SkaaEditor
 {
@@ -147,31 +149,18 @@ namespace SkaaEditor
             this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
             if (this.ActiveProject != null)
             {
+                this.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
                 this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
                 this.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
             }
             this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
             this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
+            this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
             this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
             this.imageEditorBox.MouseUp += imageEditorBox_MouseUp;
         }
 
-        private void ActiveProject_PaletteChanged(object sender, EventArgs e)
-        {
-            this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
-        }
-
-        private void SaveActiveFrame()
-        {
-            //todo: implement Undo/Redo from here with pairs of old/new frames
-            this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
-            this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
-        }
-        private void UpdateImageEditorBoxImage()
-        { 
-            this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
-        }
         private void NewProject(bool loadDefaults = false)
         {
             string workingFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -192,20 +181,30 @@ namespace SkaaEditor
             //this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
             SetupUI();
 
-            if (this.ActiveProject.ActiveGameSet != null)
-                PopulateSpriteList();
+            //if (this.ActiveProject.ActiveGameSet != null)
+            //    PopulateSpriteList();
         }
         private void PopulateSpriteList()
         {
-            //column names:
+            //SFRAME column names:
             //SPRITE ACTION DIR FRAME OFFSET_X OFFSET_Y WIDTH HEIGHT FILENAME BITMAPPTR
             this.cbMultiColumn.DrawMode = DrawMode.OwnerDrawVariable;
-            this.cbMultiColumn.DataSource = this.ActiveProject.SpriteTablesDataSet.Tables["BALLISTA"];
-            List<String> cols = new List<string>();
-            foreach (DataColumn c in (this.cbMultiColumn.DataSource as DataTable).Columns)
-                cols.Add(c.ColumnName);
-            this.cbMultiColumn.DisplayMember = "SPRITE";
-            this.cbMultiColumn.ValueMember = "ACTION";
+
+            if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
+            {
+                this.cbMultiColumn.Enabled = true;
+                this.cbMultiColumn.DataSource = this.ActiveProject.SpriteTablesDataSet.Tables[this.ActiveProject.ActiveSprite.SpriteId];
+                List<String> cols = new List<string>();
+                foreach (DataColumn c in (this.cbMultiColumn.DataSource as DataTable).Columns)
+                    cols.Add(c.ColumnName);
+                this.cbMultiColumn.DisplayMember = "SPRITE";
+                this.cbMultiColumn.ValueMember = "ACTION";
+            }
+            else
+            { 
+                this.cbMultiColumn.DataSource = null;
+                this.cbMultiColumn.Enabled = false;
+            }
 
             // todo: try a GetRow(DataTable dt) to SpriteFrame
             // it can iterate through the rows and look for 
@@ -216,73 +215,7 @@ namespace SkaaEditor
             // guess for the user, in case they open a previously
             // edited sprite without having saved a GameSet.
         }
-        private void skaaEditorMainForm_Load(object sender, EventArgs e)
-        {
-            NewProject(true);
-            //SetupUI();
-        }
-
-        private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
-        {
-            this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
-        }
-        private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            //todo: save/cache changes to current frame
-            this.SaveActiveFrame();
-            this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
-        }        
-        private void imageEditorBox_ImageChanged(object sender, EventArgs e)
-        {
-           SetupUI();
-        }
-        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
-        {
-            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
-            // which is actually false by the time we get to here.
-            if (this.cbEdit.Checked)
-            {
-                this._awaitingEdits = true;
-                this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
-            }                       
-        }
-        private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
-        {
-            //sets the palette which causes the color chooser's buttons to be filled
-            if (this.ActiveProject != null)
-                this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
-            else //user has closed the project (it is now null)
-            { 
-                this.imageEditorBox.Image = null;
-                this.skaaColorChooser.Palette = null;
-            }
-
-
-            //SetupUI(); //called by imageEditorBox_ImageChanged()
-        }
-        private void cbEdit_CheckedChanged(object sender, EventArgs e)
-        {
-            this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
-        }
-        private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            UpdateImageEditorBoxImage();
-        }
-        private void imageEditorBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
-            // which is actually false by the time we get to here.
-            if (this.cbEdit.Checked && this._awaitingEdits)
-            {
-                SaveActiveFrame();
-            }
-        }
-        private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.imageEditorBox.ShowPixelGrid = !this.imageEditorBox.ShowPixelGrid;
-            (sender as ToolStripMenuItem).Checked = this.imageEditorBox.ShowPixelGrid;
-        }
-
+     
         #region Loading Events
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -528,6 +461,57 @@ namespace SkaaEditor
         }
         #endregion
 
+        #region ActiveSprite & ActiveFrame Change Events
+        private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
+        {
+            this.ActiveProject.ActiveSprite = this.timelineControl.ActiveSprite;
+            //timelineControl.ActiveFrame gets changed by ActiveProject_ActiveSpriteChanged()
+        }
+        private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
+        }
+        //private void SaveActiveFrame()
+        //{
+        //    //todo: implement Undo/Redo from here with pairs of old/new frames
+        //    if (this.ActiveProject.ActiveFrame != null
+        //        && this.ActiveProject.ActiveFrame.ImageBmp != null
+        //        && this.imageEditorBox != null)
+        //    {
+        //        this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
+        //        this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
+        //    }
+        //}
+        private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
+        {
+            //todo: implement Undo/Redo from here with pairs of old/new sprites
+            this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
+            PopulateSpriteList();
+        }
+        private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            //SaveActiveFrame();
+
+            if (this.ActiveProject.ActiveFrame == null)
+            {
+                this.imageEditorBox.Image = null;
+                this.timelineControl.ActiveFrame = null;
+            }
+            else
+            {
+                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
+                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+            }
+        }
+        #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
+            savEditor.Show();
+        }
+
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (AboutForm abt = new AboutForm())
@@ -548,13 +532,88 @@ namespace SkaaEditor
         {
             Application.Exit();
         }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
-            savEditor.Show();
-        }
+            DataRow selection;
+            uint? offset = null;
 
+            if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
+            {
+                selection = (this.cbMultiColumn.SelectedItem as DataRowView).Row;
+                offset = selection.GetNullableUInt32FromIndex(9);
+                this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames.Find(sf => sf.SprBitmapOffset == offset);
+            }
+
+            if (this.ActiveProject.ActiveFrame == null)
+            {
+#if DEBUG
+                //a list that can be copy/pasted to Excel and compared against a manual DBF dump
+                List<uint?> offsets = new List<uint?>();
+                foreach (SpriteFrame s in this.ActiveProject.ActiveSprite.Frames)
+                    offsets.Add(s.SprBitmapOffset);
+#endif
+                throw new ArgumentNullException(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.ActiveProject.ActiveSprite.SpriteId, offset.ToString()));
+            }
+        }
+        private void skaaEditorMainForm_Load(object sender, EventArgs e)
+        {
+            NewProject(true);
+            //SetupUI();
+        }
+        private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
+        {
+            this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
+        }
+        private void imageEditorBox_ImageChanged(object sender, EventArgs e)
+        {
+            SetupUI();
+        }
+        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
+        {
+            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
+            // which is actually false by the time we get to here.
+            if (this.cbEdit.Checked)
+            {
+                this._awaitingEdits = true;
+                this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
+            }
+        }
+        private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
+        {
+            //sets the palette which causes the color chooser's buttons to be filled
+            if (this.ActiveProject != null)
+                this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
+            else //user has closed the project (it is now null)
+            {
+                this.imageEditorBox.Image = null;
+                this.skaaColorChooser.Palette = null;
+            }
+
+
+            //SetupUI(); //called by imageEditorBox_ImageChanged()
+        }
+        private void cbEdit_CheckedChanged(object sender, EventArgs e)
+        {
+            this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
+        }
+        private void imageEditorBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
+            // which is actually false by the time we get to here.
+            if (this.cbEdit.Checked && this._awaitingEdits)
+            {
+                //SaveActiveFrame();
+            }
+        }
+        private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.imageEditorBox.ShowPixelGrid = !this.imageEditorBox.ShowPixelGrid;
+            (sender as ToolStripMenuItem).Checked = this.imageEditorBox.ShowPixelGrid;
+        }
+        private void ActiveProject_PaletteChanged(object sender, EventArgs e)
+        {
+            this.skaaColorChooser.Palette = this.ActiveProject.PalStruct.ActivePalette;
+        }
 
     }
 }

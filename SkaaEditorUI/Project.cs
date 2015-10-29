@@ -19,13 +19,6 @@ namespace SkaaEditor
     [Serializable]
     public class Project
     {
-        [NonSerialized]
-        public SuperPalette PalStruct;
-        [NonSerialized]
-        public SuperGameSet SetStruct;
-        [NonSerialized]
-        public SuperSprite SprStruct;
-
         [field: NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
@@ -76,14 +69,34 @@ namespace SkaaEditor
                 handler(this, e);
             }
         }
+        [field: NonSerialized]
+        private EventHandler _activeSpriteChanged;
+        public event EventHandler ActiveSpriteChanged
+        {
+            add
+            {
+                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
+                {
+                    _activeSpriteChanged += value;
+                }
+            }
+            remove
+            {
+                _activeSpriteChanged -= value;
+            }
+        }
+        protected virtual void OnActiveSpriteChanged(EventArgs e)
+        {
+            EventHandler handler = _activeSpriteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
 
         private string _workingFolder;
-        //private MemoryStream _paletteFileMemoryStream;
-        //private Sprite _activeSprite;
         private SpriteFrame _activeFrame;
-        //private GameSet _activeGameSet;
-        [NonSerialized]
-        //private ColorPalette _palette;
         private DataSet _spriteTablesDataSet = new DataSet("sprites");
         public DataSet SpriteTablesDataSet
         {
@@ -98,6 +111,12 @@ namespace SkaaEditor
             }
         }
 
+        [NonSerialized]
+        public SuperPalette PalStruct;
+        [NonSerialized]
+        public SuperGameSet SetStruct;
+        [NonSerialized]
+        public SuperSprite SprStruct;
         public Sprite ActiveSprite
         {
             get
@@ -109,23 +128,10 @@ namespace SkaaEditor
                 if (this.SprStruct.ActiveSprite != value)
                 {
                     this.SprStruct.ActiveSprite = value;
+                    OnActiveSpriteChanged(null);
                 }
             }
         }
-        //public GameSet ActiveGameSet
-        //{
-        //    get
-        //    {
-        //        return this._activeGameSet;
-        //    }
-        //    set
-        //    {
-        //        if (this._activeGameSet != value)
-        //        {
-        //            this._activeGameSet = value;
-        //        }
-        //    }
-        //}
         public SpriteFrame ActiveFrame
         {
             get
@@ -137,11 +143,10 @@ namespace SkaaEditor
                 if (this._activeFrame != value)
                 {
                     this._activeFrame = value;
-                    OnActiveFrameChanged(new EventArgs());
+                    OnActiveFrameChanged(null);
                 }
             }
         }
-
         public ColorPalette ActivePalette
         {
             get
@@ -153,7 +158,7 @@ namespace SkaaEditor
                 if (this.PalStruct.ActivePalette != value)
                 {
                     this.PalStruct.ActivePalette = value;
-                    OnPaletteChanged(new EventArgs());
+                    OnPaletteChanged(null);
                 }
             }
         }
@@ -171,36 +176,6 @@ namespace SkaaEditor
                 }
             }
         }
-        //public ColorPalette Palette
-        //{
-        //    get
-        //    {
-        //        return this._palette;
-        //    }
-        //    set
-        //    {
-        //        if (this._palette != value)
-        //        { 
-        //            this._palette = value;
-        //            OnPaletteChanged(new EventArgs());
-        //        }
-        //    }
-        //}
-        //public MemoryStream PaletteFileMemoryStream
-        //{
-        //    get
-        //    {
-        //        return this._paletteFileMemoryStream;
-        //    }
-        //    set
-        //    {
-        //        if(this._paletteFileMemoryStream != value)
-        //        {
-        //            this._paletteFileMemoryStream = value;
-        //        }
-        //    }
-        //}
-        //public string PaletteFileName;
 
         public Project ()
         {
@@ -208,12 +183,34 @@ namespace SkaaEditor
         public Project(string path, bool loadDefaults)
         {
             this._workingFolder = path;
+            this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
+            this.ActiveFrameChanged += Project_ActiveFrameChanged;
 
             if (loadDefaults)
             {
                 LoadPalette(_workingFolder);
                 LoadGameSet(_workingFolder);
             }
+        }
+
+        private void Project_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void Project_ActiveSpriteChanged(object sender, EventArgs e)
+        {
+            //changing the ActiveFrame property fires its event before 
+            //this event goes on to the MainForm and the TimeLine 
+            //control ends up not having an ActiveSprite before it tries
+            //to set its own ActiveFrame
+
+            //let the UI's event handler set the active frame
+
+            //if (this.ActiveSprite == null || this.ActiveSprite.Frames.Count < 1)
+            //    this.ActiveFrame = null;
+            //else
+            //    this.ActiveFrame = this.ActiveSprite.Frames[0];
         }
 
         /// <summary>
@@ -312,7 +309,7 @@ namespace SkaaEditor
 
                     SpriteFrame frame = new SpriteFrame(size, width, height, spr);
 
-                    frame.SprBitmapOffset = spritestream.Position - 8;
+                    frame.SprBitmapOffset = (uint?)spritestream.Position - 8;
 
                     frame.SetPixels(spritestream);
                     frame.BuildBitmap32bpp();

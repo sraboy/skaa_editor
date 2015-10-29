@@ -85,8 +85,8 @@ namespace SkaaEditor
             this.cbEdit = new System.Windows.Forms.CheckBox();
             this.imageEditorBox = new SkaaEditor.SkaaImageBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.cbMultiColumn = new MultiColumnComboBox.MultiColumnComboBoxControl();
             this.timelineControl = new Timeline.TimelineControl();
-            this.cbMultiColumn = new MultiColumnComboBoxControl.MultiColumnComboBox();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -348,6 +348,15 @@ namespace SkaaEditor
             this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // cbMultiColumn
+            // 
+            this.cbMultiColumn.FormattingEnabled = true;
+            this.cbMultiColumn.Location = new System.Drawing.Point(198, 3);
+            this.cbMultiColumn.Name = "cbMultiColumn";
+            this.cbMultiColumn.Size = new System.Drawing.Size(689, 21);
+            this.cbMultiColumn.TabIndex = 13;
+            this.cbMultiColumn.SelectionChangeCommitted += new System.EventHandler(this.cbMultiColumn_SelectionChangeCommitted);
+            // 
             // timelineControl
             // 
             this.timelineControl.ActiveFrame = null;
@@ -357,14 +366,6 @@ namespace SkaaEditor
             this.timelineControl.Name = "timelineControl";
             this.timelineControl.Size = new System.Drawing.Size(129, 172);
             this.timelineControl.TabIndex = 12;
-            // 
-            // mccbSprites
-            // 
-            this.cbMultiColumn.FormattingEnabled = true;
-            this.cbMultiColumn.Location = new System.Drawing.Point(198, 3);
-            this.cbMultiColumn.Name = "mccbSprites";
-            this.cbMultiColumn.Size = new System.Drawing.Size(689, 21);
-            this.cbMultiColumn.TabIndex = 13;
             // 
             // SkaaEditorMainForm
             // 
@@ -425,6 +426,6 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
-        private MultiColumnComboBoxControl.MultiColumnComboBox cbMultiColumn;
+        private MultiColumnComboBox.MultiColumnComboBoxControl cbMultiColumn;
     }
 }

@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaColorChooser", "SkaaCol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaImageBox", "SkaaImageBox\SkaaImageBox.csproj", "{086B66C3-643E-43C5-8ED9-5B8B1397277A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaFrameViewer", "SkaaFrameViewer\SkaaFrameViewer.csproj", "{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaControls", "SkaaFrameViewer\SkaaControls.csproj", "{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaGameDataLib", "SkaaGameDataLib\SkaaGameDataLib.csproj", "{DA473696-B41A-4C5E-879D-77AE1E12B01D}"
 EndProject

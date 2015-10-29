@@ -43,6 +43,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
@@ -60,7 +61,6 @@
     </Compile>
     <Compile Include="Misc.cs" />
     <Compile Include="Project.cs" />
-    <Compile Include="Serialization.cs" />
     <Compile Include="SkaaEditorMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,9 +121,9 @@
       <Project>{3f16f961-5140-422d-86a6-40ccea72b495}</Project>
       <Name>SkaaColorChooser</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SkaaFrameViewer\SkaaFrameViewer.csproj">
+    <ProjectReference Include="..\SkaaFrameViewer\SkaaControls.csproj">
       <Project>{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}</Project>
-      <Name>SkaaFrameViewer</Name>
+      <Name>SkaaControls</Name>
     </ProjectReference>
     <ProjectReference Include="..\SkaaGameDataLib\SkaaGameDataLib.csproj">
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>

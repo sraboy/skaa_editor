@@ -38,9 +38,9 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 
-namespace MultiColumnComboBoxControl
+namespace MultiColumnComboBox
 {
-    public partial class MultiColumnComboBox : ComboBox
+    public partial class MultiColumnComboBoxControl : ComboBox
     {
         //public MultiColumnComboBox()
         //{
