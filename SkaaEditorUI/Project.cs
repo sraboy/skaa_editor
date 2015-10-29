@@ -19,26 +19,6 @@ namespace SkaaEditor
     [Serializable]
     public class Project
     {
-        public struct SuperPalette
-        {
-            public string PaletteFileName;
-            public MemoryStream PaletteFileMemoryStream;
-            public ColorPalette ActivePalette;
-
-        }
-        public struct SuperGameSet
-        {
-            public string GameSetFileName;
-            public MemoryStream GameSetFileMemoryStream;
-            public GameSet ActiveGameSet;
-        }
-        public struct SuperSprite
-        {
-            public string SpriteFileName;
-            public MemoryStream SpriteFileMemoryStream;
-            public Sprite ActiveSprite;
-        }
-
         [NonSerialized]
         public SuperPalette PalStruct;
         [NonSerialized]
@@ -308,6 +288,7 @@ namespace SkaaEditor
 
             return this.ActivePalette;
         }
+
         public Sprite LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
@@ -345,7 +326,8 @@ namespace SkaaEditor
             }
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-            spr.SetupTable(this.ActiveGameSet.GetSpriteTablesInDataSet());
+            spr.GetTable(this.ActiveGameSet.GetSpriteTablesInDataSet());
+            spr.MatchFrameOffsets();
 
             return spr;
         }
@@ -362,9 +344,9 @@ namespace SkaaEditor
             try
             { 
                 if(filepath == null)
-                    Serialization.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
+                    ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
                 else
-                    Serialization.ZipProject(this, filepath);
+                    ProjectZipper.ZipProject(this, filepath);
             }
             catch(Exception ex)
             {
@@ -373,102 +355,14 @@ namespace SkaaEditor
 
             return true;
         }
-        /// <summary>
-        /// Deserializes the stream into a <see cref="Project"/> object
-        /// </summary>
-        /// <param name="str">The stream of the <see cref="Project"/> object</param>
-        /// <returns>A project object with the deserialized data</returns>
+
         public static Project LoadProject(Stream str)
         {
             return (Project) Serialization.Deserialize(str);
         }
         public static Project LoadProject(string filePath)
         {
-            return Serialization.LoadZipProject(filePath);
-        }
-    }
-
-    public static class Serialization
-    {
-        internal static Stream Serialize(object o)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                IFormatter fm = new BinaryFormatter();
-                fm.Serialize(ms, o);
-                return ms;
-            }
-
-            //todo: implement XmlSerializer with Base64-encoded binary blobs, or refs to files in archive
-            //XmlSerializer xs = new XmlSerializer(typeof(Project));
-            //using (MemoryStream ms = new MemoryStream())
-            //{
-            //    using (XmlWriter xw = XmlWriter.Create(ms))
-            //    {
-            //        xs.Serialize(xw, this);
-            //        return ms;
-            //    }
-            //}
-        }
-        internal static object Deserialize(Stream str)
-        {
-            return new BinaryFormatter().Deserialize(str);// as MemoryStream;
-        }
-        internal static void ZipProject(Project p, string filePath)
-        {            
-            using (FileStream zipStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite)) 
-            {
-                using (ZipArchive arch = new ZipArchive(zipStream, ZipArchiveMode.Create))
-                {
-                    ZipArchiveEntry paletteEntry = arch.CreateEntry(Path.GetFileName(p.PalStruct.PaletteFileName));
-                    p.PalStruct.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
-                    ZipArchiveEntry setEntry = arch.CreateEntry(Path.GetFileName(p.SetStruct.GameSetFileName));
-                    p.SetStruct.GameSetFileMemoryStream.WriteTo(setEntry.Open());
-                    ZipArchiveEntry spriteEntry = arch.CreateEntry(Path.GetFileName(p.SprStruct.SpriteFileName));
-                    p.SprStruct.SpriteFileMemoryStream.WriteTo(spriteEntry.Open());
-
-                    //using (StreamWriter sw = new StreamWriter(paletteEntry.Open()))
-                    //{
-                    //    //sw.Write(Convert.ToBase64CharArray(p.PaletteFileMemoryStream.ToArray(), 0, (int) p.PaletteFileMemoryStream.Length, );
-                    //    sw.WriteLine("Information about this package.");
-                    //    sw.WriteLine("========================");
-                    //}
-                }
-            }
-        }
-        internal static Project LoadZipProject(string filePath)
-        {
-            string path = Path.GetDirectoryName(filePath);
-            //todo: Open for updating 
-            ZipArchive arch = ZipFile.Open(filePath, ZipArchiveMode.Read);
-            //todo: change this to a temp folder with randomly generated name
-            arch.ExtractToDirectory(path + '\\' + Path.GetFileNameWithoutExtension(filePath));
-            //foreach(ZipArchiveEntry ent in arch.Entries)
-            //{
-            //    string[] name;
-            //    name = ent.Name.Split( new char[]{'.'} );
-            //    switch(name[1])
-            //    {
-            //        case "res":
-            //            //p.PalStruct.PaletteFileName = ent.Name;
-            //            p.LoadPalette()
-            //            break;
-            //        case "set":
-            //            p.SetStruct.GameSetFileName = ent.Name;
-            //            break;
-            //        case "spr":
-            //            p.SprStruct.SpriteFileName = ent.Name;
-            //            break;
-            //        default:
-            //            throw new FileFormatException("Expecting RES, SET and SPR file extensions.\nReceived " + name[1]);
-            //    }
-            //}
-            
-            Project p = new Project(Path.GetDirectoryName(filePath), false);
-            p.LoadPalette(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "res"));
-            p.LoadGameSet(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "set"));
-            p.LoadSprite(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "spr"));
-            return p;
+            return ProjectZipper.LoadZipProject(filePath);
         }
     }
 }

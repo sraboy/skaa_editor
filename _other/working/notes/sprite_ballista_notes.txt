@@ -1,15 +1,3 @@
-SFRAME dBase III database in std.set @ offset 0x1FA55-7a4ce (recordNum = 0x1d = 29)
-
-short rec_count = 0x24 = 36d
-dataSize = 0x1e1 = 481d
-
-record = {
-char[8] name;
-uint32_t pointer
-}
-
-SFRAME is @ indexId = 29 (0-indexed)
-
 Name    Act Dir Fid OffX OffY   W   H Filename BitmapPtr
 BALLISTA M   N   1    -6  -30  46  67 WB-M5-1  24035
 BALLISTA M   N   2    -6  -30  46  67 WB-M5-2  26084

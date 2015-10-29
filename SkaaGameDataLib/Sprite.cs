@@ -163,20 +163,87 @@ namespace SkaaGameDataLib
             return save;
         }
 
-        public void SetupTable(DataSet ds)
+        /// <summary>
+        /// Finds the DataTable for this <see cref="Sprite"/> in the provided DataSource by looking
+        /// for a DataTable which has a name that matches this sprite's <see cref="SpriteId"/>. The
+        /// sprite's <see cref="GameSetDataTable"/> is set to the matching DataTable or null if 
+        /// none is found.
+        /// </summary>
+        /// <param name="ds">The DataSource in which to look for the matching DataTable.</param>
+        /// <returns>The sprite's <see cref="GameSetDataTable"/>, which will be null if no match was found.</returns>
+        public DataTable GetTable(DataSet ds)
         {
             this.GameSetDataTable = ds.Tables[this.SpriteId];
-            int c = 0;
+            return this.GameSetDataTable;
+        }
 
-            foreach(DataRow dr in this.GameSetDataTable.Rows)
-            { 
-                int offset = Convert.ToInt32(dr.ItemArray[9]);
+        /// <summary>
+        /// Iterates through all the rows in this <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
+        /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRow"/>
+        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.SprBitmapOffset"/>.
+        /// </summary>
+        public void MatchFrameOffsets()
+        { 
+#if DEBUG
+            //counts how many frames find matches for offsets
+            int frameOffsetMatches = 0; 
+            //a list that can be copy/pasted to Excel and compared against a manual DBF dump
+            List<long> offsets = new List<long>();
+            foreach (SpriteFrame s in this.Frames)
+                offsets.Add(s.SprBitmapOffset);
+#endif
+
+            foreach (DataRow dr in this.GameSetDataTable.Rows)
+            {
+                string x = dr.ItemArray[9].ToString();
+
+                /* Codepage 437 is needed due to the use of Extended ASCII.
+                 *
+                 * For example, in SFRAME.dbf, the BITMAPPTR is labeled as a
+                 * CHAR type (which is just a string in dBase III parlance).
+                 * Because of this, it's not possible to read the bytes in as
+                 * numbers, even though they're just used as pointers in the 
+                 * original code.
+                 */
+                byte[] bytes = Encoding.GetEncoding(437).GetBytes(x);
+
+                uint? offset = null;
+                
+                switch(bytes.Length)
+                {
+                    case 0:
+                        offset = 0;
+                        break;
+                    case 1:
+                        offset = bytes[0];
+                        break;
+                    case 2:
+                        offset = BitConverter.ToUInt16(bytes, 0);
+                        break;
+                    case 3:
+                        byte[] copy = new byte[4];
+                        bytes.CopyTo(copy, 0);
+                        offset = BitConverter.ToUInt32(copy, 0);
+                        break;
+                    case 4:
+                        offset = BitConverter.ToUInt32(bytes, 0);
+                        break;
+                    default:
+                        throw new ArgumentNullException("There was an issue reading offsets from the sprite's DataTable that will cause the variable \'offset\' to remain null.");
+                }                    
+
                 SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
 
                 if (sf != null)
-                { 
+                {
                     sf.GameSetDataRow = dr;
-                    c++; //only 22 of 41 frames in Ballista get a match due to poor file reading by the Jet DB engine
+#if DEBUG
+                    frameOffsetMatches++;
+#endif
+                }
+                else
+                {
+                    throw new ArgumentNullException(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.SpriteId, offset.ToString()));
                 }
             }
         }

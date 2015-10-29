@@ -58,7 +58,9 @@
     <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Misc.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="Serialization.cs" />
     <Compile Include="SkaaEditorMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
