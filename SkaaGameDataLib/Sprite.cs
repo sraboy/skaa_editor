@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -141,22 +142,46 @@ namespace SkaaGameDataLib
         /// <returns>A byte array containing the SPR data that can be written directly to a file</returns>
         public byte[] BuildSPR()
         {
-            List<byte[]> SPRArrays = new List<byte[]>();
-            int initSize = 0;
-            
+            List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
+            uint initSize = 0;
+
+#if DEBUG
+            int rows = 0;
             foreach (SpriteFrame sf in this.Frames)
             {
-                SPRArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.SprFrameRawDataSize + 4); //add another four for ulong size
+                if (sf.GameSetDataRow != null)
+                    rows++;
+                else
+                    Debug.Assert(sf.GameSetDataRow == null, string.Format("SpriteFrame with offset {0} has no GameSetDataRow.", sf.SprBitmapOffset));
+            }
+#endif
+            foreach (SpriteFrame sf in this.Frames)
+            {
+                sf.GameSetDataRow.BeginEdit();
+                sf.SprBitmapOffset = initSize;
+                sf.GameSetDataRow.ItemArray[9] = sf.SprBitmapOffset.ToString();
+                sf.GameSetDataRow.AcceptChanges();
+
+                SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
+                initSize += (uint) (sf.SprFrameRawDataSize + 4); //add another four for ulong size
+
+                //sf.GameSetDataRow.BeginEdit();
+                //byte[] conv = BitConverter.GetBytes(sf.SprBitmapOffset.Value);
+                //sf.GameSetDataRow.ItemArray[9] = conv;
+                //sf.GameSetDataRow.AcceptChanges();
+
+                //sf.GameSetDataRow.Table.LoadDataRow(sf.GameSetDataRow.ItemArray, LoadOption.Upsert);
+                //sf.GameSetDataRow.Table.AcceptChanges();
             }
 
+            //convert the List<byte[]> to a byte[]
             int lastSize = 0;
-            byte[] save = new byte[initSize];
+            byte[] save = new byte[(int) initSize];
 
-            foreach (byte[] ba in SPRArrays)
+            foreach (byte[] b in SpriteFrameDataArrays)
             {
-                Buffer.BlockCopy(ba, 0, save, lastSize, Buffer.ByteLength(ba));
-                lastSize += ba.Length;
+                Buffer.BlockCopy(b, 0, save, lastSize, Buffer.ByteLength(b));
+                lastSize += b.Length;
             }
 
             return save;
@@ -182,10 +207,12 @@ namespace SkaaGameDataLib
         /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.SprBitmapOffset"/>.
         /// </summary>
         public void MatchFrameOffsets()
-        { 
+        {
+            Comparison<SpriteFrame> comp = new Comparison<SpriteFrame>(Misc.CompareFrameOffset);
+            this.Frames.Sort(comp);
 #if DEBUG
             //counts how many frames find matches for offsets
-            int frameOffsetMatches = 0; 
+            int frameOffsetMatches = 0;
             //a list that can be copy/pasted to Excel and compared against a manual DBF dump
             List<uint?> offsets = new List<uint?>();
             foreach (SpriteFrame s in this.Frames)
@@ -194,57 +221,46 @@ namespace SkaaGameDataLib
 
             foreach (DataRow dr in this.GameSetDataTable.Rows)
             {
-                string x = dr.ItemArray[9].ToString();
-
-                /* Codepage 437 is needed due to the use of Extended ASCII.
-                 *
-                 * For example, in SFRAME.dbf, the BITMAPPTR is labeled as a
-                 * CHAR type (which is just a string in dBase III parlance).
-                 * Because of this, it's not possible to read the bytes in as
-                 * numbers, even though they're just used as pointers in the 
-                 * original code.
-                 */
-                byte[] bytes = Encoding.GetEncoding(437).GetBytes(x);
-
-                uint? offset = null;
-                
-                switch(bytes.Length)
-                {
-                    case 0:
-                        offset = 0;
-                        break;
-                    case 1:
-                        offset = bytes[0];
-                        break;
-                    case 2:
-                        offset = BitConverter.ToUInt16(bytes, 0);
-                        break;
-                    case 3:
-                        byte[] copy = new byte[4];
-                        bytes.CopyTo(copy, 0);
-                        offset = BitConverter.ToUInt32(copy, 0);
-                        break;
-                    case 4:
-                        offset = BitConverter.ToUInt32(bytes, 0);
-                        break;
-                    default:
-                        throw new ArgumentNullException("There was an issue reading offsets from the sprite's DataTable that will cause the variable \'offset\' to remain null.");
-                }                    
+                uint offset = Convert.ToUInt32(dr.ItemArray[9]);
 
                 SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
-
-                if (sf != null)
-                {
-                    sf.GameSetDataRow = dr;
-#if DEBUG
-                    frameOffsetMatches++;
-#endif
-                }
-                else
+                if(sf == null)
                 {
                     throw new ArgumentNullException(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.SpriteId, offset.ToString()));
                 }
+                else
+                {
+                    sf.GameSetDataRow = dr;
+                }
+
+                //List<SpriteFrame> matches = this.Frames.FindAll(f => f.SprBitmapOffset == offset);
+
+//                if (matches.Count > 0)//!= null)// && sf.GameSetDataRow == null)
+//                {
+//                    foreach (SpriteFrame sf in matches)
+//                    {
+//                        sf.GameSetDataRow = dr;
+//#if DEBUG
+//                        frameOffsetMatches++;
+//                    }
+//#endif
+//                }
+//                else
+//                {
+//                    throw new ArgumentNullException(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.SpriteId, offset.ToString()));
+//                }
             }
+
+#if DEBUG
+            int rows = 0;
+            foreach (SpriteFrame sf in this.Frames)
+            {
+                if (sf.GameSetDataRow != null)
+                    rows++;
+                else
+                    throw new ArgumentNullException(string.Format("SpriteFrame with offset {0} has no GameSetDataRow.", sf.SprBitmapOffset));
+            }
+#endif
         }
 
         private void Sprite_PaletteUpdated(object sender, EventArgs e) { }

@@ -286,11 +286,10 @@ namespace SkaaGameDataLib
                 Palette.Add(c);
             }
 
-            //This function may be called to save the current
-            //image before making changes. So we need to build
-            //a 32-bit BMP with current FrameData and then build
-            //this SPR to return to the caller. This ensures the
-            //caller has an original as a runtime backup for undo.
+            //BuildBitmap8bppIndexed() may be called to save the 
+            //current image before making changes. So we build  
+            //a 32-bit BMP with current FrameData so it can be used 
+            //below and to build this SPR to return to the caller. 
             if (this.ImageBmp == null)
                 BuildBitmap32bpp();
 
@@ -361,6 +360,15 @@ namespace SkaaGameDataLib
             Array.Resize<byte>(ref indexedData, realOffset);
 
             return indexedData;
+        }
+
+        /// <summary>
+        /// This function builds a new 32-bit BMP and new SPR data based on the edited <see cref="Bitmap"/>
+        /// </summary>
+        public void SaveChanges(Bitmap bmp)
+        {
+            this.ImageBmp = bmp;
+            this.FrameData = BuildBitmap8bppIndexed();
         }
     }
 }

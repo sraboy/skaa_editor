@@ -216,11 +216,12 @@ namespace SkaaEditor
         #region Loading Events
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.ActiveProject != null)
-            {
-                if (!Confirm())
-                    return;
-            }
+            //todo: confirm user doesn't want to save the current changes
+            //if (this.ActiveProject != null)
+            //{
+            //    if (!Confirm())
+            //        return;
+            //}
 
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
@@ -233,8 +234,7 @@ namespace SkaaEditor
             }
 
         }
-        //todo: Confirm and maybe save any open project
-        private bool Confirm() { return true; }
+
         private void openSPRToolStripMenuItem_Click(object sender, EventArgs e)
         {
             /* To see SPR loading in action, view ResourceDb::init_imported() 
@@ -340,6 +340,8 @@ namespace SkaaEditor
             {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
+                    SaveFrame();
+
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
                         byte[] save = this.ActiveProject.ActiveSprite.BuildSPR();
@@ -392,9 +394,9 @@ namespace SkaaEditor
                 {
                     //get this before SaveActiveFrameChanges() changes it
                     bool needToSaveSet = this._awaitingEdits;
-                    SaveActiveFrameChanges();
-                    //updates this frame's ImageBmp based on changes
-                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+                    SaveFrame(); //updates this frame's ImageBmp based on changes
+
+                    //this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
                     int totalFrames = this.ActiveProject.ActiveSprite.Frames.Count;
                     int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
 
@@ -466,7 +468,7 @@ namespace SkaaEditor
         {
             this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
         }
-        private void SaveActiveFrameChanges()
+        private void SaveFrame()
         {
             //todo: implement Undo/Redo from here with pairs of old/new frames
             if (this._awaitingEdits &&
@@ -474,8 +476,9 @@ namespace SkaaEditor
                 && this.ActiveProject.ActiveFrame.ImageBmp != null
                 && this.imageEditorBox != null)
             {
-                this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
-                this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
+                //this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
+                //this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
+                this.ActiveProject.ActiveFrame.SaveChanges(this.imageEditorBox.Image as Bitmap);
                 this.ActiveProject.ActiveFrame.PendingRawChanges = false;
                 this._awaitingEdits = false;
             }
@@ -558,25 +561,6 @@ namespace SkaaEditor
             NewProject(true);
             //SetupUI();
         }
-        private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
-        {
-            this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
-        }
-        private void imageEditorBox_ImageChanged(object sender, EventArgs e)
-        {
-            SetupUI();
-        }
-        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
-        {
-            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
-            // which is actually false by the time we get to here.
-            if (this.cbEdit.Checked)
-            {
-                this._awaitingEdits = true;
-                this.ActiveProject.ActiveFrame.PendingRawChanges = true;
-                this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
-            }
-        }
         private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
         {
             //sets the palette which causes the color chooser's buttons to be filled
@@ -591,9 +575,26 @@ namespace SkaaEditor
 
             //SetupUI(); //called by imageEditorBox_ImageChanged()
         }
-        private void cbEdit_CheckedChanged(object sender, EventArgs e)
+        private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
         {
-            this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
+            this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
+        }
+
+        private void imageEditorBox_ImageChanged(object sender, EventArgs e)
+        {
+            SetupUI();
+        }
+        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
+        {
+            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
+            // which is actually false by the time we get to here.
+            if (this.cbEdit.Checked)
+            {
+                this._awaitingEdits = true;
+                this.ActiveProject.ActiveFrame.PendingRawChanges = true;
+                
+                this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
+            }
         }
         private void imageEditorBox_MouseUp(object sender, MouseEventArgs e)
         {
@@ -603,6 +604,10 @@ namespace SkaaEditor
             {
                 //SaveActiveFrame();
             }
+        }
+        private void cbEdit_CheckedChanged(object sender, EventArgs e)
+        {
+            this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
         }
         private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
