@@ -181,6 +181,7 @@ namespace SkaaEditor
         public Project ()
         {
         }
+
         public Project(string workingFolder, bool loadDefaults)
         {
             this._workingFolder = workingFolder;
@@ -244,9 +245,13 @@ namespace SkaaEditor
             //this.SuperSet.GameSetFileName = filename;
             this.SpriteTablesDataSet = this.ActiveGameSet.GetSpriteTablesInDataSet();
         }
+        /// <summary>
+        /// Loads a palette file.
+        /// </summary>
+        /// <param name="filepath">The specific palette file to load. If blank, the project's current working folder is used and pal_std.res is loaded.</param>
+        /// <returns>A ColorPalette built from the palette file</returns>
         public ColorPalette LoadPalette(string filepath = null)
         {
-            
             if (filepath == null)
                 filepath = this._workingFolder;
 
@@ -260,7 +265,6 @@ namespace SkaaEditor
                 this.SuperPal.PaletteFileName = Path.GetFileName(filepath);
                 filepath = Path.GetDirectoryName(filepath);
             }
-
 
             this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;          
 

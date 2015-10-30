@@ -101,9 +101,9 @@ namespace SkaaEditor
             }
             set
             {
-                if(this._activeProject != value)
+                if (this._activeProject != value)
                 {
-                    this._activeProject = value;                   
+                    this._activeProject = value;
                     OnActiveProjectChanged(new EventArgs());
                 }
             }
@@ -198,7 +198,7 @@ namespace SkaaEditor
                 this.cbMultiColumn.ValueMember = "ACTION";
             }
             else
-            { 
+            {
                 this.cbMultiColumn.DataSource = null;
                 this.cbMultiColumn.Enabled = false;
             }
@@ -212,7 +212,7 @@ namespace SkaaEditor
             // guess for the user, in case they open a previously
             // edited sprite without having saved a GameSet.
         }
-     
+
         #region Loading Events
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -225,16 +225,16 @@ namespace SkaaEditor
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.DefaultExt = ".skp";
-                if(dlg.ShowDialog() == DialogResult.OK)
-                { 
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
                     this.ActiveProject = Project.LoadProject(dlg.FileName);
                     SetupUI();
                 }
             }
-            
+
         }
         //todo: Confirm and maybe save any open project
-        private bool Confirm() { return true; } 
+        private bool Confirm() { return true; }
         private void openSPRToolStripMenuItem_Click(object sender, EventArgs e)
         {
             /* To see SPR loading in action, view ResourceDb::init_imported() 
@@ -251,14 +251,14 @@ namespace SkaaEditor
                 return;
 
             using (OpenFileDialog dlg = new OpenFileDialog())
-            { 
+            {
                 dlg.DefaultExt = ".spr";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     this.ActiveProject.ActiveSprite = this.ActiveProject.LoadSprite(dlg.FileName);
                     //this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
-                    
+
                     this.exportBmpToolStripMenuItem.Enabled = true;
                     //this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
                     this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
@@ -324,7 +324,7 @@ namespace SkaaEditor
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create)) //truncates the current file if it exists already
-                    { 
+                    {
                         byte[] spr_data = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
                         fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     }
@@ -337,7 +337,7 @@ namespace SkaaEditor
                 throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
-            { 
+            {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
@@ -359,18 +359,9 @@ namespace SkaaEditor
                 dlg.FileName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHMM") + ".skp";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
-                { 
+                {
                     this.ActiveProject.SaveProject(dlg.FileName);
 
-                    
-
-                    //using (MemoryStream ms = this.ActiveProject.SaveProject() as MemoryStream)
-                    //{
-                    //    byte[] array = ms.ToArray();
-
-                    //    using (FileStream fileStream = new FileStream(dlg.FileName, FileMode.Create))
-                    //        fileStream.Write(array, 0, array.Length);
-                    //}
                 }
             }
         }
@@ -436,7 +427,7 @@ namespace SkaaEditor
                         exportHeight = low * spriteHeight;
 
                     using (Bitmap bitmap = new Bitmap(exportWidth, exportHeight))
-                    { 
+                    {
                         using (Graphics g = Graphics.FromImage(bitmap))
                         {
                             int frameIndex = 0;
@@ -456,9 +447,9 @@ namespace SkaaEditor
                             bitmap.Save(fs, ImageFormat.Bmp);
                     }
 
-                    if(needToSaveSet)
+                    if (needToSaveSet)
                     {
-                        
+
                     }
 
                 }//end if
