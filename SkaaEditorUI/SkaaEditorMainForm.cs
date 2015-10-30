@@ -361,7 +361,6 @@ namespace SkaaEditor
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     this.ActiveProject.SaveProject(dlg.FileName);
-
                 }
             }
         }

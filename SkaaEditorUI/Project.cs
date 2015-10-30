@@ -182,9 +182,9 @@ namespace SkaaEditor
         {
         }
 
-        public Project(string workingFolder, bool loadDefaults)
+        public Project(string workingPath, bool loadDefaults)
         {
-            this._workingFolder = workingFolder;
+            this._workingFolder = workingPath;
             this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
             this.ActiveFrameChanged += Project_ActiveFrameChanged;
 
@@ -296,7 +296,7 @@ namespace SkaaEditor
             if (this.ActivePalette == null)
                 return null;
 
-            SuperSprite ssp = new SuperSprite();
+            this.SuperSpr = new SuperSprite();
             Sprite spr = new Sprite(this.ActivePalette);
 
             using (FileStream spritestream = File.OpenRead(filepath))
@@ -322,13 +322,12 @@ namespace SkaaEditor
                     spr.Frames.Add(frame);
                 }
 
-                ssp.ActiveSprite = spr;
-                ssp.SpriteFileName = Path.GetFileName(filepath);
-                ssp.SpriteFileMemoryStream = new MemoryStream();
+                //this.ActiveSprite = spr; //this ends up firing the event too early. return the spr instead.
+                this.SuperSpr.SpriteFileName = Path.GetFileName(filepath);
+                this.SuperSpr.SpriteFileMemoryStream = new MemoryStream();
                 spritestream.Position = 0;
-                spritestream.CopyTo(ssp.SpriteFileMemoryStream);
+                spritestream.CopyTo(this.SuperSpr.SpriteFileMemoryStream);
                 spritestream.Position = 0;
-                this.SuperSpr = ssp;
 
                 //this.SprStruct.SpriteFileMemoryStream = new MemoryStream();
                 //spritestream.Position = 0;
@@ -361,6 +360,7 @@ namespace SkaaEditor
                     ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
                 else
                     ProjectZipper.ZipProject(this, filepath);
+
         }
         public static Project LoadProject(Stream str)
         {
