@@ -23,8 +23,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.OleDb;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -91,6 +93,7 @@ namespace SkaaGameDataLib
         //    this.RawDataStream.Position = 0;
         //    return this.RawDataStream;
         //}
+
         /// <summary>
         /// Breaks up the SFRAME DataTable into individual DataTables, one for each sprite in the SFRAME DataTable
         /// </summary>
@@ -101,11 +104,11 @@ namespace SkaaGameDataLib
         public DataSet GetSpriteTablesInDataSet()
         {
             DataTable sframeTable = this.Databases.Tables["SFRAME"];
-            List<string> spriteNames = new List<string>();
             DataSet allSpritesSet = new DataSet("sprites");
 
             foreach (DataRow r in sframeTable.Rows)
             {
+                //string name = Encoding.ASCII.GetString((byte[])r[0]);
                 DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
                 DataTable tbl;
 
@@ -118,12 +121,12 @@ namespace SkaaGameDataLib
                 {
                     tbl = sframeTable.Clone();
                     tbl.TableName = r[0].ToString();
-                    spriteNames.Add(r[0].ToString());
+                    //spriteNames.Add(r[0].ToString());
                     tbl.ImportRow(r);
                     allSpritesSet.Tables.Add(tbl);
                 }
             }
-            
+
             return allSpritesSet;
         }
         #region old DbfFile Reader
@@ -175,9 +178,9 @@ namespace SkaaGameDataLib
                 string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
                     this._workingPath + "\\dbf" + ";Extended Properties=dBase III";
 
-                using (OleDbConnection dbfFile = new OleDbConnection(connex))
+                using (OleDbConnection dbConnex = new OleDbConnection(connex))
                 {
-                    OleDbCommand cmd = new OleDbCommand("SELECT * FROM [" + tempFile + ']', dbfFile);
+                    OleDbCommand cmd = new OleDbCommand("SELECT * FROM [" + tempFile + ']', dbConnex);
                     #region old sframe
                     //if (r.name == "SFRAME") //special reading of this file to read BITMAPPTR properly
                     //{
@@ -267,9 +270,52 @@ namespace SkaaGameDataLib
                     using (OleDbDataAdapter adapter = new OleDbDataAdapter(cmd))
                     {
                         DataTable table = new DataTable(r.name);
-                        dbfFile.Open();
+                        dbConnex.Open();
+
                         adapter.FillSchema(table, SchemaType.Source);
-                        adapter.Fill(table);
+                        if(table.TableName == "SFRAME")
+                        {
+                            dbConnex.Close();
+
+                            #region old manual reader
+                            //using (FileStream fsFixDataType = new FileStream(this._workingPath + "\\dbf\\" + tempFile, FileMode.Open))
+                            //{
+                            //    using (MemoryStream ms = new MemoryStream())
+                            //    { 
+                            //        fsFixDataType.CopyTo(ms);
+                            //        using (FileStream fsBackup = new FileStream(this._workingPath + "\\dbf\\" + table.TableName + "_fixed.dbf", FileMode.OpenOrCreate))
+                            //        { 
+                            //            ms.CopyTo(fsBackup);
+                            //        }
+                            //        ms.Position = 0x14B;
+                            //        char colType = (char) ms.ReadByte();
+                            //        if(colType == 'C')
+                            //        {
+                            //            ms.Position--;
+                            //            ms.WriteByte(0x4e); //0x4e = N = Number
+                            //        }
+                            //        ms.CopyTo(fsFixDataType);
+                            //    }
+                            //}
+                            ////cmd = new OleDbCommand("SELECT * FROM [" + table.TableName + "_fixed.dbf" + ']', dbfFile);
+                            //dbConnex.Open();
+                            #endregion
+
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                using (FileStream fsSframe = new FileStream(this._workingPath + "\\dbf\\" + tempFile, FileMode.Open))
+                                {
+                                    fsSframe.CopyTo(ms);
+                                }
+
+                                DbfFile dbfFile = new DbfFile(ms, r.name, (int) ms.Length);
+                                table = dbfFile.GetConvertedRawDataTable();
+                            }
+
+                            //FillTable(table, cmd, dbConnex);
+                        }
+                        else
+                            adapter.Fill(table);
                         #region old sframe
                         //if (r.name == "SFRAME") //special reading of this file to read BITMAPPTR properly
                         //{
@@ -343,6 +389,65 @@ namespace SkaaGameDataLib
                 }
             }
         }
+        private void FillTable(DataTable dt, OleDbCommand cmd, OleDbConnection conn)
+        {
+            // Execute the SELECT command and gets a reader
+            OleDbDataReader dr = cmd.ExecuteReader();
+            dt.Columns[9].MaxLength = -1;
+            dt.Columns[9].DataType = typeof(uint);
+            dt.AcceptChanges();
+
+            while (dr.Read())
+            {
+                
+                
+                object sprite = dr.IsDBNull(0) ? (object) DBNull.Value : dr.GetString(0);
+//#if DEBUG
+//                if (sprite.ToString() == "BALLISTA")
+//                    Debugger.Break();
+//#endif
+                object action = dr.IsDBNull(1) ? (object) DBNull.Value : dr.GetString(1);
+                object dir = dr.IsDBNull(2) ? (object) DBNull.Value : dr.GetString(2);
+                object frame = dr.IsDBNull(3) ? (object) DBNull.Value : Convert.ToInt16(dr.GetString(3));
+                object offset_x = dr.IsDBNull(4) ? (object) DBNull.Value : Convert.ToDouble(dr.GetValue(4));
+                object offset_y = dr.IsDBNull(5) ? (object) DBNull.Value : Convert.ToDouble(dr.GetValue(5));
+                object width = dr.IsDBNull(6) ? (object) DBNull.Value : Convert.ToInt32(dr.GetValue(6));
+                object height = dr.IsDBNull(7) ? (object) DBNull.Value : Convert.ToInt32(dr.GetValue(7));
+                object filename = dr.IsDBNull(8) ? (object) DBNull.Value : dr.GetString(8);
+//#if DEBUG
+//                if (sprite.ToString() == "BALLISTA" && filename.ToString() == "WB-M4-2")
+//                    Debugger.Break();
+//#endif
+                //dr.GetBytes() has invalid cast errors all the time. GetChars() works fine for some reason.
+
+                //object bitmapptr = dr.IsDBNull(9) ? (object) DBNull.Value : new Func<uint> (() => { byte[] bytes = new byte[4]; dr.GetBytes(9, 0, bytes, 0, 4); return Convert.ToUInt32(bytes); })();
+                Func<byte[]> ConvertCharsToBytes = () => { char[] chars = new char[4]; byte[] bytes = new byte[4]; dr.GetChars(9, 0, chars, 0, 4); return Encoding.GetEncoding(437).GetBytes(chars);};
+                object bitmapptr = dr.IsDBNull(9) ? 0 : BitConverter.ToUInt32(ConvertCharsToBytes(), 0);
+
+                //MemoryStream stream = dr.GetStream(0) as MemoryStream;
+
+
+                DataRow row = dt.NewRow();
+                row.BeginEdit();
+                
+                row[0] = sprite;
+                row[1] = action;
+                row[2] = dir;
+                row[3] = frame;
+                row[4] = offset_x;
+                row[5] = offset_y;
+                //if (width == null)
+                //    row[6] = DBNull.Value;
+
+                row[6] = width;// ?? (object)DBNull.Value;
+                row[7] = height;
+                row[8] = filename;
+                row[9] = bitmapptr;//Convert.ToUInt32(bitmapptr.ToString());
+                
+                dt.Rows.Add(row);
+                row.AcceptChanges();
+            }
+        }
         /// <summary>
         /// Reads all the <see cref="ResIndex"/> rows from <see cref="_rawData"/>, a .set file.
         /// </summary>
@@ -378,10 +483,11 @@ namespace SkaaGameDataLib
             return dataRows;
         }
 
-        public void SaveDataSetToSetFile(string filepath, DataTable tableToMerge)
+        public void MergeDataTableChanges(DataRow dr)//string filepath, DataTable tableToMerge)
         {
-            DataTable newDataTable;// = new DataTable();
-            //newDataTable = tableToMerge.Clone();
+            DataTable newDataTable;
+            DataTable tableToMerge = dr.Table;
+
             newDataTable = this.Databases.Tables[tableToMerge.TableName];
             newDataTable.Merge(tableToMerge, true, MissingSchemaAction.Add);
 

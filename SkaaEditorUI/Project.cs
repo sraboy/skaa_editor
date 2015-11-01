@@ -315,7 +315,7 @@ namespace SkaaEditor
 
                     SpriteFrame frame = new SpriteFrame(size, width, height, spr);
 
-                    frame.SprBitmapOffset = (uint?)spritestream.Position - 8;
+                    frame.SprBitmapOffset = (int) spritestream.Position - 8;
 
                     frame.SetPixels(spritestream);
                     frame.BuildBitmap32bpp();
@@ -351,16 +351,10 @@ namespace SkaaEditor
         }
         public void SaveProject(string filepath)
         {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                BuildNewSet().CopyTo(ms);
-            }
-
             if (filepath == null)
                     ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
                 else
                     ProjectZipper.ZipProject(this, filepath);
-
         }
         public static Project LoadProject(Stream str)
         {
@@ -370,13 +364,13 @@ namespace SkaaEditor
         {
             return ProjectZipper.LoadZipProject(filePath);
         }
-        public MemoryStream BuildNewSet()
+       
+        public void UpdateGameSet()
         {
-            using (MemoryStream ms = new MemoryStream())
+            foreach(SpriteFrame sf in this.ActiveSprite.Frames)
             {
-
-
-                return ms;
+                if (sf.PendingRawChanges)
+                    this.ActiveGameSet.MergeDataTableChanges(sf.GameSetDataRow);
             }
         }
     }
