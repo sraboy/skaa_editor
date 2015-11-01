@@ -33,12 +33,15 @@ using System.IO;
 
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Data;
 
 namespace SkaaGameDataLib
 {
+    [Serializable]
     public class SpriteFrame
     {
-        private int _sprSize, _pixelSize, _height, _width;
+        private int _sprFrameRawDataSize, _pixelSize, _height, _width;
+        private Sprite _parentSprite;
 
         /// <summary>
         /// The size, in pixels, of the frame. Simple height * width.
@@ -59,27 +62,45 @@ namespace SkaaGameDataLib
         /// The size, in bytes, of the SPR data, not counting the four bytes used to represent this value.
         /// This value needs to be recalculated if the frame is edited due to the transparency compression.
         /// </summary>
-        public int SprSize
+        public int SprFrameRawDataSize
         {
             get
             {
-                return this._sprSize;
+                return this._sprFrameRawDataSize;
             }
             set
             {
-                if (this._sprSize != value)
-                    this._sprSize = value;
+                if (this._sprFrameRawDataSize != value)
+                    this._sprFrameRawDataSize = value;
             }
         }
         public int Height
         {
-            get;
-            set;
+            get
+            {
+                return this._height;
+            }
+            set
+            {
+                if(this._height != value)
+                {
+                    this._height = value;
+                }
+            }
         }
         public int Width
         {
-            get;
-            set;
+            get
+            {
+                return this._width;
+            }
+            set
+            {
+                if (this._width != value)
+                {
+                    this._width = value;
+                }
+            }
         }
         public byte[] FrameData
         {
@@ -91,11 +112,32 @@ namespace SkaaGameDataLib
             get;
             set;
         }
+        public Sprite ParentSprite
+        {
+            get
+            {
+                return this._parentSprite;
+            }
+            set
+            {
+                if (this._parentSprite != value)
+                    this._parentSprite = value;
+            }
+        }
         public ColorPalette Palette
+        {
+            get
+            {
+                return this.ParentSprite.Palette;
+            }
+        }
+        public DataRow GameSetDataRow
         {
             get;
             set;
         }
+        public uint? SprBitmapOffset;
+        public bool PendingRawChanges;
 
         #region Constructors
         /// <summary>
@@ -106,26 +148,26 @@ namespace SkaaGameDataLib
         /// <summary>
         /// Initializes the new sprite frame of the specified size pre-filled with 0xff (transparent byte).
         /// </summary>
-        /// <param name="sizeOfSPR">The size in bytes of the frame, including 2 bytes each for height and width</param>
+        /// <param name="sizeOfFrame">The size in bytes of the frame, including 2 bytes each for height and width</param>
         /// <param name="width">The width of the frame in pixels</param>
         /// <param name="height">The height of the frame in pixels</param>
-        /// <param name="palette">The ColorPalette to associate with this frame</param>
+        /// <param name="parent">The Sprite to which this frame belongs</param>
         /// <remarks> 
         /// We preset all bytes to 0xff, an unused palette entry that signifies a 
         /// transparent pixel.The default is 0x00, but that's actually used for 
         /// black.This is required due to the manual compression the 7KAA developers
         /// used in the SPR files. See <see cref="SetPixels(FileStream)"/> for the implementation.
         /// </remarks>
-        public SpriteFrame(int sizeOfSPR, int width, int height, ColorPalette palette)
+        public SpriteFrame(int sizeOfFrame, int width, int height, Sprite parent)
         {
-            this.SprSize = sizeOfSPR;
+            this.ParentSprite = parent;
+            this.SprFrameRawDataSize = sizeOfFrame;
             this.Height = height;
             this.Width = width;
 
             this.PixelSize = this.Height * this.Width;
             this.FrameData = new byte[PixelSize];
             FrameData = Enumerable.Repeat<byte>(0xff, PixelSize).ToArray();
-            this.Palette = palette;
         }
         #endregion
 
@@ -182,10 +224,9 @@ namespace SkaaGameDataLib
                     }
                 }//end inner for
             }//end outer for
-        }//end SetPixels()
+        }
         public Bitmap BuildBitmap32bpp()
         {
-            //this.FrameData = this.BuildBitmap8bppIndexed();
             int idx;
             Bitmap bmp = new Bitmap(this.Width, this.Height);
 
@@ -207,11 +248,6 @@ namespace SkaaGameDataLib
             return this.ImageBmp;
         }
 
-        //public void VerifySize(byte[] data)
-        //{
-        //    //todo: check for garbage at the end
-        //}
-
         /// <summary>
         /// Supplies an SPR-formatted version of this frame.
         /// </summary>
@@ -227,7 +263,6 @@ namespace SkaaGameDataLib
 
             // todo: will have to recalculate size if pixels change because the number of
             //       ommitted transparent bytes will have changed too
-            //byte[] size = BitConverter.GetBytes(this.SprSize);
             byte[] width = BitConverter.GetBytes((short) this.Width);
             byte[] height = BitConverter.GetBytes((short) this.Height);
 
@@ -240,8 +275,6 @@ namespace SkaaGameDataLib
             *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
             **************************************************************************/
             int seek_pos = 4; //first four bytes are for SprSize, at the end of the function
-            //Buffer.BlockCopy(size, 0, indexedData, seek_pos, size.Length);
-            //seek_pos += size.Length;
             Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
             seek_pos += width.Length;
             Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
@@ -253,12 +286,20 @@ namespace SkaaGameDataLib
                 Palette.Add(c);
             }
 
+            //This function may be called to save the current
+            //image before making changes. So we need to build
+            //a 32-bit BMP with current FrameData and then build
+            //this SPR to return to the caller. This ensures the
+            //caller has an original as a runtime backup for undo.
+            if (this.ImageBmp == null)
+                BuildBitmap32bpp();
+
             //the below is pretty much the same as GetPixel() but reversed(ish)
-            for (int y = 0; y < ImageBmp.Height; ++y)
+            for (int y = 0; y < this.ImageBmp.Height; ++y)
             {
-                for (int x = 0; x < ImageBmp.Width; ++x)
+                for (int x = 0; x < this.ImageBmp.Width; ++x)
                 {
-                    Color pixel = ImageBmp.GetPixel(x, y);
+                    Color pixel = this.ImageBmp.GetPixel(x, y);
                     var pixARGB = pixel.ToArgb();
                     palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(pixARGB)));
 
@@ -313,11 +354,9 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
 
-            //VerifySize(indexedData);
-
-            this.SprSize = realOffset - 4;
-            byte[] size = BitConverter.GetBytes(this.SprSize);
-            if (size.Length > 4) throw new Exception("SPR cannot contain more than 32-bits worth of data!");
+            this.SprFrameRawDataSize = realOffset - 4;
+            byte[] size = BitConverter.GetBytes(this.SprFrameRawDataSize);
+            if (size.Length > 4) throw new Exception("SPR size must be Int32!");
             Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
             Array.Resize<byte>(ref indexedData, realOffset);
 
