@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -176,6 +177,7 @@ namespace SkaaGameDataLib
 
             DataTable table = new DataTable(this.TableName);
 
+            //build columns
             foreach (FieldDescriptor fd in this.FieldDescriptorArray)
             {
                 DataColumn col = new DataColumn(fd.FieldName);
@@ -211,11 +213,7 @@ namespace SkaaGameDataLib
                 table.Columns.Add(col);
             }
 
-
-
-            
-            //List<object> values = new List<object>();
-
+            //populate rows
             while(this._memoryStream.Position < this._memoryStream.Length)
             {
                 DataRow row = table.NewRow();
@@ -261,7 +259,118 @@ namespace SkaaGameDataLib
             table.AcceptChanges();
             return table;
         }
+        public DataTable GetConvertedRawDataTable()
+        {
+            DataTable table = new DataTable(this.TableName);
 
+            //build columns
+            foreach (FieldDescriptor fd in this.FieldDescriptorArray)
+            {
+                DataColumn col = new DataColumn(fd.FieldName);
+                col.DataType = typeof(object);
+
+                //http://www.clicketyclick.dk/databases/xbase/format/data_types.html
+                switch (fd.FieldType)
+                {
+                    case 'C': //string < 254 chars
+                        col.DataType = typeof(string);
+                        col.MaxLength = 11;// 10 for 32-bit int max (4,294,967,295) + /0      // fd.FieldLength + 1; //+ 1 for null terminator
+                        break;
+                    case 'N': //int64 (up to 18 chars according to dBase spec)
+                        col.DataType = typeof(long);
+                        break;
+                    case 'L': //nullable bool, byte
+                        throw new NotImplementedException("Encountered /'L/' for nullable bool!");
+                        break;
+                    case 'D': //YYYYMMDD
+                        throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
+                        break;
+                    case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
+                        throw new NotImplementedException("Encountered /'@/' for time!");
+                        break;
+                    case 'O': //double (8 bytes)
+                        throw new NotImplementedException("Encountered /'O/' for double!");
+                        break;
+                    case '+': //auto-increment (long)
+                        throw new NotImplementedException("Encountered /'+/' for auto-increment!");
+                        break;
+                }
+
+                table.Columns.Add(col);
+            }
+
+            //populate rows
+            while (this._memoryStream.Position < this._memoryStream.Length)
+            {
+                DataRow row = table.NewRow();
+                table.Rows.Add(row);
+                
+
+                byte recordDivider = (byte) this._memoryStream.ReadByte();
+                if (recordDivider != 0x20)
+                {
+                    //check EOF first
+                    if (recordDivider == 0x1a || this._memoryStream.Position < this._memoryStream.Length)
+                        break;
+                    else
+                        throw new Exception(string.Format("Record divider is not 0x20! Byte is {0}.", recordDivider.ToString()));
+                }
+
+                for (int i = 0; i < this.FieldDescriptorArray.Count; i++)
+                {
+                    FieldDescriptor fd = this.FieldDescriptorArray[i];
+                    byte[] bytes = new byte[fd.FieldLength];
+                    this._memoryStream.Read(bytes, 0, bytes.Length);
+                    row.BeginEdit();
+                    //row[i] = bytes;
+
+                    switch (fd.FieldType)
+                    {
+                        case 'C':
+                            if(fd.FieldName == "BITMAPPTR")
+                            {
+                                int val = BitConverter.ToInt32(bytes, 0);
+                                row[i] = bytes==null ? "0" : val.ToString();
+                            }
+                            else
+                                row[i] = Encoding.ASCII.GetString(bytes);
+                            break;
+                        case 'N':
+                            string str = Encoding.ASCII.GetString(bytes);
+                            int conv = Convert.ToInt32(str);// BitConverter.ToInt16(val, 1);
+                            row[i] = conv;
+                            break;
+                        case 'L': //nullable bool, byte
+                            throw new NotImplementedException("Encountered /'L/' for nullable bool!");
+                            break;
+                        case 'D': //YYYYMMDD
+                            throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
+                            break;
+                        case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
+                            throw new NotImplementedException("Encountered /'@/' for time!");
+                            break;
+                        case 'O': //double (8 bytes)
+                            throw new NotImplementedException("Encountered /'O/' for double!");
+                            break;
+                        case '+': //auto-increment (long)
+                            throw new NotImplementedException("Encountered /'+/' for auto-increment!");
+                            break;
+                    }
+
+                    row.AcceptChanges();
+
+                    if(i != 0 && i % FieldDescriptorArray.Count == 0) //only after getting all columns, so at the end of each row
+                    {
+                        recordDivider = (byte) this._memoryStream.ReadByte();
+                        if (recordDivider != 0x20)
+                            throw new Exception(string.Format("Record divider is not 0x20! Byte is {0}.", recordDivider.ToString()));
+                    }
+                }
+            }
+
+            table.AcceptChanges();
+            return table;
+        }
         private void ReadPreHeader()
         {
             this.Header.Version = (byte) _memoryStream.ReadByte();

@@ -136,7 +136,7 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-        public uint? SprBitmapOffset;
+        public int SprBitmapOffset;
         public bool PendingRawChanges;
 
         #region Constructors

@@ -93,6 +93,7 @@ namespace SkaaGameDataLib
         //    this.RawDataStream.Position = 0;
         //    return this.RawDataStream;
         //}
+
         /// <summary>
         /// Breaks up the SFRAME DataTable into individual DataTables, one for each sprite in the SFRAME DataTable
         /// </summary>
@@ -103,11 +104,11 @@ namespace SkaaGameDataLib
         public DataSet GetSpriteTablesInDataSet()
         {
             DataTable sframeTable = this.Databases.Tables["SFRAME"];
-            //List<string> spriteNames = new List<string>();
             DataSet allSpritesSet = new DataSet("sprites");
 
             foreach (DataRow r in sframeTable.Rows)
             {
+                //string name = Encoding.ASCII.GetString((byte[])r[0]);
                 DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
                 DataTable tbl;
 
@@ -125,7 +126,7 @@ namespace SkaaGameDataLib
                     allSpritesSet.Tables.Add(tbl);
                 }
             }
-            
+
             return allSpritesSet;
         }
         #region old DbfFile Reader
@@ -276,17 +277,16 @@ namespace SkaaGameDataLib
                         {
                             dbConnex.Close();
 
+                            #region old manual reader
                             //using (FileStream fsFixDataType = new FileStream(this._workingPath + "\\dbf\\" + tempFile, FileMode.Open))
                             //{
                             //    using (MemoryStream ms = new MemoryStream())
                             //    { 
                             //        fsFixDataType.CopyTo(ms);
-
                             //        using (FileStream fsBackup = new FileStream(this._workingPath + "\\dbf\\" + table.TableName + "_fixed.dbf", FileMode.OpenOrCreate))
                             //        { 
                             //            ms.CopyTo(fsBackup);
                             //        }
-
                             //        ms.Position = 0x14B;
                             //        char colType = (char) ms.ReadByte();
                             //        if(colType == 'C')
@@ -297,9 +297,10 @@ namespace SkaaGameDataLib
                             //        ms.CopyTo(fsFixDataType);
                             //    }
                             //}
-
                             ////cmd = new OleDbCommand("SELECT * FROM [" + table.TableName + "_fixed.dbf" + ']', dbfFile);
                             //dbConnex.Open();
+                            #endregion
+
                             using (MemoryStream ms = new MemoryStream())
                             {
                                 using (FileStream fsSframe = new FileStream(this._workingPath + "\\dbf\\" + tempFile, FileMode.Open))
@@ -308,10 +309,10 @@ namespace SkaaGameDataLib
                                 }
 
                                 DbfFile dbfFile = new DbfFile(ms, r.name, (int) ms.Length);
-                                table = dbfFile.GetRawDataTable();
+                                table = dbfFile.GetConvertedRawDataTable();
                             }
 
-                             //FillTable(table, cmd, dbConnex);
+                            //FillTable(table, cmd, dbConnex);
                         }
                         else
                             adapter.Fill(table);
@@ -384,7 +385,6 @@ namespace SkaaGameDataLib
                         //}
                         #endregion
                         this.Databases.Tables.Add(table);
-                    //    this.Databases.Tables.Remove(table);
                     }
                 }
             }

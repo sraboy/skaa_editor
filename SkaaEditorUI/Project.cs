@@ -315,7 +315,7 @@ namespace SkaaEditor
 
                     SpriteFrame frame = new SpriteFrame(size, width, height, spr);
 
-                    frame.SprBitmapOffset = (uint?)spritestream.Position - 8;
+                    frame.SprBitmapOffset = (int) spritestream.Position - 8;
 
                     frame.SetPixels(spritestream);
                     frame.BuildBitmap32bpp();

@@ -143,7 +143,7 @@ namespace SkaaGameDataLib
         public byte[] BuildSPR()
         {
             List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
-            uint initSize = 0;
+            int initSize = 0;
 
 #if DEBUG
             int rows = 0;
@@ -163,7 +163,7 @@ namespace SkaaGameDataLib
                 sf.GameSetDataRow.AcceptChanges();
 
                 SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (uint) (sf.SprFrameRawDataSize + 4); //add another four for ulong size
+                initSize += (sf.SprFrameRawDataSize + 4); //add another four for int size
 
                 //sf.GameSetDataRow.BeginEdit();
                 //byte[] conv = BitConverter.GetBytes(sf.SprBitmapOffset.Value);
@@ -210,18 +210,18 @@ namespace SkaaGameDataLib
         {
             Comparison<SpriteFrame> comp = new Comparison<SpriteFrame>(Misc.CompareFrameOffset);
             this.Frames.Sort(comp);
-#if DEBUG
-            //counts how many frames find matches for offsets
-            int frameOffsetMatches = 0;
-            //a list that can be copy/pasted to Excel and compared against a manual DBF dump
-            List<uint?> offsets = new List<uint?>();
-            foreach (SpriteFrame s in this.Frames)
-                offsets.Add(s.SprBitmapOffset);
-#endif
+//#if DEBUG
+//            //counts how many frames find matches for offsets
+//            int frameOffsetMatches = 0;
+//            //a list that can be copy/pasted to Excel and compared against a manual DBF dump
+//            List<uint?> offsets = new List<uint?>();
+//            foreach (SpriteFrame s in this.Frames)
+//                offsets.Add(s.SprBitmapOffset);
+//#endif
 
             foreach (DataRow dr in this.GameSetDataTable.Rows)
             {
-                uint offset = Convert.ToUInt32(dr.ItemArray[9]);
+                int offset = Convert.ToInt32(dr.ItemArray[9]);
 
                 SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
                 if(sf == null)

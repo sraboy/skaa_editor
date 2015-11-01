@@ -536,23 +536,23 @@ namespace SkaaEditor
         private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DataRow selection;
-            uint? offset = null;
+            int? offset = null;
 
             if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
             {
                 selection = (this.cbMultiColumn.SelectedItem as DataRowView).Row;
-                offset = selection.GetNullableUInt32FromIndex(9);
+                offset = Convert.ToInt32(selection[9]);//selection.GetNullableUInt32FromIndex(9);
                 this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames.Find(sf => sf.SprBitmapOffset == offset);
             }
 
             if (this.ActiveProject.ActiveFrame == null)
             {
-#if DEBUG
-                //a list that can be copy/pasted to Excel and compared against a manual DBF dump
-                List<uint?> offsets = new List<uint?>();
-                foreach (SpriteFrame s in this.ActiveProject.ActiveSprite.Frames)
-                    offsets.Add(s.SprBitmapOffset);
-#endif
+//#if DEBUG
+//                //a list that can be copy/pasted to Excel and compared against a manual DBF dump
+//                List<int> offsets = new List<int>();
+//                foreach (SpriteFrame s in this.ActiveProject.ActiveSprite.Frames)
+//                    offsets.Add(s.SprBitmapOffset);
+//#endif
                 throw new ArgumentNullException(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.ActiveProject.ActiveSprite.SpriteId, offset.ToString()));
             }
         }
