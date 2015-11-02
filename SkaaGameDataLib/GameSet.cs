@@ -209,7 +209,8 @@ namespace SkaaGameDataLib
 
         public void BuildNewGameSet()
         {
-
+            //GameSetFile file = new GameSetFile(this.SetFile.Directory + '\\' + "newSet.set");
+            this.SetFile.SaveGameSetToFile(this.SetFile.Directory + '\\' + "newSet.set");
         }
 
     }//end GameSet

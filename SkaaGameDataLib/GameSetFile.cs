@@ -73,6 +73,34 @@ namespace SkaaGameDataLib
             return ds;
         }
 
+        public void SaveGameSetToFile(string filePath)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            {
+                fs.Write(BitConverter.GetBytes(this._recordCount), 0, 2);
+
+                int lowestOffset = 9999999;
+
+                foreach (Database db in this.Databases)
+                {
+                    if (db.Offset < lowestOffset)
+                        lowestOffset = db.Offset;
+
+                    byte[] paddedName = Encoding.ASCII.GetBytes(db.Name.PadRight(9, '\0'));//.ToCharArray();//BitConverter.GetBytes();
+                    byte[] offset = new byte[4];
+                    offset = BitConverter.GetBytes(db.Offset);
+                    fs.Write(paddedName, 0, 9);
+                    fs.Write(offset, 0, 4);
+                }
+
+                //write the extra padding at the end
+                for(int i = 0; i < 9; i++)
+                    fs.WriteByte(0x0);
+
+
+            }
+        }
+
         private void ReadDatabaseDefinitions()
         {
             byte[] recCount = new byte[2];
