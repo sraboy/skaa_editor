@@ -340,7 +340,7 @@ namespace SkaaEditor
             {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    SaveFrame();
+                    UpdateFrameChanges();
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
@@ -394,7 +394,7 @@ namespace SkaaEditor
                 {
                     //get this before SaveActiveFrameChanges() changes it
                     bool needToSaveSet = this._awaitingEdits;
-                    SaveFrame(); //updates this frame's ImageBmp based on changes
+                    UpdateFrameChanges(); //updates this frame's ImageBmp based on changes
 
                     //this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
                     int totalFrames = this.ActiveProject.ActiveSprite.Frames.Count;
@@ -468,7 +468,10 @@ namespace SkaaEditor
         {
             this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
         }
-        private void SaveFrame()
+        /// <summary>
+        /// Updates the project's ActiveFrame by rebuilding its internal SPR and BMP images based on the imageEditorBox's Bitmap.
+        /// </summary>
+        private void UpdateFrameChanges()
         {
             //todo: implement Undo/Redo from here with pairs of old/new frames
             if (this._awaitingEdits &&
@@ -592,7 +595,6 @@ namespace SkaaEditor
             {
                 this._awaitingEdits = true;
                 this.ActiveProject.ActiveFrame.PendingRawChanges = true;
-                
                 this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
             }
         }

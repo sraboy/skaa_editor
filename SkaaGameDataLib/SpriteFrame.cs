@@ -40,6 +40,32 @@ namespace SkaaGameDataLib
     [Serializable]
     public class SpriteFrame
     {
+        [field: NonSerialized]
+        private EventHandler _frameUpdated;
+        public event EventHandler FrameUpdated
+        {
+            add
+            {
+                if (_frameUpdated == null || !_frameUpdated.GetInvocationList().Contains(value))
+                {
+                    _frameUpdated += value;
+                }
+            }
+            remove
+            {
+                _frameUpdated -= value;
+            }
+        }
+        protected virtual void OnFrameUpdated(EventArgs e)
+        {
+            EventHandler handler = _frameUpdated;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
         private int _sprFrameRawDataSize, _pixelSize, _height, _width;
         private Sprite _parentSprite;
 
@@ -136,7 +162,9 @@ namespace SkaaGameDataLib
             get;
             set;
         }
+
         public int SprBitmapOffset;
+        public int NewSprBitmapOffset;
         public bool PendingRawChanges;
 
         #region Constructors
@@ -369,6 +397,10 @@ namespace SkaaGameDataLib
         {
             this.ImageBmp = bmp;
             this.FrameData = BuildBitmap8bppIndexed();
+            EventArgs e = new EventArgs();
+            
+            
+            OnFrameUpdated(null);
         }
     }
 }

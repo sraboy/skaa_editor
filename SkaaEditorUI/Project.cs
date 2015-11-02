@@ -199,7 +199,6 @@ namespace SkaaEditor
         {
             
         }
-
         private void Project_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //changing the ActiveFrame property fires its event before 
@@ -351,6 +350,8 @@ namespace SkaaEditor
         }
         public void SaveProject(string filepath)
         {
+            UpdateGameSet("SFRAME");
+
             if (filepath == null)
                     ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
                 else
@@ -365,13 +366,24 @@ namespace SkaaEditor
             return ProjectZipper.LoadZipProject(filePath);
         }
        
-        public void UpdateGameSet()
+        public void UpdateGameSet(string tableName)
         {
+            //making sure all our frames have new offsets
+            this.ActiveSprite.BuildSPR();
+
             foreach(SpriteFrame sf in this.ActiveSprite.Frames)
             {
-                if (sf.PendingRawChanges)
-                    this.ActiveGameSet.MergeDataTableChanges(sf.GameSetDataRow);
+                //it's got a new offset
+                if(sf.NewSprBitmapOffset != sf.SprBitmapOffset)
+                {
+                    sf.GameSetDataRow.BeginEdit();
+                    sf.GameSetDataRow[9] = sf.NewSprBitmapOffset.ToString();
+                    sf.GameSetDataRow.AcceptChanges();
+                }                
             }
+
+            this.ActiveGameSet.MergeDataTableChanges(this.ActiveSprite, tableName);
+            this.ActiveGameSet.BuildNewGameSet();
         }
     }
 }

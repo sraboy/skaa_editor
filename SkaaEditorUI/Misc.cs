@@ -61,12 +61,13 @@ namespace SkaaEditor
             {
                 using (ZipArchive arch = new ZipArchive(zipStream, ZipArchiveMode.Create))
                 {
-                    ZipArchiveEntry paletteEntry = arch.CreateEntry(Path.GetFileName(p.SuperPal.PaletteFileName));
-                    p.SuperPal.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
-                    ZipArchiveEntry setEntry = arch.CreateEntry(Path.GetFileName(p.ActiveGameSet.FileName));
-                    p.ActiveGameSet.RawDataStream.WriteTo(setEntry.Open());
-                    ZipArchiveEntry spriteEntry = arch.CreateEntry(Path.GetFileName(p.SuperSpr.SpriteFileName));
-                    p.SuperSpr.SpriteFileMemoryStream.WriteTo(spriteEntry.Open());
+                    //ZipArchiveEntry paletteEntry = arch.CreateEntry(Path.GetFileName(p.SuperPal.PaletteFileName));
+                    //p.SuperPal.PaletteFileMemoryStream.WriteTo(paletteEntry.Open());
+                    
+                    //ZipArchiveEntry setEntry = arch.CreateEntry(Path.GetFileName(p.ActiveGameSet.FileName));
+                    //p.ActiveGameSet.RawDataStream.WriteTo(setEntry.Open());
+                    //ZipArchiveEntry spriteEntry = arch.CreateEntry(Path.GetFileName(p.SuperSpr.SpriteFileName));
+                    //p.SuperSpr.SpriteFileMemoryStream.WriteTo(spriteEntry.Open());
 
                     //using (StreamWriter sw = new StreamWriter(paletteEntry.Open()))
                     //{
