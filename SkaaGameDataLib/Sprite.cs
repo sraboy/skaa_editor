@@ -88,11 +88,8 @@ namespace SkaaGameDataLib
             get;
             set;
         }
-        public DataTable GameSetDataTable
-        {
-            get;
-            set;
-        }
+        //public DataTable GameSetDataTable;
+        public DataView SpriteRows;
         public string SpriteId
         {
             get;
@@ -177,31 +174,8 @@ namespace SkaaGameDataLib
                 initSize += (sf.SprFrameRawDataSize + 4); //add another four for int size
 
                 if (i < this.Frames.Count - 1) //not the last one
-                    this.Frames[i+1].NewSprBitmapOffset = initSize;
-
-                
+                    this.Frames[i+1].NewSprBitmapOffset = initSize;   
             }
-
-            //foreach (SpriteFrame sf in this.Frames)
-            //{
-            //    sf.GameSetDataRow.BeginEdit();
-            //    sf.SprBitmapOffset = initSize;
-            //    sf.GameSetDataRow.ItemArray[9] = sf.SprBitmapOffset.ToString();
-            //    sf.GameSetDataRow.AcceptChanges();
-
-            //    SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-            //    sf.NewSprBitmapOffset = initSize;
-            //    initSize += (sf.SprFrameRawDataSize + 4); //add another four for int size
-
-
-            //    //sf.GameSetDataRow.BeginEdit();
-            //    //byte[] conv = BitConverter.GetBytes(sf.SprBitmapOffset.Value);
-            //    //sf.GameSetDataRow.ItemArray[9] = conv;
-            //    //sf.GameSetDataRow.AcceptChanges();
-
-            //    //sf.GameSetDataRow.Table.LoadDataRow(sf.GameSetDataRow.ItemArray, LoadOption.Upsert);
-            //    //sf.GameSetDataRow.Table.AcceptChanges();
-            //}
 
             //convert the List<byte[]> to a byte[]
             int lastSize = 0;
@@ -215,19 +189,20 @@ namespace SkaaGameDataLib
 
             return save;
         }
-        /// <summary>
-        /// Finds the DataTable for this <see cref="Sprite"/> in the provided DataSource by looking
-        /// for a DataTable which has a name that matches this sprite's <see cref="SpriteId"/>. The
-        /// sprite's <see cref="GameSetDataTable"/> is set to the matching DataTable or null if 
-        /// none is found.
-        /// </summary>
-        /// <param name="ds">The DataSource in which to look for the matching DataTable.</param>
-        /// <returns>The sprite's <see cref="GameSetDataTable"/>, which will be null if no match was found.</returns>
-        public DataTable GetTable(DataSet ds)
-        {
-            this.GameSetDataTable = ds.Tables[this.SpriteId];
-            return this.GameSetDataTable;
-        }
+        ///// <summary>
+        ///// Finds the DataTable for this <see cref="Sprite"/> in the provided DataSource by looking
+        ///// for a DataTable which has a name that matches this sprite's <see cref="SpriteId"/>. The
+        ///// sprite's <see cref="GameSetDataTable"/> is set to the matching DataTable or null if 
+        ///// none is found.
+        ///// </summary>
+        ///// <param name="ds">The DataSource in which to look for the matching DataTable.</param>
+        ///// <returns>The sprite's <see cref="GameSetDataTable"/>, which will be null if no match was found.</returns>
+        //public DataTable GetTable(DataSet ds)
+        //{
+        //    this.GameSetDataTable = ds.Tables[this.SpriteId];
+        //    return this.GameSetDataTable;
+        //}
+      
         /// <summary>
         /// Iterates through all the rows in this <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
         /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRow"/>
@@ -237,18 +212,19 @@ namespace SkaaGameDataLib
         {
             //Comparison<SpriteFrame> comp = new Comparison<SpriteFrame>(Misc.CompareFrameOffset);
             //this.Frames.Sort(comp);
-//#if DEBUG
-//            //counts how many frames find matches for offsets
-//            int frameOffsetMatches = 0;
-//            //a list that can be copy/pasted to Excel and compared against a manual DBF dump
-//            List<uint?> offsets = new List<uint?>();
-//            foreach (SpriteFrame s in this.Frames)
-//                offsets.Add(s.SprBitmapOffset);
-//#endif
+            //#if DEBUG
+            //            //counts how many frames find matches for offsets
+            //            int frameOffsetMatches = 0;
+            //            //a list that can be copy/pasted to Excel and compared against a manual DBF dump
+            //            List<uint?> offsets = new List<uint?>();
+            //            foreach (SpriteFrame s in this.Frames)
+            //                offsets.Add(s.SprBitmapOffset);
+            //#endif
 
-            foreach (DataRow dr in this.GameSetDataTable.Rows)
+            foreach (DataRowView drv in this.SpriteRows)//GameSetDataTable.Rows)
             {
-                int offset = Convert.ToInt32(dr.ItemArray[9]);
+
+                int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
 
                 SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
                 if(sf == null)
@@ -257,7 +233,7 @@ namespace SkaaGameDataLib
                 }
                 else
                 {
-                    sf.GameSetDataRow = dr;
+                    sf.GameSetDataRow = drv.Row;
                 }
 
                 //List<SpriteFrame> matches = this.Frames.FindAll(f => f.SprBitmapOffset == offset);

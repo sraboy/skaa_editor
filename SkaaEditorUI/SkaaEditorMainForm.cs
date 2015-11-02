@@ -234,7 +234,6 @@ namespace SkaaEditor
             }
 
         }
-
         private void openSPRToolStripMenuItem_Click(object sender, EventArgs e)
         {
             /* To see SPR loading in action, view ResourceDb::init_imported() 

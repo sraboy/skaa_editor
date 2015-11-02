@@ -327,15 +327,10 @@ namespace SkaaEditor
                 spritestream.Position = 0;
                 spritestream.CopyTo(this.SuperSpr.SpriteFileMemoryStream);
                 spritestream.Position = 0;
-
-                //this.SprStruct.SpriteFileMemoryStream = new MemoryStream();
-                //spritestream.Position = 0;
-                //spritestream.CopyTo(this.SprStruct.SpriteFileMemoryStream);
-                //this.SprStruct.SpriteFileName = Path.GetFileName(filepath);
             }
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-            spr.GetTable(this.ActiveGameSet.GetSpriteTablesInDataSet());
+            spr.SpriteRows = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
             spr.MatchFrameOffsets();
 
             return spr;
@@ -382,7 +377,7 @@ namespace SkaaEditor
                 }                
             }
 
-            this.ActiveGameSet.MergeDataTableChanges(this.ActiveSprite, tableName);
+            //this.ActiveGameSet.MergeDataTableChanges(this.ActiveSprite, tableName);
             this.ActiveGameSet.BuildNewGameSet();
         }
     }
