@@ -89,7 +89,7 @@ namespace SkaaGameDataLib
             set;
         }
         //public DataTable GameSetDataTable;
-        public DataView SpriteRows;
+        public DataView SpriteDataView;
         public string SpriteId
         {
             get;
@@ -171,7 +171,7 @@ namespace SkaaGameDataLib
                 sf.GameSetDataRow.AcceptChanges();
 
                 SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.SprFrameRawDataSize + 4); //add another four for int size
+                initSize += (sf.SprFrameRawDataSize + 8); //int size, short width, short height
 
                 if (i < this.Frames.Count - 1) //not the last one
                     this.Frames[i+1].NewSprBitmapOffset = initSize;   
@@ -221,7 +221,7 @@ namespace SkaaGameDataLib
             //                offsets.Add(s.SprBitmapOffset);
             //#endif
 
-            foreach (DataRowView drv in this.SpriteRows)//GameSetDataTable.Rows)
+            foreach (DataRowView drv in this.SpriteDataView)//GameSetDataTable.Rows)
             {
 
                 int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
@@ -229,7 +229,7 @@ namespace SkaaGameDataLib
                 SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
                 if(sf == null)
                 {
-                    throw new ArgumentNullException(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.SpriteId, offset.ToString()));
+                    throw new Exception(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.SpriteId, offset.ToString()));
                 }
                 else
                 {
@@ -261,7 +261,7 @@ namespace SkaaGameDataLib
                 if (sf.GameSetDataRow != null)
                     rows++;
                 else
-                    throw new ArgumentNullException(string.Format("SpriteFrame with offset {0} has no GameSetDataRow.", sf.SprBitmapOffset));
+                    throw new Exception(string.Format("SpriteFrame with offset {0} has no GameSetDataRow.", sf.SprBitmapOffset));
             }
 #endif
         }

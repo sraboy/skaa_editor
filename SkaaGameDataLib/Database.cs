@@ -11,14 +11,43 @@ namespace SkaaGameDataLib
     /// Represents the rows in the header of a SET file and the databases they refer to. 
     /// </summary>
     [Serializable]
-    public class Database
+    public class DatabaseContainer
     {
+        //[field: NonSerialized]
+        //private EventHandler _databaseUpdated;
+        //public event EventHandler DatabaseUpdated
+        //{
+        //    add
+        //    {
+        //        if (_databaseUpdated == null || !_databaseUpdated.GetInvocationList().Contains(value))
+        //        {
+        //            _databaseUpdated += value;
+        //        }
+        //    }
+        //    remove
+        //    {
+        //        _databaseUpdated -= value;
+        //    }
+        //}
+        //protected virtual void OnDatabaseUpdated(EventArgs e)
+        //{
+        //    EventHandler handler = _databaseUpdated;
+
+        //    if (handler != null)
+        //    {
+        //        handler(this, e);
+        //    }
+        //}
+
         //Lifted from ORESX.h
-        //private char[] name;
         public string Name; //char[9] in the file
         public int Offset;
         public DataTable Table;
+        //public bool hasChanges;
 
-        public Database() { }
+        public DatabaseContainer()
+        {
+
+        }
     }
 }

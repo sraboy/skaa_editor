@@ -97,19 +97,19 @@ namespace SkaaEditor
 
         private string _workingFolder;
         private SpriteFrame _activeFrame;
-        private DataSet _spriteTablesDataSet = new DataSet("sprites");
-        public DataSet SpriteTablesDataSet
-        {
-            get
-            {
-                return this._spriteTablesDataSet;
-            }
-            set
-            {
-                if (this._spriteTablesDataSet != value)
-                    this._spriteTablesDataSet = value;
-            }
-        }
+        //private DataSet _spriteTablesDataSet = new DataSet("sprites");
+        //public DataSet SpriteTablesDataSet
+        //{
+        //    get
+        //    {
+        //        return this._spriteTablesDataSet;
+        //    }
+        //    set
+        //    {
+        //        if (this._spriteTablesDataSet != value)
+        //            this._spriteTablesDataSet = value;
+        //    }
+        //}
         private GameSet _activeGameSet;
 
         [NonSerialized]
@@ -242,7 +242,7 @@ namespace SkaaEditor
             this.ActiveGameSet = new GameSet(filepath);
             //this.SuperSet.GameSetFileMemoryStream = this.ActiveGameSet.GetRawDataStream() as MemoryStream;
             //this.SuperSet.GameSetFileName = filename;
-            this.SpriteTablesDataSet = this.ActiveGameSet.GetSpriteTablesInDataSet();
+            //this.SpriteTablesDataSet = this.ActiveGameSet.GetSpriteTablesInDataSet();
         }
         /// <summary>
         /// Loads a palette file.
@@ -330,7 +330,7 @@ namespace SkaaEditor
             }
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-            spr.SpriteRows = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
+            spr.SpriteDataView = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
             spr.MatchFrameOffsets();
 
             return spr;
@@ -363,10 +363,10 @@ namespace SkaaEditor
        
         public void UpdateGameSet(string tableName)
         {
-            //making sure all our frames have new offsets
+            //making sure all our frames get any new offsets
             this.ActiveSprite.BuildSPR();
 
-            foreach(SpriteFrame sf in this.ActiveSprite.Frames)
+            foreach (SpriteFrame sf in this.ActiveSprite.Frames)
             {
                 //it's got a new offset
                 if(sf.NewSprBitmapOffset != sf.SprBitmapOffset)
@@ -374,11 +374,14 @@ namespace SkaaEditor
                     sf.GameSetDataRow.BeginEdit();
                     sf.GameSetDataRow[9] = sf.NewSprBitmapOffset.ToString();
                     sf.GameSetDataRow.AcceptChanges();
-                }                
+                }
+
+                //if (tableHasChanges)
+                //    this.ActiveGameSet.SetFile.DatabaseContainers.Find(db => db.Name == "SFRAME").hasChanges = true;
             }
 
             //this.ActiveGameSet.MergeDataTableChanges(this.ActiveSprite, tableName);
-            this.ActiveGameSet.BuildNewGameSet();
+            this.ActiveGameSet.SaveGameSet();
         }
     }
 }

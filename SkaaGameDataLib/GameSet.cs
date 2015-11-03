@@ -59,52 +59,47 @@ namespace SkaaGameDataLib
         public GameSet(string filepath)
         {
             this.SetFile = new GameSetFile(filepath);
-            this.SetFile.Open();
-            this.SetDatabase = this.SetFile.GetDataSet();
-            //this.Databases = new DataSet(this.SetFile.FileName);
+            this.SetDatabase = this.SetFile.OpenAndRead();
         }
+
         //public Stream GetRawDataStream()
         //{
         //    //todo: fix this cheap hack
         //    this.RawDataStream.Position = 0;
         //    return this.RawDataStream;
         //}
-
-        /// <summary>
-        /// Breaks up the SFRAME DataTable into individual DataTables, one for each sprite in the SFRAME DataTable
-        /// </summary>
-        /// <returns>
-        /// A DataSet object, named "sprites", containing a separate table for each sprite in 
-        /// the SFRAME DataTable, each named by the SpriteId from the original dBase object
-        /// </returns>
-        public DataSet GetSpriteTablesInDataSet()
-        {
-            DataTable sframeTable = this.SetDatabase.Tables["SFRAME"];
-            DataSet allSpritesSet = new DataSet("sprites");
-
-            foreach (DataRow r in sframeTable.Rows)
-            {
-                //string name = Encoding.ASCII.GetString((byte[])r[0]);
-                DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
-                DataTable tbl;
-
-                if (curTable != null)
-                {
-                    tbl = curTable;
-                    tbl.ImportRow(r);
-                }
-                else
-                {
-                    tbl = sframeTable.Clone();
-                    tbl.TableName = r[0].ToString();
-                    //spriteNames.Add(r[0].ToString());
-                    tbl.ImportRow(r);
-                    allSpritesSet.Tables.Add(tbl);
-                }
-            }
-
-            return allSpritesSet;
-        }
+        ///// <summary>
+        ///// Breaks up the SFRAME DataTable into individual DataTables, one for each sprite in the SFRAME DataTable
+        ///// </summary>
+        ///// <returns>
+        ///// A DataSet object, named "sprites", containing a separate table for each sprite in 
+        ///// the SFRAME DataTable, each named by the SpriteId from the original dBase object
+        ///// </returns>
+        //public DataSet GetSpriteTablesInDataSet()
+        //{
+        //    DataTable sframeTable = this.SetDatabase.Tables["SFRAME"];
+        //    DataSet allSpritesSet = new DataSet("sprites");
+        //    foreach (DataRow r in sframeTable.Rows)
+        //    {
+        //        //string name = Encoding.ASCII.GetString((byte[])r[0]);
+        //        DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
+        //        DataTable tbl;
+        //        if (curTable != null)
+        //        {
+        //            tbl = curTable;
+        //            tbl.ImportRow(r);
+        //        }
+        //        else
+        //        {
+        //            tbl = sframeTable.Clone();
+        //            tbl.TableName = r[0].ToString();
+        //            //spriteNames.Add(r[0].ToString());
+        //            tbl.ImportRow(r);
+        //            allSpritesSet.Tables.Add(tbl);
+        //        }
+        //    }
+        //    return allSpritesSet;
+        //}
         #region old DbfFile Reader
         //private void ReadSetFileToDataSet()
         //{
@@ -207,10 +202,10 @@ namespace SkaaGameDataLib
         //    newDataTable.Merge(tableToMerge, true, MissingSchemaAction.Add);
         //}
 
-        public void BuildNewGameSet()
+        public void SaveGameSet()
         {
             //GameSetFile file = new GameSetFile(this.SetFile.Directory + '\\' + "newSet.set");
-            this.SetFile.SaveGameSetToFile(this.SetFile.Directory + '\\' + "newSet.set");
+            this.SetFile.SaveGameSetToFile(this.SetFile.Directory + '\\' + "newSet.set", this);
         }
 
     }//end GameSet

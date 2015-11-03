@@ -8,6 +8,20 @@ using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
+    public class DbaseIIIDataColumn : DataColumn
+    {
+        /// <summary>
+        /// Describes the length, in bytes, that this field must occupy in the DBF file. Text fields
+        /// should be padded on the right with spaces (0x20) while number fields should be padded
+        /// on the left with nulls (0x00). This is separate and unrelated to <see cref="DataColumn.MaxLength"/>
+        /// </summary>
+        public int ByteLength;
+
+        public DbaseIIIDataColumn() : base() { }
+        public DbaseIIIDataColumn(string columnName) : base(columnName) { }
+        public DbaseIIIDataColumn(string columnName, Type dataType) : base(columnName, dataType) { }
+    }
+
     /// <summary>
     /// [INCOMPLETE] Does not yet read the data from the file, only the table's schema data in the header.
     /// Represents a dBase III (not to be confused with dBase III+ or FoxPro) file and makes it manipulable via a DataTable.
@@ -68,10 +82,10 @@ namespace SkaaGameDataLib
         }
 
         private MemoryStream _memoryStream;
+        private byte _eofMarker = 0x1a;
 
         public DbfPreHeader Header;
         public List<FieldDescriptor> FieldDescriptorArray;
-        //public ResIndex ResourceIndex;
         public string TableName;
         public int DataSize;
 
@@ -96,10 +110,10 @@ namespace SkaaGameDataLib
         }
         /// <summary>
         /// Reads a DBF file assuming no type information and provides byte arrays for each cell. It
-        /// is up to the caller to resolve data types.
+        /// is up to the caller to resolve data types. A columns are of type object.
         /// </summary>
         /// <returns>A DataTable containing records filled with byte arrays.</returns>
-        public DataTable GetRawDataTable()
+        public DataTable RawFill()
         {
             //todo: verify previous byte is still 0xD
 
@@ -110,34 +124,6 @@ namespace SkaaGameDataLib
             {
                 DataColumn col = new DataColumn(fd.FieldName);
                 col.DataType = typeof(object);
-
-                //http://www.clicketyclick.dk/databases/xbase/format/data_types.html
-                //switch (fd.FieldType)
-                //{
-                //    case 'C': //string < 254 chars
-                //        col.DataType = typeof(string);
-                //        col.MaxLength = fd.FieldLength + 1; //+ 1 for null terminator
-                //        break;
-                //    case 'N': //int64 (up to 18 chars)
-                //        col.DataType = typeof(long);
-                //        break;
-                //    case 'L': //nullable bool, byte
-                //        throw new NotImplementedException("Encountered /'L/' for nullable bool!");
-                //        break;
-                //    case 'D': //YYYYMMDD
-                //        throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
-                //        break;
-                //    case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
-                //        throw new NotImplementedException("Encountered /'@/' for time!");
-                //        break;
-                //    case 'O': //double (8 bytes)
-                //        throw new NotImplementedException("Encountered /'O/' for double!");
-                //        break;
-                //    case '+': //auto-increment (long)
-                //        throw new NotImplementedException("Encountered /'+/' for auto-increment!");
-                //        break;
-                //}
-
                 table.Columns.Add(col);
             }
 
@@ -154,32 +140,6 @@ namespace SkaaGameDataLib
                     this._memoryStream.Read(val, 0, val.Length);
                     row.BeginEdit();
                     row[i] = val;
-                    //switch(fd.FieldType)
-                    //{
-                    //    case 'C':
-                    //        row[i] = System.Text.Encoding.ASCII.GetString(val);
-                    //        break;
-                    //    case 'N':
-                    //        string str = System.Text.Encoding.ASCII.GetString(val);
-                    //        int conv = Convert.ToInt32(str);// BitConverter.ToInt16(val, 1);
-                    //        row[i] = conv;
-                    //        break;
-                    //    case 'L': //nullable bool, byte
-                    //        throw new NotImplementedException("Encountered /'L/' for nullable bool!");
-                    //        break;
-                    //    case 'D': //YYYYMMDD
-                    //        throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
-                    //        break;
-                    //    case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
-                    //        throw new NotImplementedException("Encountered /'@/' for time!");
-                    //        break;
-                    //    case 'O': //double (8 bytes)
-                    //        throw new NotImplementedException("Encountered /'O/' for double!");
-                    //        break;
-                    //    case '+': //auto-increment (long)
-                    //        throw new NotImplementedException("Encountered /'+/' for auto-increment!");
-                    //        break;
-                    //}
                     row.AcceptChanges();
                 }
             }
@@ -187,58 +147,28 @@ namespace SkaaGameDataLib
             table.AcceptChanges();
             return table;
         }
-        public DataTable GetConvertedRawDataTable()
+        /// <summary>
+        /// Fills a DataTable based on the dBaseIII field descriptor information.
+        /// </summary>
+        /// <returns>The new DataTable</returns>
+        public DataTable FillAndGetTable()
         {
             DataTable table = new DataTable(this.TableName);
 
             //build columns
-            foreach (FieldDescriptor fd in this.FieldDescriptorArray)
-            {
-                DataColumn col = new DataColumn(fd.FieldName);
-                col.DataType = typeof(object);
-
-                //http://www.clicketyclick.dk/databases/xbase/format/data_types.html
-                switch (fd.FieldType)
-                {
-                    case 'C': //string < 254 chars
-                        col.DataType = typeof(string);
-                        col.MaxLength = 11;// 10 for 32-bit int max (4,294,967,295) + /0      // fd.FieldLength + 1; //+ 1 for null terminator
-                        break;
-                    case 'N': //int64 (up to 18 chars according to dBase spec)
-                        col.DataType = typeof(long);
-                        break;
-                    case 'L': //nullable bool, byte
-                        throw new NotImplementedException("Encountered /'L/' for nullable bool!");
-                        break;
-                    case 'D': //YYYYMMDD
-                        throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
-                        break;
-                    case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
-                        throw new NotImplementedException("Encountered /'@/' for time!");
-                        break;
-                    case 'O': //double (8 bytes)
-                        throw new NotImplementedException("Encountered /'O/' for double!");
-                        break;
-                    case '+': //auto-increment (long)
-                        throw new NotImplementedException("Encountered /'+/' for auto-increment!");
-                        break;
-                }
-
-                table.Columns.Add(col);
-            }
+            FillSchema(table);
 
             //populate rows
-            while (this._memoryStream.Position < this._memoryStream.Length)
+            while (this._memoryStream.Position < this._memoryStream.Length - 1) // -1 since last byte is 0x1a for EOF
             {
                 DataRow row = table.NewRow();
                 table.Rows.Add(row);
-
 
                 byte recordDivider = (byte) this._memoryStream.ReadByte();
                 if (recordDivider != 0x20)
                 {
                     //check EOF first
-                    if (recordDivider == 0x1a || this._memoryStream.Position < this._memoryStream.Length)
+                    if (recordDivider == this._eofMarker || this._memoryStream.Position < this._memoryStream.Length)
                         break;
                     else
                         throw new Exception(string.Format("Record divider is not 0x20! Byte is {0}.", recordDivider.ToString()));
@@ -255,7 +185,8 @@ namespace SkaaGameDataLib
                     switch (fd.FieldType)
                     {
                         case 'C':
-                            if (fd.FieldName == "BITMAPPTR")
+                            //if (fd.FieldName == "BITMAPPTR")
+                            if(fd.FieldName.EndsWith("PTR"))
                             {
                                 int val = BitConverter.ToInt32(bytes, 0);
                                 row[i] = bytes == null ? "0" : val.ToString();
@@ -264,8 +195,8 @@ namespace SkaaGameDataLib
                                 row[i] = Encoding.ASCII.GetString(bytes);
                             break;
                         case 'N':
-                            string str = Encoding.ASCII.GetString(bytes);
-                            int conv = Convert.ToInt32(str);// BitConverter.ToInt16(val, 1);
+                            string str = bytes == null ? "0" : Encoding.ASCII.GetString(bytes).Trim();
+                            int conv = str == string.Empty ? 0 : Convert.ToInt32(str);// BitConverter.ToInt16(val, 1);
                             row[i] = conv;
                             break;
                         case 'L': //nullable bool, byte
@@ -296,9 +227,56 @@ namespace SkaaGameDataLib
                 }
             }
 
+            if (_memoryStream.ReadByte() != this._eofMarker)
+                throw new Exception("Expected byte of 0x1A for EOF!");
+
             table.AcceptChanges();
             return table;
         }
+        public void FillSchema(DataTable table)
+        {
+            foreach (FieldDescriptor fd in this.FieldDescriptorArray)
+            {
+                //DataColumn col = new DataColumn(fd.FieldName);
+                DbaseIIIDataColumn col = new DbaseIIIDataColumn(fd.FieldName);
+                col.DataType = typeof(object);
+
+                //http://www.clicketyclick.dk/databases/xbase/format/data_types.html
+                switch (fd.FieldType)
+                {
+                    case 'C': //string < 254 chars
+                        col.DataType = typeof(string);
+                        //col.MaxLength = 11;// 10 for 32-bit int max (4,294,967,295) + /0
+                        //Below ensures we can fit an int's string representation since the original 
+                        //length is specified in bytes for the char[]. Go larger if specified (like DES in HEADER.DBF).
+                        col.MaxLength = fd.FieldLength < 11 ? 11 : fd.FieldLength;
+                        col.ByteLength = fd.FieldLength;// + 1; //+ 1 for null terminator
+                        break;
+                    case 'N': //int64 (up to 18 chars according to dBase spec)
+                        col.DataType = typeof(long);
+                        col.ByteLength = fd.FieldLength;
+                        break;
+                    case 'L': //nullable bool, byte
+                        throw new NotImplementedException("Encountered /'L/' for nullable bool!");
+                        break;
+                    case 'D': //YYYYMMDD
+                        throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
+                        break;
+                    case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
+                        throw new NotImplementedException("Encountered /'@/' for time!");
+                        break;
+                    case 'O': //double (8 bytes)
+                        throw new NotImplementedException("Encountered /'O/' for double!");
+                        break;
+                    case '+': //auto-increment (long)
+                        throw new NotImplementedException("Encountered /'+/' for auto-increment!");
+                        break;
+                }
+
+                table.Columns.Add(col);
+            }
+        }
+
         private void ReadPreHeader()
         {
             this.Header.Version = (byte) _memoryStream.ReadByte();

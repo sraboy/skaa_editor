@@ -190,10 +190,13 @@ namespace SkaaEditor
             if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
             {
                 this.cbMultiColumn.Enabled = true;
-                this.cbMultiColumn.DataSource = this.ActiveProject.SpriteTablesDataSet.Tables[this.ActiveProject.ActiveSprite.SpriteId];
-                List<String> cols = new List<string>();
-                foreach (DataColumn c in (this.cbMultiColumn.DataSource as DataTable).Columns)
-                    cols.Add(c.ColumnName);
+
+                //this.cbMultiColumn.DataSource = this.ActiveProject.SpriteTablesDataSet.Tables[this.ActiveProject.ActiveSprite.SpriteId];
+                //List<String> cols = new List<string>();
+                //foreach (DataColumn c in (this.cbMultiColumn.DataSource as DataTable).Columns)
+                //    cols.Add(c.ColumnName);
+
+                this.cbMultiColumn.DataSource = this.ActiveProject.ActiveSprite.SpriteDataView;
                 this.cbMultiColumn.DisplayMember = "SPRITE";
                 this.cbMultiColumn.ValueMember = "ACTION";
             }
