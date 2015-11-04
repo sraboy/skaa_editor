@@ -376,13 +376,12 @@ namespace SkaaEditor
                         sf.GameSetDataRow.BeginEdit();
                         sf.GameSetDataRow[9] = sf.NewSprBitmapOffset.ToString();
                         sf.GameSetDataRow.AcceptChanges();
+                        sf.SprBitmapOffset = sf.NewSprBitmapOffset;
+                        sf.NewSprBitmapOffset = 0;
                     }
-
-                    //if (tableHasChanges)
-                    //    this.ActiveGameSet.SetFile.DatabaseContainers.Find(db => db.Name == "SFRAME").hasChanges = true;
                 }
             }
-            //this.ActiveGameSet.MergeDataTableChanges(this.ActiveSprite, tableName);
+            this.ActiveSprite.SpriteDataView = this.ActiveGameSet.GetSpriteDataView(this.ActiveSprite.SpriteId);
             this.ActiveGameSet.SaveGameSet();
         }
     }

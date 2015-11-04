@@ -42,9 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseContainer.cs" />
-    <Compile Include="DbfFile.cs">
+    <Compile Include="DbaseIIIDataColumn.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DbfFile.cs" />
     <Compile Include="GameSet.cs" />
     <Compile Include="GameSetFile.cs" />
     <Compile Include="Misc.cs" />

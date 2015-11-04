@@ -391,16 +391,12 @@ namespace SkaaGameDataLib
         }
 
         /// <summary>
-        /// This function builds a new 32-bit BMP and new SPR data based on the edited <see cref="Bitmap"/>
+        /// This function saves the new 32-bit BMP and new SPR data based on the edited <see cref="Bitmap"/>
         /// </summary>
         public void SaveChanges(Bitmap bmp)
         {
             this.ImageBmp = bmp;
             this.FrameData = BuildBitmap8bppIndexed();
-            EventArgs e = new EventArgs();
-            
-            
-            OnFrameUpdated(null);
         }
     }
 }

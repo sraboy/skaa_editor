@@ -182,16 +182,11 @@ namespace SkaaEditor
             //SFRAME column names:
             //SPRITE ACTION DIR FRAME OFFSET_X OFFSET_Y WIDTH HEIGHT FILENAME BITMAPPTR
             this.cbMultiColumn.DrawMode = DrawMode.OwnerDrawVariable;
-
+            
             if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
             {
                 this.cbMultiColumn.Enabled = true;
-
-                //this.cbMultiColumn.DataSource = this.ActiveProject.SpriteTablesDataSet.Tables[this.ActiveProject.ActiveSprite.SpriteId];
-                //List<String> cols = new List<string>();
-                //foreach (DataColumn c in (this.cbMultiColumn.DataSource as DataTable).Columns)
-                //    cols.Add(c.ColumnName);
-
+                this.cbMultiColumn.DataSource = null;
                 this.cbMultiColumn.DataSource = this.ActiveProject.ActiveSprite.SpriteDataView;
                 this.cbMultiColumn.DisplayMember = "SPRITE";
                 this.cbMultiColumn.ValueMember = "ACTION";
@@ -391,8 +386,6 @@ namespace SkaaEditor
             {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    //get this before SaveActiveFrameChanges() changes it
-                    bool needToSaveSet = this._awaitingEdits;
                     UpdateFrameChanges(); //updates this frame's ImageBmp based on changes
 
                     //this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
@@ -446,12 +439,6 @@ namespace SkaaEditor
                         using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
                             bitmap.Save(fs, ImageFormat.Bmp);
                     }
-
-                    if (needToSaveSet)
-                    {
-
-                    }
-
                 }//end if
             }//end using SaveFileDialog
         }
@@ -511,9 +498,44 @@ namespace SkaaEditor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
-            savEditor.Show();
+            //SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
+            //savEditor.Show();
+
+            this.ActiveProject.UpdateGameSet("SFRAME");
+            PopulateSpriteList();
+            //List<SpriteFrame> frames = this.ActiveProject.ActiveSprite.Frames;
+            //LowOffsetFirst LowestOffset = new LowOffsetFirst();
+            //Comparer<SpriteFrame> comp = (Comparer<SpriteFrame>) LowestOffset;
+            //frames.Sort(comp);
+
+            //bool update = false;
+            //int change = 0;
+            //for(int i = 0; i < frames.Count; i++)
+            //{
+            //    SpriteFrame sf = frames[i];
+            //    change = sf.SprBitmapOffset - sf.NewSprBitmapOffset;
+            //    if(i != frames.Count - 1)
+            //    {
+            //        frames[i].NewSprBitmapOffset = frames[i].SprBitmapOffset + change;
+            //    }
+            //}
+
+            //this.SprBitmapOffset = this.NewSprBitmapOffset;
+            //this.GameSetDataRow[9] = this.SprBitmapOffset.ToString();
+            //this.PendingRawChanges = false;
+            //this.ParentSprite.MatchFrameOffsets();
         }
+
+        //private class LowOffsetFirst : Comparer<SpriteFrame>
+        //{
+        //    public override int Compare(SpriteFrame x, SpriteFrame y)
+        //    {
+        //        if (x.SprBitmapOffset <= y.SprBitmapOffset)
+        //            return x.SprBitmapOffset;
+        //        else
+        //            return y.SprBitmapOffset;
+        //    }
+        //}
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -597,16 +619,17 @@ namespace SkaaEditor
                 this._awaitingEdits = true;
                 this.ActiveProject.ActiveFrame.PendingRawChanges = true;
                 this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
+                Bitmap bmp = (sender as SkaaImageBox).Image as Bitmap;
             }
         }
         private void imageEditorBox_MouseUp(object sender, MouseEventArgs e)
         {
             // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
             // which is actually false by the time we get to here.
-            if (this.cbEdit.Checked && this._awaitingEdits)
-            {
-                //SaveActiveFrame();
-            }
+            //if (this.cbEdit.Checked && this._awaitingEdits)
+            //{
+                
+            //}
         }
         private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {

@@ -8,20 +8,6 @@ using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
-    public class DbaseIIIDataColumn : DataColumn
-    {
-        /// <summary>
-        /// Describes the length, in bytes, that this field must occupy in the DBF file. Text fields
-        /// should be padded on the right with spaces (0x20) while number fields should be padded
-        /// on the left with nulls (0x00). This is separate and unrelated to <see cref="DataColumn.MaxLength"/>
-        /// </summary>
-        public int ByteLength;
-
-        public DbaseIIIDataColumn() : base() { }
-        public DbaseIIIDataColumn(string columnName) : base(columnName) { }
-        public DbaseIIIDataColumn(string columnName, Type dataType) : base(columnName, dataType) { }
-    }
-
     /// <summary>
     /// Represents a dBase III (not to be confused with dBase III+ or FoxPro) file and makes it manipulable via a DataTable.
     /// </summary>
@@ -181,12 +167,10 @@ namespace SkaaGameDataLib
                     byte[] bytes = new byte[fd.FieldLength];
                     this._memoryStream.Read(bytes, 0, bytes.Length);
                     row.BeginEdit();
-                    //row[i] = bytes;
 
                     switch (fd.FieldType)
                     {
                         case 'C':
-                            //if (fd.FieldName == "BITMAPPTR")
                             if(fd.FieldName.EndsWith("PTR"))
                             {
                                 int val = BitConverter.ToInt32(bytes, 0);
@@ -197,7 +181,7 @@ namespace SkaaGameDataLib
                             break;
                         case 'N':
                             string str = bytes == null ? "0" : Encoding.GetEncoding(1252).GetString(bytes).Trim();
-                            int conv = str == string.Empty ? 0 : Convert.ToInt32(str);// BitConverter.ToInt16(val, 1);
+                            int conv = str == string.Empty ? 0 : Convert.ToInt32(str);
                             row[i] = conv;
                             break;
                         case 'L': //nullable bool, byte
@@ -248,7 +232,6 @@ namespace SkaaGameDataLib
                 {
                     case 'C': //string < 254 chars
                         col.DataType = typeof(string);
-                        //col.MaxLength = 11;// 10 for 32-bit int max (4,294,967,295) + /0
                         //Below ensures we can fit an int's string representation since the original 
                         //length is specified in bytes for the char[]. Go larger if specified (like DES in HEADER.DBF).
                         col.MaxLength = fd.FieldLength < 11 ? 11 : fd.FieldLength;
@@ -345,14 +328,15 @@ namespace SkaaGameDataLib
 
                 this.FieldDescriptorArray.Add(fd);
 
-                check = (byte) _memoryStream.ReadByte();
-                //if (check == 0xD)
-                //    break;
-                //else
-                
+                check = (byte) _memoryStream.ReadByte();               
             }
         }
-        
+        public void WriteToStream(Stream fs)
+        {
+            WritePreHeader(fs);
+            WriteFieldDescriptors(fs);
+            WriteDataTable(fs);
+        }
         public void WriteAndClose(string path)
         {
             string fileName = this.TableName + ".dbf";
@@ -363,50 +347,50 @@ namespace SkaaGameDataLib
                 WriteDataTable(fs);
             }
         }
-        private void WritePreHeader(FileStream fs)
+        private void WritePreHeader(Stream str)
         {
-            fs.WriteByte(this.Header.Version);
-            fs.Write(this.Header.LastEdited, 0, 3);
-            fs.Write(BitConverter.GetBytes(this.Header.NumberOfRecords), 0, 4);
-            fs.Write(BitConverter.GetBytes(this.Header.LengthOfHeader), 0, 2);
-            fs.Write(BitConverter.GetBytes(this.Header.LengthOfRecord), 0, 2);
-            fs.Write(this.Header.ReservedOne, 0, 2);
-            fs.WriteByte(this.Header.IncompleTransaction);
-            fs.WriteByte(this.Header.EncryptionFlag);
-            fs.Write(this.Header.FreeRecordThread, 0, 4);
-            fs.Write(this.Header.ReservedMultiUser, 0, 8);
-            fs.WriteByte(this.Header.MdxFlag);
-            fs.WriteByte(this.Header.Language);
-            fs.Write(this.Header.ReservedTwo, 0, 2);
+            str.WriteByte(this.Header.Version);
+            str.Write(this.Header.LastEdited, 0, 3);
+            str.Write(BitConverter.GetBytes(this.Header.NumberOfRecords), 0, 4);
+            str.Write(BitConverter.GetBytes(this.Header.LengthOfHeader), 0, 2);
+            str.Write(BitConverter.GetBytes(this.Header.LengthOfRecord), 0, 2);
+            str.Write(this.Header.ReservedOne, 0, 2);
+            str.WriteByte(this.Header.IncompleTransaction);
+            str.WriteByte(this.Header.EncryptionFlag);
+            str.Write(this.Header.FreeRecordThread, 0, 4);
+            str.Write(this.Header.ReservedMultiUser, 0, 8);
+            str.WriteByte(this.Header.MdxFlag);
+            str.WriteByte(this.Header.Language);
+            str.Write(this.Header.ReservedTwo, 0, 2);
         }
-        private void WriteFieldDescriptors(FileStream fs)
+        private void WriteFieldDescriptors(Stream str)
         {
             foreach (FieldDescriptor fd in this.FieldDescriptorArray)
             {
                 StringBuilder sb = new StringBuilder(fd.FieldName);
                 sb.Append((char) 0x0, 11 - fd.FieldName.Length);
                 string writeme = sb.ToString();
-                fs.Write(Encoding.UTF8.GetBytes(writeme), 0, 11);
+                str.Write(Encoding.UTF8.GetBytes(writeme), 0, 11);
 
-                fs.WriteByte((byte) fd.FieldType);
-                fs.Write(fd.FieldDataAddress, 0, 4);
-                fs.WriteByte(fd.FieldLength);
-                fs.WriteByte(fd.DecimalCount);
-                fs.Write(fd.ReservedMultiUserOne, 0, 2);
-                fs.WriteByte(fd.WorkAreaId);
-                fs.Write(fd.ReservedMultiUserTwo, 0, 2);
-                fs.WriteByte(fd.FlagSetFields);
-                fs.Write(fd.Reserved, 0, 7);
-                fs.WriteByte(fd.IndexFieldFlag);
+                str.WriteByte((byte) fd.FieldType);
+                str.Write(fd.FieldDataAddress, 0, 4);
+                str.WriteByte(fd.FieldLength);
+                str.WriteByte(fd.DecimalCount);
+                str.Write(fd.ReservedMultiUserOne, 0, 2);
+                str.WriteByte(fd.WorkAreaId);
+                str.Write(fd.ReservedMultiUserTwo, 0, 2);
+                str.WriteByte(fd.FlagSetFields);
+                str.Write(fd.Reserved, 0, 7);
+                str.WriteByte(fd.IndexFieldFlag);
             }
 
-            fs.WriteByte(0xD);
+            str.WriteByte(0xD);
         }
-        private void WriteDataTable(FileStream fs)
+        private void WriteDataTable(Stream str)
         {
             foreach(DataRow dr in this._dataTable.Rows)
             {
-                fs.WriteByte(this._recordIsValidMarker); //row divider
+                str.WriteByte(this._recordIsValidMarker); //row divider
                 foreach (DbaseIIIDataColumn col in this._dataTable.Columns)
                 {
                     string value;
@@ -426,7 +410,7 @@ namespace SkaaGameDataLib
                             value.PadRight(col.ByteLength, ' ');
                             bytes = Encoding.GetEncoding(1252).GetBytes(value);
                         }
-                        fs.Write(bytes, 0, col.ByteLength);
+                        str.Write(bytes, 0, col.ByteLength);
                     }
                     else if (col.DataType == typeof(long))
                     {
@@ -435,7 +419,7 @@ namespace SkaaGameDataLib
                         value = value.PadLeft(col.ByteLength, ' ');
                         byte[] bytes = new byte[col.ByteLength];
                         Encoding.GetEncoding(1252).GetBytes(value, 0, col.ByteLength, bytes, 0);
-                        fs.Write(bytes, 0, col.ByteLength);
+                        str.Write(bytes, 0, col.ByteLength);
                     }
                     else
                     {
@@ -459,7 +443,7 @@ namespace SkaaGameDataLib
                 }
             }
 
-            fs.WriteByte(this._eofMarker);
+            str.WriteByte(this._eofMarker);
         }
     }
 }
