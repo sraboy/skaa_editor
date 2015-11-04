@@ -130,10 +130,10 @@ namespace SkaaEditor
             //disable BMP export until a sprite is loaded
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             //enable loading a set. once a set is loaded, don't allow loading a new one
-            this.loadSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
+            //this.loadSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
             //enable loading a palette. once a palette is loaded, don't allow loading a new one
 
-            this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.SuperPal.ActivePalette == null) ? true : false;
+            this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.SuperPal == null || this.ActiveProject.SuperPal.ActivePalette == null) ? true : false;
 
             //disable saving until a sprite is loaded
             this.saveSPRToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
@@ -175,11 +175,7 @@ namespace SkaaEditor
                 closeProjectToolStripMenuItem_Click(null, null);
 
             ActiveProject_PaletteChanged(null, null);
-            //this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
             SetupUI();
-
-            //if (this.ActiveProject.ActiveGameSet != null)
-            //    PopulateSpriteList();
         }
         private void PopulateSpriteList()
         {
@@ -281,6 +277,7 @@ namespace SkaaEditor
                 {
                     if (this.ActiveProject == null)
                         NewProject(false);
+
                     this.ActiveProject.LoadPalette(Path.GetDirectoryName(dlg.FileName));
                 }
 
@@ -525,6 +522,8 @@ namespace SkaaEditor
         }
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //todo: confirm closing the current project first
+            this.ActiveProject = null;
             NewProject(false);
         }
         private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -569,7 +568,7 @@ namespace SkaaEditor
         private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
         {
             //sets the palette which causes the color chooser's buttons to be filled
-            if (this.ActiveProject != null)
+            if (this.ActiveProject != null && this.ActiveProject.SuperPal != null)
                 this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
             else //user has closed the project (it is now null)
             {
@@ -620,7 +619,10 @@ namespace SkaaEditor
         }
         private void ActiveProject_PaletteChanged(object sender, EventArgs e)
         {
-            this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
+            if (this.ActiveProject == null)
+                this.skaaColorChooser.Palette = null;
+            else if (this.ActiveProject.SuperPal != null)
+                this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
         }
     }
 }

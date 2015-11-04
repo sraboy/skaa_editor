@@ -40,18 +40,18 @@ namespace SkaaGameDataLib
     public class GameSet
     {
         public GameSetFile SetFile;
-        private DataSet _databases;
-        public DataSet SetDatabase
+        private DataSet _gameDataSet;
+        public DataSet GameDataSet
         {
             get
             {
-                return this._databases;
+                return this._gameDataSet;
             }
             set
             {
-                if (this._databases != value)
+                if (this._gameDataSet != value)
                 { 
-                    this._databases = value;
+                    this._gameDataSet = value;
                 }
             }
         }        
@@ -59,7 +59,8 @@ namespace SkaaGameDataLib
         public GameSet(string filepath)
         {
             this.SetFile = new GameSetFile(filepath);
-            this.SetDatabase = this.SetFile.OpenAndRead();
+            this.SetFile.OpenAndRead();
+            this.GameDataSet = this.SetFile.GameDataSet;
         }
 
         //public Stream GetRawDataStream()
@@ -81,7 +82,7 @@ namespace SkaaGameDataLib
         //    DataSet allSpritesSet = new DataSet("sprites");
         //    foreach (DataRow r in sframeTable.Rows)
         //    {
-        //        //string name = Encoding.ASCII.GetString((byte[])r[0]);
+        //        //string name = Encoding.GetEncoding(1252).GetString((byte[])r[0]);
         //        DataTable curTable = allSpritesSet.Tables[r[0].ToString()];
         //        DataTable tbl;
         //        if (curTable != null)
@@ -159,7 +160,7 @@ namespace SkaaGameDataLib
         //                //dr.GetBytes() has invalid cast errors all the time. GetChars() works fine for some reason.
 
         //                //object bitmapptr = dr.IsDBNull(9) ? (object) DBNull.Value : new Func<uint> (() => { byte[] bytes = new byte[4]; dr.GetBytes(9, 0, bytes, 0, 4); return Convert.ToUInt32(bytes); })();
-        //                Func<byte[]> ConvertCharsToBytes = () => { char[] chars = new char[4]; byte[] bytes = new byte[4]; dr.GetChars(9, 0, chars, 0, 4); return Encoding.GetEncoding(437).GetBytes(chars);};
+        //                Func<byte[]> ConvertCharsToBytes = () => { char[] chars = new char[4]; byte[] bytes = new byte[4]; dr.GetChars(9, 0, chars, 0, 4); return Encoding.GetEncoding(1252).GetBytes(chars);};
         //                object bitmapptr = dr.IsDBNull(9) ? 0 : BitConverter.ToUInt32(ConvertCharsToBytes(), 0);
 
         //                //MemoryStream stream = dr.GetStream(0) as MemoryStream;
@@ -189,7 +190,7 @@ namespace SkaaGameDataLib
 
         public DataView GetSpriteDataView(string spriteId)
         {
-            DataView dv = new DataView(this.SetDatabase.Tables["SFRAME"]);// , "BALLISTA",)
+            DataView dv = new DataView(this.GameDataSet.Tables["SFRAME"]);// , "BALLISTA",)
             dv.RowFilter = string.Format("SPRITE = '{0}'", spriteId);
             return dv;
         }
@@ -205,7 +206,7 @@ namespace SkaaGameDataLib
         public void SaveGameSet()
         {
             //GameSetFile file = new GameSetFile(this.SetFile.Directory + '\\' + "newSet.set");
-            this.SetFile.SaveGameSetToFile(this.SetFile.Directory + '\\' + "newSet.set", this);
+            this.SetFile.SaveGameSetToFile(this.SetFile.Directory + '\\' + "newSet.set");//, this);
         }
 
     }//end GameSet

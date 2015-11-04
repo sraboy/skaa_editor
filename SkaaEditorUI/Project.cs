@@ -122,7 +122,7 @@ namespace SkaaEditor
         {
             get
             {
-                return this.SuperSpr.ActiveSprite;
+                return this.SuperSpr == null ? null : this.SuperSpr.ActiveSprite;
             }
             set
             {
@@ -364,22 +364,24 @@ namespace SkaaEditor
         public void UpdateGameSet(string tableName)
         {
             //making sure all our frames get any new offsets
-            this.ActiveSprite.BuildSPR();
+            if(this.ActiveSprite != null)
+            { 
+                this.ActiveSprite.BuildSPR();
 
-            foreach (SpriteFrame sf in this.ActiveSprite.Frames)
-            {
-                //it's got a new offset
-                if(sf.NewSprBitmapOffset != sf.SprBitmapOffset)
+                foreach (SpriteFrame sf in this.ActiveSprite.Frames)
                 {
-                    sf.GameSetDataRow.BeginEdit();
-                    sf.GameSetDataRow[9] = sf.NewSprBitmapOffset.ToString();
-                    sf.GameSetDataRow.AcceptChanges();
+                    //it's got a new offset
+                    if(sf.NewSprBitmapOffset != sf.SprBitmapOffset)
+                    {
+                        sf.GameSetDataRow.BeginEdit();
+                        sf.GameSetDataRow[9] = sf.NewSprBitmapOffset.ToString();
+                        sf.GameSetDataRow.AcceptChanges();
+                    }
+
+                    //if (tableHasChanges)
+                    //    this.ActiveGameSet.SetFile.DatabaseContainers.Find(db => db.Name == "SFRAME").hasChanges = true;
                 }
-
-                //if (tableHasChanges)
-                //    this.ActiveGameSet.SetFile.DatabaseContainers.Find(db => db.Name == "SFRAME").hasChanges = true;
             }
-
             //this.ActiveGameSet.MergeDataTableChanges(this.ActiveSprite, tableName);
             this.ActiveGameSet.SaveGameSet();
         }

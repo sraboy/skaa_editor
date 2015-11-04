@@ -25,7 +25,7 @@ namespace SkaaGameDataLib
              * numbers, even though they're just used as pointers in the 
              * original code.
              */
-            byte[] bytes = Encoding.GetEncoding(437).GetBytes(x);
+            byte[] bytes = Encoding.GetEncoding(1252).GetBytes(x);
 
             uint? offset = null;
 

@@ -43,7 +43,7 @@ namespace SkaaGameDataLib
         public string Name; //char[9] in the file
         public int Offset;
         public DataTable Table;
-        //public bool hasChanges;
+        public DbfFile DbfFileObject;
 
         public DatabaseContainer()
         {

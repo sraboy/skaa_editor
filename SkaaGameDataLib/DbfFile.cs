@@ -23,7 +23,6 @@ namespace SkaaGameDataLib
     }
 
     /// <summary>
-    /// [INCOMPLETE] Does not yet read the data from the file, only the table's schema data in the header.
     /// Represents a dBase III (not to be confused with dBase III+ or FoxPro) file and makes it manipulable via a DataTable.
     /// </summary>
     /// <remarks>
@@ -83,6 +82,8 @@ namespace SkaaGameDataLib
 
         private MemoryStream _memoryStream;
         private byte _eofMarker = 0x1a;
+        private byte _recordIsValidMarker = 0x20; //vs 0x2a for "is deleted"
+        private DataTable _dataTable;
 
         public DbfPreHeader Header;
         public List<FieldDescriptor> FieldDescriptorArray;
@@ -164,14 +165,14 @@ namespace SkaaGameDataLib
                 DataRow row = table.NewRow();
                 table.Rows.Add(row);
 
-                byte recordDivider = (byte) this._memoryStream.ReadByte();
-                if (recordDivider != 0x20)
+                byte check = (byte) this._memoryStream.ReadByte();
+                if (check != this._recordIsValidMarker)
                 {
                     //check EOF first
-                    if (recordDivider == this._eofMarker || this._memoryStream.Position < this._memoryStream.Length)
+                    if (check == this._eofMarker || this._memoryStream.Position < this._memoryStream.Length)
                         break;
                     else
-                        throw new Exception(string.Format("Record divider is not 0x20! Byte is {0}.", recordDivider.ToString()));
+                        throw new Exception(string.Format("Record is not marked as valid (preceded by 0x20)! Byte is {0}.", check.ToString()));
                 }
 
                 for (int i = 0; i < this.FieldDescriptorArray.Count; i++)
@@ -192,10 +193,10 @@ namespace SkaaGameDataLib
                                 row[i] = bytes == null ? "0" : val.ToString();
                             }
                             else
-                                row[i] = Encoding.ASCII.GetString(bytes);
+                                row[i] = Encoding.GetEncoding(1252).GetString(bytes);
                             break;
                         case 'N':
-                            string str = bytes == null ? "0" : Encoding.ASCII.GetString(bytes).Trim();
+                            string str = bytes == null ? "0" : Encoding.GetEncoding(1252).GetString(bytes).Trim();
                             int conv = str == string.Empty ? 0 : Convert.ToInt32(str);// BitConverter.ToInt16(val, 1);
                             row[i] = conv;
                             break;
@@ -220,9 +221,9 @@ namespace SkaaGameDataLib
 
                     if (i != 0 && i % FieldDescriptorArray.Count == 0) //only after getting all columns, so at the end of each row
                     {
-                        recordDivider = (byte) this._memoryStream.ReadByte();
-                        if (recordDivider != 0x20)
-                            throw new Exception(string.Format("Record divider is not 0x20! Byte is {0}.", recordDivider.ToString()));
+                        check = (byte) this._memoryStream.ReadByte();
+                        if (check != this._recordIsValidMarker)
+                            throw new Exception(string.Format("Record is not marked as valid (preceded by 0x20)! Byte is {0}.", check.ToString()));
                     }
                 }
             }
@@ -231,7 +232,8 @@ namespace SkaaGameDataLib
                 throw new Exception("Expected byte of 0x1A for EOF!");
 
             table.AcceptChanges();
-            return table;
+            this._dataTable = table;
+            return this._dataTable;
         }
         public void FillSchema(DataTable table)
         {
@@ -307,8 +309,11 @@ namespace SkaaGameDataLib
         {
             byte check = 0x0;
 
-            while (true)
+            while (check != 0xD)
             {
+                if(check != 0x0)
+                    _memoryStream.Position--;
+
                 FieldDescriptor fd = new FieldDescriptor();
 
                 byte[] fieldName = new byte[11];
@@ -341,11 +346,120 @@ namespace SkaaGameDataLib
                 this.FieldDescriptorArray.Add(fd);
 
                 check = (byte) _memoryStream.ReadByte();
-                if (check == 0xD)
-                    break;
-                else
-                    _memoryStream.Position--;
+                //if (check == 0xD)
+                //    break;
+                //else
+                
             }
+        }
+        
+        public void WriteAndClose(string path)
+        {
+            string fileName = this.TableName + ".dbf";
+            using (FileStream fs = new FileStream(path + '\\' + fileName, FileMode.Create))
+            { 
+                WritePreHeader(fs);
+                WriteFieldDescriptors(fs);
+                WriteDataTable(fs);
+            }
+        }
+        private void WritePreHeader(FileStream fs)
+        {
+            fs.WriteByte(this.Header.Version);
+            fs.Write(this.Header.LastEdited, 0, 3);
+            fs.Write(BitConverter.GetBytes(this.Header.NumberOfRecords), 0, 4);
+            fs.Write(BitConverter.GetBytes(this.Header.LengthOfHeader), 0, 2);
+            fs.Write(BitConverter.GetBytes(this.Header.LengthOfRecord), 0, 2);
+            fs.Write(this.Header.ReservedOne, 0, 2);
+            fs.WriteByte(this.Header.IncompleTransaction);
+            fs.WriteByte(this.Header.EncryptionFlag);
+            fs.Write(this.Header.FreeRecordThread, 0, 4);
+            fs.Write(this.Header.ReservedMultiUser, 0, 8);
+            fs.WriteByte(this.Header.MdxFlag);
+            fs.WriteByte(this.Header.Language);
+            fs.Write(this.Header.ReservedTwo, 0, 2);
+        }
+        private void WriteFieldDescriptors(FileStream fs)
+        {
+            foreach (FieldDescriptor fd in this.FieldDescriptorArray)
+            {
+                StringBuilder sb = new StringBuilder(fd.FieldName);
+                sb.Append((char) 0x0, 11 - fd.FieldName.Length);
+                string writeme = sb.ToString();
+                fs.Write(Encoding.UTF8.GetBytes(writeme), 0, 11);
+
+                fs.WriteByte((byte) fd.FieldType);
+                fs.Write(fd.FieldDataAddress, 0, 4);
+                fs.WriteByte(fd.FieldLength);
+                fs.WriteByte(fd.DecimalCount);
+                fs.Write(fd.ReservedMultiUserOne, 0, 2);
+                fs.WriteByte(fd.WorkAreaId);
+                fs.Write(fd.ReservedMultiUserTwo, 0, 2);
+                fs.WriteByte(fd.FlagSetFields);
+                fs.Write(fd.Reserved, 0, 7);
+                fs.WriteByte(fd.IndexFieldFlag);
+            }
+
+            fs.WriteByte(0xD);
+        }
+        private void WriteDataTable(FileStream fs)
+        {
+            foreach(DataRow dr in this._dataTable.Rows)
+            {
+                fs.WriteByte(this._recordIsValidMarker); //row divider
+                foreach (DbaseIIIDataColumn col in this._dataTable.Columns)
+                {
+                    string value;
+                    if (col.DataType == typeof(string))
+                    {
+                        byte[] bytes = new byte[col.ByteLength];
+                        value = (string) dr[col];
+
+                        if (col.ColumnName.EndsWith("PTR"))
+                        {
+                            int val = value == "0" ? 0 : Convert.ToInt32(value);
+                            bytes = BitConverter.GetBytes(val);
+                        }
+                        else
+                        {
+                            value = (string) dr[col];
+                            value.PadRight(col.ByteLength, ' ');
+                            bytes = Encoding.GetEncoding(1252).GetBytes(value);
+                        }
+                        fs.Write(bytes, 0, col.ByteLength);
+                    }
+                    else if (col.DataType == typeof(long))
+                    {
+                        long val = (long) dr[col];
+                        value = val.ToString();
+                        value = value.PadLeft(col.ByteLength, ' ');
+                        byte[] bytes = new byte[col.ByteLength];
+                        Encoding.GetEncoding(1252).GetBytes(value, 0, col.ByteLength, bytes, 0);
+                        fs.Write(bytes, 0, col.ByteLength);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException(string.Format("Unknown DataColumn Type: {0}", col.DataType.ToString()));
+                        //case 'L': //nullable bool, byte
+                        //    throw new NotImplementedException("Encountered /'L/' for nullable bool!");
+                        //    break;
+                        //case 'D': //YYYYMMDD
+                        //    throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
+                        //    break;
+                        //case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
+                        //    throw new NotImplementedException("Encountered /'@/' for time!");
+                        //    break;
+                        //case 'O': //double (8 bytes)
+                        //    throw new NotImplementedException("Encountered /'O/' for double!");
+                        //    break;
+                        //case '+': //auto-increment (long)
+                        //    throw new NotImplementedException("Encountered /'+/' for auto-increment!");
+                        //    break;
+                    }
+                }
+            }
+
+            fs.WriteByte(this._eofMarker);
         }
     }
 }

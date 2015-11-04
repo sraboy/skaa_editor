@@ -171,7 +171,7 @@ namespace SkaaGameDataLib
                 sf.GameSetDataRow.AcceptChanges();
 
                 SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.SprFrameRawDataSize + 8); //int size, short width, short height
+                initSize += (sf.SprFrameRawDataSize + 4); //int size, short width, short height
 
                 if (i < this.Frames.Count - 1) //not the last one
                     this.Frames[i+1].NewSprBitmapOffset = initSize;   
@@ -179,15 +179,15 @@ namespace SkaaGameDataLib
 
             //convert the List<byte[]> to a byte[]
             int lastSize = 0;
-            byte[] save = new byte[initSize];
+            byte[] newSprData = new byte[initSize];
 
             foreach (byte[] b in SpriteFrameDataArrays)
             {
-                Buffer.BlockCopy(b, 0, save, lastSize, Buffer.ByteLength(b));
+                Buffer.BlockCopy(b, 0, newSprData, lastSize, Buffer.ByteLength(b));
                 lastSize += b.Length;
             }
 
-            return save;
+            return newSprData;
         }
         ///// <summary>
         ///// Finds the DataTable for this <see cref="Sprite"/> in the provided DataSource by looking
