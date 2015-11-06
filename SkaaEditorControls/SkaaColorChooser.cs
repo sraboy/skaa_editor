@@ -76,7 +76,7 @@ namespace SkaaEditorControls
                 if (this._palette != value)
                 { 
                     this._palette = value;
-                    OnPaletteChanged(new EventArgs());
+                    OnPaletteChanged(EventArgs.Empty);
                 }
             }
         }

@@ -67,6 +67,7 @@ namespace SkaaGameDataLib
         {
             DataView dv = new DataView(this.GameDataSet.Tables["SFRAME"]);// , "BALLISTA",)
             dv.RowFilter = string.Format("SPRITE = '{0}'", spriteId);
+            
             return dv;
         }
         public void SaveGameSet()

@@ -68,6 +68,7 @@ namespace SkaaGameDataLib
 
         private int _sprFrameRawDataSize, _pixelSize, _height, _width;
         private Sprite _parentSprite;
+        private byte[] _frameData;
 
         /// <summary>
         /// The size, in pixels, of the frame. Simple height * width.
@@ -130,8 +131,15 @@ namespace SkaaGameDataLib
         }
         public byte[] FrameData
         {
-            get;
-            set;
+            get
+            {
+                return this._frameData;
+            }
+            set
+            {
+                if (this._frameData != value)
+                    this._frameData = value;
+            }
         }
         public Bitmap ImageBmp
         {
@@ -157,15 +165,14 @@ namespace SkaaGameDataLib
                 return this.ParentSprite.Palette;
             }
         }
-        public DataRow GameSetDataRow
+        public List<DataRow> GameSetDataRows
         {
             get;
             set;
         }
 
         public int SprBitmapOffset;
-        public int NewSprBitmapOffset;
-        public bool PendingRawChanges;
+        public bool PendingChanges;
 
         #region Constructors
         /// <summary>
@@ -192,6 +199,7 @@ namespace SkaaGameDataLib
             this.SprFrameRawDataSize = sizeOfFrame;
             this.Height = height;
             this.Width = width;
+            this.GameSetDataRows = new List<DataRow>();
 
             this.PixelSize = this.Height * this.Width;
             this.FrameData = new byte[PixelSize];
@@ -223,7 +231,7 @@ namespace SkaaGameDataLib
             {
                 for (int x = 0; x < this.Width; ++x)
                 {
-                    if (pixelsToSkip != 0)  //only if we've previous identified transparent bits
+                    if (pixelsToSkip != 0)  //only if we've previously identified transparent bits
                     {
                         if (pixelsToSkip >= this.Width - x) //greater than one line
                         {
@@ -289,8 +297,7 @@ namespace SkaaGameDataLib
             int realOffset = 8; //since our array offset is unaware of the header
             byte[] indexedData = new byte[this.PixelSize + 4];
 
-            // todo: will have to recalculate size if pixels change because the number of
-            //       ommitted transparent bytes will have changed too
+            // todo: will have to recalculate size if pixels change
             byte[] width = BitConverter.GetBytes((short) this.Width);
             byte[] height = BitConverter.GetBytes((short) this.Height);
 
@@ -321,7 +328,7 @@ namespace SkaaGameDataLib
             if (this.ImageBmp == null)
                 BuildBitmap32bpp();
 
-            //the below is pretty much the same as GetPixel() but reversed(ish)
+            //the below is pretty much the same as SetPixel() but reversed(ish)
             for (int y = 0; y < this.ImageBmp.Height; ++y)
             {
                 for (int x = 0; x < this.ImageBmp.Width; ++x)
@@ -385,18 +392,26 @@ namespace SkaaGameDataLib
             byte[] size = BitConverter.GetBytes(this.SprFrameRawDataSize);
             if (size.Length > 4) throw new Exception("SPR size must be Int32!");
             Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
+
+            //Since FrameData is set to ((Width * Height) + 4), its length will
+            //be based on the real pixels, not the "compressed" length with
+            //the transparent pixels. This makes it impossible to calculate the
+            //offsets of the next frames in the sprite to build a new game set.
+            this.SprFrameRawDataSize = realOffset;
             Array.Resize<byte>(ref indexedData, realOffset);
 
             return indexedData;
         }
 
         /// <summary>
-        /// This function saves the new 32-bit BMP and new SPR data based on the edited <see cref="Bitmap"/>
+        /// Saves the new 32-bit BMP and generates new SPR data based on the edited <see cref="Bitmap"/>
         /// </summary>
-        public void SaveChanges(Bitmap bmp)
+        internal void ProcessUpdates(Bitmap bmp)
         {
             this.ImageBmp = bmp;
+            this.PendingChanges = true;
             this.FrameData = BuildBitmap8bppIndexed();
+            OnFrameUpdated(EventArgs.Empty);
         }
     }
 }

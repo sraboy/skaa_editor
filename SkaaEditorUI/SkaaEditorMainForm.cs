@@ -104,7 +104,7 @@ namespace SkaaEditorUI
                 if (this._activeProject != value)
                 {
                     this._activeProject = value;
-                    OnActiveProjectChanged(new EventArgs());
+                    OnActiveProjectChanged(EventArgs.Empty);
                 }
             }
         }
@@ -158,7 +158,6 @@ namespace SkaaEditorUI
             this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
             this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
-            this.imageEditorBox.MouseUp += imageEditorBox_MouseUp;
         }
         private void NewProject(bool loadDefaults = false)
         {
@@ -250,16 +249,24 @@ namespace SkaaEditorUI
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     this.ActiveProject.ActiveSprite = this.ActiveProject.LoadSprite(dlg.FileName);
-                    //this.ActiveProject.ActiveSprite = new Sprite(this.skaaColorChooser.Palette);
+                    this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
 
                     this.exportBmpToolStripMenuItem.Enabled = true;
-                    //this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
                     this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                     this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
                     this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
                 }
             }
         }
+
+        private void ActiveSprite_SpriteUpdated(object sender, EventArgs e)
+        {
+            //this.ActiveProject.ActiveSprite.SpriteDataView = 
+            //    this.ActiveProject.ActiveGameSet.GetSpriteDataView(this.ActiveProject.ActiveSprite.SpriteId);
+
+            PopulateSpriteList();
+        }
+
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog dlg = new OpenFileDialog())
@@ -334,7 +341,8 @@ namespace SkaaEditorUI
             {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    UpdateFrameChanges();
+                    UpdateSprite();
+                    //UpdateFrameChanges();
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
@@ -386,9 +394,9 @@ namespace SkaaEditorUI
             {
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    UpdateFrameChanges(); //updates this frame's ImageBmp based on changes
+                    //UpdateFrameChanges(); //updates this frame's ImageBmp based on changes
+                    UpdateSprite();
 
-                    //this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
                     int totalFrames = this.ActiveProject.ActiveSprite.Frames.Count;
                     int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
 
@@ -457,21 +465,6 @@ namespace SkaaEditorUI
         /// <summary>
         /// Updates the project's ActiveFrame by rebuilding its internal SPR and BMP images based on the imageEditorBox's Bitmap.
         /// </summary>
-        private void UpdateFrameChanges()
-        {
-            //todo: implement Undo/Redo from here with pairs of old/new frames
-            if (this._awaitingEdits &&
-                this.ActiveProject.ActiveFrame != null
-                && this.ActiveProject.ActiveFrame.ImageBmp != null
-                && this.imageEditorBox != null)
-            {
-                //this.ActiveProject.ActiveFrame.ImageBmp = this.imageEditorBox.Image as Bitmap;
-                //this.ActiveProject.ActiveFrame.FrameData = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
-                this.ActiveProject.ActiveFrame.SaveChanges(this.imageEditorBox.Image as Bitmap);
-                this.ActiveProject.ActiveFrame.PendingRawChanges = false;
-                this._awaitingEdits = false;
-            }
-        }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
@@ -501,41 +494,8 @@ namespace SkaaEditorUI
             //SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
             //savEditor.Show();
 
-            this.ActiveProject.UpdateGameSet("SFRAME");
-            PopulateSpriteList();
-            //List<SpriteFrame> frames = this.ActiveProject.ActiveSprite.Frames;
-            //LowOffsetFirst LowestOffset = new LowOffsetFirst();
-            //Comparer<SpriteFrame> comp = (Comparer<SpriteFrame>) LowestOffset;
-            //frames.Sort(comp);
-
-            //bool update = false;
-            //int change = 0;
-            //for(int i = 0; i < frames.Count; i++)
-            //{
-            //    SpriteFrame sf = frames[i];
-            //    change = sf.SprBitmapOffset - sf.NewSprBitmapOffset;
-            //    if(i != frames.Count - 1)
-            //    {
-            //        frames[i].NewSprBitmapOffset = frames[i].SprBitmapOffset + change;
-            //    }
-            //}
-
-            //this.SprBitmapOffset = this.NewSprBitmapOffset;
-            //this.GameSetDataRow[9] = this.SprBitmapOffset.ToString();
-            //this.PendingRawChanges = false;
-            //this.ParentSprite.MatchFrameOffsets();
+            UpdateSprite();
         }
-
-        //private class LowOffsetFirst : Comparer<SpriteFrame>
-        //{
-        //    public override int Compare(SpriteFrame x, SpriteFrame y)
-        //    {
-        //        if (x.SprBitmapOffset <= y.SprBitmapOffset)
-        //            return x.SprBitmapOffset;
-        //        else
-        //            return y.SprBitmapOffset;
-        //    }
-        //}
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -612,24 +572,13 @@ namespace SkaaEditorUI
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
-            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
-            // which is actually false by the time we get to here.
+            // cbEdit.Checked is used as the equivalent of imageEditorBox.IsDrawing, but
+            // IsDrawing is actually set false by the time we get to here.
             if (this.cbEdit.Checked)
             {
-                this._awaitingEdits = true;
-                this.ActiveProject.ActiveFrame.PendingRawChanges = true;
                 this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
-                Bitmap bmp = (sender as SkaaImageBox).Image as Bitmap;
+                //UpdateSprite();
             }
-        }
-        private void imageEditorBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            // cbEdit.Checked is used as the equivalent for imageEditorBox.IsDrawing,  
-            // which is actually false by the time we get to here.
-            //if (this.cbEdit.Checked && this._awaitingEdits)
-            //{
-                
-            //}
         }
         private void cbEdit_CheckedChanged(object sender, EventArgs e)
         {
@@ -646,6 +595,27 @@ namespace SkaaEditorUI
                 this.skaaColorChooser.Palette = null;
             else if (this.ActiveProject.SuperPal != null)
                 this.skaaColorChooser.Palette = this.ActiveProject.SuperPal.ActivePalette;
+        }
+
+        //private void UpdateFrameChanges()
+        //{
+        //    //todo: implement Undo/Redo from here with pairs of old/new frames
+        //    if (this._awaitingEdits &&
+        //        this.ActiveProject.ActiveFrame != null
+        //        && this.ActiveProject.ActiveFrame.ImageBmp != null
+        //        && this.imageEditorBox != null)
+        //    {
+        //        UpdateSprite();
+        //        //this.ActiveProject.ActiveFrame.SaveChanges(this.imageEditorBox.Image as Bitmap);
+        //        //this.ActiveProject.ActiveFrame.PendingChanges = false;
+        //        this._awaitingEdits = false;
+        //    }
+        //}
+
+        private void UpdateSprite()
+        {
+            this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            //PopulateSpriteList();
         }
     }
 }
