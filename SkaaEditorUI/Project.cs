@@ -14,7 +14,7 @@ using System.Data;
 using System.Drawing.Imaging;
 using System.Drawing;
 
-namespace SkaaEditor
+namespace SkaaEditorUI
 {
     [Serializable]
     public class Project

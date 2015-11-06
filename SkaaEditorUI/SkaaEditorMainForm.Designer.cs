@@ -23,7 +23,7 @@
 *  	information on 7KAA, visit http://www.7kfans.com.
 ***************************************************************************/
 
-namespace SkaaEditor
+namespace SkaaEditorUI
 {
     partial class SkaaEditorMainForm
     {
@@ -81,12 +81,12 @@ namespace SkaaEditor
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.skaaColorChooser = new SkaaColorChooser.SkaaColorChooser();
+            this.skaaColorChooser = new SkaaEditorControls.SkaaColorChooser();
             this.cbEdit = new System.Windows.Forms.CheckBox();
-            this.imageEditorBox = new SkaaEditor.SkaaImageBox();
+            this.imageEditorBox = new SkaaEditorControls.SkaaImageBox();
             this.button1 = new System.Windows.Forms.Button();
             this.cbMultiColumn = new MultiColumnComboBox.MultiColumnComboBoxControl();
-            this.timelineControl = new Timeline.TimelineControl();
+            this.timelineControl = new SkaaEditorControls.TimelineControl();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -405,11 +405,11 @@ namespace SkaaEditor
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private SkaaColorChooser.SkaaColorChooser skaaColorChooser;
+        private SkaaEditorControls.SkaaColorChooser skaaColorChooser;
         private System.Windows.Forms.CheckBox cbEdit;
-        private SkaaImageBox imageEditorBox;
+        private SkaaEditorControls.SkaaImageBox imageEditorBox;
         private System.Windows.Forms.Button button1;
-        private Timeline.TimelineControl timelineControl;
+        private SkaaEditorControls.TimelineControl timelineControl;
         private System.Windows.Forms.ToolStripMenuItem loadSetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveExportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportBmpToolStripMenuItem;

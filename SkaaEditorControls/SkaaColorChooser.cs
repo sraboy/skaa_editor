@@ -35,7 +35,7 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace SkaaColorChooser
+namespace SkaaEditorControls
 {
     public partial class SkaaColorChooser : UserControl
     {

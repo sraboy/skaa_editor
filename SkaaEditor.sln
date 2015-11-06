@@ -5,15 +5,9 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUI", "SkaaEditorUI\SkaaEditorUI.csproj", "{35FE87C7-BA8E-4CB1-9059-D21D91063381}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaColorChooser", "SkaaColorChooser\SkaaColorChooser.csproj", "{3F16F961-5140-422D-86A6-40CCEA72B495}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaImageBox", "SkaaImageBox\SkaaImageBox.csproj", "{086B66C3-643E-43C5-8ED9-5B8B1397277A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaControls", "SkaaFrameViewer\SkaaControls.csproj", "{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorControls", "SkaaEditorControls\SkaaEditorControls.csproj", "{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaGameDataLib", "SkaaGameDataLib\SkaaGameDataLib.csproj", "{DA473696-B41A-4C5E-879D-77AE1E12B01D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiColumnComboBox", "MultiColumnPictureBox\MultiColumnComboBox.csproj", "{B5C79926-E541-4871-8837-05AA6F736E0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,28 +30,6 @@ Global
 		{35FE87C7-BA8E-4CB1-9059-D21D91063381}.Release|Mixed Platforms.Build.0 = Release|x86
 		{35FE87C7-BA8E-4CB1-9059-D21D91063381}.Release|x86.ActiveCfg = Release|x86
 		{35FE87C7-BA8E-4CB1-9059-D21D91063381}.Release|x86.Build.0 = Release|x86
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Debug|x86.Build.0 = Debug|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{3F16F961-5140-422D-86A6-40CCEA72B495}.Release|x86.ActiveCfg = Release|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Debug|x86.Build.0 = Debug|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{086B66C3-643E-43C5-8ED9-5B8B1397277A}.Release|x86.ActiveCfg = Release|Any CPU
 		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -80,18 +52,6 @@ Global
 		{DA473696-B41A-4C5E-879D-77AE1E12B01D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DA473696-B41A-4C5E-879D-77AE1E12B01D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DA473696-B41A-4C5E-879D-77AE1E12B01D}.Release|x86.ActiveCfg = Release|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Debug|x86.Build.0 = Debug|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Release|x86.ActiveCfg = Release|Any CPU
-		{B5C79926-E541-4871-8837-05AA6F736E0E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

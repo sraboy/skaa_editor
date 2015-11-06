@@ -27,7 +27,7 @@ using System;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
-using SkaaColorChooser;
+using SkaaEditorControls;
 using System.Drawing.Imaging;
 using SkaaGameDataLib;
 using System.Reflection;
@@ -37,7 +37,7 @@ using System.Data;
 using MultiColumnComboBox;
 using System.Text;
 
-namespace SkaaEditor
+namespace SkaaEditorUI
 {
     public partial class SkaaEditorMainForm : Form
     {

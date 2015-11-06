@@ -40,7 +40,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cyotek.Windows.Forms;
 
-namespace SkaaEditor
+namespace SkaaEditorControls
 {
     public partial class SkaaImageBox : ImageBox
     {

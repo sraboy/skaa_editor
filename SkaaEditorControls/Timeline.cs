@@ -33,7 +33,7 @@ using System.Text;
 using System.Windows.Forms;
 using SkaaGameDataLib;
 
-namespace Timeline
+namespace SkaaEditorControls
 {
     public partial class TimelineControl : UserControl
     {

@@ -6,12 +6,12 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MultiplePictureBox")]
-[assembly: AssemblyDescription("A control that allows you to have a scrollable set of images in a single PictureBox control")]
+[assembly: AssemblyTitle("SkaaEditorControls")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.etheism.org")]
-[assembly: AssemblyProduct("MultiplePictureBox")]
-[assembly: AssemblyCopyright("Copyright © Steven Lavoie, Jr.")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("Copyright © Steven Lavoie")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

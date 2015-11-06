@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SkaaGameDataLib;
 
-namespace SkaaEditor
+namespace SkaaEditorUI
 {
     public class SuperPalette
     {

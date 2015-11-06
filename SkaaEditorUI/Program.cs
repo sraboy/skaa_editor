@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace SkaaEditor
+namespace SkaaEditorUI
 {
     static class Program
     {

@@ -8,8 +8,8 @@
     <ProjectGuid>{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SkaaFrameViewer</RootNamespace>
-    <AssemblyName>SkaaFrameViewer</AssemblyName>
+    <RootNamespace>SkaaEditorControls</RootNamespace>
+    <AssemblyName>SkaaEditorControls</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>false</SignAssembly>
@@ -41,6 +41,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cyotek.Windows.Forms.ImageBox, Version=1.1.5.1, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
+      <HintPath>..\packages\CyotekImageBox.1.1.5.1\lib\net20\Cyotek.Windows.Forms.ImageBox.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -60,6 +64,25 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveColorChangedEventArgs.cs" />
+    <Compile Include="MultiColumnComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MultiColumnComboBox.Designer.cs">
+      <DependentUpon>MultiColumnComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SkaaColorChooser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SkaaColorChooser.Designer.cs">
+      <DependentUpon>SkaaColorChooser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SkaaImageBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SkaaImageBox.Designer.cs">
+      <DependentUpon>SkaaImageBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Timeline.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -69,6 +92,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="SkaaColorChooser.resx">
+      <DependentUpon>SkaaColorChooser.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Timeline.resx">
       <DependentUpon>Timeline.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -79,6 +105,9 @@
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
       <Name>SkaaGameDataLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

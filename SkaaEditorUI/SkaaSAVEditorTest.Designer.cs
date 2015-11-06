@@ -1,4 +1,4 @@
-﻿namespace SkaaEditor
+﻿namespace SkaaEditorUI
 {
     partial class SkaaSAVEditorTest
     {

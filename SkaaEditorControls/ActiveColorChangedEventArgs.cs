@@ -31,7 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkaaColorChooser
+namespace SkaaEditorControls
 {
     public class ActiveColorChangedEventArgs : EventArgs
     {

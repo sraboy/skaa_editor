@@ -23,7 +23,7 @@
 *  	information on 7KAA, visit http://www.7kfans.com.
 ***************************************************************************/
 
-namespace SkaaColorChooser
+namespace SkaaEditorControls
 {
     partial class SkaaColorChooser
     {

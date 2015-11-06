@@ -24,7 +24,7 @@
 ***************************************************************************/
 
 using System.Windows.Forms;
-namespace Timeline
+namespace SkaaEditorControls
 {
     partial class TimelineControl
     {
