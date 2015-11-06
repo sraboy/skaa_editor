@@ -147,7 +147,6 @@ namespace SkaaGameDataLib
 
         public void SaveGameSetToFile(string filePath)//, GameSet set)
         {
-
             using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
                 //write SET file header
