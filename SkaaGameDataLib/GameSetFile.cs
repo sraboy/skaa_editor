@@ -168,8 +168,11 @@ namespace SkaaGameDataLib
                 {
 #if DEBUG
                     //writes out individual DBFs
-                    string path = Path.GetDirectoryName(filePath) + "\\dbf\\test";
-                    db.DbfFileObject.WriteAndClose(path);
+                    if(System.IO.Directory.Exists(filePath + "dbf\\test"))
+                    { 
+                        string path = Path.GetDirectoryName(filePath) + "\\dbf\\test";
+                        db.DbfFileObject.WriteAndClose(path);
+                    }
 #endif
                     db.DbfFileObject.WriteToStream(fs);
                 }
@@ -179,15 +182,14 @@ namespace SkaaGameDataLib
             }
         }
 
+        #region deprecated
         //private void WriteSframe(FileStream fs, GameSet set)
         //{
         //    //write individual databases
         //    DataTable dt = set.GameDataSet.Tables["SFRAME"];
-
         //    foreach (DataRow dr in dt.Rows)
         //    {
         //        fs.WriteByte(0x20); //row divider
-
         //        for (int i = 0; i < dr.ItemArray.Count(); i++)
         //        {
         //            byte[] bytes;
@@ -255,8 +257,8 @@ namespace SkaaGameDataLib
         //            }
         //        }
         //    }
-
         //    fs.WriteByte(0x1a); //EOF
         //}
+        #endregion
     }
 }

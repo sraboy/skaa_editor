@@ -172,7 +172,7 @@ namespace SkaaGameDataLib
             {
                 SpriteFrame sf = this.Frames[i];
                 SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.SprFrameRawDataSize); 
+                initSize += (sf.SprFrameRawDataSize) + 8;
             }
 
             //convert the List<byte[]> to a byte[]
@@ -214,7 +214,7 @@ namespace SkaaGameDataLib
             for(int i = 0; i < this.Frames.Count; i++)
             {
                 SpriteFrame sf = this.Frames[i];
-                offset += sf.SprFrameRawDataSize; //already includes +4 for the int32 size at the start
+                offset += sf.SprFrameRawDataSize; //already includes +8 for the int32 and 2x int16s at the start of every frame
                 if (i < this.Frames.Count - 1)
                 { 
                     
