@@ -172,7 +172,7 @@ namespace SkaaGameDataLib
             {
                 SpriteFrame sf = this.Frames[i];
                 SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.SprFrameRawDataSize); 
+                initSize += sf.FrameRawData.Length;
             }
 
             //convert the List<byte[]> to a byte[]
@@ -208,22 +208,24 @@ namespace SkaaGameDataLib
         public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
         {
             frameToUpdate.ProcessUpdates(bmpWithChanges);
-            frameToUpdate.SprFrameRawDataSize = frameToUpdate.FrameData.Length;
+            frameToUpdate.SprFrameRawDataSize = frameToUpdate.FrameRawData.Length;
 
             int offset = 0;
             for(int i = 0; i < this.Frames.Count; i++)
             {
                 SpriteFrame sf = this.Frames[i];
-                offset += sf.SprFrameRawDataSize; //already includes +4 for the int32 size at the start
+                offset += sf.FrameRawData.Length;
                 if (i < this.Frames.Count - 1)
                 { 
-                    
-                    this.Frames[i + 1].SprBitmapOffset = offset;
-                    foreach (DataRow dr in this.Frames[i + 1].GameSetDataRows)
+                    if(this.Frames[i + 1].SprBitmapOffset != offset)
                     { 
-                        dr.BeginEdit();
-                        dr[9] = offset.ToString();
-                        dr.AcceptChanges(); //calls EndEdit() implicitly
+                        this.Frames[i + 1].SprBitmapOffset = offset;
+                        foreach (DataRow dr in this.Frames[i + 1].GameSetDataRows)
+                        { 
+                            dr.BeginEdit();
+                            dr[9] = offset.ToString();
+                            dr.AcceptChanges(); //calls EndEdit() implicitly
+                        }
                     }
                 }
             }

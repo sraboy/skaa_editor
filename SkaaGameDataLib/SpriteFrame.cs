@@ -68,7 +68,7 @@ namespace SkaaGameDataLib
 
         private int _sprFrameRawDataSize, _pixelSize, _height, _width;
         private Sprite _parentSprite;
-        private byte[] _frameData;
+        private byte[] _frameBmpData, _frameRawData;
 
         /// <summary>
         /// The size, in pixels, of the frame. Simple height * width.
@@ -129,16 +129,28 @@ namespace SkaaGameDataLib
                 }
             }
         }
-        public byte[] FrameData
+        public byte[] FrameBmpData
         {
             get
             {
-                return this._frameData;
+                return this._frameBmpData;
             }
             set
             {
-                if (this._frameData != value)
-                    this._frameData = value;
+                if (this._frameBmpData != value)
+                    this._frameBmpData = value;
+            }
+        }
+        public byte[] FrameRawData
+        {
+            get
+            {
+                return this._frameRawData;
+            }
+            set
+            {
+                if (this._frameRawData != value)
+                    this._frameRawData = value;
             }
         }
         public Bitmap ImageBmp
@@ -202,20 +214,21 @@ namespace SkaaGameDataLib
             this.GameSetDataRows = new List<DataRow>();
 
             this.PixelSize = this.Height * this.Width;
-            this.FrameData = new byte[PixelSize];
-            FrameData = Enumerable.Repeat<byte>(0xff, PixelSize).ToArray();
+            this.FrameBmpData = new byte[PixelSize];
+            this.FrameRawData = new byte[PixelSize];
+            FrameBmpData = Enumerable.Repeat<byte>(0xff, PixelSize).ToArray();
         }
         #endregion
 
         /// <summary>
-        /// Fills this frame's <see cref="FrameData"/> byte array with the colors specifed in the <paramref name="stream"/> parameter.
+        /// Fills this frame's <see cref="FrameBmpData"/> byte array with the colors specifed in the <paramref name="stream"/> parameter.
         /// </summary>
         /// <param name="stream">
         /// A <see cref="Stream"/> of 8bpp-indexed SPR data. The object must either have its pixel data beginning at [0] 
         /// or already have its <see cref="Stream.Position"/> set past any header, like the SPR's size, width and height.
         /// </param>
         /// <remarks>
-        /// Note: <see cref="FrameData"/> is pre-filled with 0xff bytes. See the class constructors for details. 
+        /// Note: <see cref="FrameBmpData"/> is pre-filled with 0xff bytes. See the class constructors for details. 
         /// Simply put, since 0x00 is actually used for black, we need to use one of the palette entries that 
         /// signifies transparency. In pal_std.res, this is 0xf8-0xff; 0xff was chosen because it does not appear 
         /// to be used at all. 
@@ -225,6 +238,7 @@ namespace SkaaGameDataLib
             //todo:documentation: Verify 0xff is/isn't used and update explanation.
 
             int pixelsToSkip = 0;
+            int bytesRead = 8; //start after the header info
             byte pixel;
 
             for (int y = 0; y < this.Height; ++y)
@@ -243,16 +257,24 @@ namespace SkaaGameDataLib
                         pixelsToSkip = 0;
                     }
 
-                    try { pixel = Convert.ToByte(stream.ReadByte()); }
+                    try
+                    {
+                        pixel = Convert.ToByte(stream.ReadByte());
+                        this.FrameRawData[bytesRead] = pixel;
+                        bytesRead++;
+                    }
                     catch { return; /*got -1 for EOF*/ }
 
                     if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
                     {
-                        this.FrameData[this.Width * y + x] = pixel;
+                        this.FrameBmpData[this.Width * y + x] = pixel;
                     }
                     else if (pixel == 0xf8)//MANY_TRANSPARENT_CODE)
                     {
-                        pixelsToSkip = stream.ReadByte() - 1;
+                        pixel = Convert.ToByte(stream.ReadByte());
+                        pixelsToSkip = pixel - 1;
+                        this.FrameRawData[bytesRead] = pixel;
+                        bytesRead++;
                     }
                     else //f9,fa,fb,fc,fd,fe,ff
                     {
@@ -260,6 +282,9 @@ namespace SkaaGameDataLib
                     }
                 }//end inner for
             }//end outer for
+
+            Array.Resize<byte>(ref this._frameRawData, bytesRead);
+
         }
         public Bitmap BuildBitmap32bpp()
         {
@@ -270,7 +295,7 @@ namespace SkaaGameDataLib
             {
                 for (int x = 0; x < this.Width; x++)
                 {
-                    idx = FrameData[y * this.Width + x];
+                    idx = FrameBmpData[y * this.Width + x];
                     Color pixel = this.Palette.Entries[idx];
                     
                     bmp.SetPixel(x, y, pixel);
@@ -388,8 +413,8 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
 
-            this.SprFrameRawDataSize = realOffset - 4;
-            byte[] size = BitConverter.GetBytes(this.SprFrameRawDataSize);
+            //this.SprFrameRawDataSize = realOffset - 4;
+            byte[] size = BitConverter.GetBytes(realOffset - 4); //subtract four because int32 size does not count the int32
             if (size.Length > 4) throw new Exception("SPR size must be Int32!");
             Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
 
@@ -397,10 +422,12 @@ namespace SkaaGameDataLib
             //be based on the real pixels, not the "compressed" length with
             //the transparent pixels. This makes it impossible to calculate the
             //offsets of the next frames in the sprite to build a new game set.
-            this.SprFrameRawDataSize = realOffset;
+            
             Array.Resize<byte>(ref indexedData, realOffset);
+            this.FrameRawData = indexedData;
 
-            return indexedData;
+            return this.FrameRawData;
+            //return indexedData;
         }
 
         /// <summary>
@@ -410,7 +437,7 @@ namespace SkaaGameDataLib
         {
             this.ImageBmp = bmp;
             this.PendingChanges = true;
-            this.FrameData = BuildBitmap8bppIndexed();
+            this.FrameRawData = BuildBitmap8bppIndexed();
             OnFrameUpdated(EventArgs.Empty);
         }
     }

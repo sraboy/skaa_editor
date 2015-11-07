@@ -289,7 +289,6 @@ namespace SkaaEditorUI
 
             return this.ActivePalette;
         }
-
         public Sprite LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
