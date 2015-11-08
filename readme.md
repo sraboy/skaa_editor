@@ -12,7 +12,7 @@ You can load most (all?) unit-type sprites (ballista, catapult, etc). Submit an 
 - You can select a color on the palette without being in Edit Mode.
 
 ## getting started
-You may download the current ALPHA release [here](https://github.com/sraboy/skaa_editor/blob/master/_other/SkaaEditor_x86_2015102138.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
+You may download the current ALPHA release [here](https://github.com/sraboy/skaa_editor/blob/master/other/SkaaEditor_x86_2015102138.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
 
 The ZIP file includes debug information to help you help me fix bugs.
 
