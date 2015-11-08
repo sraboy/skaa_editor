@@ -34,8 +34,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//todo: replace default parameters with overloads to reduce issues with reflection and calling from other languages
-
 namespace SkaaGameDataLib
 {
     [Serializable]
@@ -141,24 +139,12 @@ namespace SkaaGameDataLib
         }
         #endregion
 
-        ///// <summary>
-        ///// Adds either a new frame or, if provided, the specified frame to the <see cref="Frames"/> List
-        ///// </summary>
-        ///// <param name="sf">A particular frame to add</param>
-        ///// <returns>The new frame</returns>
-        //public SpriteFrame AddFrame(SpriteFrame sf = null)
-        //{
-        //    if (sf == null)
-        //    {
-        //        sf = new SpriteFrame();
-        //        this.Frames.Add(sf);
-        //        return sf;
-        //    }
-
-        //    this.Frames.Add(sf);
-        //    //sf.FrameUpdated += SpriteFrameUpdated;
-        //    return sf;
-        //}
+        public SpriteFrame AddFrame(SpriteFrame sf)
+        {
+            this.Frames.Add(sf);
+            //sf.FrameUpdated += SpriteFrameUpdated;
+            return sf;
+        }
         /// <summary>
         /// Builds a 7KAA-formatted SPR containing all of this sprite's frames
         /// </summary>
@@ -195,12 +181,13 @@ namespace SkaaGameDataLib
         /// </summary>
         public void MatchFrameOffsets()
         {
-            foreach (DataRowView drv in this.SpriteDataView)//GameSetDataTable.Rows)
+            foreach (DataRowView drv in this.SpriteDataView)
             {
                 int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
                 SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
                 
-                Debug.WriteLineIf(sf == null, string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.", this.SpriteId, offset.ToString()));
+                if(sf == null)
+                    throw new Exception(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.\n\nDid you forget to load the proper SET file for this sprite?", this.SpriteId, offset.ToString()));
 
                 if (sf != null)
                     sf.GameSetDataRows.Add(drv.Row);

@@ -37,17 +37,6 @@ namespace SkaaEditorUI
                 fm.Serialize(ms, o);
                 return ms;
             }
-
-            //todo: implement XmlSerializer with Base64-encoded binary blobs, or refs to files in archive
-            //XmlSerializer xs = new XmlSerializer(typeof(Project));
-            //using (MemoryStream ms = new MemoryStream())
-            //{
-            //    using (XmlWriter xw = XmlWriter.Create(ms))
-            //    {
-            //        xs.Serialize(xw, this);
-            //        return ms;
-            //    }
-            //}
         }
         internal static object Deserialize(Stream str)
         {
@@ -119,7 +108,7 @@ namespace SkaaEditorUI
     {
         public static void Error(string message)
         {
-            Debug.WriteLine(message);
+            Trace.WriteLine(message);
 #if DEBUG
             throw new Exception(message);
 #endif

@@ -95,6 +95,7 @@ namespace SkaaGameDataLib
             ReadPreHeader();
             ReadFieldDescriptors();
         }
+
         /// <summary>
         /// Reads a DBF file assuming no type information and provides byte arrays for each cell. It
         /// is up to the caller to resolve data types. A columns are of type object.
@@ -102,8 +103,6 @@ namespace SkaaGameDataLib
         /// <returns>A DataTable containing records filled with byte arrays.</returns>
         public DataTable RawFill()
         {
-            //todo: verify previous byte is still 0xD
-
             DataTable table = new DataTable(this.TableName);
 
             //build columns

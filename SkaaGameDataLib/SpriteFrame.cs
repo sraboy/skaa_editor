@@ -212,7 +212,7 @@ namespace SkaaGameDataLib
         /// </remarks>
         private void ReadSprData(Stream stream)
         {
-            //todo:documentation: Verify 0xff is/isn't used and update explanation.
+            //todo: Verify 0xff is/isn't used in any sprite and update explanation.
 
             //Read Header
             byte[] frame_size_bytes = new byte[8];
@@ -311,7 +311,7 @@ namespace SkaaGameDataLib
             int realOffset = 8; //since our array offset is unaware of the header
             byte[] indexedData = new byte[this.PixelSize + 4];
 
-            // todo: will have to recalculate size if pixels change
+            // todo: will have to recalculate height/width if bitmap size changes
             byte[] width = BitConverter.GetBytes((short) this.Width);
             byte[] height = BitConverter.GetBytes((short) this.Height);
 

@@ -48,6 +48,7 @@ namespace SkaaEditorControls
         private Boolean _editMode;
         private Boolean _isDrawing;
         private Color _activeColor;
+        private Color _skaaTransparentColor;
         #endregion
         #region Accessor Methods
         [DefaultValue(false)]
@@ -60,7 +61,7 @@ namespace SkaaEditorControls
                 if (_editMode != value)
                 {
                     _editMode = value;
-                    this.OnEditModeChanged(EventArgs.Empty);
+                    //this.OnEditModeChanged(EventArgs.Empty);
                 }
             }
         }
@@ -73,7 +74,7 @@ namespace SkaaEditorControls
                 if (_activeColor != value)
                 {
                     _activeColor = value;
-                    this.OnActiveColorChanged(EventArgs.Empty);
+                    //this.OnActiveColorChanged(EventArgs.Empty);
                 }
             }
         }
@@ -94,7 +95,7 @@ namespace SkaaEditorControls
         #endregion
 
         public event EventHandler ImageUpdated;
-        protected virtual void OnImageUpdated(EventArgs e)
+        protected void OnImageUpdated(EventArgs e)
         {
             EventHandler handler = ImageUpdated;
 
@@ -104,12 +105,6 @@ namespace SkaaEditorControls
             }
         }
 
-        private void OnEditModeChanged(EventArgs eventArgs)
-        {
-        }
-        private void OnActiveColorChanged(EventArgs eventArgs)
-        {
-        }
         protected override void OnMouseDown(MouseEventArgs e)
         {
             PenDraw(e);
@@ -140,7 +135,7 @@ namespace SkaaEditorControls
                     if (e.Button == MouseButtons.Left)
                         (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this.ActiveColor);
                     if (e.Button == MouseButtons.Right)
-                        (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, Color.Black); //todo:setup secondary color as transparent. will have to update save to convert trans to black
+                        (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this._skaaTransparentColor); 
 
                     this.Invalidate(this.ViewPortRectangle);
                     this.Update();
@@ -155,6 +150,11 @@ namespace SkaaEditorControls
                 OnImageUpdated(null);
             }
             base.OnMouseUp(e);
+        }
+
+        public SkaaImageBox() : base()
+        {
+            this._skaaTransparentColor = Color.FromArgb(0);
         }
     }
 }

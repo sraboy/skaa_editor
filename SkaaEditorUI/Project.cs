@@ -97,12 +97,11 @@ namespace SkaaEditorUI
             }
         }
 
-        //private string _workingFolder;
         private SpriteFrame _activeFrame;
         private SkaaGameSet _activeGameSet;
 
         [NonSerialized]
-        public SkaaEditorPalette _skaaEditorPalette; //todo: make private
+        private SkaaEditorPalette _skaaEditorPalette;
         [NonSerialized]
         private SkaaEditorSprite _skaaEditorSprite;
         public Sprite ActiveSprite
@@ -165,8 +164,6 @@ namespace SkaaEditorUI
             }
         }
 
-        
-
         /// <summary>
         /// Creates a new project, optionally loading the default palette and game set.
         /// </summary>
@@ -178,31 +175,11 @@ namespace SkaaEditorUI
         }
         public void Load(string paletteFilePath, string gameSetFilePath)
         {
-            //this._workingFolder = workingFolder;
-            this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
-            this.ActiveFrameChanged += Project_ActiveFrameChanged;
+            //this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
+            //this.ActiveFrameChanged += Project_ActiveFrameChanged;
 
             LoadPalette(paletteFilePath);
             LoadGameSet(gameSetFilePath);
-        }
-
-        private void Project_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            
-        }
-        private void Project_ActiveSpriteChanged(object sender, EventArgs e)
-        {
-            //changing the ActiveFrame property fires its event before 
-            //this event goes on to the MainForm and the TimeLine 
-            //control ends up not having an ActiveSprite before it tries
-            //to set its own ActiveFrame
-
-            //let the UI's event handler set the active frame
-
-            //if (this.ActiveSprite == null || this.ActiveSprite.Frames.Count < 1)
-            //    this.ActiveFrame = null;
-            //else
-            //    this.ActiveFrame = this.ActiveSprite.Frames[0];
         }
 
         /// <summary>
@@ -220,29 +197,6 @@ namespace SkaaEditorUI
         public void LoadGameSet(string filepath)
         {
             this.ActiveGameSet = new SkaaGameSet(filepath, props.TempDirectory);
-
-            //if (filepath == null)
-            //    filepath = this._workingFolder;
-
-            //string filename;
-            //// If a set is chosen by the user, we'll get a full file path. The 'connex' string in the can't have
-            //// a file name, just a path. This is because the path is considered the 'database' and the file is
-            //// a 'table' as far as OLEDB/Jet is concerned.
-            //FileAttributes attr = File.GetAttributes(filepath);
-            //if (attr.HasFlag(FileAttributes.Directory))
-            //{
-            //    filename = "std.set";
-            //    filepath = filepath + '\\' + filename;
-            //}
-            //else
-            //{
-            //    filename = Path.GetFileName(filepath);
-            //    //filepath = Path.GetDirectoryName(filepath);
-            //}
-
-            //this.SuperSet.GameSetFileMemoryStream = this.ActiveGameSet.GetRawDataStream() as MemoryStream;
-            //this.SuperSet.GameSetFileName = filename;
-            //this.SpriteTablesDataSet = this.ActiveGameSet.GetSpriteTablesInDataSet();
         }
 
         /// <summary>

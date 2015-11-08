@@ -133,50 +133,42 @@ namespace SkaaEditorUI
         /////////////////////////////////// Setup //////////////////////////////////////////
         private void ConfigSettings()
         {
-            //            string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            //#if DEBUG
-            //            currentDirectory += @"\..\..\..\_other\working";
-            //#else
-            //                        currentDirectory += "\\data";
-            //#endif
-
             //string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + '\\' +
             //                    Assembly.GetExecutingAssembly().GetName().Name;
 
             props.ApplicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + '\\';
+            _debugTxtWriter = new TextWriterTraceListener(props.ApplicationDirectory + "debug_log.txt");
+            Trace.AutoFlush = true;
+            Trace.Listeners.Add(_debugTxtWriter);
+
             props.DataDirectory = props.ApplicationDirectory + "data\\";
             props.TempDirectory = props.ApplicationDirectory + "temp\\";
-            props.ProjectsDirectory = props.ApplicationDirectory + "projects\\";
+            props.ProjectsDirectory = props.ApplicationDirectory + "project\\";
             Directory.CreateDirectory(props.TempDirectory);
-            _debugTxtWriter = new TextWriterTraceListener(props.ApplicationDirectory + "debug_log.txt");
-            Debug.Listeners.Add(_debugTxtWriter);
         }
         private void SetupUI()
         {
             //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
 
-            //disallow opening sprites until a palette & set are loaded
-            this.openSpriteToolStripMenuItem.Enabled = (this.skaaColorChooser.Palette == null || this.ActiveProject?.ActiveGameSet == null) ? false : true;
-            //disable saving until a sprite is loaded
-            this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
-
-            //disable BMP export until a sprite is loaded
+            this.openSpriteToolStripMenuItem.Enabled = (this.skaaColorChooser.Palette == null || this.ActiveProject?.ActiveGameSet == null) ? false : true;            
+            this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;            
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
-            
-            //enable loading a set. once a set is loaded, don't allow loading a new one
-            //this.loadSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
-            //enable loading a palette. once a palette is loaded, don't allow loading a new one
-            //this.loadPaletteToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.SuperPal == null || this.ActiveProject.SuperPal.ActivePalette == null) ? true : false;
+            this.timelineControl.SetSliderEnable((this.imageEditorBox.Image == null) ? false : true);
+            this.showGridToolStripMenuItem.Checked = this.imageEditorBox.ShowPixelGrid;
+            this.cbMultiColumn.Enabled = this.cbMultiColumn.DataSource == null ? false : true;
 
-            
+            //enable loading a set. once a set is loaded, don't allow loading a new one. they have to close the project first.
+            //this.openGameSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
+
             //some help text until a sprite is loaded
             //this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "Edit >> Load Palette\nFile >> Open >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
-            //this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? "File >> Open Sprite >> Choose an SPR file.\nReport bugs to steven.lavoiejr@gmail.com" : null;
-            
-            //disable the slider until a sprite is loaded
-            this.timelineControl.SetSliderEnable((this.imageEditorBox.Image == null) ? false : true);
-            //(re)set to the current status in case the setting was changed elsewhere (loaded project)
-            this.showGridToolStripMenuItem.Checked = this.imageEditorBox.ShowPixelGrid;
+            string help_text =
+                "Be sure to open proper game set file before opening a sprite!\n" +
+                "File >> Open Game Set >> Choose a SET file. (e.g., 7KAA's std.set).\n" +
+                "You must also save your game set after saving any edits to a sprite.\n\n" +
+                "To open/edit a sprite, its filename must match the original (e.g.,\"ballista.spr,\").\n\n" +
+                "Please report bugs to steven.lavoiejr@gmail.com or https://www.github.com/sraboy/skaa_editor/.";
+            this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? help_text : null;
 
             //event subscriptions
             this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
@@ -235,9 +227,6 @@ namespace SkaaEditorUI
         }
         private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
-            //string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            
-
             NewProject(true);
         }
         /////////////////////////////////// Loading Events //////////////////////////////////////////
@@ -259,8 +248,8 @@ namespace SkaaEditorUI
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-
-                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
+                dlg.DefaultExt = props.SpriteFileExtension;
+                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -276,35 +265,50 @@ namespace SkaaEditorUI
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.ActiveProject.ActiveSprite != null)
+            {
+                string msg = "This will close the current sprite. Continue?";
+
+                if (MessageBox.Show(msg, "Wait!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    this.ActiveProject.ActiveSprite = null;
+                    this.ActiveProject.ActiveGameSet = null;
+                    this.cbMultiColumn.DataSource = null;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.Filter = dlg.DefaultExt = props.GameSetFileExtension;
+                dlg.DefaultExt = props.GameSetFileExtension;
+                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     ActiveProject.LoadGameSet(dlg.FileName);
                 }
             }
+            
         }
         //////////////////////////////////// Saving Events //////////////////////////////////////////
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-            {
-                string error = "The SkaaImageBox.Image object cannot be null!";
-                Debug.WriteLine(error);
-                throw new Exception(error);
-            }
+                Error("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
+                dlg.DefaultExt = props.SpriteFileExtension;
+                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
 #if DEBUG
-                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + dlg.DefaultExt;
+                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM");
 #else
-                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId;
 #endif
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -321,22 +325,19 @@ namespace SkaaEditorUI
         private void saveGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
-            {
-                string error = "ActiveProject cannot be null!";
-                Debug.WriteLine(error);
-                throw new Exception(error);
-            }
+                Error("ActiveProject cannot be null!");
 
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.Filter = dlg.DefaultExt = props.GameSetFileExtension;
+                dlg.DefaultExt = props.GameSetFileExtension;
+                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
                 UpdateSprite();
 #if DEBUG
-                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + dlg.DefaultExt;
+                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM");
 #else
-                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId;
 #endif
 
                 if (dlg.ShowDialog() == DialogResult.OK)
@@ -353,8 +354,9 @@ namespace SkaaEditorUI
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
-                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+                dlg.DefaultExt = ".bmp";
+                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
+                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -374,8 +376,9 @@ namespace SkaaEditorUI
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
-                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+                dlg.DefaultExt = ".bmp";
+                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
+                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -485,7 +488,6 @@ namespace SkaaEditorUI
             UpdateSprite();
         }
 
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (AboutForm abt = new AboutForm())
@@ -493,15 +495,13 @@ namespace SkaaEditorUI
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            this.Close();
         }
-
-     
         private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
         {
             //sets the palette which causes the color chooser's buttons to be filled
-            if (this.ActiveProject?._skaaEditorPalette != null)// && this.ActiveProject.SuperPal != null)
-                this.skaaColorChooser.Palette = this.ActiveProject._skaaEditorPalette.ActivePalette;
+            if (this.ActiveProject?.ActivePalette != null)// && this.ActiveProject.SuperPal != null)
+                this.skaaColorChooser.Palette = this.ActiveProject.ActivePalette;
             else //user has closed the project (it is now null)
             {
                 this.imageEditorBox.Image = null;
@@ -557,27 +557,51 @@ namespace SkaaEditorUI
         {
             if (this.ActiveProject == null)
                 this.skaaColorChooser.Palette = null;
-            else if (this.ActiveProject._skaaEditorPalette != null)
-                this.skaaColorChooser.Palette = this.ActiveProject._skaaEditorPalette.ActivePalette;
-        }
-
-
-#region Old Menu Items
-        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //todo: confirm closing the current project first
-            this.ActiveProject = null;
-            NewProject(false);
+            else if (this.ActiveProject.ActivePalette != null)
+                this.skaaColorChooser.Palette = this.ActiveProject.ActivePalette;
         }
         private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.ActiveProject = null;
-            NewProject(true);
+            this.cbMultiColumn.DataSource = null;
         }
+        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ActiveProject.ActiveSprite != null)
+            {
+                string msg = "This will close the current sprite. Continue?";
+
+                if (MessageBox.Show(msg, "Wait!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    this.ActiveProject = null;
+                    NewProject(false);
+                    this.ActiveProject.LoadPalette();
+                    this.cbMultiColumn.DataSource = null;
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+
+        private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Trace.WriteLine($"MainForm closed. Reason: {e.CloseReason}");
+
+#if !DEBUG
+            Directory.Delete(props.TempDirectory, true);
+            Trace.WriteLine($"Temp directory wiped: {props.TempDirectory}");
+#endif
+        }
+
+
+        #region Old Menu Items
+
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
-                throw new ArgumentNullException("There is no ActiveProject! How'd you even do that?");
+                Error("There is no ActiveProject!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -670,13 +694,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-#endregion
 
-        private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Debug.WriteLine($"MainForm closed. Reason: {e.CloseReason}");
-            Directory.Delete(props.TempDirectory, true);
-        }
-
+        #endregion
     }
 }
