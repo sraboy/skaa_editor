@@ -303,8 +303,7 @@ namespace SkaaEditorUI
 
                 while (spritestream.Position < spritestream.Length)
                 {
-                    SpriteFrame frame = new SpriteFrame(spr, spritestream);// size, width, height, spr);
-
+                    SpriteFrame frame = new SpriteFrame(spr, spritestream);
                     spr.Frames.Add(frame);
                 }
 
@@ -334,7 +333,6 @@ namespace SkaaEditorUI
         public void SaveProject(string filepath)
         {
             this.ActiveGameSet.SaveGameSet();
-            //UpdateGameSet("SFRAME");
 
             //if (filepath == null)
             //        ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");

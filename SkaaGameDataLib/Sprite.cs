@@ -163,7 +163,7 @@ namespace SkaaGameDataLib
         /// Builds a 7KAA-formatted SPR containing all of this sprite's frames
         /// </summary>
         /// <returns>A byte array containing the SPR data that can be written directly to a file</returns>
-        public byte[] BuildSPR()
+        public byte[] BuildSpr()
         {
             List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
             int initSize = 0;
@@ -230,7 +230,7 @@ namespace SkaaGameDataLib
                 }
             }
 
-            BuildSPR();
+            BuildSpr();
             OnSpriteUpdated(EventArgs.Empty);
         }
         private void Sprite_PaletteUpdated(object sender, EventArgs e) { }
