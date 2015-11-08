@@ -162,7 +162,7 @@ namespace SkaaEditorControls
                     }
 
                     this.Invalidate(this.ViewPortRectangle);
-                    this.Update();
+                    //this.Update();
                 }
             }
         }
