@@ -14,7 +14,7 @@ Note that yellow is the default color; 7KAA automatically replaces this yellow w
 - Editing is laggy. You'll have to move the mouse slower than you're used to.
 
 ## getting started
-You may download the current alphaV2 release [here](https://github.com/sraboy/skaa_editor/blob/master/other/SkaaEditor_x86_alphav2.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
+You may download the current alphaV2 release [here](https://github.com/sraboy/skaa_editor/blob/release_alpha_v2/other/SkaaEditor_x86_alphav2.zip). Otherwise, compile the code with Visual Studio 2015 (untested on Mono), targeting .NET4.5.
 
 There is debug information included to give you more helpful error messages. Please report bugs here by submitting an issue or by emailing me at steven.lavoiejr@gmail.com.
 
