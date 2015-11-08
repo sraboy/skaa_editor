@@ -141,24 +141,24 @@ namespace SkaaGameDataLib
         }
         #endregion
 
-        /// <summary>
-        /// Adds either a new frame or, if provided, the specified frame to the <see cref="Frames"/> List
-        /// </summary>
-        /// <param name="sf">A particular frame to add</param>
-        /// <returns>The new frame</returns>
-        public SpriteFrame AddFrame(SpriteFrame sf = null)
-        {
-            if (sf == null)
-            {
-                sf = new SpriteFrame();
-                this.Frames.Add(sf);
-                return sf;
-            }
+        ///// <summary>
+        ///// Adds either a new frame or, if provided, the specified frame to the <see cref="Frames"/> List
+        ///// </summary>
+        ///// <param name="sf">A particular frame to add</param>
+        ///// <returns>The new frame</returns>
+        //public SpriteFrame AddFrame(SpriteFrame sf = null)
+        //{
+        //    if (sf == null)
+        //    {
+        //        sf = new SpriteFrame();
+        //        this.Frames.Add(sf);
+        //        return sf;
+        //    }
 
-            this.Frames.Add(sf);
-            //sf.FrameUpdated += SpriteFrameUpdated;
-            return sf;
-        }
+        //    this.Frames.Add(sf);
+        //    //sf.FrameUpdated += SpriteFrameUpdated;
+        //    return sf;
+        //}
         /// <summary>
         /// Builds a 7KAA-formatted SPR containing all of this sprite's frames
         /// </summary>
@@ -208,7 +208,7 @@ namespace SkaaGameDataLib
         public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
         {
             frameToUpdate.ProcessUpdates(bmpWithChanges);
-            frameToUpdate.SprFrameRawDataSize = frameToUpdate.FrameRawData.Length;
+            
 
             int offset = 0;
             for(int i = 0; i < this.Frames.Count; i++)

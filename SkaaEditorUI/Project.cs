@@ -303,20 +303,8 @@ namespace SkaaEditorUI
 
                 while (spritestream.Position < spritestream.Length)
                 {
-                    byte[] frame_size_bytes = new byte[8];
+                    SpriteFrame frame = new SpriteFrame(spr, spritestream);// size, width, height, spr);
 
-                    spritestream.Read(frame_size_bytes, 0, 8);
-
-                    int size = BitConverter.ToInt32(frame_size_bytes, 0);
-                    short width = BitConverter.ToInt16(frame_size_bytes, 4);
-                    short height = BitConverter.ToInt16(frame_size_bytes, 6);
-
-                    SpriteFrame frame = new SpriteFrame(size, width, height, spr);
-
-                    frame.SprBitmapOffset = (int) spritestream.Position - 8;
-
-                    frame.SetPixels(spritestream);
-                    frame.BuildBitmap32bpp();
                     spr.Frames.Add(frame);
                 }
 
