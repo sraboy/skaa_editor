@@ -20,5 +20,11 @@
     <Setting Name="DefaultGameSetFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">std.set</Value>
     </Setting>
+    <Setting Name="GameSetFileExtension" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.set</Value>
+    </Setting>
+    <Setting Name="SpriteFileExtension" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.spr</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

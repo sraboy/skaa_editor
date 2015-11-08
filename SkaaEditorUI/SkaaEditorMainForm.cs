@@ -147,8 +147,9 @@ namespace SkaaEditorUI
             props.DataDirectory = props.ApplicationDirectory + "data\\";
             props.TempDirectory = props.ApplicationDirectory + "temp\\";
             props.ProjectsDirectory = props.ApplicationDirectory + "projects\\";
-
-            Directory.CreateDirectory(props.TempDirectory);// + Properties.Settings.Default.TempDirectory);
+            Directory.CreateDirectory(props.TempDirectory);
+            _debugTxtWriter = new TextWriterTraceListener(props.ApplicationDirectory + "debug_log.txt");
+            Debug.Listeners.Add(_debugTxtWriter);
         }
         private void SetupUI()
         {
@@ -235,8 +236,7 @@ namespace SkaaEditorUI
         private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
             //string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            _debugTxtWriter = new TextWriterTraceListener(props.TempDirectory + "debug_log.txt");
-            Debug.Listeners.Add(_debugTxtWriter);
+            
 
             NewProject(true);
         }
@@ -258,7 +258,9 @@ namespace SkaaEditorUI
 
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
-                dlg.DefaultExt = ".spr";
+                dlg.InitialDirectory = props.ApplicationDirectory;
+
+                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -276,11 +278,8 @@ namespace SkaaEditorUI
         {
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
-                dlg.Filter = ".set";
-                dlg.DefaultExt = ".set";
-                //todo: add dlg.SupportMultiDottedExtensions to all dialogs
-
-                dlg.SupportMultiDottedExtensions = true;
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.Filter = dlg.DefaultExt = props.GameSetFileExtension;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -300,6 +299,13 @@ namespace SkaaEditorUI
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
+#if DEBUG
+                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + dlg.DefaultExt;
+#else
+                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+#endif
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     UpdateSprite();
@@ -324,9 +330,15 @@ namespace SkaaEditorUI
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.Filter = dlg.DefaultExt = props.GameSetFileExtension;
                 UpdateSprite();
+#if DEBUG
+                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + dlg.DefaultExt;
+#else
+                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+#endif
 
-                dlg.FileName = "new_set.set";
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {        
                     this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
@@ -336,10 +348,14 @@ namespace SkaaEditorUI
         private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
+                Error("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
+                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     //updates this frame's ImageBmp based on changes
@@ -353,13 +369,16 @@ namespace SkaaEditorUI
         private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                throw new ArgumentNullException("The SkaaImageBox.Image object cannot be null! How'd you even do that?");
+                Error("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.Filter = dlg.DefaultExt = props.SpriteFileExtension;
+                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + dlg.DefaultExt;
+
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    //UpdateFrameChanges(); //updates this frame's ImageBmp based on changes
                     UpdateSprite();
 
                     int totalFrames = this.ActiveProject.ActiveSprite.Frames.Count;
@@ -543,7 +562,7 @@ namespace SkaaEditorUI
         }
 
 
-        #region Old Menu Items
+#region Old Menu Items
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //todo: confirm closing the current project first
@@ -651,12 +670,12 @@ namespace SkaaEditorUI
                 }
             }
         }
-        #endregion
+#endregion
 
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Debug.WriteLine($"MainForm closed. Reason: {e.CloseReason}");
-            Directory.Delete(props.TempDirectory);
+            Directory.Delete(props.TempDirectory, true);
         }
 
     }

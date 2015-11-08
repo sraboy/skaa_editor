@@ -94,5 +94,29 @@ namespace SkaaEditorUI.Properties {
                 this["DefaultGameSetFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".set")]
+        public string GameSetFileExtension {
+            get {
+                return ((string)(this["GameSetFileExtension"]));
+            }
+            set {
+                this["GameSetFileExtension"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".spr")]
+        public string SpriteFileExtension {
+            get {
+                return ((string)(this["SpriteFileExtension"]));
+            }
+            set {
+                this["SpriteFileExtension"] = value;
+            }
+        }
     }
 }

@@ -107,6 +107,7 @@ namespace SkaaGameDataLib
                 string dbfFileName = db.Name + ".dbf";
 
                 //we have to write all the DBGs
+                Directory.CreateDirectory(this._dbfDirectory);
                 using (FileStream wfs = new FileStream(this._dbfDirectory + dbfFileName, FileMode.Create))
                     wfs.Write(sframeData, 0, dataSize);
 
