@@ -1,7 +1,7 @@
 # skaa_editor
 SkaaEditor seeks to provide non-technical users (e.g., non-programmers) the ability to re-skin the game to their liking. The project is currently in its infancy and battles three other projects that vie for my time.
 
-![screenshot](https://github.com/sraboy/skaa_editor/blob/master/_other/skaa_editor.png)
+![screenshot](https://github.com/sraboy/skaa_editor/blob/master/other/skaa_editor.png)
 
 ## status & known issues
 You can load most (all?) unit-type sprites (ballista, catapult, etc). Submit an issue via the GitHub tracker if you encounter an SPR file that does not open properly. You can currently save the sprite, with any edits, in the 7KAA SPR file format. You can also exporting to a 32-bit BMP. 
