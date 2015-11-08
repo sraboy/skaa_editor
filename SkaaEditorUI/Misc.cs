@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
@@ -13,13 +14,13 @@ using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
-    public class SuperPalette
+    public class SkaaEditorPalette
     {
         public string PaletteFileName;
         public MemoryStream PaletteFileMemoryStream;
         public ColorPalette ActivePalette;
     }
-    public class SuperSprite
+    public class SkaaEditorSprite
     {
         public string SpriteFileName;
         public MemoryStream SpriteFileMemoryStream;
@@ -107,11 +108,21 @@ namespace SkaaEditorUI
             //    }
             //}
 
-            Project p = new Project(Path.GetDirectoryName(filePath), false);
-            p.LoadPalette(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "res"));
-            p.LoadGameSet(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "set"));
-            p.LoadSprite(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "spr"));
+            Project p = new Project(false);
+            //p.LoadPalette(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "res"));
+            //p.LoadGameSet(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "set"));
+            //p.LoadSprite(path + '\\' + arch.Entries.First(ent => ent.Name.Split(new char[] { '.' })[1] == "spr"));
             return p;
+        }
+    }
+    public static class ErrorHandler
+    {
+        public static void Error(string message)
+        {
+            Debug.WriteLine(message);
+#if DEBUG
+            throw new Exception(message);
+#endif
         }
     }
 }

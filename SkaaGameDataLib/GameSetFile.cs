@@ -11,12 +11,14 @@ namespace SkaaGameDataLib
 {
     public class GameSetFile
     {
+        private Properties.Settings props = Properties.Settings.Default;
+
         /* ----  SET File Format  ----
          * short recordCount
          * ResourceIndex[recordCount]
          * Database[recordCount]
          */
-        private string _fileName, _directory;
+        private string /*_setFileName, _setFileDirectory,*/ _tempDirectory, _dbfDirectory, _setFilePath;
         private short _recordCount;
         private const int _rowNameSize = 9;
         private const int _resIndexSize = 13;
@@ -25,32 +27,26 @@ namespace SkaaGameDataLib
         public List<DatabaseContainer> DatabaseContainers;
         public MemoryStream RawDataStream;
         public DataSet GameDataSet;
-        public string FileName
-        {
-            get
-            {
-                return this._fileName;
-            }
-        }
-        public string Directory
-        {
-            get
-            {
-                return this._directory;
-            }
-        }
 
-        public GameSetFile() { }
-        public GameSetFile(string filepath)
+        /// <summary>
+        /// Initializes a new <see cref="GameSetFile"/> object.
+        /// </summary>
+        /// <param name="setFilePath">The complete path to the SET file that this object represents.</param>
+        /// <param name="tempDirectoryPath">The complete path to a temporary directory the class can use freely.</param>
+        public GameSetFile(string setFilePath, string tempDirectoryPath)
         {
-            this._fileName = Path.GetFileName(filepath);
-            this._directory = Path.GetDirectoryName(filepath);
+            //this._setFileName = Path.GetFileName(setFilePath);
+            //this._setFileDirectory = Path.GetDirectoryName(setFilePath);
+            this._setFilePath = setFilePath;
+            this._tempDirectory = tempDirectoryPath;
+            this._dbfDirectory = this._tempDirectory + "dbf\\";
+
             this.DatabaseContainers = new List<DatabaseContainer>(this._recordCount);
         }
 
         public void OpenAndRead()
         {
-            using (FileStream fs = new FileStream(this._directory + '\\' + this._fileName, FileMode.Open))
+            using (FileStream fs = new FileStream(this._setFilePath, FileMode.Open))
             {
                 this.RawDataStream = new MemoryStream();
                 fs.Position = 0;
@@ -92,7 +88,7 @@ namespace SkaaGameDataLib
         }
         private DataSet BuildDataSetFromDbfFiles()
         {
-            DataSet ds = new DataSet(this.FileName);
+            DataSet ds = new DataSet(Path.GetFileName(this._setFilePath));
 
             foreach (DatabaseContainer db in this.DatabaseContainers)
             {
@@ -110,33 +106,35 @@ namespace SkaaGameDataLib
 
                 string dbfFileName = db.Name + ".dbf";
 
-                using (FileStream wfs = new FileStream(this.Directory + "\\dbf\\" + dbfFileName, FileMode.Create))
+                //we have to write all the DBGs
+                using (FileStream wfs = new FileStream(this._dbfDirectory + dbfFileName, FileMode.Create))
                     wfs.Write(sframeData, 0, dataSize);
 
                 DataTable dt;
 
-                string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
-                    this.Directory + "\\dbf" + ";Extended Properties=dBase III";
+                //string connex = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                //                this._dbfDirectory + 
+                //                ";Extended Properties=dBase III";
 
-                using (OleDbConnection dbConnection = new OleDbConnection(connex))
-                {
-                    OleDbCommand cmd = new OleDbCommand("SELECT * FROM [" + dbfFileName + ']', dbConnection);
+                //using (OleDbConnection dbConnection = new OleDbConnection(connex))
+                //{
+                //    OleDbCommand cmd = new OleDbCommand("SELECT * FROM [" + dbfFileName + ']', dbConnection);
 
-                    using (OleDbDataAdapter adapter = new OleDbDataAdapter(cmd))
-                    {
+                //    using (OleDbDataAdapter adapter = new OleDbDataAdapter(cmd))
+                //    {
 
                         dt = new DataTable(Path.GetFileNameWithoutExtension(dbfFileName));
 
-                        using (MemoryStream ms = new MemoryStream())
-                        {
-                            using (FileStream fsSframe = new FileStream(this.Directory + "\\dbf\\" + dbfFileName, FileMode.Open))
-                                fsSframe.CopyTo(ms);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (FileStream fsSframe = new FileStream(this._dbfDirectory + dbfFileName, FileMode.Open))
+                        fsSframe.CopyTo(ms);
 
-                            db.DbfFileObject = new DbfFile(ms, dt.TableName, (int) ms.Length);
-                            dt = db.DbfFileObject.FillAndGetTable();
-                        }
-                    }
+                    db.DbfFileObject = new DbfFile(ms, dt.TableName, (int) ms.Length);
+                    dt = db.DbfFileObject.FillAndGetTable();
                 }
+                //    }
+                //}
 
                 db.Table = dt;
                 ds.Tables.Add(db.Table);
@@ -145,7 +143,7 @@ namespace SkaaGameDataLib
             return ds;
         }
 
-        public void SaveGameSetToFile(string filePath)//, GameSet set)
+        internal void SaveGameSetToFile(string filePath)//, GameSet set)
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
@@ -167,6 +165,7 @@ namespace SkaaGameDataLib
                 foreach (DatabaseContainer db in this.DatabaseContainers)
                 {
 #if DEBUG
+                    
                     //writes out individual DBFs
                     if(System.IO.Directory.Exists(filePath + "dbf\\test"))
                     { 

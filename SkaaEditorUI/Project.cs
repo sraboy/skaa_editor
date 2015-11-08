@@ -19,6 +19,8 @@ namespace SkaaEditorUI
     [Serializable]
     public class Project
     {
+        private Properties.Settings props = Properties.Settings.Default;
+
         [field: NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
@@ -95,40 +97,25 @@ namespace SkaaEditorUI
             }
         }
 
-        private string _workingFolder;
+        //private string _workingFolder;
         private SpriteFrame _activeFrame;
-        //private DataSet _spriteTablesDataSet = new DataSet("sprites");
-        //public DataSet SpriteTablesDataSet
-        //{
-        //    get
-        //    {
-        //        return this._spriteTablesDataSet;
-        //    }
-        //    set
-        //    {
-        //        if (this._spriteTablesDataSet != value)
-        //            this._spriteTablesDataSet = value;
-        //    }
-        //}
-        private GameSet _activeGameSet;
+        private SkaaGameSet _activeGameSet;
 
         [NonSerialized]
-        public SuperPalette SuperPal;
-        //[NonSerialized]
-        //public SuperGameSet SuperSet;
+        public SkaaEditorPalette _skaaEditorPalette; //todo: make private
         [NonSerialized]
-        public SuperSprite SuperSpr;
+        private SkaaEditorSprite _skaaEditorSprite;
         public Sprite ActiveSprite
         {
             get
             {
-                return this.SuperSpr == null ? null : this.SuperSpr.ActiveSprite;
+                return this._skaaEditorSprite == null ? null : this._skaaEditorSprite.ActiveSprite;
             }
             set
             {
-                if (this.SuperSpr.ActiveSprite != value)
+                if (this._skaaEditorSprite.ActiveSprite != value)
                 {
-                    this.SuperSpr.ActiveSprite = value;
+                    this._skaaEditorSprite.ActiveSprite = value;
                     OnActiveSpriteChanged(null);
                 }
             }
@@ -152,18 +139,18 @@ namespace SkaaEditorUI
         {
             get
             {
-                return this.SuperPal.ActivePalette;
+                return this._skaaEditorPalette.ActivePalette;
             }
             set
             {
-                if (this.SuperPal.ActivePalette != value)
+                if (this._skaaEditorPalette.ActivePalette != value)
                 {
-                    this.SuperPal.ActivePalette = value;
+                    this._skaaEditorPalette.ActivePalette = value;
                     OnPaletteChanged(null);
                 }
             }
         }
-        public GameSet ActiveGameSet
+        public SkaaGameSet ActiveGameSet
         {
             get
             {
@@ -178,21 +165,25 @@ namespace SkaaEditorUI
             }
         }
 
-        public Project ()
-        {
-        }
+        
 
-        public Project(string workingPath, bool loadDefaults)
+        /// <summary>
+        /// Creates a new project, optionally loading the default palette and game set.
+        /// </summary>
+        /// <param name="loadDefaults">True to load pal_std.res and std.set, false otherwise.</param>
+        public Project(bool loadDefaults)
         {
-            this._workingFolder = workingPath;
+            if (loadDefaults)
+                Load(props.DataDirectory + props.DefaultPaletteFile, props.DataDirectory + props.DefaultGameSetFile);
+        }
+        public void Load(string paletteFilePath, string gameSetFilePath)
+        {
+            //this._workingFolder = workingFolder;
             this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
             this.ActiveFrameChanged += Project_ActiveFrameChanged;
 
-            if (loadDefaults)
-            {
-                LoadPalette(_workingFolder);
-                LoadGameSet(_workingFolder);
-            }
+            LoadPalette(paletteFilePath);
+            LoadGameSet(gameSetFilePath);
         }
 
         private void Project_ActiveFrameChanged(object sender, EventArgs e)
@@ -215,60 +206,74 @@ namespace SkaaEditorUI
         }
 
         /// <summary>
-        /// This function will open a file containing multiple dBase III databases, like 7KAA's std.set. 
+        /// Load the default game set file, <see cref="Properties.Settings.DefaultPaletteFile"/>.
         /// </summary>
-        /// <param name="filepath"></param>
-        public void LoadGameSet(string filepath = null)
+        public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.DefaultGameSetFile);
+
+        /// <summary>
+        /// This function will open a 7KAA SET file. 
+        /// </summary>
+        /// <param name="filepath">The complete path to the SET file.</param>
+        /// <remarks>
+        ///  A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
+        /// </remarks>
+        public void LoadGameSet(string filepath)
         {
-            if (filepath == null)
-                filepath = this._workingFolder;
+            this.ActiveGameSet = new SkaaGameSet(filepath, props.TempDirectory);
 
-            string filename;
-            // If a set is chosen by the user, we'll get a full file path. The 'connex' string in the can't have
-            // a file name, just a path. This is because the path is considered the 'database' and the file is
-            // a 'table' as far as OLEDB/Jet is concerned.
-            FileAttributes attr = File.GetAttributes(filepath);
-            if (attr.HasFlag(FileAttributes.Directory))
-            {
-                filename = "std.set";
-                filepath = filepath + '\\' + filename;
-            }
-            else
-            {
-                filename = Path.GetFileName(filepath);
-                //filepath = Path.GetDirectoryName(filepath);
-            }
+            //if (filepath == null)
+            //    filepath = this._workingFolder;
 
-            this.ActiveGameSet = new GameSet(filepath);
+            //string filename;
+            //// If a set is chosen by the user, we'll get a full file path. The 'connex' string in the can't have
+            //// a file name, just a path. This is because the path is considered the 'database' and the file is
+            //// a 'table' as far as OLEDB/Jet is concerned.
+            //FileAttributes attr = File.GetAttributes(filepath);
+            //if (attr.HasFlag(FileAttributes.Directory))
+            //{
+            //    filename = "std.set";
+            //    filepath = filepath + '\\' + filename;
+            //}
+            //else
+            //{
+            //    filename = Path.GetFileName(filepath);
+            //    //filepath = Path.GetDirectoryName(filepath);
+            //}
+
             //this.SuperSet.GameSetFileMemoryStream = this.ActiveGameSet.GetRawDataStream() as MemoryStream;
             //this.SuperSet.GameSetFileName = filename;
             //this.SpriteTablesDataSet = this.ActiveGameSet.GetSpriteTablesInDataSet();
         }
+
+        /// <summary>
+        /// Load the default palette file, <see cref="Properties.Settings.DefaultGameSetFile"/>.
+        /// </summary>
+        public void LoadPalette() => LoadPalette(props.DataDirectory + props.DefaultGameSetFile);
         /// <summary>
         /// Loads a palette file.
         /// </summary>
-        /// <param name="filepath">The specific palette file to load. If blank, the project's current working folder is used and pal_std.res is loaded.</param>
+        /// <param name="filepath">The specific palette file to load.</param>
         /// <returns>A ColorPalette built from the palette file</returns>
-        public ColorPalette LoadPalette(string filepath = null)
+        public ColorPalette LoadPalette(string filepath)
         {
-            if (filepath == null)
-                filepath = this._workingFolder;
+            //if (filepath == null)
+            //    filepath = this._workingFolder;
 
-            FileAttributes attr = File.GetAttributes(filepath);
-            this.SuperPal = new SuperPalette();
+            //FileAttributes attr = File.GetAttributes(filepath);
+            //this._skaaEditorPalette = new SkaaEditorPalette();
 
-            if (attr.HasFlag(FileAttributes.Directory))
-                this.SuperPal.PaletteFileName = "pal_std.res";
-            else
+            //if (attr.HasFlag(FileAttributes.Directory))
+            //    this._skaaEditorPalette.PaletteFileName = "pal_std.res";
+            //else
+            //{
+            //    this._skaaEditorPalette.PaletteFileName = Path.GetFileName(filepath);
+            //    filepath = Path.GetDirectoryName(filepath);
+            //}
+            this._skaaEditorPalette = new SkaaEditorPalette();
+            this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
+
+            using (FileStream fs = File.OpenRead(filepath))//filepath + '\\' + this._skaaEditorPalette.PaletteFileName))
             {
-                this.SuperPal.PaletteFileName = Path.GetFileName(filepath);
-                filepath = Path.GetDirectoryName(filepath);
-            }
-
-            this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;          
-
-            using (FileStream fs = File.OpenRead(filepath + '\\' + this.SuperPal.PaletteFileName))
-            { 
                 fs.Seek(8, SeekOrigin.Begin);
 
                 for (int i = 0; i < 256; i++)
@@ -282,9 +287,9 @@ namespace SkaaEditorUI
                     else          //0xf9 - 0xff
                         this.ActivePalette.Entries[i] = Color.FromArgb(0, r, g, b);
                 }
-                this.SuperPal.PaletteFileMemoryStream = new MemoryStream();//FileStream(filepath + '\\' + this.PaletteFileName, FileMode.Open, FileAccess.Read);
+                this._skaaEditorPalette.PaletteFileMemoryStream = new MemoryStream();
                 fs.Position = 0;
-                fs.CopyTo(this.SuperPal.PaletteFileMemoryStream);
+                fs.CopyTo(this._skaaEditorPalette.PaletteFileMemoryStream);
             }
 
             return this.ActivePalette;
@@ -294,7 +299,7 @@ namespace SkaaEditorUI
             if (this.ActivePalette == null)
                 return null;
 
-            this.SuperSpr = new SuperSprite();
+            this._skaaEditorSprite = new SkaaEditorSprite();
             Sprite spr = new Sprite(this.ActivePalette);
 
             using (FileStream spritestream = File.OpenRead(filepath))
@@ -308,10 +313,10 @@ namespace SkaaEditorUI
                 }
 
                 //this.ActiveSprite = spr; //this ends up firing the event too early. return the spr instead.
-                this.SuperSpr.SpriteFileName = Path.GetFileName(filepath);
-                this.SuperSpr.SpriteFileMemoryStream = new MemoryStream();
+                this._skaaEditorSprite.SpriteFileName = Path.GetFileName(filepath);
+                this._skaaEditorSprite.SpriteFileMemoryStream = new MemoryStream();
                 spritestream.Position = 0;
-                spritestream.CopyTo(this.SuperSpr.SpriteFileMemoryStream);
+                spritestream.CopyTo(this._skaaEditorSprite.SpriteFileMemoryStream);
                 spritestream.Position = 0;
             }
 
@@ -332,7 +337,6 @@ namespace SkaaEditorUI
         }
         public void SaveProject(string filepath)
         {
-            this.ActiveGameSet.SaveGameSet();
 
             //if (filepath == null)
             //        ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");

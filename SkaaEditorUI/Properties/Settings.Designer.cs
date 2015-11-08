@@ -22,5 +22,77 @@ namespace SkaaEditorUI.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DataDirectory {
+            get {
+                return ((string)(this["DataDirectory"]));
+            }
+            set {
+                this["DataDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TempDirectory {
+            get {
+                return ((string)(this["TempDirectory"]));
+            }
+            set {
+                this["TempDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ProjectsDirectory {
+            get {
+                return ((string)(this["ProjectsDirectory"]));
+            }
+            set {
+                this["ProjectsDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ApplicationDirectory {
+            get {
+                return ((string)(this["ApplicationDirectory"]));
+            }
+            set {
+                this["ApplicationDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pal_std.res")]
+        public string DefaultPaletteFile {
+            get {
+                return ((string)(this["DefaultPaletteFile"]));
+            }
+            set {
+                this["DefaultPaletteFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("std.set")]
+        public string DefaultGameSetFile {
+            get {
+                return ((string)(this["DefaultGameSetFile"]));
+            }
+            set {
+                this["DefaultGameSetFile"] = value;
+            }
+        }
     }
 }

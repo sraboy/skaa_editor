@@ -58,35 +58,28 @@ namespace SkaaEditorUI
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openSPRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportBmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.currentFrameTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.allFramesTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSPRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveFrameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveAllFramesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportBmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.currentFrameTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportAllFramesTo32bppBmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.skaaColorChooser = new SkaaEditorControls.SkaaColorChooser();
             this.cbEdit = new System.Windows.Forms.CheckBox();
-            this.imageEditorBox = new SkaaEditorControls.SkaaImageBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnFeatureTest = new System.Windows.Forms.Button();
             this.cbMultiColumn = new MultiColumnComboBox.MultiColumnComboBoxControl();
             this.timelineControl = new SkaaEditorControls.TimelineControl();
+            this.imageEditorBox = new SkaaEditorControls.SkaaImageBox();
+            this.skaaColorChooser = new SkaaEditorControls.SkaaColorChooser();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -107,8 +100,10 @@ namespace SkaaEditorUI
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
-            this.openToolStripMenuItem,
-            this.saveExportToolStripMenuItem,
+            this.openGameSetToolStripMenuItem,
+            this.openSpriteToolStripMenuItem,
+            this.saveSpriteToolStripMenuItem,
+            this.saveGameSetToolStripMenuItem,
             this.closeProjectToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -120,8 +115,9 @@ namespace SkaaEditorUI
             this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newProjectToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.newToolStripMenuItem.Text = "New";
+            this.newToolStripMenuItem.Visible = false;
             // 
             // newProjectToolStripMenuItem
             // 
@@ -130,45 +126,62 @@ namespace SkaaEditorUI
             this.newProjectToolStripMenuItem.Text = "Project";
             this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
-            // openToolStripMenuItem
+            // openGameSetToolStripMenuItem
             // 
-            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openProjectToolStripMenuItem,
-            this.openSPRToolStripMenuItem});
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.openToolStripMenuItem.Text = "Open / Import";
+            this.openGameSetToolStripMenuItem.Name = "openGameSetToolStripMenuItem";
+            this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.openGameSetToolStripMenuItem.Text = "Open Game Set";
+            this.openGameSetToolStripMenuItem.Click += new System.EventHandler(this.openGameSetToolStripMenuItem_Click);
             // 
-            // openProjectToolStripMenuItem
+            // openSpriteToolStripMenuItem
             // 
-            this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.openProjectToolStripMenuItem.Text = "Open Project";
-            this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
+            this.openSpriteToolStripMenuItem.Name = "openSpriteToolStripMenuItem";
+            this.openSpriteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.openSpriteToolStripMenuItem.Text = "Open Sprite";
+            this.openSpriteToolStripMenuItem.Click += new System.EventHandler(this.openSpriteToolStripMenuItem_Click);
             // 
-            // openSPRToolStripMenuItem
+            // saveSpriteToolStripMenuItem
             // 
-            this.openSPRToolStripMenuItem.Name = "openSPRToolStripMenuItem";
-            this.openSPRToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.openSPRToolStripMenuItem.Text = "Open SPR";
-            this.openSPRToolStripMenuItem.Click += new System.EventHandler(this.openSPRToolStripMenuItem_Click);
+            this.saveSpriteToolStripMenuItem.Name = "saveSpriteToolStripMenuItem";
+            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.saveSpriteToolStripMenuItem.Text = "Save Sprite";
+            this.saveSpriteToolStripMenuItem.Click += new System.EventHandler(this.saveSpriteToolStripMenuItem_Click);
             // 
-            // saveExportToolStripMenuItem
+            // saveGameSetToolStripMenuItem
             // 
-            this.saveExportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportBmpToolStripMenuItem,
-            this.saveSPRToolStripMenuItem,
-            this.saveProjectToolStripMenuItem});
-            this.saveExportToolStripMenuItem.Name = "saveExportToolStripMenuItem";
-            this.saveExportToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.saveExportToolStripMenuItem.Text = "Save / Export";
+            this.saveGameSetToolStripMenuItem.Name = "saveGameSetToolStripMenuItem";
+            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.saveGameSetToolStripMenuItem.Text = "Save Game Set";
+            this.saveGameSetToolStripMenuItem.Click += new System.EventHandler(this.saveGameSetToolStripMenuItem_Click);
+            // 
+            // closeProjectToolStripMenuItem
+            // 
+            this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.closeProjectToolStripMenuItem.Text = "Close Project";
+            this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportBmpToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
             // 
             // exportBmpToolStripMenuItem
             // 
             this.exportBmpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.currentFrameTobmp32bppToolStripMenuItem,
             this.toolStripSeparator2,
-            this.allFramesTobmp32bppToolStripMenuItem});
+            this.exportAllFramesTo32bppBmpToolStripMenuItem});
             this.exportBmpToolStripMenuItem.Name = "exportBmpToolStripMenuItem";
             this.exportBmpToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.exportBmpToolStripMenuItem.Text = "Export 32-bit BMP";
@@ -178,92 +191,17 @@ namespace SkaaEditorUI
             this.currentFrameTobmp32bppToolStripMenuItem.Name = "currentFrameTobmp32bppToolStripMenuItem";
             this.currentFrameTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.currentFrameTobmp32bppToolStripMenuItem.Text = "Current Frame";
-            this.currentFrameTobmp32bppToolStripMenuItem.Click += new System.EventHandler(this.exportCurFrameTo32bppBmpToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(147, 6);
             // 
-            // allFramesTobmp32bppToolStripMenuItem
+            // exportAllFramesTo32bppBmpToolStripMenuItem
             // 
-            this.allFramesTobmp32bppToolStripMenuItem.Name = "allFramesTobmp32bppToolStripMenuItem";
-            this.allFramesTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.allFramesTobmp32bppToolStripMenuItem.Text = "All Frames";
-            this.allFramesTobmp32bppToolStripMenuItem.Click += new System.EventHandler(this.exportAllFramesTo32bppBmpToolStripMenuItem_Click);
-            // 
-            // saveSPRToolStripMenuItem
-            // 
-            this.saveSPRToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveFrameToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.saveAllFramesToolStripMenuItem});
-            this.saveSPRToolStripMenuItem.Name = "saveSPRToolStripMenuItem";
-            this.saveSPRToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.saveSPRToolStripMenuItem.Text = "Save SPR";
-            // 
-            // saveFrameToolStripMenuItem
-            // 
-            this.saveFrameToolStripMenuItem.Name = "saveFrameToolStripMenuItem";
-            this.saveFrameToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.saveFrameToolStripMenuItem.Text = "Current Frame";
-            this.saveFrameToolStripMenuItem.Click += new System.EventHandler(this.saveSPRFrameToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(147, 6);
-            // 
-            // saveAllFramesToolStripMenuItem
-            // 
-            this.saveAllFramesToolStripMenuItem.Name = "saveAllFramesToolStripMenuItem";
-            this.saveAllFramesToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.saveAllFramesToolStripMenuItem.Text = "All Frames";
-            this.saveAllFramesToolStripMenuItem.Click += new System.EventHandler(this.saveSPRAllFramesToolStripMenuItem_Click);
-            // 
-            // saveProjectToolStripMenuItem
-            // 
-            this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.saveProjectToolStripMenuItem.Text = "Save Project";
-            this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
-            // 
-            // closeProjectToolStripMenuItem
-            // 
-            this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.closeProjectToolStripMenuItem.Text = "Close Project";
-            this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadPaletteToolStripMenuItem,
-            this.loadSetToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // loadPaletteToolStripMenuItem
-            // 
-            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
-            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-            this.loadPaletteToolStripMenuItem.Text = "Load Palette";
-            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
-            // 
-            // loadSetToolStripMenuItem
-            // 
-            this.loadSetToolStripMenuItem.Name = "loadSetToolStripMenuItem";
-            this.loadSetToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-            this.loadSetToolStripMenuItem.Text = "Load Set";
-            this.loadSetToolStripMenuItem.Click += new System.EventHandler(this.loadSetToolStripMenuItem_Click);
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Name = "exportAllFramesTo32bppBmpToolStripMenuItem";
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Text = "All Frames";
             // 
             // viewToolStripMenuItem
             // 
@@ -303,15 +241,6 @@ namespace SkaaEditorUI
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "SkaaEditor ALPHA v0.1";
             // 
-            // skaaColorChooser
-            // 
-            this.skaaColorChooser.ActiveColor = System.Drawing.Color.Empty;
-            this.skaaColorChooser.Location = new System.Drawing.Point(5, 28);
-            this.skaaColorChooser.Name = "skaaColorChooser";
-            this.skaaColorChooser.Palette = null;
-            this.skaaColorChooser.Size = new System.Drawing.Size(186, 758);
-            this.skaaColorChooser.TabIndex = 5;
-            // 
             // cbEdit
             // 
             this.cbEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -324,29 +253,16 @@ namespace SkaaEditorUI
             this.cbEdit.UseVisualStyleBackColor = true;
             this.cbEdit.CheckedChanged += new System.EventHandler(this.cbEdit_CheckedChanged);
             // 
-            // imageEditorBox
+            // btnFeatureTest
             // 
-            this.imageEditorBox.ActiveColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
-            this.imageEditorBox.GridCellSize = 12;
-            this.imageEditorBox.IsDrawing = false;
-            this.imageEditorBox.Location = new System.Drawing.Point(198, 28);
-            this.imageEditorBox.Name = "imageEditorBox";
-            this.imageEditorBox.Size = new System.Drawing.Size(689, 780);
-            this.imageEditorBox.TabIndex = 8;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(895, 306);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnFeatureTest.Location = new System.Drawing.Point(918, 487);
+            this.btnFeatureTest.Name = "btnFeatureTest";
+            this.btnFeatureTest.Size = new System.Drawing.Size(75, 23);
+            this.btnFeatureTest.TabIndex = 11;
+            this.btnFeatureTest.Text = "Feature Test";
+            this.btnFeatureTest.UseVisualStyleBackColor = true;
+            this.btnFeatureTest.Visible = false;
+            this.btnFeatureTest.Click += new System.EventHandler(this.btnFeatureTest_Click);
             // 
             // cbMultiColumn
             // 
@@ -367,13 +283,36 @@ namespace SkaaEditorUI
             this.timelineControl.Size = new System.Drawing.Size(129, 172);
             this.timelineControl.TabIndex = 12;
             // 
+            // imageEditorBox
+            // 
+            this.imageEditorBox.ActiveColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
+            this.imageEditorBox.GridCellSize = 12;
+            this.imageEditorBox.IsDrawing = false;
+            this.imageEditorBox.Location = new System.Drawing.Point(198, 28);
+            this.imageEditorBox.Name = "imageEditorBox";
+            this.imageEditorBox.Size = new System.Drawing.Size(689, 780);
+            this.imageEditorBox.TabIndex = 8;
+            // 
+            // skaaColorChooser
+            // 
+            this.skaaColorChooser.ActiveColor = System.Drawing.Color.Empty;
+            this.skaaColorChooser.Location = new System.Drawing.Point(5, 28);
+            this.skaaColorChooser.Name = "skaaColorChooser";
+            this.skaaColorChooser.Palette = null;
+            this.skaaColorChooser.Size = new System.Drawing.Size(186, 758);
+            this.skaaColorChooser.TabIndex = 5;
+            // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1023, 810);
             this.Controls.Add(this.cbMultiColumn);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnFeatureTest);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.timelineControl);
             this.Controls.Add(this.imageEditorBox);
@@ -385,6 +324,7 @@ namespace SkaaEditorUI
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "SkaaEditorMainForm";
             this.Text = "Skaa Editor for 7KAA";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SkaaEditorMainForm_FormClosing);
             this.Load += new System.EventHandler(this.skaaEditorMainForm_Load);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
@@ -398,34 +338,27 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private SkaaEditorControls.SkaaColorChooser skaaColorChooser;
         private System.Windows.Forms.CheckBox cbEdit;
         private SkaaEditorControls.SkaaImageBox imageEditorBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnFeatureTest;
         private SkaaEditorControls.TimelineControl timelineControl;
-        private System.Windows.Forms.ToolStripMenuItem loadSetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveExportToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportBmpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem allFramesTobmp32bppToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveSPRToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveFrameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem saveAllFramesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openSPRToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
         private MultiColumnComboBox.MultiColumnComboBoxControl cbMultiColumn;
+        private System.Windows.Forms.ToolStripMenuItem openSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openGameSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportBmpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem exportAllFramesTo32bppBmpToolStripMenuItem;
     }
 }

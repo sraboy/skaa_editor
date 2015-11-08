@@ -37,7 +37,7 @@ using System.Threading.Tasks;
 namespace SkaaGameDataLib
 {
     [Serializable]
-    public class GameSet
+    public class SkaaGameSet
     {
         public GameSetFile SetFile;
         private DataSet _gameDataSet;
@@ -56,9 +56,9 @@ namespace SkaaGameDataLib
             }
         }        
 
-        public GameSet(string filepath)
+        public SkaaGameSet(string setFileDirectory, string tempDirectory)
         {
-            this.SetFile = new GameSetFile(filepath);
+            this.SetFile = new GameSetFile(setFileDirectory, tempDirectory);
             this.SetFile.OpenAndRead();
             this.GameDataSet = this.SetFile.GameDataSet;
         }
@@ -70,9 +70,9 @@ namespace SkaaGameDataLib
             
             return dv;
         }
-        public void SaveGameSet()
+        public void SaveGameSet(string filename)
         {
-            this.SetFile.SaveGameSetToFile(this.SetFile.Directory + '\\' + "newSet.set");//, this);
+            this.SetFile.SaveGameSetToFile(filename);//, this);
         }
 
     }//end GameSet

@@ -106,8 +106,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\std.set" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\pal_std.res" />
     <None Include="Resources\skaa.ico" />
     <None Include="Resources\skaa_modern.ico" />
     <None Include="Resources\logo_modern.png" />
@@ -122,6 +124,15 @@
       <Name>SkaaGameDataLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BSD 2-Clause License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GPLv3.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MIT License.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -130,4 +141,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.pdb ; $(OutputPath)*.xml" />
+    </ItemGroup>
+    <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
+  </Target>
 </Project>

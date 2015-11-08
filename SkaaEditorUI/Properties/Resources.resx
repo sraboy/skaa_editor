@@ -127,4 +127,19 @@
   <data name="logo_modern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\logo_modern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="BSD_2_Clause_License" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BSD 2-Clause License.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="GPLv3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GPLv3.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="MIT_License" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MIT License.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="pal_std" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pal_std.res;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="std" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\std.set;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>
