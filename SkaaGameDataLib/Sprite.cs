@@ -41,7 +41,9 @@ namespace SkaaGameDataLib
     {
         [NonSerialized]
         private ColorPalette _pallet;
-        
+        [NonSerialized]
+        private byte[] _sprData;
+
         [field: NonSerialized]
         private EventHandler _paletteUpdated;
         public event EventHandler PaletteUpdated
@@ -136,6 +138,7 @@ namespace SkaaGameDataLib
             this.PaletteUpdated += Sprite_PaletteUpdated;
             this.Palette = pal;
             this.Frames = new List<SpriteFrame>();
+            this.PendingChanges = true;
         }
         #endregion
 
@@ -151,28 +154,34 @@ namespace SkaaGameDataLib
         /// <returns>A byte array containing the SPR data that can be written directly to a file</returns>
         public byte[] BuildSpr()
         {
-            List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
-            int initSize = 0;
-
-            for(int i = 0; i < this.Frames.Count; i++)
+            if (this.PendingChanges)
             {
-                SpriteFrame sf = this.Frames[i];
-                SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
+                List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
+                int initSize = 0;
 
-                initSize += sf.FrameRawData.Length;
+                for (int i = 0; i < this.Frames.Count; i++)
+                {
+                    SpriteFrame sf = this.Frames[i];
+                    SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
+
+                    initSize += sf.FrameRawData.Length;
+                }
+
+                //convert the List<byte[]> to a byte[]
+                int lastSize = 0;
+                byte[] newSprData = new byte[initSize];
+
+                foreach (byte[] b in SpriteFrameDataArrays)
+                {
+                    Buffer.BlockCopy(b, 0, newSprData, lastSize, b.Length);
+                    lastSize += b.Length;
+                }
+
+                this._sprData = newSprData;
+                this.PendingChanges = false;
             }
 
-            //convert the List<byte[]> to a byte[]
-            int lastSize = 0;
-            byte[] newSprData = new byte[initSize];
-
-            foreach (byte[] b in SpriteFrameDataArrays)
-            {
-                Buffer.BlockCopy(b, 0, newSprData, lastSize, b.Length);
-                lastSize += b.Length;
-            }
-
-            return newSprData;
+            return this._sprData;
         }
         /// <summary>
         /// Iterates through all the rows in this <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
@@ -196,7 +205,6 @@ namespace SkaaGameDataLib
         public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
         {
             frameToUpdate.ProcessUpdates(bmpWithChanges);
-            
 
             int offset = 0;
             for(int i = 0; i < this.Frames.Count; i++)
@@ -210,6 +218,8 @@ namespace SkaaGameDataLib
                     if(this.Frames[i + 1].SprBitmapOffset != offset)
                     { 
                         this.Frames[i + 1].SprBitmapOffset = offset;
+                        this.PendingChanges = true;
+
                         foreach (DataRow dr in this.Frames[i + 1].GameSetDataRows)
                         { 
                             dr.BeginEdit();
@@ -220,7 +230,7 @@ namespace SkaaGameDataLib
                 }
             }
 
-            BuildSpr();
+            this._sprData = BuildSpr();
             OnSpriteUpdated(EventArgs.Empty);
         }
         private void Sprite_PaletteUpdated(object sender, EventArgs e) { }

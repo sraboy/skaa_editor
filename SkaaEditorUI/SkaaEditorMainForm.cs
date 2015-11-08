@@ -265,7 +265,7 @@ namespace SkaaEditorUI
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.ActiveProject.ActiveSprite != null)
+            if (this.ActiveProject?.ActiveSprite != null)
             {
                 string msg = "This will close the current sprite. Continue?";
 
@@ -333,7 +333,11 @@ namespace SkaaEditorUI
                 dlg.InitialDirectory = props.ApplicationDirectory;
                 dlg.DefaultExt = props.GameSetFileExtension;
                 dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
-                UpdateSprite();
+
+                if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
+                    UpdateSprite();
+                else
+                    return;
 #if DEBUG
                 dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM");
 #else
