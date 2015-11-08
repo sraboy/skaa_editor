@@ -342,11 +342,10 @@ namespace SkaaEditorUI
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     UpdateSprite();
-                    //UpdateFrameChanges();
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
-                        byte[] save = this.ActiveProject.ActiveSprite.BuildSPR();
+                        byte[] save = this.ActiveProject.ActiveSprite.BuildSpr();
                         fs.Write(save, 0, Buffer.ByteLength(save));
                     }
                 }
@@ -545,7 +544,7 @@ namespace SkaaEditorUI
         private void skaaEditorMainForm_Load(object sender, EventArgs e)
         {
             NewProject(true);
-            //SetupUI();
+            
         }
         private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
         {

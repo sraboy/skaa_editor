@@ -289,7 +289,6 @@ namespace SkaaEditorUI
 
             return this.ActivePalette;
         }
-
         public Sprite LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
@@ -304,20 +303,7 @@ namespace SkaaEditorUI
 
                 while (spritestream.Position < spritestream.Length)
                 {
-                    byte[] frame_size_bytes = new byte[8];
-
-                    spritestream.Read(frame_size_bytes, 0, 8);
-
-                    int size = BitConverter.ToInt32(frame_size_bytes, 0);
-                    short width = BitConverter.ToInt16(frame_size_bytes, 4);
-                    short height = BitConverter.ToInt16(frame_size_bytes, 6);
-
-                    SpriteFrame frame = new SpriteFrame(size, width, height, spr);
-
-                    frame.SprBitmapOffset = (int) spritestream.Position - 8;
-
-                    frame.SetPixels(spritestream);
-                    frame.BuildBitmap32bpp();
+                    SpriteFrame frame = new SpriteFrame(spr, spritestream);
                     spr.Frames.Add(frame);
                 }
 
@@ -347,7 +333,6 @@ namespace SkaaEditorUI
         public void SaveProject(string filepath)
         {
             this.ActiveGameSet.SaveGameSet();
-            //UpdateGameSet("SFRAME");
 
             //if (filepath == null)
             //        ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");

@@ -141,29 +141,29 @@ namespace SkaaGameDataLib
         }
         #endregion
 
-        /// <summary>
-        /// Adds either a new frame or, if provided, the specified frame to the <see cref="Frames"/> List
-        /// </summary>
-        /// <param name="sf">A particular frame to add</param>
-        /// <returns>The new frame</returns>
-        public SpriteFrame AddFrame(SpriteFrame sf = null)
-        {
-            if (sf == null)
-            {
-                sf = new SpriteFrame();
-                this.Frames.Add(sf);
-                return sf;
-            }
+        ///// <summary>
+        ///// Adds either a new frame or, if provided, the specified frame to the <see cref="Frames"/> List
+        ///// </summary>
+        ///// <param name="sf">A particular frame to add</param>
+        ///// <returns>The new frame</returns>
+        //public SpriteFrame AddFrame(SpriteFrame sf = null)
+        //{
+        //    if (sf == null)
+        //    {
+        //        sf = new SpriteFrame();
+        //        this.Frames.Add(sf);
+        //        return sf;
+        //    }
 
-            this.Frames.Add(sf);
-            //sf.FrameUpdated += SpriteFrameUpdated;
-            return sf;
-        }
+        //    this.Frames.Add(sf);
+        //    //sf.FrameUpdated += SpriteFrameUpdated;
+        //    return sf;
+        //}
         /// <summary>
         /// Builds a 7KAA-formatted SPR containing all of this sprite's frames
         /// </summary>
         /// <returns>A byte array containing the SPR data that can be written directly to a file</returns>
-        public byte[] BuildSPR()
+        public byte[] BuildSpr()
         {
             List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
             int initSize = 0;
@@ -172,7 +172,8 @@ namespace SkaaGameDataLib
             {
                 SpriteFrame sf = this.Frames[i];
                 SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-                initSize += (sf.SprFrameRawDataSize) + 8;
+
+                initSize += sf.FrameRawData.Length;
             }
 
             //convert the List<byte[]> to a byte[]
@@ -208,27 +209,31 @@ namespace SkaaGameDataLib
         public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
         {
             frameToUpdate.ProcessUpdates(bmpWithChanges);
-            frameToUpdate.SprFrameRawDataSize = frameToUpdate.FrameData.Length;
+            
 
             int offset = 0;
             for(int i = 0; i < this.Frames.Count; i++)
             {
                 SpriteFrame sf = this.Frames[i];
-                offset += sf.SprFrameRawDataSize; //already includes +8 for the int32 and 2x int16s at the start of every frame
+
+                offset += sf.FrameRawData.Length;
+
                 if (i < this.Frames.Count - 1)
                 { 
-                    
-                    this.Frames[i + 1].SprBitmapOffset = offset;
-                    foreach (DataRow dr in this.Frames[i + 1].GameSetDataRows)
+                    if(this.Frames[i + 1].SprBitmapOffset != offset)
                     { 
-                        dr.BeginEdit();
-                        dr[9] = offset.ToString();
-                        dr.AcceptChanges(); //calls EndEdit() implicitly
+                        this.Frames[i + 1].SprBitmapOffset = offset;
+                        foreach (DataRow dr in this.Frames[i + 1].GameSetDataRows)
+                        { 
+                            dr.BeginEdit();
+                            dr[9] = offset.ToString();
+                            dr.AcceptChanges(); //calls EndEdit() implicitly
+                        }
                     }
                 }
             }
 
-            BuildSPR();
+            BuildSpr();
             OnSpriteUpdated(EventArgs.Empty);
         }
         private void Sprite_PaletteUpdated(object sender, EventArgs e) { }
