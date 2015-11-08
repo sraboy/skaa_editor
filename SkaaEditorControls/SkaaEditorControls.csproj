@@ -29,6 +29,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -101,6 +102,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BitmapProcessing\BitmapProcessing.csproj">
+      <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
+      <Name>BitmapProcessing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SkaaGameDataLib\SkaaGameDataLib.csproj">
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
       <Name>SkaaGameDataLib</Name>

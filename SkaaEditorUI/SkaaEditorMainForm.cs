@@ -39,12 +39,15 @@ using System.Text;
 using System.Diagnostics;
 using System.Resources;
 using static SkaaEditorUI.ErrorHandler;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace SkaaEditorUI
 {
     public partial class SkaaEditorMainForm : Form
     {
         private Properties.Settings props = Properties.Settings.Default;
+        private int _buildingSprite = 0;
 
         private EventHandler _animateChanged;
         public event EventHandler AnimateChanged
@@ -312,6 +315,7 @@ namespace SkaaEditorUI
 #endif
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
+                    this.toolStripStatLbl.Text = "Building Sprite...";
                     UpdateSprite();
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
@@ -319,6 +323,7 @@ namespace SkaaEditorUI
                         byte[] save = this.ActiveProject.ActiveSprite.BuildSpr();
                         fs.Write(save, 0, Buffer.ByteLength(save));
                     }
+                    this.toolStripStatLbl.Text = string.Empty;
                 }
             }
         }
@@ -335,7 +340,13 @@ namespace SkaaEditorUI
                 dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
 
                 if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
+                {
+                    this.toolStripStatLbl.Text = "Building Sprite...";
                     UpdateSprite();
+                    this.toolStripStatLbl.Text = string.Empty;
+                    //if (UpdateSprite().Result)
+                    //    Interlocked.Exchange(ref _buildingSprite, 0);
+                }
                 else
                     return;
 #if DEBUG
@@ -345,8 +356,10 @@ namespace SkaaEditorUI
 #endif
 
                 if (dlg.ShowDialog() == DialogResult.OK)
-                {        
+                {
+                    this.toolStripStatLbl.Text = "Saving Game Set...";
                     this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
+                    this.toolStripStatLbl.Text = string.Empty;
                 }
             }
         }
@@ -445,6 +458,14 @@ namespace SkaaEditorUI
         private void UpdateSprite()
         {
             this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            //new thread, in case it takes too long
+            //var task = Task<bool>.Factory.StartNew(() => 
+            //{
+            //    if (Interlocked.Increment(ref _buildingSprite) != 1)
+            //        return false;
+            //    return this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            //});
+            //return task;       
         }
         private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
         {

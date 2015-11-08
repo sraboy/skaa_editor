@@ -80,7 +80,10 @@ namespace SkaaEditorUI
             this.timelineControl = new SkaaEditorControls.TimelineControl();
             this.imageEditorBox = new SkaaEditorControls.SkaaImageBox();
             this.skaaColorChooser = new SkaaEditorControls.SkaaColorChooser();
+            this.toolStripStatLbl = new System.Windows.Forms.ToolStripStatusLabel();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.mainMenuStrip.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -235,6 +238,8 @@ namespace SkaaEditorUI
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatLbl});
             this.statusStrip1.Location = new System.Drawing.Point(0, 788);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1023, 22);
@@ -306,6 +311,13 @@ namespace SkaaEditorUI
             this.skaaColorChooser.Size = new System.Drawing.Size(186, 758);
             this.skaaColorChooser.TabIndex = 5;
             // 
+            // toolStripStatLbl
+            // 
+            this.toolStripStatLbl.Name = "toolStripStatLbl";
+            this.toolStripStatLbl.Size = new System.Drawing.Size(1008, 17);
+            this.toolStripStatLbl.Spring = true;
+            this.toolStripStatLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -328,6 +340,8 @@ namespace SkaaEditorUI
             this.Load += new System.EventHandler(this.skaaEditorMainForm_Load);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -360,5 +374,7 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exportAllFramesTo32bppBmpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatLbl;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }

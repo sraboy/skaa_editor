@@ -333,7 +333,7 @@ namespace SkaaEditorUI
         public void UpdateSprite(SpriteFrame sf, Bitmap bmp)
         {
             this.ActiveSprite.ProcessUpdates(this.ActiveFrame, bmp);
-            //this.ActiveSprite.SpriteDataView = this.ActiveGameSet.GetSpriteDataView(this.ActiveSprite.SpriteId);
+            //return true;
         }
     }
 }
