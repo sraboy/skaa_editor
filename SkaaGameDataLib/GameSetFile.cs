@@ -166,13 +166,10 @@ namespace SkaaGameDataLib
                 foreach (DatabaseContainer db in this.DatabaseContainers)
                 {
 #if DEBUG
-                    
-                    //writes out individual DBFs
-                    if(System.IO.Directory.Exists(filePath + "dbf\\test"))
-                    { 
-                        string path = Path.GetDirectoryName(filePath) + "\\dbf\\test";
-                        db.DbfFileObject.WriteAndClose(path);
-                    }
+                    //writes out individual DBFs... easier to inspect SFRAME, etc
+                    string path = this._dbfDirectory + "test";
+                    Directory.CreateDirectory(path);
+                    db.DbfFileObject.WriteAndClose(path);                   
 #endif
                     db.DbfFileObject.WriteToStream(fs);
                 }

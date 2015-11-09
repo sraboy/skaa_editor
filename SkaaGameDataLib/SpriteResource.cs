@@ -219,42 +219,76 @@ namespace SkaaGameDataLib
 
         public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
         {
+            //update the bitmap, if frameToUpdate.PendingChanges is true
             frameToUpdate.ProcessUpdates(bmpWithChanges);
             Sprite spr = frameToUpdate.ParentSprite;
 
+            List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
+
+            //update the SprBitmapOffset since changes will change the size of the  
+            //FrameRawData when it gets written to an SPR. The game depends on having 
+            //the exact offsets to the SPR data.
             int offset = 0;
             for (int i = 0; i < spr.Frames.Count; i++)
             {
                 SpriteFrame sf = spr.Frames[i];
-
                 offset += sf.FrameRawData.Length;
-
-                if (i < spr.Frames.Count - 1)
+                //we depend on short-circuit evaluation here.If i isn't less then the Frames.Count - 1, 
+                //we'll end up with an out-of-bounds exception. We can't just test for PendingChanges because
+                //changes in one SpriteFrame will affect offsets in others, not in itself.
+                if ((i < spr.Frames.Count - 1) && (spr.Frames[i + 1].SprBitmapOffset != offset))
                 {
-                    if (spr.Frames[i + 1].SprBitmapOffset != offset)
-                    {
-                        spr.Frames[i + 1].SprBitmapOffset = offset;
-                        //this.PendingChanges = true;
+                    spr.Frames[i + 1].SprBitmapOffset = offset;
+                    //this.PendingChanges = true;
 
-                        foreach (DataRow dr in spr.Frames[i + 1].GameSetDataRows)
-                        {
-                            dr.BeginEdit();
-                            dr[9] = offset.ToString();
-                            dr.AcceptChanges(); //calls EndEdit() implicitly
-                        }
+                    foreach (DataRow dr in spr.Frames[i + 1].GameSetDataRows)
+                    {
+                        dr.BeginEdit();
+                        dr[9] = offset.ToString();
+                        dr.AcceptChanges(); //calls EndEdit() implicitly
                     }
+
+                    sf.PendingChanges = false;
                 }
 
-                sf.FrameRawData = SprDataHandlers.FrameBmpToSpr(sf, this.Palette);
+                //Killing two birds with one for loop. See below.
+                SpriteFrameDataArrays.Add(sf.FrameRawData);
             }
 
-            using (MemoryStream newSprData = new MemoryStream())
+            //convert the List<byte[]> to a byte[]
+            int lastSize = 0;
+            byte[] newSprData = new byte[offset]; //offset now equals the total size of all the frames
+
+            foreach (byte[] b in SpriteFrameDataArrays)
             {
-                foreach (SpriteFrame sf in spr.Frames)
-                    newSprData.Write(sf.FrameRawData, (int) newSprData.Position, sf.FrameRawData.Length);
-
-                this._sprData = newSprData.GetBuffer();
+                Buffer.BlockCopy(b, 0, newSprData, lastSize, b.Length);
+                lastSize += b.Length;
             }
+
+            this._sprData = newSprData;
+        
+
+            //using (MemoryStream newSprData = new MemoryStream(offset)) 
+            //{
+            //    newSprData.SetLength(offset);
+            //    int count = 0;
+            //    int len = 0;
+            //    foreach (SpriteFrame sf in spr.Frames)
+            //    {
+            //        try
+            //        {
+            //            //newSprData.SetLength(newSprData.Length + sf.FrameRawData.Length);
+            //            newSprData.Write(sf.FrameRawData, (int) newSprData.Position, sf.FrameRawData.Length);
+            //            count++;
+            //            len += sf.FrameRawData.Length;
+            //        }
+            //        catch(Exception e)
+            //        {
+            //            Debugger.Break();
+            //        }
+            //    }
+            //    this._sprData = newSprData.GetBuffer();
+            //}
             //this.BuildSpr();
             //this._sprData = BuildSpr();
             //OnSpriteObjectChanged(EventArgs.Empty);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -32,14 +33,13 @@ namespace SkaaGameDataLib
             Color transparentByte = Color.FromArgb(0xff);
             bmp.MakeTransparent(transparentByte);
             return bmp;
-            //return this.ImageBmp;
         }
-        public static byte[] FrameBmpToSpr(SpriteFrame sf, ColorPalette pal)
+        public static void FrameBmpToSpr(SpriteFrame sf, ColorPalette pal)
         {
             byte palColorByte;
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
-            int realOffset = 8; //since our array offset is unaware of the header
+            int realOffset = 8; //since our array offset is unaware of the SPR header data
             byte[] indexedData = new byte[sf.PixelSize + 4];
 
             // todo: will have to recalculate height/width if bitmap size changes
@@ -132,8 +132,14 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
 
-            byte[] size = BitConverter.GetBytes(realOffset - 4); //subtract four because int32 size does not count the int32
-            if (size.Length > 4) throw new Exception("SPR size must be Int32!");
+            //subtract four because the int32 size in the header is exclusive of those bytes used for the int32 size
+            byte[] size = BitConverter.GetBytes(realOffset - 4);
+            if (size.Length > 4)
+            {
+                string error = $"SPR size must be Int32! Size for {sf.ParentSprite.SpriteId}'s SpriteFrame at offset {realOffset} is {size.ToString()}";
+                Trace.WriteLine(error);
+                throw new Exception(error);
+            }
             Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
 
             //Since FrameData is set to ((Width * Height) + 4), its length will
@@ -141,15 +147,10 @@ namespace SkaaGameDataLib
             //the transparent pixels. This makes it impossible to calculate the
             //offsets of the next frames in the sprite to build a new game set.
             Array.Resize<byte>(ref indexedData, realOffset);
-            //sf.FrameRawData = indexedData;
-
-            return indexedData;
-            //return this.FrameRawData;
-            //return indexedData;
+            sf.FrameRawData = indexedData;
         }
         public static void SprStreamToSpriteFrame(SpriteFrame sf, Stream stream)
         {
-            //todo: Verify 0xff is/isn't used in any sprite and update explanation.
 
             sf.SprBitmapOffset = (int) stream.Position;
             //Read Header
@@ -161,8 +162,13 @@ namespace SkaaGameDataLib
             sf.PixelSize = sf.Height * sf.Width;
             sf.FrameBmpData = new byte[sf.PixelSize];
             sf.FrameRawData = new byte[sf.PixelSize];
+
+            //initialize it to an unused transparent-pixel-marker
+            //todo: Verify 0xff is/isn't used in any of the other sprites
             sf.FrameBmpData = Enumerable.Repeat<byte>(0xff, sf.PixelSize).ToArray();
             sf.FrameRawData = Enumerable.Repeat<byte>(0xff, sf.PixelSize).ToArray();
+
+            Buffer.BlockCopy(frame_size_bytes, 0, sf.FrameRawData, 0, 8);
 
             int pixelsToSkip = 0;
             int bytesRead = 8; //start after the header info
@@ -195,6 +201,7 @@ namespace SkaaGameDataLib
                         //got -1 for EOF
                         byte[] resize = sf.FrameRawData;
                         Array.Resize<byte>(ref resize, bytesRead);
+                        sf.FrameRawData = resize;
                         return;
                     }
 
@@ -218,6 +225,7 @@ namespace SkaaGameDataLib
 
             byte[] resizeMe = sf.FrameRawData;
             Array.Resize<byte>(ref resizeMe, bytesRead);
+            sf.FrameRawData = resizeMe;
         }
         public static Bitmap SpriteToBmp(Sprite spr)
         {

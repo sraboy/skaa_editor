@@ -30,7 +30,7 @@ namespace SkaaEditorUI
         #endregion
 
         #region Event Handlers
-        [field: NonSerialized]
+        [NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
         {
@@ -55,7 +55,7 @@ namespace SkaaEditorUI
                 handler(this, e);
             }
         }
-        [field: NonSerialized]
+        [NonSerialized]
         private EventHandler _paletteChanged;
         public event EventHandler PaletteChanged
         {
@@ -80,7 +80,7 @@ namespace SkaaEditorUI
                 handler(this, e);
             }
         }
-        [field: NonSerialized]
+        [NonSerialized]
         private EventHandler _activeSpriteChanged;
         public event EventHandler ActiveSpriteChanged
         {
@@ -255,30 +255,31 @@ namespace SkaaEditorUI
         public void LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
-                throw new Exception("Cannot load a Sprite if the ActivePalette is null.");        
+                throw new Exception("Cannot load a Sprite if the ActivePalette is null.");
 
-            this._activeSprite = new Sprite(this.ActivePalette);
+            //cant use the property here or we'll fire the event before we've finished loading
+            Sprite spr = new Sprite(this.ActivePalette);
+            //this._activeSprite = new Sprite(this.ActivePalette);
             
-            //Sprite spr = this.ActiveSprite;
-
             using (FileStream spritestream = File.OpenRead(filepath))
             {
-                this.ActiveSprite.Resource.FileName = Path.GetFileName(filepath);
-
                 while (spritestream.Position < spritestream.Length)
                 {
-                    SpriteFrame sf = new SpriteFrame(this.ActiveSprite);
+                    SpriteFrame sf = new SpriteFrame(spr);
                     SprDataHandlers.SprStreamToSpriteFrame(sf, spritestream);
-                    this.ActiveSprite.Frames.Add(sf);
+                    sf.ImageBmp = SprDataHandlers.FrameSprToBmp(sf, this.ActivePalette);
+                    spr.Frames.Add(sf);
                 }
 
                 //this.ActiveSprite = spr; //this ends up firing the event too early. return the spr instead.
             }
 
-            this.ActiveSprite.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-            DataView dv = this.ActiveGameSet.GetSpriteDataView(this.ActiveSprite.SpriteId);
-            this.ActiveSprite.SetSpriteDataView(dv);
-            //return spr;
+            spr.Resource.FileName = Path.GetFileName(filepath);
+            spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
+            DataView dv = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
+            spr.SetSpriteDataView(dv);
+            this.ActiveSprite = spr;
+            //this.OnActiveSpriteChanged(EventArgs.Empty);
         }
 
         /// <summary>

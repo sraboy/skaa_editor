@@ -59,11 +59,11 @@ namespace SkaaEditorUI
         }
         //private List<string> DebugActions;
 #endif
-        /*
-         * Keep methods outside the #if so we don't have to remove calls 
+        
+        /* Keep methods outside the #if so we don't have to remove calls 
          * to them throughout the code or use #if checks there. They'll 
          * always get built but won't be called in release mode. This 
-         * isn't possible with non-void methods.
+         * isn't possible with non-void methods or event handlers.
          */
         [Conditional("DEBUG")]
         private void AddDebugArg(string methodName, object arg)
@@ -85,25 +85,7 @@ namespace SkaaEditorUI
             //this.lbDebugActions.SelectedValueChanged += LbDebugActions_SelectedValueChanged;
 
             this.lbDebugActions.Items.Add("CopySpriteAndSetToSkaaDirectory");
-        }
-        private void btnDebugAction_Click(object sender, EventArgs e)
-        {
-            foreach (string debugAction in this.lbDebugActions.SelectedItems)
-            {
-                Type thisType = this.GetType();
-                MethodInfo debugMethod = thisType.GetMethod(debugAction, BindingFlags.Instance | BindingFlags.NonPublic);
-                debugMethod.Invoke(this, null);
-            }
-
-            //SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
-            //savEditor.Show();
-
-            //UpdateSprite();
-            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Hue);
-            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Brightness);
-            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
-
-            CopySpriteAndSetToSkaaDirectory();
+            this.lbDebugActions.Items.Add("OpenDefaultBallistaSprite");
         }
         [Conditional("DEBUG")]
         private void CopySpriteAndSetToSkaaDirectory()
@@ -144,6 +126,35 @@ namespace SkaaEditorUI
                 this._debugArgs = null;
             }
         }
+        [Conditional("DEBUG")]
+        private void OpenDefaultBallistaSprite()
+        {
+            string sender = GetCurrentMethod();
+            this._debugArgs = new List<DebugArgs>() { new DebugArgs() { MethodName = "OpenDefaultBallistaSprite", Arg = props.DataDirectory + "ballista.spr" } };
+            this.openSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
+            this._debugArgs = null;
+        }
+
+        private void btnDebugAction_Click(object sender, EventArgs e)
+        {
+            foreach (string debugAction in this.lbDebugActions.SelectedItems)
+            {
+                Type thisType = this.GetType();
+                MethodInfo debugMethod = thisType.GetMethod(debugAction, BindingFlags.Instance | BindingFlags.NonPublic);
+                debugMethod.Invoke(this, null);
+            }
+
+            //SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
+            //savEditor.Show();
+
+            //UpdateSprite();
+            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Hue);
+            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Brightness);
+            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+
+            //CopySpriteAndSetToSkaaDirectory();
+        }
+
         #endregion
 
         #region Event Handlers
@@ -260,7 +271,7 @@ namespace SkaaEditorUI
         /// are done. Ensure EventHandlers already prevent multiple hooks:
         /// <code>if(!PropertyChanged.GetInvocationList().Contains(value)) { }</code>
         /// </remarks>
-        private void SetupUI()
+        private void SetupUI(bool update = false)
         {
             //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
             //this.colorGridChooser.EditModeChanged += ColorGridChooser_ColorPickerActiveChanged;
@@ -284,12 +295,21 @@ namespace SkaaEditorUI
                 "Please report bugs to steven.lavoiejr@gmail.com or https://www.github.com/sraboy/skaa_editor/.";
             this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? help_text : null;
 
-            //event subscriptions
-            if (this.ActiveProject != null)
+            if (!update) // Only subscribe to events on initial UI setup
             {
-                this.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
-                this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
-                this.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
+                //event subscriptions
+                if (this.ActiveProject != null)
+                {
+                    this.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
+                    this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
+                    this.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
+                }
+                //this.colorGridChooser.ColorChanged += ColorGridChooser_ColorChanged;
+                //this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
+                this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
+                //this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
+                this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
+                this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
             }
             //this.colorGridChooser.ColorChanged += ColorGridChooser_ColorChanged;
             //this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
@@ -307,7 +327,6 @@ namespace SkaaEditorUI
 
             OnActiveProjectChanged(EventArgs.Empty);
             //ActiveProject_PaletteChanged(null, null);
-            
         }
         private void PopulateSpriteList()
         {
@@ -318,8 +337,12 @@ namespace SkaaEditorUI
             if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
             {
                 this.cbMultiColumn.Enabled = true;
+           
+                // Have to set the DataSource to null before changing it;
+                // otherwise, it can't actually update.
                 this.cbMultiColumn.DataSource = null;
-                this.cbMultiColumn.DataSource = this.ActiveProject.ActiveSprite.Resource.SpriteDataView;
+                this.cbMultiColumn.DataSource = this.ActiveProject?.ActiveSprite?.Resource?.SpriteDataView;
+
                 this.cbMultiColumn.DisplayMember = "SPRITE";
                 this.cbMultiColumn.ValueMember = "ACTION";
             }
@@ -347,7 +370,17 @@ namespace SkaaEditorUI
         {
             if (this.colorGridChooser.Enabled == false)
                 return;
-
+#if DEBUG
+            if(sender.ToString() == "OpenDefaultBallistaSprite")
+            {
+                this.ActiveProject.LoadSprite(this._debugArgs[0].Arg.ToString());
+                this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+                this.exportBmpToolStripMenuItem.Enabled = true;
+                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                return;
+            }
+#endif
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
@@ -415,7 +448,9 @@ namespace SkaaEditorUI
 #endif
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    AddDebugArg( GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                    if(sender.ToString() == "CopySpriteAndSetToSkaaDirectory") //debugging
+                        AddDebugArg( GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+
                     this.toolStripStatLbl.Text = "Building Sprite...";
                     ProcessSpriteUpdates();
 
@@ -458,7 +493,9 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    AddDebugArg(GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                    if (sender.ToString() == "CopySpriteAndSetToSkaaDirectory")
+                        AddDebugArg(GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+
                     this.toolStripStatLbl.Text = "Saving Game Set...";
                     this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
                     this.toolStripStatLbl.Text = string.Empty;
@@ -522,6 +559,9 @@ namespace SkaaEditorUI
         //}
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
+            //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
+            // but it's needed for the tracking bar to be able to make this update
+
             this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
         }
         private void ActiveSprite_SpriteUpdated(object sender, EventArgs e)
@@ -533,6 +573,7 @@ namespace SkaaEditorUI
             //todo: implement Undo/Redo from here with pairs of old/new sprites
             this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
             this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
+            SetupUI();
             PopulateSpriteList();
         }
         private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
@@ -599,7 +640,7 @@ namespace SkaaEditorUI
         }
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
-            SetupUI();
+            SetupUI(true);
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
@@ -607,6 +648,7 @@ namespace SkaaEditorUI
             // IsDrawing is actually set false by the time we get to here.
             if (this.cbEdit.Checked)
             {
+                this.ActiveProject.ActiveFrame.PendingChanges = true;
                 this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
                 //UpdateSprite();
             }

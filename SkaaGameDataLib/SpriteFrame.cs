@@ -193,7 +193,6 @@ namespace SkaaGameDataLib
             this.GameSetDataRows = new List<DataRow>();
         }
 
-        //public SpriteFrame() { }
         /// <summary>
         /// Initializes a new <see cref="SpriteFrame"/>.
         /// </summary>
@@ -220,27 +219,6 @@ namespace SkaaGameDataLib
         /// to be used at all. 
         /// </remarks>
         
-        //public Bitmap BuildBitmapFromSpr()
-        //{
-        //    int idx;
-        //    Bitmap bmp = new Bitmap(this.Width, this.Height);
-        //    FastBitmap fbmp = new FastBitmap(bmp);
-        //    fbmp.LockImage();
-        //    for (int y = 0; y < this.Height; y++)
-        //    {
-        //        for (int x = 0; x < this.Width; x++)
-        //        {
-        //            idx = FrameBmpData[y * this.Width + x];
-        //            Color pixel = this.Palette.Entries[idx];
-        //            fbmp.SetPixel(x, y, pixel);
-        //        }
-        //    }
-        //    fbmp.UnlockImage();
-        //    Color transparentByte = Color.FromArgb(0xff);
-        //    bmp.MakeTransparent(transparentByte);
-        //    this.ImageBmp = bmp;
-        //    return this.ImageBmp;
-        //}
 
         ///// <summary>
         ///// Supplies an SPR-formatted version of this frame.
@@ -368,11 +346,14 @@ namespace SkaaGameDataLib
         /// </summary>
         internal void ProcessUpdates(Bitmap bmp)
         {
-            this.ImageBmp = bmp;
-            this.PendingChanges = true;
-            
-            this.FrameRawData = SprDataHandlers.FrameBmpToSpr(this, bmp.Palette);
-            OnFrameUpdated(EventArgs.Empty);
+            if (this.PendingChanges == true)
+            {
+                this.ImageBmp = bmp;
+                SprDataHandlers.FrameBmpToSpr(this, this.ParentSprite.Resource.Palette);
+                this.PendingChanges = false;
+               
+                OnFrameUpdated(EventArgs.Empty);  //this doesn't get triggered by FrameBmpToSpr()
+            }
         }
     }
     
