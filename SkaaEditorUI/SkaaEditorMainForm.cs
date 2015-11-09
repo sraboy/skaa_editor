@@ -103,7 +103,7 @@ namespace SkaaEditorUI
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Brightness);
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
 
-            CopySpriteAndSetToSkaaDirectory();
+            //CopySpriteAndSetToSkaaDirectory();
         }
         [Conditional("DEBUG")]
         private void CopySpriteAndSetToSkaaDirectory()
