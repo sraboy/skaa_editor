@@ -30,10 +30,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
-
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Data;
+using BitmapProcessing;
 
 namespace SkaaGameDataLib
 {
@@ -279,6 +279,8 @@ namespace SkaaGameDataLib
         {
             int idx;
             Bitmap bmp = new Bitmap(this.Width, this.Height);
+            FastBitmap fbmp = new FastBitmap(bmp);
+            fbmp.LockImage();
 
             for (int y = 0; y < this.Height; y++)
             {
@@ -286,11 +288,10 @@ namespace SkaaGameDataLib
                 {
                     idx = FrameBmpData[y * this.Width + x];
                     Color pixel = this.Palette.Entries[idx];
-                    
-                    bmp.SetPixel(x, y, pixel);
+                    fbmp.SetPixel(x, y, pixel);
                 }
             }
-
+            fbmp.UnlockImage();
             Color transparentByte = Color.FromArgb(0xff);
             bmp.MakeTransparent(transparentByte);
             this.ImageBmp = bmp;

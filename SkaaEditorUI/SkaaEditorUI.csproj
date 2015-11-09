@@ -115,6 +115,10 @@
     <None Include="Resources\logo_modern.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ColorPicker\ColorPicker.csproj">
+      <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>
+      <Name>ColorPicker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SkaaEditorControls\SkaaEditorControls.csproj">
       <Project>{a6836ea4-c3ca-4179-bc90-c6768fcead6f}</Project>
       <Name>SkaaEditorControls</Name>
@@ -132,6 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\MIT License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\VCKicks License.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -34,180 +34,162 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.IO;
+using Cyotek.Windows.Forms;
 
 namespace SkaaEditorControls
 {
-    public partial class SkaaColorChooser : UserControl
+    public partial class SkaaColorChooser : ColorGrid
     {
-        public event EventHandler ActiveColorChanged;
-        protected virtual void OnActiveColorChanged(ActiveColorChangedEventArgs e)
-        {
-            EventHandler handler = ActiveColorChanged;
+        private bool _colorPickerActive = false;
 
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-        public event EventHandler PaletteChanged;
-        public virtual void OnPaletteChanged(EventArgs e)
-        {
-            EventHandler handler = PaletteChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        private Color _activeColor;
-        private ColorPalette _palette;
-        private Button _activeButton;
-        private List<Button> ColorBoxes;
-
-        public ColorPalette Palette
+        public bool ColorPickerActive
         {
             get
             {
-                return this._palette;
+                return this._colorPickerActive;
             }
             set
             {
-                if (this._palette != value)
-                { 
-                    this._palette = value;
-                    OnPaletteChanged(EventArgs.Empty);
-                }
-            }
-        }
-        public Color ActiveColor
-        {
-            get
-            {
-                return this._activeColor;
-            }
-            set
-            {
-                if(this._activeColor != value)
+                if (this._colorPickerActive != value)
                 {
-                    Color prevColor = _activeColor;
-                    this._activeColor = value;
-                    this.OnActiveColorChanged(new ActiveColorChangedEventArgs(prevColor, _activeColor));
+                    this._colorPickerActive = value;
+                    OnEditModeChanged(EventArgs.Empty);
                 }
-
             }
         }
 
-        public SkaaColorChooser()
+        public SkaaScreenColorPicker ColorDropper;
+        [field: NonSerialized]
+        private EventHandler _colorPickerActiveChanged;
+        public event EventHandler ColorPickerActiveChanged
         {
-            InitializeComponent();
-
-            ColorBoxes = new List<Button>();
-
-            this.PaletteChanged += SkaaColorChooser_PaletteChanged;
-
-            #region Dynamic Button Creation
-            //I've gone math retarded and can't get the locations right
-            //Taking a break and just manually created 256 buttons with some copy/paste
-
-            //int btn_height = 18, btn_width = 18, btn_space = 3;
-
-            //for (int i = 0; i < 256; i++)
-            //{
-            //    Button btn = new Button();
-            //    btn.Size = new Size(btn_width, btn_height);
-            //    btn.BackColor = Color.Transparent;
-            //    btn.FlatAppearance.BorderColor = Color.White;
-            //    btn.FlatStyle = FlatStyle.Flat;
-
-            //    this.ColorBoxes.Add(btn);
-            //}
-
-            //ColorBoxes[0].Location = new Point(3, 3);
-            //this.Controls.Add(ColorBoxes[0]);
-
-            //int rows = 32, columns = 8; //32*8 = 256 colors
-            //for (int y = 0; y < rows; y++)
-            //{
-            //    int x = 0;
-
-            //    if (y == 0) //pre-made the first one already, so skip it
-            //        x = 1;  //this allows the inner loop to remain simpler
-            //                //and reduces the work being done 256x
-            //                //doing x = 1 below would skip 0th position
-
-            //    for (; x < columns; x++)
-            //    {
-            //        Controls.Add(ColorBoxes[y * columns + x]);
-            //        Point p = ColorBoxes[(y * columns + x) - 1].Location; //get previous box's loc
-            //        ColorBoxes[y * columns + x].Location = new Point(p.X + (x * (btn_width + btn_space)), p.Y + (y * (btn_space + btn_height)));
-            //    }
-            //}
-            #endregion
-
-            //disable until a palette is loaded
-            foreach (Button btn in this.Controls)
-                btn.Enabled = false;
-        }
-
-        private void SetupColorBoxes()
-        {
-            for(int i = 0; i < 256; i++)
+            add
             {
-                Button btn = this.Controls[i] as Button;
-                btn.BackColor = Palette.Entries[i];
-                btn.Enabled = true;
-                btn.Click += btnColorBox_Click;
-            }
-        }
-        private void TearDownColorBoxes()
-        {
-            this._activeButton = null;
-
-            for (int i = 0; i < 256; i++)
-            {
-                Button btn = this.Controls[i] as Button;
-                btn.BackColor = Color.Transparent;
-                btn.Enabled = false;
-                btn.Click -= btnColorBox_Click;
-            }
-        }
-        private void SkaaColorChooser_PaletteChanged(object sender, EventArgs e)
-        {
-            if (this.Palette == null)
-                TearDownColorBoxes();
-            else
-                SetupColorBoxes();
-        }
-        private void btnColorBox_Click(object sender, EventArgs e)
-        {
-            int btnSizeOffset = 30;
-            int btnLocOffset = 16;
-
-            Button btn = sender as Button;
-
-            if (btn != _activeButton)
-            {
-                if(_activeButton != null) //for the first time
-                { 
-                    //return previous active color button to normal
-                    this._activeButton.Size = btn.Size;
-                    this._activeButton.Location = new Point(this._activeButton.Location.X + btnLocOffset, this._activeButton.Location.Y + btnLocOffset);
-                    this._activeButton.FlatAppearance.BorderColor = Color.White;
-                    this._activeButton.FlatAppearance.BorderSize = 1;
-                    this._activeButton.SendToBack();
+                if (_colorPickerActiveChanged == null || !_colorPickerActiveChanged.GetInvocationList().Contains(value))
+                {
+                    _colorPickerActiveChanged += value;
                 }
-
-                this.ActiveColor = btn.BackColor;
-
-                //set the new button and make it stand out
-                this._activeButton = btn;
-                this._activeButton.Size = new Size(btn.Size.Height + btnSizeOffset, btn.Size.Width + btnSizeOffset);
-                this._activeButton.Location = new Point(btn.Location.X - btnLocOffset, btn.Location.Y - btnLocOffset);
-                this._activeButton.FlatAppearance.BorderColor = Color.GreenYellow;
-                this._activeButton.FlatAppearance.BorderSize = 3;
-                this._activeButton.BringToFront();
+            }
+            remove
+            {
+                _colorPickerActiveChanged -= value;
             }
         }
+        protected void OnColorPickerActiveChanged(EventArgs e)
+        {
+            EventHandler handler = _colorPickerActiveChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public SkaaColorChooser() : base () { }
+        public SkaaColorChooser(ColorCollection colors) : base(colors)
+        {
+            this.ColorDropper = new SkaaScreenColorPicker();
+            //this.ColorDropper.ColorChanged += Picker_ColorChanged;
+        }
+
+        //protected override void EditColor(int colorIndex)
+        //{
+        //    this.ColorDropper.SetCaptureMode();
+        //    //if (_eyedropperCursor == null)
+        //    //{
+        //    //    // ReSharper disable AssignNullToNotNullAttribute
+        //    //    _eyedropperCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.eyedropper.cur")));
+        //    //}
+        //}
+        protected override void OnMouseDoubleClick(MouseEventArgs e)
+        {
+            //ColorHitTestInfo hitTest;
+
+            //base.OnMouseDoubleClick(e);
+
+            //hitTest = this.HitTest(e.Location);
+
+            //if (e.Button == MouseButtons.Left && (hitTest.Source == ColorSource.Custom && this.ColorPickerActive != ColorEditingMode.None || hitTest.Source == ColorSource.Standard && this.ColorPickerActive == ColorEditingMode.Both))
+            //{
+            //    this._colorPickerActive = true;
+            //}
+        }
+
+        //private void Picker_ColorChanged(object sender, EventArgs e) { }
+        
+    }
+
+    public partial class SkaaScreenColorPicker : ScreenColorPicker
+    {
+        //public Cursor EyeDropperCursor;
+
+        public void SetCaptureMode()
+        {
+            this.IsCapturing = true;
+        }
+        public void MoveMouse()
+        {
+            if (this.IsCapturing)
+            {
+                this.UpdateSnapshot();
+            }
+        }
+        /// <summary>
+        /// Updates the snapshot.
+        /// </summary>
+        protected override void UpdateSnapshot()
+        {
+            return;
+
+            Point cursor;
+
+            cursor = MousePosition;
+            cursor.X -= this.SnapshotImage.Width / 2;
+            cursor.Y -= this.SnapshotImage.Height / 2;
+
+            using (Graphics graphics = Graphics.FromImage(this.SnapshotImage))
+            {
+                Point center;
+
+                // clear the image first, in case the mouse is near the borders of the screen so there isn't enough copy content to fill the area
+                graphics.Clear(Color.Empty);
+
+                // copy the image from the screen
+                graphics.CopyFromScreen(cursor, Point.Empty, this.SnapshotImage.Size);
+
+                // update the active color
+                center = this.GetCenterPoint();
+                this.Color = this.SnapshotImage.GetPixel(center.X, center.Y);
+
+                // force a redraw
+                this.HasSnapshot = true;
+                this.Refresh(); // just calling Invalidate isn't enough as the display will lag
+            }
+        }
+
+
+
+        ///// <summary>
+        ///// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+        ///// </summary>
+        ///// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+        //protected override void OnMouseDown(MouseEventArgs e)
+        //{
+        //    base.OnMouseDown(e);
+
+        //    if (e.Button == MouseButtons.Left && !this.IsCapturing)
+        //    {
+        //        if (EyeDropperCursor == null)
+        //        {
+        //            // ReSharper disable AssignNullToNotNullAttribute
+        //            EyeDropperCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.eyedropper.cur")));
+        //        }
+        //        // ReSharper restore AssignNullToNotNullAttribute
+
+        //        this.Cursor = EyeDropperCursor;
+        //        this.IsCapturing = true;
+        //        this.Invalidate();
+        //    }
+        //}
     }
 }
