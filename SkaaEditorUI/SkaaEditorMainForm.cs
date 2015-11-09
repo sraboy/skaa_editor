@@ -38,7 +38,10 @@ using MultiColumnComboBox;
 using System.Text;
 using System.Diagnostics;
 using System.Resources;
-using static SkaaEditorUI.ErrorHandler;
+using static SkaaEditorUI.Misc;
+using System.Threading.Tasks;
+using System.Threading;
+using Cyotek.Windows.Forms;
 
 namespace SkaaEditorUI
 {
@@ -46,6 +49,104 @@ namespace SkaaEditorUI
     {
         private Properties.Settings props = Properties.Settings.Default;
 
+        #region Debugging
+#if DEBUG
+        private List<DebugArgs> _debugArgs;
+        private class DebugArgs
+        {
+            public string MethodName;
+            public object Arg;
+        }
+        private List<string> DebugActions;
+#endif
+        /*
+         * Keep methods outside the #if so we don't have to remove calls 
+         * to them throughout the code or use #if checks there. They'll 
+         * always get built but won't be called in release mode. This 
+         * isn't possible with non-void methods.
+         */
+        [Conditional("DEBUG")]
+        private void AddDebugArg(string methodName, object arg)
+        {
+            if (this._debugArgs == null)
+                this._debugArgs = new List<DebugArgs>();
+
+            this._debugArgs.Add(new DebugArgs() { MethodName = methodName, Arg = arg });
+        }
+        [Conditional("DEBUG")]
+        private void ConfigSettingsDebug()
+        {
+            this._debugArgs = new List<DebugArgs>();
+            props.SkaaDataDirectory = @"E:\Programming\GitHubVisualStudio\7kaa\data\";
+
+            this.btnDebugAction.Visible = true;
+            this.btnDebugAction.Click += btnDebugAction_Click;
+            this.lbDebugActions.Visible = true;
+            //this.lbDebugActions.SelectedValueChanged += LbDebugActions_SelectedValueChanged;
+
+            this.lbDebugActions.Items.Add("CopySpriteAndSetToSkaaDirectory");
+        }
+        private void btnDebugAction_Click(object sender, EventArgs e)
+        {
+            foreach (string debugAction in this.lbDebugActions.SelectedItems)
+            {
+                Type thisType = this.GetType();
+                MethodInfo debugMethod = thisType.GetMethod(debugAction, BindingFlags.Instance | BindingFlags.NonPublic);
+                debugMethod.Invoke(this, null);
+            }
+
+            //SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
+            //savEditor.Show();
+
+            //UpdateSprite();
+            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Hue);
+            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Brightness);
+            //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+
+            CopySpriteAndSetToSkaaDirectory();
+        }
+        [Conditional("DEBUG")]
+        private void CopySpriteAndSetToSkaaDirectory()
+        {
+            string sender = GetCurrentMethod();
+            this.saveSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
+            this.saveGameSetToolStripMenuItem_Click(sender, EventArgs.Empty);
+
+            foreach (DebugArgs arg in this._debugArgs)
+            {
+                switch (arg.MethodName)
+                {
+                    case "saveGameSetToolStripMenuItem_Click":
+                        string stdSetFile = props.SkaaDataDirectory + "resource\\std.set";
+                        if (File.Exists(stdSetFile))
+                        {
+                            //make sure we have a backup of std.set
+                            if (!File.Exists(stdSetFile + ".bak"))
+                                File.Copy(stdSetFile, stdSetFile + ".bak");
+                        }
+
+                        File.Copy((string)arg.Arg, stdSetFile, true);
+                        break;
+
+                    case "saveSpriteToolStripMenuItem_Click":
+                        string ballistaFile = props.SkaaDataDirectory + "sprite\\ballista.spr";
+                        if (File.Exists(ballistaFile))
+                        {
+                            //make sure we have a backup of ballista
+                            if (!File.Exists(ballistaFile + ".bak"))
+                                File.Copy(ballistaFile, ballistaFile + ".bak");
+                        }
+
+                        File.Copy((string) arg.Arg, ballistaFile, true);
+                        break;
+                }
+
+                this._debugArgs = null;
+            }
+        }
+        #endregion
+
+        #region Event Handlers
         private EventHandler _animateChanged;
         public event EventHandler AnimateChanged
         {
@@ -94,11 +195,14 @@ namespace SkaaEditorUI
                 handler(this, e);
             }
         }
+        #endregion
 
+        #region Private Members
         private Project _activeProject;
         //todo: add Debug logging throughout
         //todo: Move all error handling to Error()
         private TextWriterTraceListener _debugTxtWriter;
+        #endregion
 
         public Project ActiveProject
         {
@@ -116,41 +220,50 @@ namespace SkaaEditorUI
             }
         }
 
+        /////////////////////////////////// Setup //////////////////////////////////////////
         public SkaaEditorMainForm()
         {
             InitializeComponent();
+            //this has to happen early so NewProject() triggers the event
+            this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
+            this.imageEditorBox.ShowPixelGrid = true;
             ConfigSettings();
         }
-
         /// <summary>
-        /// Sets/Resets the UI. Called by the ActiveProjectChanged event.
+        /// Provides for initial application settings like default directories, debug logging, etc.
         /// </summary>
-        /// <remarks>
-        /// This may be called any time to reset menu items and ensure event subscriptions 
-        /// are done. EventHandlers already ensure they are not hooked multiple times.
-        /// </remarks>
-
-        /////////////////////////////////// Setup //////////////////////////////////////////
         private void ConfigSettings()
         {
             //string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + '\\' +
             //                    Assembly.GetExecutingAssembly().GetName().Name;
 
             props.ApplicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + '\\';
+
             _debugTxtWriter = new TextWriterTraceListener(props.ApplicationDirectory + "debug_log.txt");
             Trace.AutoFlush = true;
             Trace.Listeners.Add(_debugTxtWriter);
 
             props.DataDirectory = props.ApplicationDirectory + "data\\";
             props.TempDirectory = props.ApplicationDirectory + "temp\\";
-            props.ProjectsDirectory = props.ApplicationDirectory + "project\\";
+            props.ProjectsDirectory = props.ApplicationDirectory + "projects\\";
+            Directory.CreateDirectory(props.ProjectsDirectory);
             Directory.CreateDirectory(props.TempDirectory);
+
+            ConfigSettingsDebug();
         }
+        /// <summary>
+        /// Sets/Resets various UI settings like menu options, etc.
+        /// </summary>
+        /// <remarks>
+        /// This may be called any time to reset menu items and ensure event subscriptions 
+        /// are done. Ensure EventHandlers already prevent multiple hooks:
+        /// <code>if(!PropertyChanged.GetInvocationList().Contains(value)) { }</code>
+        /// </remarks>
         private void SetupUI(bool update = false)
         {
             //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
-
-            this.openSpriteToolStripMenuItem.Enabled = (this.skaaColorChooser.Palette == null || this.ActiveProject?.ActiveGameSet == null) ? false : true;            
+            //this.colorGridChooser.EditModeChanged += ColorGridChooser_ColorPickerActiveChanged;
+            this.openSpriteToolStripMenuItem.Enabled = (this.colorGridChooser.Enabled == false || this.ActiveProject?.ActiveGameSet == null) ? false : true;            
             this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;            
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
             this.timelineControl.SetSliderEnable((this.imageEditorBox.Image == null) ? false : true);
@@ -173,16 +286,14 @@ namespace SkaaEditorUI
             if (!update) // Only subscribe to events on initial UI setup
             {
                 //event subscriptions
-                this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
-
                 if (this.ActiveProject != null)
                 {
                     this.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
                     this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
                     this.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
                 }
-
-                this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
+                //this.colorGridChooser.ColorChanged += ColorGridChooser_ColorChanged;
+                //this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
                 this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
                 this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
                 this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
@@ -196,8 +307,9 @@ namespace SkaaEditorUI
             else
                 closeProjectToolStripMenuItem_Click(null, null);
 
-            ActiveProject_PaletteChanged(null, null);
-            SetupUI();
+            OnActiveProjectChanged(EventArgs.Empty);
+            //ActiveProject_PaletteChanged(null, null);
+            
         }
         private void PopulateSpriteList()
         {
@@ -244,7 +356,7 @@ namespace SkaaEditorUI
             *  data_buf_size is set to the actual size of the entire file.
             */
 
-            if (this.skaaColorChooser.Palette == null)
+            if (this.colorGridChooser.Enabled == false)
                 return;
 
             using (OpenFileDialog dlg = new OpenFileDialog())
@@ -267,7 +379,7 @@ namespace SkaaEditorUI
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.ActiveProject.ActiveSprite != null)
+            if (this.ActiveProject?.ActiveSprite != null)
             {
                 string msg = "This will close the current sprite. Continue?";
 
@@ -304,16 +416,18 @@ namespace SkaaEditorUI
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.InitialDirectory = props.ProjectsDirectory;
                 dlg.DefaultExt = props.SpriteFileExtension;
                 dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
 #if DEBUG
-                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM");
+                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + '.' + dlg.DefaultExt;
 #else
                 dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId;
 #endif
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
+                    AddDebugArg( GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                    this.toolStripStatLbl.Text = "Building Sprite...";
                     UpdateSprite();
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
@@ -321,6 +435,7 @@ namespace SkaaEditorUI
                         byte[] save = this.ActiveProject.ActiveSprite.BuildSpr();
                         fs.Write(save, 0, Buffer.ByteLength(save));
                     }
+                    this.toolStripStatLbl.Text = string.Empty;
                 }
             }
         }
@@ -332,19 +447,32 @@ namespace SkaaEditorUI
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.InitialDirectory = props.ProjectsDirectory;
                 dlg.DefaultExt = props.GameSetFileExtension;
                 dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
-                UpdateSprite();
+
+                if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
+                {
+                    this.toolStripStatLbl.Text = "Building Sprite...";
+                    UpdateSprite();
+                    this.toolStripStatLbl.Text = string.Empty;
+                    //if (UpdateSprite().Result)
+                    //    Interlocked.Exchange(ref _buildingSprite, 0);
+                }
+                else
+                    return;
 #if DEBUG
-                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM");
+                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + '.' + dlg.DefaultExt;
 #else
                 dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId;
 #endif
 
                 if (dlg.ShowDialog() == DialogResult.OK)
-                {        
+                {
+                    AddDebugArg(GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                    this.toolStripStatLbl.Text = "Saving Game Set...";
                     this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
+                    this.toolStripStatLbl.Text = string.Empty;
                 }
             }
         }
@@ -443,6 +571,14 @@ namespace SkaaEditorUI
         private void UpdateSprite()
         {
             this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            //new thread, in case it takes too long
+            //var task = Task<bool>.Factory.StartNew(() => 
+            //{
+            //    if (Interlocked.Increment(ref _buildingSprite) != 1)
+            //        return false;
+            //    return this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            //});
+            //return task;       
         }
         private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
         {
@@ -466,8 +602,6 @@ namespace SkaaEditorUI
         }
         private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
         {
-            //SaveActiveFrame();
-
             if (this.ActiveProject.ActiveFrame == null)
             {
                 this.imageEditorBox.Image = null;
@@ -479,16 +613,7 @@ namespace SkaaEditorUI
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
         }
-        ///////////////////////////////////////////////////////////////////////////////
-
-
-        private void btnFeatureTest_Click(object sender, EventArgs e)
-        {
-            //SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
-            //savEditor.Show();
-
-            UpdateSprite();
-        }
+        ///////////////////////////////////////////////////////////////////////////////    
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -501,20 +626,25 @@ namespace SkaaEditorUI
         }
         private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
         {
-            //sets the palette which causes the color chooser's buttons to be filled
-            if (this.ActiveProject?.ActivePalette != null)// && this.ActiveProject.SuperPal != null)
-                this.skaaColorChooser.Palette = this.ActiveProject.ActivePalette;
-            else //user has closed the project (it is now null)
-            {
+            if (this.ActiveProject?.ActivePalette == null)
                 this.imageEditorBox.Image = null;
-                this.skaaColorChooser.Palette = null;
-            }
+
+            SetUpColorGrid();
+            SetupUI();
+            ////sets the palette which causes the color chooser's buttons to be filled
+            //if (this.ActiveProject?.ActivePalette != null)// && this.ActiveProject.SuperPal != null)
+            //    this.skaaColorChooser.Palette = this.ActiveProject.ActivePalette;
+            //else //user has closed the project (it is now null)
+            //{
+            //    this.imageEditorBox.Image = null;
+            //    this.skaaColorChooser.Palette = null;
+            //}
             //SetupUI(); //called by imageEditorBox_ImageChanged()
         }
-        private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
-        {
-            this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
-        }
+        //private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
+        //{
+        //    this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
+        //}
         private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DataRow selection;
@@ -557,15 +687,31 @@ namespace SkaaEditorUI
         }
         private void ActiveProject_PaletteChanged(object sender, EventArgs e)
         {
+            SetUpColorGrid();
+        }
+        private void SetUpColorGrid()
+        {
             if (this.ActiveProject == null)
-                this.skaaColorChooser.Palette = null;
+            {
+                this.colorGridChooser.Enabled = false;
+                //this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
+            }
             else if (this.ActiveProject.ActivePalette != null)
-                this.skaaColorChooser.Palette = this.ActiveProject.ActivePalette;
+            {
+                this.colorGridChooser.Enabled = true;
+                this.colorGridChooser.Colors = new ColorCollection(this.ActiveProject.ActivePalette.Entries.Distinct());
+                this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+            }
+        }
+        private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
+        {
+            this.imageEditorBox.ActiveColor = (sender as ColorGrid).Color;
         }
         private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.ActiveProject = null;
             this.cbMultiColumn.DataSource = null;
+            this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
         }
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {

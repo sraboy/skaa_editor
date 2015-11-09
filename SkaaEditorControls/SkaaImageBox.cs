@@ -39,16 +39,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cyotek.Windows.Forms;
+using System.Drawing.Imaging;
+using BitmapProcessing;
 
 namespace SkaaEditorControls
 {
     public partial class SkaaImageBox : ImageBox
     {
-        #region Private Vars
+         #region Private Vars
         private Boolean _editMode;
         private Boolean _isDrawing;
         private Color _activeColor;
         private Color _skaaTransparentColor;
+        private int bmpWidth = 0, bmpHeight = 0;
+        private FastBitmap fbmp;
         #endregion
         #region Accessor Methods
         [DefaultValue(false)]
@@ -78,7 +82,7 @@ namespace SkaaEditorControls
                 }
             }
         }
-        public Boolean IsDrawing
+        public bool IsDrawing
         {
             get
             {
@@ -119,6 +123,16 @@ namespace SkaaEditorControls
             PenDraw(e);
             base.OnMouseMove(e);
         }
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            if (this.IsDrawing)
+            {
+                this.IsDrawing = false;
+                OnImageUpdated(null);
+            }
+            base.OnMouseUp(e);
+        }
+
         private void PenDraw(MouseEventArgs e)
         {
             if (this.EditMode == true && this.Image != null)
@@ -133,28 +147,38 @@ namespace SkaaEditorControls
                 if ((currentPixel.X < Image.Width && currentPixel.Y < Image.Height) && (currentPixel.X >= 0 && currentPixel.Y >= 0))
                 {
                     if (e.Button == MouseButtons.Left)
-                        (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this.ActiveColor);
+                    {
+                        fbmp.LockImage();
+                        fbmp.SetPixel(currentPixel.X, currentPixel.Y, this.ActiveColor);
+                        fbmp.UnlockImage();
+                        //(this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this.ActiveColor);
+                    }
                     if (e.Button == MouseButtons.Right)
-                        (this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this._skaaTransparentColor); 
+                    {
+                        fbmp.LockImage();
+                        fbmp.SetPixel(currentPixel.X, currentPixel.Y, this._skaaTransparentColor);
+                        fbmp.UnlockImage();
+                        //(this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this._skaaTransparentColor);
+                    }
 
                     this.Invalidate(this.ViewPortRectangle);
-                    this.Update();
+                    //this.Update();
                 }
             }
-        }
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            if(this.IsDrawing)
-            {
-                this.IsDrawing = false;
-                OnImageUpdated(null);
-            }
-            base.OnMouseUp(e);
         }
 
         public SkaaImageBox() : base()
         {
             this._skaaTransparentColor = Color.FromArgb(0);
+            this.ImageChanged += SkaaImageBox_ImageChanged;
+        }
+
+        private void SkaaImageBox_ImageChanged(object sender, EventArgs e)
+        {
+            Bitmap bmp = this.Image as Bitmap;
+            this.fbmp = new FastBitmap(bmp);
+            this.bmpWidth = bmp.Width;
+            this.bmpHeight = bmp.Height;
         }
     }
 }

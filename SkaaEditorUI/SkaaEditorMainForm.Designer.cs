@@ -23,6 +23,8 @@
 *  	information on 7KAA, visit http://www.7kfans.com.
 ***************************************************************************/
 
+using SkaaEditorControls;
+
 namespace SkaaEditorUI
 {
     partial class SkaaEditorMainForm
@@ -74,13 +76,17 @@ namespace SkaaEditorUI
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this.cbEdit = new System.Windows.Forms.CheckBox();
-            this.btnFeatureTest = new System.Windows.Forms.Button();
+            this.btnDebugAction = new System.Windows.Forms.Button();
             this.cbMultiColumn = new MultiColumnComboBox.MultiColumnComboBoxControl();
             this.timelineControl = new SkaaEditorControls.TimelineControl();
             this.imageEditorBox = new SkaaEditorControls.SkaaImageBox();
-            this.skaaColorChooser = new SkaaEditorControls.SkaaColorChooser();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
+            this.lbDebugActions = new System.Windows.Forms.ListBox();
             this.mainMenuStrip.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -235,11 +241,20 @@ namespace SkaaEditorUI
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 788);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatLbl});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 809);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1023, 22);
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "SkaaEditor ALPHA v0.1";
+            // 
+            // toolStripStatLbl
+            // 
+            this.toolStripStatLbl.Name = "toolStripStatLbl";
+            this.toolStripStatLbl.Size = new System.Drawing.Size(1008, 17);
+            this.toolStripStatLbl.Spring = true;
+            this.toolStripStatLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // cbEdit
             // 
@@ -253,16 +268,17 @@ namespace SkaaEditorUI
             this.cbEdit.UseVisualStyleBackColor = true;
             this.cbEdit.CheckedChanged += new System.EventHandler(this.cbEdit_CheckedChanged);
             // 
-            // btnFeatureTest
+            // btnDebugAction
             // 
-            this.btnFeatureTest.Location = new System.Drawing.Point(918, 487);
-            this.btnFeatureTest.Name = "btnFeatureTest";
-            this.btnFeatureTest.Size = new System.Drawing.Size(75, 23);
-            this.btnFeatureTest.TabIndex = 11;
-            this.btnFeatureTest.Text = "Feature Test";
-            this.btnFeatureTest.UseVisualStyleBackColor = true;
-            this.btnFeatureTest.Visible = false;
-            this.btnFeatureTest.Click += new System.EventHandler(this.btnFeatureTest_Click);
+            this.btnDebugAction.AutoSize = true;
+            this.btnDebugAction.BackColor = System.Drawing.Color.MistyRose;
+            this.btnDebugAction.Location = new System.Drawing.Point(918, 298);
+            this.btnDebugAction.Name = "btnDebugAction";
+            this.btnDebugAction.Size = new System.Drawing.Size(82, 23);
+            this.btnDebugAction.TabIndex = 11;
+            this.btnDebugAction.Text = "Debug Action";
+            this.btnDebugAction.UseVisualStyleBackColor = false;
+            this.btnDebugAction.Visible = false;
             // 
             // cbMultiColumn
             // 
@@ -294,30 +310,43 @@ namespace SkaaEditorUI
             this.imageEditorBox.IsDrawing = false;
             this.imageEditorBox.Location = new System.Drawing.Point(198, 28);
             this.imageEditorBox.Name = "imageEditorBox";
-            this.imageEditorBox.Size = new System.Drawing.Size(689, 780);
+            this.imageEditorBox.Size = new System.Drawing.Size(689, 801);
             this.imageEditorBox.TabIndex = 8;
             // 
-            // skaaColorChooser
+            // colorGridChooser
             // 
-            this.skaaColorChooser.ActiveColor = System.Drawing.Color.Empty;
-            this.skaaColorChooser.Location = new System.Drawing.Point(5, 28);
-            this.skaaColorChooser.Name = "skaaColorChooser";
-            this.skaaColorChooser.Palette = null;
-            this.skaaColorChooser.Size = new System.Drawing.Size(186, 758);
-            this.skaaColorChooser.TabIndex = 5;
+            this.colorGridChooser.CellSize = new System.Drawing.Size(20, 20);
+            this.colorGridChooser.ColorPickerActive = false;
+            this.colorGridChooser.Columns = 8;
+            this.colorGridChooser.Location = new System.Drawing.Point(1, 28);
+            this.colorGridChooser.Name = "colorGridChooser";
+            this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
+            this.colorGridChooser.Size = new System.Drawing.Size(191, 107);
+            this.colorGridChooser.TabIndex = 14;
+            this.colorGridChooser.ColorChanged += new System.EventHandler(this.ColorGridChooser_ColorChanged);
+            // 
+            // lbDebugActions
+            // 
+            this.lbDebugActions.FormattingEnabled = true;
+            this.lbDebugActions.Location = new System.Drawing.Point(893, 327);
+            this.lbDebugActions.Name = "lbDebugActions";
+            this.lbDebugActions.Size = new System.Drawing.Size(124, 186);
+            this.lbDebugActions.TabIndex = 15;
+            this.lbDebugActions.Visible = false;
             // 
             // SkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1023, 810);
+            this.ClientSize = new System.Drawing.Size(1023, 831);
+            this.Controls.Add(this.lbDebugActions);
+            this.Controls.Add(this.colorGridChooser);
             this.Controls.Add(this.cbMultiColumn);
-            this.Controls.Add(this.btnFeatureTest);
+            this.Controls.Add(this.btnDebugAction);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.timelineControl);
             this.Controls.Add(this.imageEditorBox);
             this.Controls.Add(this.cbEdit);
-            this.Controls.Add(this.skaaColorChooser);
             this.Controls.Add(this.mainMenuStrip);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -328,6 +357,8 @@ namespace SkaaEditorUI
             this.Load += new System.EventHandler(this.skaaEditorMainForm_Load);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -343,10 +374,9 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private SkaaEditorControls.SkaaColorChooser skaaColorChooser;
         private System.Windows.Forms.CheckBox cbEdit;
         private SkaaEditorControls.SkaaImageBox imageEditorBox;
-        private System.Windows.Forms.Button btnFeatureTest;
+        private System.Windows.Forms.Button btnDebugAction;
         private SkaaEditorControls.TimelineControl timelineControl;
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -360,5 +390,9 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exportAllFramesTo32bppBmpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatLbl;
+        private System.Windows.Forms.ColorDialog colorDialog1;
+        private SkaaColorChooser colorGridChooser;
+        private System.Windows.Forms.ListBox lbDebugActions;
     }
 }
