@@ -146,7 +146,7 @@ namespace SkaaEditorUI
             props.ProjectsDirectory = props.ApplicationDirectory + "project\\";
             Directory.CreateDirectory(props.TempDirectory);
         }
-        private void SetupUI()
+        private void SetupUI(bool update = false)
         {
             //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
 
@@ -170,21 +170,24 @@ namespace SkaaEditorUI
                 "Please report bugs to steven.lavoiejr@gmail.com or https://www.github.com/sraboy/skaa_editor/.";
             this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? help_text : null;
 
-            //event subscriptions
-            this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
-
-            if (this.ActiveProject != null)
+            if (!update) // Only subscribe to events on initial UI setup
             {
-                this.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
-                this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
-                this.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
-            }
+                //event subscriptions
+                this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
 
-            this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
-            this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
-            this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
-            this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
-            this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
+                if (this.ActiveProject != null)
+                {
+                    this.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
+                    this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
+                    this.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
+                }
+
+                this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
+                this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
+                this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
+                this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
+                this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
+            }
         }
         private void NewProject(bool loadDefaults)
         {
@@ -205,7 +208,6 @@ namespace SkaaEditorUI
             if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
             {
                 this.cbMultiColumn.Enabled = true;
-                this.cbMultiColumn.DataSource = null;
                 this.cbMultiColumn.DataSource = this.ActiveProject.ActiveSprite.SpriteDataView;
                 this.cbMultiColumn.DisplayMember = "SPRITE";
                 this.cbMultiColumn.ValueMember = "ACTION";
@@ -532,7 +534,7 @@ namespace SkaaEditorUI
         }
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
-            SetupUI();
+            SetupUI(true);
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
