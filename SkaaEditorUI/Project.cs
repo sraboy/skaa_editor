@@ -145,7 +145,7 @@ namespace SkaaEditorUI
                 if (this._skaaEditorPalette.ActivePalette != value)
                 {
                     this._skaaEditorPalette.ActivePalette = value;
-                    OnPaletteChanged(null);
+                    OnPaletteChanged(EventArgs.Empty);
                 }
             }
         }
@@ -210,19 +210,6 @@ namespace SkaaEditorUI
         /// <returns>A ColorPalette built from the palette file</returns>
         public ColorPalette LoadPalette(string filepath)
         {
-            //if (filepath == null)
-            //    filepath = this._workingFolder;
-
-            //FileAttributes attr = File.GetAttributes(filepath);
-            //this._skaaEditorPalette = new SkaaEditorPalette();
-
-            //if (attr.HasFlag(FileAttributes.Directory))
-            //    this._skaaEditorPalette.PaletteFileName = "pal_std.res";
-            //else
-            //{
-            //    this._skaaEditorPalette.PaletteFileName = Path.GetFileName(filepath);
-            //    filepath = Path.GetDirectoryName(filepath);
-            //}
             this._skaaEditorPalette = new SkaaEditorPalette();
             this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
 
@@ -333,7 +320,7 @@ namespace SkaaEditorUI
         public void UpdateSprite(SpriteFrame sf, Bitmap bmp)
         {
             this.ActiveSprite.ProcessUpdates(this.ActiveFrame, bmp);
-            //this.ActiveSprite.SpriteDataView = this.ActiveGameSet.GetSpriteDataView(this.ActiveSprite.SpriteId);
+            //return true;
         }
     }
 }

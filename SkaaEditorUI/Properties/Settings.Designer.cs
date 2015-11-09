@@ -118,5 +118,17 @@ namespace SkaaEditorUI.Properties {
                 this["SpriteFileExtension"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SkaaDataDirectory {
+            get {
+                return ((string)(this["SkaaDataDirectory"]));
+            }
+            set {
+                this["SkaaDataDirectory"] = value;
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -26,7 +27,6 @@ namespace SkaaEditorUI
         public MemoryStream SpriteFileMemoryStream;
         public Sprite ActiveSprite;
     }
-
     public static class Serialization
     {
         internal static Stream Serialize(object o)
@@ -104,8 +104,15 @@ namespace SkaaEditorUI
             return p;
         }
     }
-    public static class ErrorHandler
+    public static class Misc
     {
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static string GetCurrentMethod()
+        {
+            StackTrace st = new StackTrace();
+            StackFrame sf = st.GetFrame(1);
+            return sf.GetMethod().Name;
+        }
         public static void Error(string message)
         {
             Trace.WriteLine(message);
