@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaGameDataLib", "SkaaGame
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitmapProcessing", "BitmapProcessing\BitmapProcessing.csproj", "{3816600B-B417-460D-8457-96039058B03E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPicker", "ColorPicker\ColorPicker.csproj", "{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,18 @@ Global
 		{3816600B-B417-460D-8457-96039058B03E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3816600B-B417-460D-8457-96039058B03E}.Release|x86.ActiveCfg = Release|Any CPU
 		{3816600B-B417-460D-8457-96039058B03E}.Release|x86.Build.0 = Release|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

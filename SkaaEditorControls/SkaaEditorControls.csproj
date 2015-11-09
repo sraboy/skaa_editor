@@ -73,10 +73,7 @@
       <DependentUpon>MultiColumnComboBox.cs</DependentUpon>
     </Compile>
     <Compile Include="SkaaColorChooser.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SkaaColorChooser.Designer.cs">
-      <DependentUpon>SkaaColorChooser.cs</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SkaaImageBox.cs">
       <SubType>Component</SubType>
@@ -105,6 +102,10 @@
     <ProjectReference Include="..\BitmapProcessing\BitmapProcessing.csproj">
       <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
       <Name>BitmapProcessing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ColorPicker\ColorPicker.csproj">
+      <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>
+      <Name>ColorPicker</Name>
     </ProjectReference>
     <ProjectReference Include="..\SkaaGameDataLib\SkaaGameDataLib.csproj">
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>

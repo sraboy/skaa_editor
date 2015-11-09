@@ -26,5 +26,8 @@
     <Setting Name="SpriteFileExtension" Type="System.String" Scope="User">
       <Value Profile="(Default)">.spr</Value>
     </Setting>
+    <Setting Name="SkaaDataDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
