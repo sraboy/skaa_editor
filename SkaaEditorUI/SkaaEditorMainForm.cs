@@ -344,15 +344,7 @@ namespace SkaaEditorUI
         /////////////////////////////////// Loading Events //////////////////////////////////////////
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /* To see SPR loading in action, view ResourceDb::init_imported() 
-            *  in ORESDB.cpp around line 72. The resName will be "sprite\\NAME.SPR".
-            * 
-            *  No need to follow its call into File::file_open() in OFILE.cpp at 
-            *  line 53. Though the files are well-structured, they are considered 
-            *  FLAT by 7KAA.
-            *
-            *  data_buf_size is set to the actual size of the entire file.
-            */
+
 
             if (this.colorGridChooser.Enabled == false)
                 return;

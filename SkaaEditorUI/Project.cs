@@ -19,8 +19,18 @@ namespace SkaaEditorUI
     [Serializable]
     public class Project
     {
+        #region Private Members
         private Properties.Settings props = Properties.Settings.Default;
+        private SpriteFrame _activeFrame;
+        private SkaaGameSet _activeGameSet;
 
+        [NonSerialized]
+        private PaletteResource _skaaEditorPalette;
+        [NonSerialized]
+        private SpriteResource _skaaEditorSprite;
+        #endregion
+
+        #region Event Handlers
         [field: NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
@@ -96,25 +106,20 @@ namespace SkaaEditorUI
                 handler(this, e);
             }
         }
+        #endregion
 
-        private SpriteFrame _activeFrame;
-        private SkaaGameSet _activeGameSet;
-
-        [NonSerialized]
-        private SkaaEditorPalette _skaaEditorPalette;
-        [NonSerialized]
-        private SkaaEditorSprite _skaaEditorSprite;
+        #region Public Members
         public Sprite ActiveSprite
         {
             get
             {
-                return this._skaaEditorSprite == null ? null : this._skaaEditorSprite.ActiveSprite;
+                return this._skaaEditorSprite == null ? null : this._skaaEditorSprite.SpriteObject;
             }
             set
             {
-                if (this._skaaEditorSprite.ActiveSprite != value)
+                if (this._skaaEditorSprite.SpriteObject != value)
                 {
-                    this._skaaEditorSprite.ActiveSprite = value;
+                    this._skaaEditorSprite.SpriteObject = value;
                     OnActiveSpriteChanged(null);
                 }
             }
@@ -138,13 +143,13 @@ namespace SkaaEditorUI
         {
             get
             {
-                return this._skaaEditorPalette.ActivePalette;
+                return this._skaaEditorPalette.ColorPaletteObject;
             }
             set
             {
-                if (this._skaaEditorPalette.ActivePalette != value)
+                if (this._skaaEditorPalette.ColorPaletteObject != value)
                 {
-                    this._skaaEditorPalette.ActivePalette = value;
+                    this._skaaEditorPalette.ColorPaletteObject = value;
                     OnPaletteChanged(EventArgs.Empty);
                 }
             }
@@ -163,6 +168,7 @@ namespace SkaaEditorUI
                 }
             }
         }
+        #endregion
 
         /// <summary>
         /// Creates a new project, optionally loading the default palette and game set.
@@ -210,7 +216,7 @@ namespace SkaaEditorUI
         /// <returns>A ColorPalette built from the palette file</returns>
         public ColorPalette LoadPalette(string filepath)
         {
-            this._skaaEditorPalette = new SkaaEditorPalette();
+            this._skaaEditorPalette = new PaletteResource();
             this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
 
             using (FileStream fs = File.OpenRead(filepath))//filepath + '\\' + this._skaaEditorPalette.PaletteFileName))
@@ -228,19 +234,30 @@ namespace SkaaEditorUI
                     else          //0xf9 - 0xff
                         this.ActivePalette.Entries[i] = Color.FromArgb(0, r, g, b);
                 }
-                this._skaaEditorPalette.PaletteFileMemoryStream = new MemoryStream();
+                this._skaaEditorPalette.ResMemoryStream = new MemoryStream();
                 fs.Position = 0;
-                fs.CopyTo(this._skaaEditorPalette.PaletteFileMemoryStream);
+                fs.CopyTo(this._skaaEditorPalette.ResMemoryStream);
             }
 
             return this.ActivePalette;
         }
+        /// <summary>
+        /// Opens an SPR file and creates a <see cref="Sprite"/> object for it
+        /// </summary>
+        /// <param name="filepath">The absolute path to the SPR file to open</param>
+        /// <returns>The newly-created <see cref="Sprite"/></returns>
+        /// <remarks>
+        /// The original game code for reading SPR files can be found <code>ResourceDb::init_imported()</code> 
+        /// in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". (There's 
+        /// no need to follow the call into <code>File::file_open()</code> in OFILE.cpp. Though the files are 
+        /// well-structured, they are considered FLAT by 7KAA.
+        /// </remarks>
         public Sprite LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
                 return null;
 
-            this._skaaEditorSprite = new SkaaEditorSprite();
+            this._skaaEditorSprite = new SpriteResource();
             Sprite spr = new Sprite(this.ActivePalette);
 
             using (FileStream spritestream = File.OpenRead(filepath))
@@ -254,10 +271,10 @@ namespace SkaaEditorUI
                 }
 
                 //this.ActiveSprite = spr; //this ends up firing the event too early. return the spr instead.
-                this._skaaEditorSprite.SpriteFileName = Path.GetFileName(filepath);
-                this._skaaEditorSprite.SpriteFileMemoryStream = new MemoryStream();
+                this._skaaEditorSprite.FileName = Path.GetFileName(filepath);
+                this._skaaEditorSprite.SprMemoryStream = new MemoryStream();
                 spritestream.Position = 0;
-                spritestream.CopyTo(this._skaaEditorSprite.SpriteFileMemoryStream);
+                spritestream.CopyTo(this._skaaEditorSprite.SprMemoryStream);
                 spritestream.Position = 0;
             }
 

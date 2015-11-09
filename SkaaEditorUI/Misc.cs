@@ -15,17 +15,25 @@ using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
-    public class SkaaEditorPalette
+    /// <summary>
+    /// Used to encapsulate a <see cref="ColorPalette"/>, its name and the <see cref="MemoryStream"/> 
+    /// containing the raw RES file data.
+    /// </summary>
+    public class PaletteResource
     {
-        public string PaletteFileName;
-        public MemoryStream PaletteFileMemoryStream;
-        public ColorPalette ActivePalette;
+        public string FileName;
+        public MemoryStream ResMemoryStream;
+        public ColorPalette ColorPaletteObject;
     }
-    public class SkaaEditorSprite
+    /// <summary>
+    /// Used to encapsulate a <see cref="Sprite"/>, its name and the <see cref="MemoryStream"/> 
+    /// containing the raw SPR file data.
+    /// </summary>
+    public class SpriteResource
     {
-        public string SpriteFileName;
-        public MemoryStream SpriteFileMemoryStream;
-        public Sprite ActiveSprite;
+        public string FileName;
+        public MemoryStream SprMemoryStream;
+        public Sprite SpriteObject;
     }
     public static class Serialization
     {
