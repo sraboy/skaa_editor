@@ -294,7 +294,7 @@ namespace SkaaEditorUI
             //this.colorGridChooser.ColorChanged += ColorGridChooser_ColorChanged;
             //this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
             this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
-            this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
+            //this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
             this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
         }
@@ -319,7 +319,7 @@ namespace SkaaEditorUI
             {
                 this.cbMultiColumn.Enabled = true;
                 this.cbMultiColumn.DataSource = null;
-                this.cbMultiColumn.DataSource = this.ActiveProject.ActiveSprite.SpriteDataView;
+                this.cbMultiColumn.DataSource = this.ActiveProject.ActiveSprite.Resource.SpriteDataView;
                 this.cbMultiColumn.DisplayMember = "SPRITE";
                 this.cbMultiColumn.ValueMember = "ACTION";
             }
@@ -345,8 +345,6 @@ namespace SkaaEditorUI
         /////////////////////////////////// Loading Events //////////////////////////////////////////
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-
             if (this.colorGridChooser.Enabled == false)
                 return;
 
@@ -358,13 +356,13 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    this.ActiveProject.ActiveSprite = this.ActiveProject.LoadSprite(dlg.FileName);
+                    this.ActiveProject.LoadSprite(dlg.FileName);
                     this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
 
                     this.exportBmpToolStripMenuItem.Enabled = true;
                     this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                     this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-                    this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSprite.Frames.Count - 1); //-1 for 0-index
+                    //this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSpriteResource.SpriteObject.Frames.Count - 1); //-1 for 0-index
                 }
             }
         }
@@ -419,11 +417,11 @@ namespace SkaaEditorUI
                 {
                     AddDebugArg( GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
                     this.toolStripStatLbl.Text = "Building Sprite...";
-                    UpdateSprite();
+                    ProcessSpriteUpdates();
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
-                        byte[] save = this.ActiveProject.ActiveSprite.BuildSpr();
+                        byte[] save = this.ActiveProject.ActiveSprite.Resource.SprData;
                         fs.Write(save, 0, Buffer.ByteLength(save));
                     }
                     this.toolStripStatLbl.Text = string.Empty;
@@ -445,7 +443,7 @@ namespace SkaaEditorUI
                 if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
                 {
                     this.toolStripStatLbl.Text = "Building Sprite...";
-                    UpdateSprite();
+                    ProcessSpriteUpdates();
                     this.toolStripStatLbl.Text = string.Empty;
                     //if (UpdateSprite().Result)
                     //    Interlocked.Exchange(ref _buildingSprite, 0);
@@ -503,79 +501,25 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    UpdateSprite();
+                    ProcessSpriteUpdates();
 
-                    int totalFrames = this.ActiveProject.ActiveSprite.Frames.Count;
-                    int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
-
-                    double sqrt = Math.Sqrt((double) totalFrames);
-
-                    if (totalFrames % 1 != 0) //totalFrames is a perfect square
-                    {
-                        low = (int) sqrt;
-                        high = (int) sqrt;
-                    }
-                    else
-                    {
-                        low = (int) Math.Floor(sqrt) + 1; //adds an additional row
-                        high = (int) Math.Ceiling(sqrt);
-                    }
-
-                    //need the largest height and width to tile the export
-                    foreach (SpriteFrame sp in this.ActiveProject.ActiveSprite.Frames)
-                    {
-                        if (sp.Width > spriteWidth)
-                            spriteWidth = sp.Width;
-                        if (sp.Height > spriteHeight)
-                            spriteHeight = sp.Height;
-                    }
-
-                    //calculated height and width of the bitmap
-                    //based on tiles of the largest possible size
-                    int exportWidth = high * spriteWidth,
-                        exportHeight = low * spriteHeight;
-
-                    using (Bitmap bitmap = new Bitmap(exportWidth, exportHeight))
-                    {
-                        using (Graphics g = Graphics.FromImage(bitmap))
-                        {
-                            int frameIndex = 0;
-
-                            for (int y = 0; y < exportHeight; y += spriteHeight)
-                            {
-                                //once we hit the max frames, just break
-                                for (int x = 0; x < exportWidth && frameIndex < this.ActiveProject.ActiveSprite.Frames.Count; x += spriteWidth)
-                                {
-                                    g.DrawImage(this.ActiveProject.ActiveSprite.Frames[frameIndex].ImageBmp, new Point(x, y));
-                                    frameIndex++;
-                                }
-                            }
-                        }
-
+                    using (Bitmap bmp = SprDataHandlers.SpriteToBmp(this.ActiveProject.ActiveSprite))
                         using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
-                            bitmap.Save(fs, ImageFormat.Bmp);
-                    }
-                }//end if
-            }//end using SaveFileDialog
+                            bmp.Save(fs, ImageFormat.Bmp);
+                }
+            }
         }
         /////////////////////////// Update Sprite and Frame ///////////////////////////
-        private void UpdateSprite()
+        private void ProcessSpriteUpdates()
         {
-            this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
-            //new thread, in case it takes too long
-            //var task = Task<bool>.Factory.StartNew(() => 
-            //{
-            //    if (Interlocked.Increment(ref _buildingSprite) != 1)
-            //        return false;
-            //    return this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
-            //});
-            //return task;       
+            this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            //this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
         }
-        private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
-        {
-            this.ActiveProject.ActiveSprite = this.timelineControl.ActiveSprite;
-            //timelineControl.ActiveFrame gets changed by ActiveProject_ActiveSpriteChanged()
-        }
+        //private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
+        //{
+        //    //this.ActiveProject.ActiveSpriteResource = this.timelineControl.ActiveSprite;
+        //    //timelineControl.ActiveFrame gets changed by ActiveProject_ActiveSpriteChanged()
+        //}
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
             this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
@@ -827,7 +771,8 @@ namespace SkaaEditorUI
                 {
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create)) //truncates the current file if it exists already
                     {
-                        byte[] spr_data = this.ActiveProject.ActiveFrame.BuildBitmap8bppIndexed();
+                        ProcessSpriteUpdates();
+                        byte[] spr_data = this.ActiveProject.ActiveFrame.FrameRawData;//.BuildBitmap8bppIndexed();
                         fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     }
                 }

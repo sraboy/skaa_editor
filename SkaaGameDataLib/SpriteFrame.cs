@@ -170,13 +170,14 @@ namespace SkaaGameDataLib
                     this._parentSprite = value;
             }
         }
-        public ColorPalette Palette
-        {
-            get
-            {
-                return this.ParentSprite.Palette;
-            }
-        }
+        //public ColorPalette Palette
+        //{
+        //    get
+        //    {
+        //        return this.ParentSprite.Palette;
+        //    }
+        //}
+
         public List<DataRow> GameSetDataRows
         {
             get;
@@ -186,18 +187,26 @@ namespace SkaaGameDataLib
         public int SprBitmapOffset;
         public bool PendingChanges;
 
+        public SpriteFrame(int sprOffset)
+        {
+            this.SprBitmapOffset = sprOffset;
+            this.GameSetDataRows = new List<DataRow>();
+        }
+
+        //public SpriteFrame() { }
         /// <summary>
         /// Initializes a new <see cref="SpriteFrame"/>.
         /// </summary>
         /// <param name="parentSprite">The <see cref="Sprite"/> containing this <see cref="SpriteFrame"/></param>
         /// <param name="stream"></param>
-        public SpriteFrame(Sprite parentSprite, Stream stream)
+        public SpriteFrame(Sprite parentSprite)//, Stream stream)
         {
             this.ParentSprite = parentSprite;
-            this.SprBitmapOffset = (int) stream.Position;
+            //this.SprBitmapOffset = (int) stream.Position;
             this.GameSetDataRows = new List<DataRow>();
-            ReadSprData(stream);
-            BuildBitmapFromSpr();
+            //this.FrameRawData = GameDataHandlers.SprStreamToSpriteFrame(stream);
+            //ReadSprData(stream);
+            //BuildBitmapFromSpr();
         }
 
         /// <summary>
@@ -210,215 +219,149 @@ namespace SkaaGameDataLib
         /// signifies transparency. In pal_std.res, this is 0xf8-0xff; 0xff was chosen because it does not appear 
         /// to be used at all. 
         /// </remarks>
-        private void ReadSprData(Stream stream)
-        {
-            //todo: Verify 0xff is/isn't used in any sprite and update explanation.
+        
+        //public Bitmap BuildBitmapFromSpr()
+        //{
+        //    int idx;
+        //    Bitmap bmp = new Bitmap(this.Width, this.Height);
+        //    FastBitmap fbmp = new FastBitmap(bmp);
+        //    fbmp.LockImage();
+        //    for (int y = 0; y < this.Height; y++)
+        //    {
+        //        for (int x = 0; x < this.Width; x++)
+        //        {
+        //            idx = FrameBmpData[y * this.Width + x];
+        //            Color pixel = this.Palette.Entries[idx];
+        //            fbmp.SetPixel(x, y, pixel);
+        //        }
+        //    }
+        //    fbmp.UnlockImage();
+        //    Color transparentByte = Color.FromArgb(0xff);
+        //    bmp.MakeTransparent(transparentByte);
+        //    this.ImageBmp = bmp;
+        //    return this.ImageBmp;
+        //}
 
-            //Read Header
-            byte[] frame_size_bytes = new byte[8];
-            stream.Read(frame_size_bytes, 0, 8);
-            int sprSize = BitConverter.ToInt32(frame_size_bytes, 0);
-            this.Width = BitConverter.ToInt16(frame_size_bytes, 4);
-            this.Height = BitConverter.ToInt16(frame_size_bytes, 6);
-            this.PixelSize = this.Height * this.Width;
-            this.FrameBmpData = new byte[PixelSize];
-            this.FrameRawData = new byte[PixelSize];
-            FrameBmpData = Enumerable.Repeat<byte>(0xff, PixelSize).ToArray();
-            FrameRawData = Enumerable.Repeat<byte>(0xff, PixelSize).ToArray();
+        ///// <summary>
+        ///// Supplies an SPR-formatted version of this frame.
+        ///// </summary>
+        ///// <returns>Returns a byte array containing the frame data in 7KAA's 
+        ///// SPR format: int32 size, int16 width, int16 height, byte[] data.</returns>
+        //public byte[] BuildBitmap8bppIndexed()
+        //{
+        //    byte palColorByte;                        
+        //    byte transparentByte = 0xf8;
+        //    int transparentByteCount = 0;
+        //    int realOffset = 8; //since our array offset is unaware of the header
+        //    byte[] indexedData = new byte[this.PixelSize + 4];
 
-            int pixelsToSkip = 0;
-            int bytesRead = 8; //start after the header info
-            byte pixel;
+        //    // todo: will have to recalculate height/width if bitmap size changes
+        //    byte[] width = BitConverter.GetBytes((short) this.Width);
+        //    byte[] height = BitConverter.GetBytes((short) this.Height);
 
-            for (int y = 0; y < this.Height; ++y)
-            {
-                for (int x = 0; x < this.Width; ++x)
-                {
-                    if (pixelsToSkip != 0)  //only if we've previously identified transparent bits
-                    {
-                        if (pixelsToSkip >= this.Width - x) //greater than one line
-                        {
-                            pixelsToSkip -= (this.Width - x); // skip to next line
-                            break;
-                        }
+        //    /**************************************************************************
+        //    *  BitConverter is required, rather than Convert.ToByte(), so we can 
+        //    *  get the full 16- or 32-bit representations of the values. This is also  
+        //    *  why Height and Width are both cast to short, to ensure we get a 16-bit
+        //    *  representation of each value to match the binary's file format of:
+        //    *  ____________________________________________________________ 
+        //    *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
+        //    **************************************************************************/
+        //    int seek_pos = 4; //first four bytes are for SprSize, at the end of the function
+        //    Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
+        //    seek_pos += width.Length;
+        //    Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
+        //    seek_pos += height.Length;
 
-                        x += pixelsToSkip;  //skip reading the indicated amount of bytes for transparent pictures
-                        pixelsToSkip = 0;
-                    }
+        //    List<Color> Palette = new List<Color>();
+        //    foreach (Color c in this.Palette.Entries)
+        //    {
+        //        Palette.Add(c);
+        //    }
 
-                    try
-                    {
-                        pixel = Convert.ToByte(stream.ReadByte());
-                        this.FrameRawData[bytesRead] = pixel;
-                        bytesRead++;
-                    }
-                    catch { return; /*got -1 for EOF*/ }
+        //    //BuildBitmap8bppIndexed() may be called to save the 
+        //    //current image before making changes. So we build  
+        //    //a 32-bit BMP with current FrameData so it can be used 
+        //    //below and to build this SPR to return to the caller. 
+        //    if (this.ImageBmp == null)
+        //        BuildBitmapFromSpr();
 
-                    if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
-                    {
-                        this.FrameBmpData[this.Width * y + x] = pixel;
-                    }
-                    else if (pixel == 0xf8)//MANY_TRANSPARENT_CODE)
-                    {
-                        pixel = Convert.ToByte(stream.ReadByte());
-                        pixelsToSkip = pixel - 1;
-                        this.FrameRawData[bytesRead] = pixel;
-                        bytesRead++;
-                    }
-                    else //f9,fa,fb,fc,fd,fe,ff
-                    {
-                        pixelsToSkip = 256 - pixel - 1;	// skip (neg al) pixels
-                    }
-                }//end inner for
-            }//end outer for
+        //    //the below is pretty much the same as SetPixel() but reversed(ish)
+        //    for (int y = 0; y < this.ImageBmp.Height; ++y)
+        //    {
+        //        for (int x = 0; x < this.ImageBmp.Width; ++x)
+        //        {
+        //            Color pixel = this.ImageBmp.GetPixel(x, y);
+        //            var pixARGB = pixel.ToArgb();
+        //            palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(pixARGB)));
 
-            Array.Resize<byte>(ref this._frameRawData, bytesRead);
+        //            if (palColorByte > 0xf8) //0xf9 - 0xff are transparent
+        //                transparentByteCount++;
 
-        }
-        public Bitmap BuildBitmapFromSpr()
-        {
-            int idx;
-            Bitmap bmp = new Bitmap(this.Width, this.Height);
-            FastBitmap fbmp = new FastBitmap(bmp);
-            fbmp.LockImage();
+        //            // Once we hit a non-zero pixel, we need to write out the transparent pixel marker
+        //            // and the count of transparent pixels. We then write out the current non-zero pixel.
+        //            // The second expression after || below is to check if we're on the last pixel of the
+        //            // image. If so, and the final pixels were colored, there won't be a next pixel to be 
+        //            // below 0xf8 so we need to write it out anyway.
+        //            bool lastByte = (x == (this.Width - 1) && (y == (this.Height - 1)));
 
-            for (int y = 0; y < this.Height; y++)
-            {
-                for (int x = 0; x < this.Width; x++)
-                {
-                    idx = FrameBmpData[y * this.Width + x];
-                    Color pixel = this.Palette.Entries[idx];
-                    fbmp.SetPixel(x, y, pixel);
-                }
-            }
-            fbmp.UnlockImage();
-            Color transparentByte = Color.FromArgb(0xff);
-            bmp.MakeTransparent(transparentByte);
-            this.ImageBmp = bmp;
-
-            return this.ImageBmp;
-        }
-
-        /// <summary>
-        /// Supplies an SPR-formatted version of this frame.
-        /// </summary>
-        /// <returns>Returns a byte array containing the frame data in 7KAA's 
-        /// SPR format: int32 size, int16 width, int16 height, byte[] data.</returns>
-        public byte[] BuildBitmap8bppIndexed()
-        {
-            byte palColorByte;                        
-            byte transparentByte = 0xf8;
-            int transparentByteCount = 0;
-            int realOffset = 8; //since our array offset is unaware of the header
-            byte[] indexedData = new byte[this.PixelSize + 4];
-
-            // todo: will have to recalculate height/width if bitmap size changes
-            byte[] width = BitConverter.GetBytes((short) this.Width);
-            byte[] height = BitConverter.GetBytes((short) this.Height);
-
-            /**************************************************************************
-            *  BitConverter is required, rather than Convert.ToByte(), so we can 
-            *  get the full 16- or 32-bit representations of the values. This is also  
-            *  why Height and Width are both cast to short, to ensure we get a 16-bit
-            *  representation of each value to match the binary's file format of:
-            *  ____________________________________________________________ 
-            *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
-            **************************************************************************/
-            int seek_pos = 4; //first four bytes are for SprSize, at the end of the function
-            Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
-            seek_pos += width.Length;
-            Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
-            seek_pos += height.Length;
-
-            List<Color> Palette = new List<Color>();
-            foreach (Color c in this.Palette.Entries)
-            {
-                Palette.Add(c);
-            }
-
-            //BuildBitmap8bppIndexed() may be called to save the 
-            //current image before making changes. So we build  
-            //a 32-bit BMP with current FrameData so it can be used 
-            //below and to build this SPR to return to the caller. 
-            if (this.ImageBmp == null)
-                BuildBitmapFromSpr();
-
-            //the below is pretty much the same as SetPixel() but reversed(ish)
-            for (int y = 0; y < this.ImageBmp.Height; ++y)
-            {
-                for (int x = 0; x < this.ImageBmp.Width; ++x)
-                {
-                    Color pixel = this.ImageBmp.GetPixel(x, y);
-                    var pixARGB = pixel.ToArgb();
-                    palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(pixARGB)));
-
-                    if (palColorByte > 0xf8) //0xf9 - 0xff are transparent
-                        transparentByteCount++;
-
-                    // Once we hit a non-zero pixel, we need to write out the transparent pixel marker
-                    // and the count of transparent pixels. We then write out the current non-zero pixel.
-                    // The second expression after || below is to check if we're on the last pixel of the
-                    // image. If so, and the final pixels were colored, there won't be a next pixel to be 
-                    // below 0xf8 so we need to write it out anyway.
-                    bool lastByte = (x == (this.Width - 1) && (y == (this.Height - 1)));
-
-                    if (palColorByte <= 0xf8 || lastByte)
-                    { 
-                        if (transparentByteCount > 0)  
-                        {
-                            // Write 0xf8[dd] where [dd] is transparent byte count, unless the
-                            // number of transparent bytes is 6 or less, then just use the other
-                            // codes below. Seems like the devs were pretty ruthless in trying to 
-                            // save disk space back in 1997.
-                            if (transparentByteCount > 7) 
-                            { 
-                                indexedData[realOffset] = transparentByte;
-                                realOffset++;
-                                indexedData[realOffset] = Convert.ToByte(transparentByteCount);
-                                realOffset++;
-                                transparentByteCount = 0;
-                            }
-                            else
-                            {
-                                //less than 8 and 7kaa cuts down on file size by just writing one byte      
-                                //transparentByteCount = 2: 0xfe
-                                //transparentByteCount = 3: 0xfd
-                                //transparentByteCount = 4: 0xfc
-                                //transparentByteCount = 5: 0xfb
-                                //transparentByteCount = 6: 0xfa
-                                //transparentByteCount = 7: 0xf9
-                                indexedData[realOffset] = Convert.ToByte(0xff - (transparentByteCount - 1));
-                                realOffset++;
-                                transparentByteCount = 0;
-                            }
-                        }
+        //            if (palColorByte <= 0xf8 || lastByte)
+        //            { 
+        //                if (transparentByteCount > 0)  
+        //                {
+        //                    // Write 0xf8[dd] where [dd] is transparent byte count, unless the
+        //                    // number of transparent bytes is 6 or less, then just use the other
+        //                    // codes below. Seems like the devs were pretty ruthless in trying to 
+        //                    // save disk space back in 1997.
+        //                    if (transparentByteCount > 7) 
+        //                    { 
+        //                        indexedData[realOffset] = transparentByte;
+        //                        realOffset++;
+        //                        indexedData[realOffset] = Convert.ToByte(transparentByteCount);
+        //                        realOffset++;
+        //                        transparentByteCount = 0;
+        //                    }
+        //                    else
+        //                    {
+        //                        //less than 8 and 7kaa cuts down on file size by just writing one byte      
+        //                        //transparentByteCount = 2: 0xfe
+        //                        //transparentByteCount = 3: 0xfd
+        //                        //transparentByteCount = 4: 0xfc
+        //                        //transparentByteCount = 5: 0xfb
+        //                        //transparentByteCount = 6: 0xfa
+        //                        //transparentByteCount = 7: 0xf9
+        //                        indexedData[realOffset] = Convert.ToByte(0xff - (transparentByteCount - 1));
+        //                        realOffset++;
+        //                        transparentByteCount = 0;
+        //                    }
+        //                }
                         
-                        //there is no other byte to write out
-                        if (!lastByte)
-                        {
-                            indexedData[realOffset] = palColorByte;
-                            realOffset++;
-                        }
-                    }
-                }//end inner for
-            }//end outer for
+        //                //there is no other byte to write out
+        //                if (!lastByte)
+        //                {
+        //                    indexedData[realOffset] = palColorByte;
+        //                    realOffset++;
+        //                }
+        //            }
+        //        }//end inner for
+        //    }//end outer for
 
-            //this.SprFrameRawDataSize = realOffset - 4;
-            byte[] size = BitConverter.GetBytes(realOffset - 4); //subtract four because int32 size does not count the int32
-            if (size.Length > 4) throw new Exception("SPR size must be Int32!");
-            Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
+        //    //this.SprFrameRawDataSize = realOffset - 4;
+        //    byte[] size = BitConverter.GetBytes(realOffset - 4); //subtract four because int32 size does not count the int32
+        //    if (size.Length > 4) throw new Exception("SPR size must be Int32!");
+        //    Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
 
-            //Since FrameData is set to ((Width * Height) + 4), its length will
-            //be based on the real pixels, not the "compressed" length with
-            //the transparent pixels. This makes it impossible to calculate the
-            //offsets of the next frames in the sprite to build a new game set.
+        //    //Since FrameData is set to ((Width * Height) + 4), its length will
+        //    //be based on the real pixels, not the "compressed" length with
+        //    //the transparent pixels. This makes it impossible to calculate the
+        //    //offsets of the next frames in the sprite to build a new game set.
             
-            Array.Resize<byte>(ref indexedData, realOffset);
-            this.FrameRawData = indexedData;
+        //    Array.Resize<byte>(ref indexedData, realOffset);
+        //    this.FrameRawData = indexedData;
 
-            return this.FrameRawData;
-            //return indexedData;
-        }
+        //    return this.FrameRawData;
+        //    //return indexedData;
+        //}
 
         /// <summary>
         /// Saves the new 32-bit BMP and generates new SPR data based on the edited <see cref="Bitmap"/>
@@ -427,8 +370,10 @@ namespace SkaaGameDataLib
         {
             this.ImageBmp = bmp;
             this.PendingChanges = true;
-            this.FrameRawData = BuildBitmap8bppIndexed();
+            
+            this.FrameRawData = SprDataHandlers.FrameBmpToSpr(this, bmp.Palette);
             OnFrameUpdated(EventArgs.Empty);
         }
     }
+    
 }

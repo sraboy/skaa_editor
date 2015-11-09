@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameDataHandlers.cs" />
+    <Compile Include="PaletteResource.cs" />
     <Compile Include="DatabaseContainer.cs" />
     <Compile Include="DbaseIIIDataColumn.cs">
       <SubType>Component</SubType>
@@ -57,6 +59,7 @@
     </Compile>
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteFrame.cs" />
+    <Compile Include="SpriteResource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

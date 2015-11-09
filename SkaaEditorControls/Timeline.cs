@@ -172,8 +172,7 @@ namespace SkaaEditorControls
 
         private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
         {
-            //if (this.ActiveSprite != null && this.ActiveSprite.Frames.Count > 0)
-            //    this.ActiveFrame = this.ActiveSprite.Frames[0];
+            this.frameSlider.Maximum = this.ActiveSprite.Frames.Count - 1;
         }
 
         private void TimelineControl_ActiveFrameChanged(object sender, EventArgs e)
@@ -183,14 +182,14 @@ namespace SkaaEditorControls
             this.frameSlider.Value = this._activeFrameIndex;
         }
 
-        public void SetMaxFrames(int frameCount)
-        {
-            this.frameSlider.Maximum = frameCount;
-        }
-        public int GetMaxFrames(int frameCount)
-        {
-            return this.frameSlider.Maximum;
-        }
+        //private void SetMaxFrames(int frameCount)
+        //{
+        //    this.frameSlider.Maximum = frameCount;
+        //}
+        //public int GetMaxFrames(int frameCount)
+        //{
+        //    return this.frameSlider.Maximum;
+        //}
         public void SetSliderEnable(bool enabled = true)
         {
             this.frameSlider.Enabled = enabled;

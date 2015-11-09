@@ -39,35 +39,8 @@ namespace SkaaGameDataLib
     [Serializable]
     public class Sprite
     {
+        #region Event Handlers
         [NonSerialized]
-        private ColorPalette _pallet;
-        [NonSerialized]
-        private byte[] _sprData;
-
-        [field: NonSerialized]
-        private EventHandler _paletteUpdated;
-        public event EventHandler PaletteUpdated
-        {
-            add
-            {
-                if (_paletteUpdated == null || !_paletteUpdated.GetInvocationList().Contains(value))
-                {
-                    _paletteUpdated += value;
-                }
-            }
-            remove
-            {
-                _paletteUpdated -= value;
-            }
-        }
-        protected virtual void OnPaletteUpdated(EventArgs e)
-        {
-            EventHandler handler = _paletteUpdated;
-
-            if (handler != null)
-                handler(this, e);
-        }
-        [field: NonSerialized]
         private EventHandler _spriteUpdated;
         public event EventHandler SpriteUpdated
         {
@@ -92,147 +65,72 @@ namespace SkaaGameDataLib
                 handler(this, e);
             }
         }
+        #endregion
 
-        public ColorPalette Palette
+        #region Private Members
+        private List<SpriteFrame> _frames;
+        private string _spriteId;
+        private SpriteResource _resource;
+        #endregion
+        
+        #region Public Properties
+        public List<SpriteFrame> Frames
         {
             get
             {
-                return this._pallet;
+                return this._frames;
             }
             set
             {
-                if(this._pallet != value)
+                if(this._frames != value)
                 {
-                    this._pallet = value;
-                    OnPaletteUpdated(EventArgs.Empty);
+                    this._frames = value;
                 }
             }
         }
-        public List<SpriteFrame> Frames
-        {
-            get;
-            set;
-        }
-        public DataView SpriteDataView;
         public string SpriteId
         {
-            get;
-            set;
+            get
+            {
+                return this._spriteId;
+            }
+            set
+            {
+                if (this._spriteId != value)
+                {
+                    this._spriteId = value;
+                }
+            }
         }
-        public bool PendingChanges;
+        public SpriteResource Resource
+        {
+            get
+            {
+                return this._resource;
+            }
+            set
+            {
+                if (this._resource != value)
+                {
+                    this._resource = value;
+                }
+            }
+        }
+        #endregion
+        //public bool PendingChanges;
 
         #region Constructors
-        /// <summary>
-        /// A default constructor which performs no initialization or setup except an internal event subscription <see cref="PaletteUpdated"/>
-        /// </summary>
-        public Sprite()
-        {
-            this.PaletteUpdated += Sprite_PaletteUpdated;
-        }
-        /// <summary>
-        /// Creates a new Sprite object with the specified ColorPalette and instantiates an empty List of SpriteFrames in <see cref="Frames"/>.
-        /// </summary>
-        /// <param name="pal">The palette to use for this sprite. Accessible via <see cref="Palette"/></param>
         public Sprite(ColorPalette pal)
         {
-            this.PaletteUpdated += Sprite_PaletteUpdated;
-            this.Palette = pal;
             this.Frames = new List<SpriteFrame>();
-            this.PendingChanges = true;
+            this.Resource = new SpriteResource(pal);
         }
         #endregion
 
-        public SpriteFrame AddFrame(SpriteFrame sf)
+        public bool SetSpriteDataView(DataView dv)
         {
-            this.Frames.Add(sf);
-            //sf.FrameUpdated += SpriteFrameUpdated;
-            return sf;
+            this.Resource.SpriteDataView = dv;
+            return this.Resource.MatchFrameOffsets(this);
         }
-        /// <summary>
-        /// Builds a 7KAA-formatted SPR containing all of this sprite's frames
-        /// </summary>
-        /// <returns>A byte array containing the SPR data that can be written directly to a file</returns>
-        public byte[] BuildSpr()
-        {
-            if (this.PendingChanges)
-            {
-                List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
-                int initSize = 0;
-
-                for (int i = 0; i < this.Frames.Count; i++)
-                {
-                    SpriteFrame sf = this.Frames[i];
-                    SpriteFrameDataArrays.Add(sf.BuildBitmap8bppIndexed());
-
-                    initSize += sf.FrameRawData.Length;
-                }
-
-                //convert the List<byte[]> to a byte[]
-                int lastSize = 0;
-                byte[] newSprData = new byte[initSize];
-
-                foreach (byte[] b in SpriteFrameDataArrays)
-                {
-                    Buffer.BlockCopy(b, 0, newSprData, lastSize, b.Length);
-                    lastSize += b.Length;
-                }
-
-                this._sprData = newSprData;
-                this.PendingChanges = false;
-            }
-
-            return this._sprData;
-        }
-        /// <summary>
-        /// Iterates through all the rows in this <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
-        /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRows"/>
-        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.SprBitmapOffset"/>.
-        /// </summary>
-        public void MatchFrameOffsets()
-        {
-            foreach (DataRowView drv in this.SpriteDataView)
-            {
-                int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
-                SpriteFrame sf = this.Frames.Find(f => f.SprBitmapOffset == offset);
-                
-                if(sf == null)
-                    throw new Exception(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.\n\nDid you forget to load the proper SET file for this sprite?", this.SpriteId, offset.ToString()));
-
-                if (sf != null)
-                    sf.GameSetDataRows.Add(drv.Row);
-            }
-        }
-        public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
-        {
-            frameToUpdate.ProcessUpdates(bmpWithChanges);
-
-            int offset = 0;
-            for(int i = 0; i < this.Frames.Count; i++)
-            {
-                SpriteFrame sf = this.Frames[i];
-
-                offset += sf.FrameRawData.Length;
-
-                if (i < this.Frames.Count - 1)
-                { 
-                    if(this.Frames[i + 1].SprBitmapOffset != offset)
-                    { 
-                        this.Frames[i + 1].SprBitmapOffset = offset;
-                        this.PendingChanges = true;
-
-                        foreach (DataRow dr in this.Frames[i + 1].GameSetDataRows)
-                        { 
-                            dr.BeginEdit();
-                            dr[9] = offset.ToString();
-                            dr.AcceptChanges(); //calls EndEdit() implicitly
-                        }
-                    }
-                }
-            }
-
-            this._sprData = BuildSpr();
-            OnSpriteUpdated(EventArgs.Empty);
-        }
-        private void Sprite_PaletteUpdated(object sender, EventArgs e) { }
     }
 }
