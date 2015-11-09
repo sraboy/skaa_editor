@@ -15,26 +15,6 @@ using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
-    /// <summary>
-    /// Used to encapsulate a <see cref="ColorPalette"/>, its name and the <see cref="MemoryStream"/> 
-    /// containing the raw RES file data.
-    /// </summary>
-    public class PaletteResource
-    {
-        public string FileName;
-        public MemoryStream ResMemoryStream;
-        public ColorPalette ColorPaletteObject;
-    }
-    /// <summary>
-    /// Used to encapsulate a <see cref="Sprite"/>, its name and the <see cref="MemoryStream"/> 
-    /// containing the raw SPR file data.
-    /// </summary>
-    public class SpriteResource
-    {
-        public string FileName;
-        public MemoryStream SprMemoryStream;
-        public Sprite SpriteObject;
-    }
     public static class Serialization
     {
         internal static Stream Serialize(object o)

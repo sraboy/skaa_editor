@@ -47,7 +47,7 @@ namespace SkaaEditorUI
 {
     public partial class SkaaEditorMainForm : Form
     {
-        private Properties.Settings props = Properties.Settings.Default;
+        //todo: change all exceptions to Error()
 
         #region Debugging
 #if DEBUG
@@ -57,7 +57,7 @@ namespace SkaaEditorUI
             public string MethodName;
             public object Arg;
         }
-        private List<string> DebugActions;
+        //private List<string> DebugActions;
 #endif
         /*
          * Keep methods outside the #if so we don't have to remove calls 
@@ -200,8 +200,8 @@ namespace SkaaEditorUI
         #region Private Members
         private Project _activeProject;
         //todo: add Debug logging throughout
-        //todo: Move all error handling to Error()
         private TextWriterTraceListener _debugTxtWriter;
+        private Properties.Settings props = Properties.Settings.Default;
         #endregion
 
         public Project ActiveProject
@@ -219,6 +219,7 @@ namespace SkaaEditorUI
                 }
             }
         }
+
 
         /////////////////////////////////// Setup //////////////////////////////////////////
         public SkaaEditorMainForm()
