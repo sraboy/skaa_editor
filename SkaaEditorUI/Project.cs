@@ -270,8 +270,6 @@ namespace SkaaEditorUI
                     sf.ImageBmp = SprDataHandlers.FrameSprToBmp(sf, this.ActivePalette);
                     spr.Frames.Add(sf);
                 }
-
-                //this.ActiveSprite = spr; //this ends up firing the event too early. return the spr instead.
             }
 
             spr.Resource.FileName = Path.GetFileName(filepath);
@@ -279,7 +277,6 @@ namespace SkaaEditorUI
             DataView dv = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
             spr.SetSpriteDataView(dv);
             this.ActiveSprite = spr;
-            //this.OnActiveSpriteChanged(EventArgs.Empty);
         }
 
         /// <summary>
@@ -306,35 +303,5 @@ namespace SkaaEditorUI
         {
             return ProjectZipper.LoadZipProject(filePath);
         }
-       
-        //public void UpdateGameSet(string tableName)
-        //{
-            ////making sure all our frames get any new offsets
-            //if (this.ActiveSprite != null)
-            //{
-            //    this.ActiveSprite.BuildSPR();
-
-            //    foreach (SpriteFrame sf in this.ActiveSprite.Frames)
-            //    {
-            //        //it's got a new offset
-            //        if (sf.NewSprBitmapOffset != sf.SprBitmapOffset)
-            //        {
-            //            sf.GameSetDataRow.BeginEdit();
-            //            sf.GameSetDataRow[9] = sf.NewSprBitmapOffset.ToString();
-            //            sf.GameSetDataRow.AcceptChanges();
-            //            sf.SprBitmapOffset = sf.NewSprBitmapOffset;
-            //            sf.NewSprBitmapOffset = 0;
-            //        }
-            //    }
-            //}
-            //this.ActiveSprite.SpriteDataView = this.ActiveGameSet.GetSpriteDataView(this.ActiveSprite.SpriteId);
-            //this.ActiveGameSet.SaveGameSet();
-        //}
-
-        //public void UpdateSprite(SpriteFrame sf, Bitmap bmp)
-        //{
-        //    this.ActiveSprite.Resource.ProcessUpdates(sf, bmp);
-        //    //return true;
-        //}
     }
 }

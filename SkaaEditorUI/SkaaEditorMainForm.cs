@@ -231,7 +231,6 @@ namespace SkaaEditorUI
             }
         }
 
-
         /////////////////////////////////// Setup //////////////////////////////////////////
         public SkaaEditorMainForm()
         {
@@ -395,7 +394,6 @@ namespace SkaaEditorUI
                     this.exportBmpToolStripMenuItem.Enabled = true;
                     this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                     this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-                    //this.timelineControl.SetMaxFrames(this.ActiveProject.ActiveSpriteResource.SpriteObject.Frames.Count - 1); //-1 for 0-index
                 }
             }
         }
@@ -552,11 +550,6 @@ namespace SkaaEditorUI
             this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
             //this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
         }
-        //private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
-        //{
-        //    //this.ActiveProject.ActiveSpriteResource = this.timelineControl.ActiveSprite;
-        //    //timelineControl.ActiveFrame gets changed by ActiveProject_ActiveSpriteChanged()
-        //}
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
             //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
@@ -617,10 +610,6 @@ namespace SkaaEditorUI
             //}
             //SetupUI(); //called by imageEditorBox_ImageChanged()
         }
-        //private void skaaColorChooser_ActiveColorChanged(object sender, EventArgs e)
-        //{
-        //    this.imageEditorBox.ActiveColor = (e as ActiveColorChangedEventArgs).NewColor;
-        //}
         private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DataRow selection;
@@ -709,7 +698,6 @@ namespace SkaaEditorUI
                 }
             }
         }
-
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Trace.WriteLine($"MainForm closed. Reason: {e.CloseReason}");
@@ -719,7 +707,6 @@ namespace SkaaEditorUI
             Trace.WriteLine($"Temp directory wiped: {props.TempDirectory}");
 #endif
         }
-
 
         #region Old Menu Items
 
