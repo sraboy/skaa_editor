@@ -60,8 +60,10 @@ namespace SkaaEditorUI
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -106,10 +108,8 @@ namespace SkaaEditorUI
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
-            this.openGameSetToolStripMenuItem,
-            this.openSpriteToolStripMenuItem,
-            this.saveSpriteToolStripMenuItem,
-            this.saveGameSetToolStripMenuItem,
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
             this.closeProjectToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -121,7 +121,7 @@ namespace SkaaEditorUI
             this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newProjectToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Visible = false;
             // 
@@ -132,45 +132,63 @@ namespace SkaaEditorUI
             this.newProjectToolStripMenuItem.Text = "Project";
             this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openGameSetToolStripMenuItem,
+            this.openSpriteToolStripMenuItem});
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            // 
             // openGameSetToolStripMenuItem
             // 
             this.openGameSetToolStripMenuItem.Name = "openGameSetToolStripMenuItem";
-            this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.openGameSetToolStripMenuItem.Text = "Open Game Set";
+            this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.openGameSetToolStripMenuItem.Text = "Game Set";
             this.openGameSetToolStripMenuItem.Click += new System.EventHandler(this.openGameSetToolStripMenuItem_Click);
             // 
             // openSpriteToolStripMenuItem
             // 
             this.openSpriteToolStripMenuItem.Name = "openSpriteToolStripMenuItem";
-            this.openSpriteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.openSpriteToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.openSpriteToolStripMenuItem.Text = "Open Sprite";
             this.openSpriteToolStripMenuItem.Click += new System.EventHandler(this.openSpriteToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveSpriteToolStripMenuItem,
+            this.saveGameSetToolStripMenuItem});
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Text = "Save";
             // 
             // saveSpriteToolStripMenuItem
             // 
             this.saveSpriteToolStripMenuItem.Name = "saveSpriteToolStripMenuItem";
-            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.saveSpriteToolStripMenuItem.Text = "Save Sprite";
+            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveSpriteToolStripMenuItem.Text = "Sprite";
             this.saveSpriteToolStripMenuItem.Click += new System.EventHandler(this.saveSpriteToolStripMenuItem_Click);
             // 
             // saveGameSetToolStripMenuItem
             // 
             this.saveGameSetToolStripMenuItem.Name = "saveGameSetToolStripMenuItem";
-            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.saveGameSetToolStripMenuItem.Text = "Save Game Set";
+            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveGameSetToolStripMenuItem.Text = "Game Set";
             this.saveGameSetToolStripMenuItem.Click += new System.EventHandler(this.saveGameSetToolStripMenuItem_Click);
             // 
             // closeProjectToolStripMenuItem
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeProjectToolStripMenuItem.Text = "Close Project";
             this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -382,10 +400,6 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
         private MultiColumnComboBox.MultiColumnComboBoxControl cbMultiColumn;
-        private System.Windows.Forms.ToolStripMenuItem openSpriteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openGameSetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportBmpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -394,5 +408,11 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ColorDialog colorDialog1;
         private SkaaColorChooser colorGridChooser;
         private System.Windows.Forms.ListBox lbDebugActions;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openGameSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
     }
 }
