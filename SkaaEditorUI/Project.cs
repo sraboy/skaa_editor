@@ -279,29 +279,37 @@ namespace SkaaEditorUI
             this.ActiveSprite = spr;
         }
 
-        /// <summary>
-        /// Serializes the project with a BinaryFormatter
-        /// </summary>
-        /// <returns>A MemoryStream containing the serialized project data</returns>
-        public Stream SaveProject()
-        {
-            return Serialization.Serialize(this);
-        }
-        public void SaveProject(string filepath)
-        {
+        ///// <summary>
+        ///// Serializes the project with a BinaryFormatter
+        ///// </summary>
+        ///// <returns>A MemoryStream containing the serialized project data</returns>
+        //public Stream SaveProject()
+        //{
+        //    return Serialization.Serialize(this);
+        //}
 
-            //if (filepath == null)
-            //        ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
-            //    else
-            //        ProjectZipper.ZipProject(this, filepath);
-        }
-        public static Project LoadProject(Stream str)
+        public ZipArchive SaveProject()
         {
-            return (Project) Serialization.Deserialize(str);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (ZipArchive arch = new ZipArchive(ms, ZipArchiveMode.Create))
+                {
+                    ZipArchiveEntry spr = arch.CreateEntry("sprite\\" + this.ActiveSprite.SpriteId + ".spr", CompressionLevel.Optimal);
+                    //ZipArchiveEntry set = arch.CreateEntry("resource\\std.set", CompressionLevel.Optimal);
+                    MemoryStream sprStream = spr.Open() as MemoryStream;
+                    sprStream.Write(this.ActiveSprite.Resource.SprData, 0, this.ActiveSprite.Resource.SprData.Length);
+                    sprStream.Close();
+                    return arch;
+                }
+            }
         }
-        public static Project LoadProject(string filePath)
-        {
-            return ProjectZipper.LoadZipProject(filePath);
-        }
+        //public static Project LoadProject(Stream str)
+        //{
+        //    return (Project) Serialization.Deserialize(str);
+        //}
+        //public static Project LoadProject(string filePath)
+        //{
+        //    return ProjectZipper.LoadZipProject(filePath);
+        //}
     }
 }

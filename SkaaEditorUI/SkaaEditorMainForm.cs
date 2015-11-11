@@ -42,6 +42,7 @@ using static SkaaEditorUI.Misc;
 using System.Threading.Tasks;
 using System.Threading;
 using Cyotek.Windows.Forms;
+using System.IO.Compression;
 
 namespace SkaaEditorUI
 {
@@ -86,6 +87,7 @@ namespace SkaaEditorUI
 
             this.lbDebugActions.Items.Add("CopySpriteAndSetToSkaaDirectory");
             this.lbDebugActions.Items.Add("OpenDefaultBallistaSprite");
+            this.lbDebugActions.Items.Add("SaveProject");
         }
         [Conditional("DEBUG")]
         private void CopySpriteAndSetToSkaaDirectory()
@@ -134,7 +136,13 @@ namespace SkaaEditorUI
             this.openSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
             this._debugArgs = null;
         }
-
+        [Conditional("DEBUG")]
+        private void SaveProject()
+        {
+            ProcessSpriteUpdates();
+            ZipArchive arch = 
+            this.ActiveProject.SaveProject();// props.ProjectsDirectory + "test.zip");
+        }
         private void btnDebugAction_Click(object sender, EventArgs e)
         {
             foreach (string debugAction in this.lbDebugActions.SelectedItems)
@@ -739,7 +747,7 @@ namespace SkaaEditorUI
                 dlg.DefaultExt = ".skp";
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    this.ActiveProject = Project.LoadProject(dlg.FileName);
+                    //this.ActiveProject = Project.LoadProject(dlg.FileName);
                     SetupUI();
                 }
             }
