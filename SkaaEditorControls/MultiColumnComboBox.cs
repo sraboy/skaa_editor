@@ -106,6 +106,7 @@ namespace MultiColumnComboBox
 
         private void InitializeColumns()
         {
+            if (DataManager == null) { return; }
             PropertyDescriptorCollection propertyDescriptorCollection = DataManager.GetItemProperties();
 
             columnWidths = new float[propertyDescriptorCollection.Count];
