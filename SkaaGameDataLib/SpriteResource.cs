@@ -212,7 +212,7 @@ namespace SkaaGameDataLib
                 if (sf == null)
                 {
                     //this should only happen when creating new sprites. for now, we'll just log it
-                    Trace.WriteLine(($"Unable to find matching offset in Sprite.Frames for {spr.SpriteId} and offset: {offset.ToString()}. nDid you forget to load the proper SET file for this sprite?");
+                    Trace.WriteLine(($"Unable to find matching offset in Sprite.Frames for {spr.SpriteId} and offset: {offset.ToString()}. nDid you forget to load the proper SET file for this sprite?"));
                     return false;
                 }
 
@@ -239,7 +239,8 @@ namespace SkaaGameDataLib
             {
                 SpriteFrame sf = spr.Frames[i];
                 offset += sf.FrameRawData.Length;
-                Debug.Assert(sf.FrameRawData == null, $"Sprite {sf.ParentSprite.SpriteId}'s SpriteFrame's FrameRawData is null!");
+                Debug.Assert(sf.FrameRawData != null, $"Sprite {sf.ParentSprite.SpriteId}'s SpriteFrame's FrameRawData is null!");
+                
                 //we depend on short-circuit evaluation here.If i isn't less then the Frames.Count - 1, 
                 //we'll end up with an out-of-bounds exception. We can't just test for PendingChanges because
                 //changes in one SpriteFrame will affect offsets in others, not in itself.

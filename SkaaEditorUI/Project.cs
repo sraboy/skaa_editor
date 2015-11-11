@@ -24,6 +24,7 @@ namespace SkaaEditorUI
         private Properties.Settings props = Properties.Settings.Default;
         private SpriteFrame _activeFrame;
         private SkaaGameSet _activeGameSet;
+        private string _projectName;
 
         private PaletteResource _skaaEditorPalette;
         private Sprite _activeSprite;
@@ -167,6 +168,20 @@ namespace SkaaEditorUI
                 }
             }
         }
+        public string ProjectName
+        {
+            get
+            {
+                return this._projectName;
+            }
+            set
+            {
+                if (this._projectName != value)
+                {
+                    this._projectName = value;
+                }
+            }
+        }
         #endregion
 
         /// <summary>
@@ -288,20 +303,22 @@ namespace SkaaEditorUI
         //    return Serialization.Serialize(this);
         //}
 
-        public ZipArchive SaveProject()
+        public void SaveProject()
         {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                using (ZipArchive arch = new ZipArchive(ms, ZipArchiveMode.Create))
-                {
-                    ZipArchiveEntry spr = arch.CreateEntry("sprite\\" + this.ActiveSprite.SpriteId + ".spr", CompressionLevel.Optimal);
-                    //ZipArchiveEntry set = arch.CreateEntry("resource\\std.set", CompressionLevel.Optimal);
-                    MemoryStream sprStream = spr.Open() as MemoryStream;
-                    sprStream.Write(this.ActiveSprite.Resource.SprData, 0, this.ActiveSprite.Resource.SprData.Length);
-                    sprStream.Close();
-                    return arch;
-                }
-            }
+
+
+            //using (MemoryStream ms = new MemoryStream())
+            //{
+            //    using (ZipArchive arch = new ZipArchive(ms, ZipArchiveMode.Create))
+            //    {
+            //        ZipArchiveEntry spr = arch.CreateEntry("sprite\\" + this.ActiveSprite.SpriteId + ".spr", CompressionLevel.Optimal);
+            //        //ZipArchiveEntry set = arch.CreateEntry("resource\\std.set", CompressionLevel.Optimal);
+            //        MemoryStream sprStream = spr.Open() as MemoryStream;
+            //        sprStream.Write(this.ActiveSprite.Resource.SprData, 0, this.ActiveSprite.Resource.SprData.Length);
+            //        sprStream.Close();
+            //        return arch;
+            //    }
+            //}
         }
         //public static Project LoadProject(Stream str)
         //{

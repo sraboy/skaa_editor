@@ -87,7 +87,7 @@ namespace SkaaEditorUI
 
             this.lbDebugActions.Items.Add("CopySpriteAndSetToSkaaDirectory");
             this.lbDebugActions.Items.Add("OpenDefaultBallistaSprite");
-            this.lbDebugActions.Items.Add("SaveProject");
+            this.lbDebugActions.Items.Add("SaveProjectToDateTimeDirectory");
         }
         [Conditional("DEBUG")]
         private void CopySpriteAndSetToSkaaDirectory()
@@ -137,11 +137,17 @@ namespace SkaaEditorUI
             this._debugArgs = null;
         }
         [Conditional("DEBUG")]
-        private void SaveProject()
+        private void SaveProjectToDateTimeDirectory()
         {
             ProcessSpriteUpdates();
-            ZipArchive arch = 
-            this.ActiveProject.SaveProject();// props.ProjectsDirectory + "test.zip");
+            string projectName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHMM");
+            props.ProjectDirectory = props.ProjectsDirectory + projectName;
+
+            if (!Directory.Exists(props.ProjectDirectory))
+                Directory.CreateDirectory(props.ProjectDirectory);
+
+            this.saveSpriteToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
+            this.saveGameSetToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
         }
         private void btnDebugAction_Click(object sender, EventArgs e)
         {
@@ -239,7 +245,7 @@ namespace SkaaEditorUI
             }
         }
 
-        /////////////////////////////////// Setup //////////////////////////////////////////
+        #region Setup Methods
         public SkaaEditorMainForm()
         {
             InitializeComponent();
@@ -269,6 +275,20 @@ namespace SkaaEditorUI
             Directory.CreateDirectory(props.TempDirectory);
 
             ConfigSettingsDebug();
+        }
+        private void SetUpColorGrid()
+        {
+            if (this.ActiveProject == null)
+            {
+                this.colorGridChooser.Enabled = false;
+                //this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
+            }
+            else if (this.ActiveProject.ActivePalette != null)
+            {
+                this.colorGridChooser.Enabled = true;
+                this.colorGridChooser.Colors = new ColorCollection(this.ActiveProject.ActivePalette.Entries.Distinct());
+                this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+            }
         }
         /// <summary>
         /// Sets/Resets various UI settings like menu options, etc.
@@ -372,7 +392,9 @@ namespace SkaaEditorUI
         {
             NewProject(true);
         }
-        /////////////////////////////////// Loading Events //////////////////////////////////////////
+        #endregion
+
+        #region Loading Methods
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.colorGridChooser.Enabled == false)
@@ -434,9 +456,11 @@ namespace SkaaEditorUI
                     ActiveProject.LoadGameSet(dlg.FileName);
                 }
             }
-            
+
         }
-        //////////////////////////////////// Saving Events //////////////////////////////////////////
+        #endregion
+
+        #region Saving Events
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
@@ -444,7 +468,7 @@ namespace SkaaEditorUI
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                dlg.InitialDirectory = props.ProjectsDirectory;
+                dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
                 dlg.DefaultExt = props.SpriteFileExtension;
                 dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
 #if DEBUG
@@ -477,7 +501,7 @@ namespace SkaaEditorUI
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                dlg.InitialDirectory = props.ProjectsDirectory;
+                dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
                 dlg.DefaultExt = props.GameSetFileExtension;
                 dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
 
@@ -508,25 +532,26 @@ namespace SkaaEditorUI
                 }
             }
         }
-        private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.imageEditorBox.Image == null)
-                Error("The SkaaImageBox.Image object cannot be null!");
+            if (this.ActiveProject == null)
+                Error("There is no ActiveProject!");
 
-            using (SaveFileDialog dlg = new SaveFileDialog())
+            using (FolderBrowserDialog dlg = new FolderBrowserDialog())
             {
-                dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = ".bmp";
-                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
-                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
+                dlg.Description = "Choose or create a directory in which to store your new files.";
+                dlg.SelectedPath = props.ProjectsDirectory;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    //updates this frame's ImageBmp based on changes
-                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+                    string projectName = Path.GetDirectoryName(dlg.SelectedPath); //"new_project_" + DateTime.Now.ToString("yyyyMMddHHMM");
+                    props.ProjectDirectory = dlg.SelectedPath;// props.ProjectsDirectory + projectName;
 
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
-                        this.imageEditorBox.Image.Save(fs, ImageFormat.Bmp);
+                    if (!Directory.Exists(props.ProjectDirectory))
+                        Directory.CreateDirectory(props.ProjectDirectory);
+
+                    this.saveSpriteToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
+                    this.saveGameSetToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
                 }
             }
         }
@@ -552,11 +577,12 @@ namespace SkaaEditorUI
                 }
             }
         }
-        /////////////////////////// Update Sprite and Frame ///////////////////////////
+        #endregion
+
+        #region Update Sprite/Frame Methods
         private void ProcessSpriteUpdates()
         {
             this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
-            //this.ActiveProject.UpdateSprite(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
         }
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
@@ -590,7 +616,8 @@ namespace SkaaEditorUI
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
         }
-        ///////////////////////////////////////////////////////////////////////////////    
+        #endregion
+
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -601,6 +628,27 @@ namespace SkaaEditorUI
         {
             this.Close();
         }
+
+        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ActiveProject.ActiveSprite != null)
+            {
+                string msg = "This will close the current sprite. Continue?";
+
+                if (MessageBox.Show(msg, "Wait!", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    this.ActiveProject = null;
+                    NewProject(false);
+                    this.ActiveProject.LoadPalette();
+                    this.cbMultiColumn.DataSource = null;
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+
         private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
         {
             if (this.ActiveProject?.ActivePalette == null)
@@ -663,20 +711,6 @@ namespace SkaaEditorUI
         {
             SetUpColorGrid();
         }
-        private void SetUpColorGrid()
-        {
-            if (this.ActiveProject == null)
-            {
-                this.colorGridChooser.Enabled = false;
-                //this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
-            }
-            else if (this.ActiveProject.ActivePalette != null)
-            {
-                this.colorGridChooser.Enabled = true;
-                this.colorGridChooser.Colors = new ColorCollection(this.ActiveProject.ActivePalette.Entries.Distinct());
-                this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
-            }
-        }
         private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
         {
             this.imageEditorBox.ActiveColor = (sender as ColorGrid).Color;
@@ -686,25 +720,6 @@ namespace SkaaEditorUI
             this.ActiveProject = null;
             this.cbMultiColumn.DataSource = null;
             this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
-        }
-        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (this.ActiveProject.ActiveSprite != null)
-            {
-                string msg = "This will close the current sprite. Continue?";
-
-                if (MessageBox.Show(msg, "Wait!", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    this.ActiveProject = null;
-                    NewProject(false);
-                    this.ActiveProject.LoadPalette();
-                    this.cbMultiColumn.DataSource = null;
-                }
-                else
-                {
-                    return;
-                }
-            }
         }
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -717,22 +732,6 @@ namespace SkaaEditorUI
         }
 
         #region Old Menu Items
-
-        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (this.ActiveProject == null)
-                Error("There is no ActiveProject!");
-
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                dlg.DefaultExt = ".skp";
-                dlg.FileName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHMM") + ".skp";
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    //this.ActiveProject.SaveProject(dlg.FileName);
-                }
-            }
-        }
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //todo: confirm user doesn't want to save the current changes
@@ -815,7 +814,28 @@ namespace SkaaEditorUI
                 }
             }
         }
+        private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.imageEditorBox.Image == null)
+                Error("The SkaaImageBox.Image object cannot be null!");
 
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.DefaultExt = ".bmp";
+                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
+                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    //updates this frame's ImageBmp based on changes
+                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
+                        this.imageEditorBox.Image.Save(fs, ImageFormat.Bmp);
+                }
+            }
+        }
         #endregion
     }
 }
