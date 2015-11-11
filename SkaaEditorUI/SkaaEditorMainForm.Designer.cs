@@ -270,6 +270,7 @@ namespace SkaaEditorUI
             // 
             // btnDebugAction
             // 
+            this.btnDebugAction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDebugAction.AutoSize = true;
             this.btnDebugAction.BackColor = System.Drawing.Color.MistyRose;
             this.btnDebugAction.Location = new System.Drawing.Point(918, 298);
@@ -327,6 +328,7 @@ namespace SkaaEditorUI
             // 
             // lbDebugActions
             // 
+            this.lbDebugActions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lbDebugActions.FormattingEnabled = true;
             this.lbDebugActions.Location = new System.Drawing.Point(893, 327);
             this.lbDebugActions.Name = "lbDebugActions";
