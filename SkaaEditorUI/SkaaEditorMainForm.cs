@@ -310,12 +310,6 @@ namespace SkaaEditorUI
                 this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
                 this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
             }
-            //this.colorGridChooser.ColorChanged += ColorGridChooser_ColorChanged;
-            //this.skaaColorChooser.ActiveColorChanged += skaaColorChooser_ActiveColorChanged;
-            this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
-            //this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
-            this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
-            this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
         }
         private void NewProject(bool loadDefaults)
         {
