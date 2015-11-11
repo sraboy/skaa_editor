@@ -155,7 +155,7 @@
     <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>mkdir $(ProjectDir)$(OutDir)\data
-copy $(ProjectDir)..\other\working\* $(ProjectDir)$(OutDir)\data\</PostBuildEvent>
+    <PostBuildEvent>mkdir "$(ProjectDir)$(OutDir)data"
+copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
