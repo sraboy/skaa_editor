@@ -4,10 +4,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUI", "SkaaEditorUI\SkaaEditorUI.csproj", "{35FE87C7-BA8E-4CB1-9059-D21D91063381}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221} = {FB2A5786-CD2E-42CE-BC5D-0FCE90034221}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorControls", "SkaaEditorControls\SkaaEditorControls.csproj", "{A6836EA4-C3CA-4179-BC90-C6768FCEAD6F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB2A5786-CD2E-42CE-BC5D-0FCE90034221} = {FB2A5786-CD2E-42CE-BC5D-0FCE90034221}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaGameDataLib", "SkaaGameDataLib\SkaaGameDataLib.csproj", "{DA473696-B41A-4C5E-879D-77AE1E12B01D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3816600B-B417-460D-8457-96039058B03E} = {3816600B-B417-460D-8457-96039058B03E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitmapProcessing", "BitmapProcessing\BitmapProcessing.csproj", "{3816600B-B417-460D-8457-96039058B03E}"
 EndProject
