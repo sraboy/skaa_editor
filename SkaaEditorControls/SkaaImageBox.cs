@@ -41,8 +41,9 @@ namespace SkaaEditorControls
     public partial class SkaaImageBox : ImageBox
     {
         #region Private Vars
-        private Boolean _editMode;
-        private Boolean _isDrawing;
+        private bool _editMode;
+        private bool _isDrawing;
+        private bool _panMode;
         private Color _activeColor;
         private Color _skaaTransparentColor;
         private int bmpWidth = 0, bmpHeight = 0;
@@ -60,6 +61,19 @@ namespace SkaaEditorControls
                 {
                     _editMode = value;
                     //this.OnEditModeChanged(EventArgs.Empty);
+                }
+            }
+        }
+        [DefaultValue(false)]
+        [Category("Behavior")]
+        public bool PanMode
+        {
+            get { return _panMode; }
+            set
+            {
+                if (_panMode != value)
+                {
+                    _panMode = value;
                 }
             }
         }
@@ -105,17 +119,34 @@ namespace SkaaEditorControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            PenDraw(e);
-
-            if (!this.Focused)
+            if(this.Image != null)
             {
-                this.Focus();
+                if (this.EditMode == true)
+                {
+                    this.PenDraw(e);
+                    
+                    //if editing, we don't want to call base.OnMouseDown() because
+                    //the control defaults to panning since it wasn't made for editing
+                    if (!this.Focused)
+                    {
+                        this.Focus();
+                    }
+                }
+                else if (this.PanMode)
+                { 
+                    base.OnMouseDown(e);
+                }
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            PenDraw(e);
-            base.OnMouseMove(e);
+            if (this.Image != null)
+            {
+                if (this.EditMode == true)
+                    this.PenDraw(e);
+                else if (this.PanMode == true) //prevents the cursor from turning into the cross-arrows (Cursors.SizeAll)
+                    base.OnMouseMove(e);       //todo: override IsPanning to remove Cursors.SizeAll
+            }
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
@@ -124,13 +155,18 @@ namespace SkaaEditorControls
                 this.IsDrawing = false;
                 OnImageUpdated(null);
             }
+            
+
             base.OnMouseUp(e);
         }
 
         private void PenDraw(MouseEventArgs e)
         {
-            if (this.EditMode == true && this.Image != null)
-            {
+            //sraboy-11Nov15-moved this check to calling functions
+            //so we're not needlessly entering a new function now that
+            //we're adding a PanTool
+            //if (this.EditMode == true && this.Image != null)
+            //{
                 this.IsDrawing = true;
                 this.IsSelecting = false;
                 this.IsPanning = false;
@@ -142,6 +178,7 @@ namespace SkaaEditorControls
                 {
                     if (e.Button == MouseButtons.Left)
                     {
+                        //replaced slow SetPixel with FastBitmap from BitmapProcessing lib
                         fbmp.LockImage();
                         fbmp.SetPixel(currentPixel.X, currentPixel.Y, this.ActiveColor);
                         fbmp.UnlockImage();
@@ -149,6 +186,7 @@ namespace SkaaEditorControls
                     }
                     if (e.Button == MouseButtons.Right)
                     {
+                        //replaced slow SetPixel with FastBitmap from BitmapProcessing lib
                         fbmp.LockImage();
                         fbmp.SetPixel(currentPixel.X, currentPixel.Y, this._skaaTransparentColor);
                         fbmp.UnlockImage();
@@ -158,7 +196,7 @@ namespace SkaaEditorControls
                     this.Invalidate(this.ViewPortRectangle);
                     //this.Update();
                 }
-            }
+            //}
         }
 
         public SkaaImageBox() : base()

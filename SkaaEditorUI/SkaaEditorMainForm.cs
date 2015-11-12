@@ -276,7 +276,6 @@ namespace SkaaEditorUI
 
             //need to adjust our actions based on the tool selected
             this.drawingToolbox.SelectedToolChanged += DrawingToolbox_SelectedToolChanged;
-            
 
             ConfigSettings();
             NewProject();
@@ -289,24 +288,27 @@ namespace SkaaEditorUI
 
             switch(this._selectedTool)
             {
-                case DrawingTools.PaintBucket:
+                case DrawingTools.PaintBucket: //todo: need to detect this and fill, not just pencil draw
+                    break;
                 case DrawingTools.Pencil:
+                    this.imageEditorBox.PanMode = false;
                     this.imageEditorBox.EditMode = true;
                     break;
                 case DrawingTools.Pan:
                     this.imageEditorBox.EditMode = false;
-                    
+                    this.imageEditorBox.PanMode = true;
                     break;
                 case DrawingTools.None:
+                    this.imageEditorBox.PanMode = false;
                     this.imageEditorBox.EditMode = false;
                     this.imageEditorBox.Focus(); //prevents the button from remaining highlighted due to focus
                     break;
                 default:
-                    Trace.WriteLine($"Unknown tool selected: {this._selectedTool.ToString()}");
                     this.imageEditorBox.EditMode = false;
+                    this.imageEditorBox.PanMode = false;
+                    Trace.WriteLine($"Unknown tool selected: {this._selectedTool.ToString()}");
                     break;
             }
-            
         }
     
         /// <summary>
