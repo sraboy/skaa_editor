@@ -1,7 +1,6 @@
-﻿/***************************************************************************
-*   This file is part of SkaaEditor, a binary file editor for 7KAA.
-*
-*   Copyright (C) 2015  Steven Lavoie  steven.lavoiejr@gmail.com
+﻿#region Copyright Notice
+/***************************************************************************
+*   Copyright (C) 2015 Steven Lavoie  steven.lavoiejr@gmail.com
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -22,6 +21,7 @@
 *  	is licensed under GPLv3, including any code from Enlight Software. For
 *  	information on 7KAA, visit http://www.7kfans.com.
 ***************************************************************************/
+#endregion
 
 using System;
 using System.Collections.Generic;

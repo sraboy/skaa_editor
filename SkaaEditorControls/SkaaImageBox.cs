@@ -1,12 +1,6 @@
-﻿/***************************************************************************
-*   This file is part of SkaaEditor, a binary file editor for 7KAA.
-*
-*   Copyright (C) 2015  Steven Lavoie  steven.lavoiejr@gmail.com
-*
-*   Much thanks to the creators of the base class, Cyotek Ltd. The ImageBox
-*   class is licensed under the MIT License. You may find more information
-*   here: http://www.cyotek.com/blog/imagebox-1-1-4-0-update and
-*   here: https://github.com/cyotek/Cyotek.Windows.Forms.ImageBox.
+﻿#region Copyright Notice
+/***************************************************************************
+*   Copyright (C) 2015 Steven Lavoie  steven.lavoiejr@gmail.com
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -27,7 +21,7 @@
 *  	is licensed under GPLv3, including any code from Enlight Software. For
 *  	information on 7KAA, visit http://www.7kfans.com.
 ***************************************************************************/
-
+#endregion
 
 using System;
 using System.Collections.Generic;

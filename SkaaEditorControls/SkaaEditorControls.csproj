@@ -74,12 +74,6 @@
       <DependentUpon>DrawingToolbox.cs</DependentUpon>
     </Compile>
     <Compile Include="DrawingToolSelectedEventArgs.cs" />
-    <Compile Include="MultiColumnComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MultiColumnComboBox.Designer.cs">
-      <DependentUpon>MultiColumnComboBox.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -134,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="SkaaEditorControls.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\HandToolIcon.png" />
