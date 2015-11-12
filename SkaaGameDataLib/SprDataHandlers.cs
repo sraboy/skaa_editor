@@ -79,18 +79,23 @@ namespace SkaaGameDataLib
                 for (int x = 0; x < sf.ImageBmp.Width; ++x)
                 {
                     Color pixel = sf.ImageBmp.GetPixel(x, y);
-                    var pixARGB = pixel.ToArgb();
-
                     
-                        Color fromArgb = Color.FromArgb(pixARGB);
-                        int idx = Palette.FindIndex(c => c == fromArgb);
+                    int pixARGB = pixel.ToArgb();
+                    //Color fromArgb = Color.FromArgb(pixARGB);
+                    int idx = Palette.FindIndex(c => c == pixel);
 
-                        Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | fromArgb = {fromArgb.ToString()} | idx = {idx.ToString()}");
+                    foreach(Color c in Palette)
+                    {
+                        Debug.WriteLine($"Color c = {c.ToString()} | {{A = {c.A}}} {{R = {c.R}}} {{G = {c.G}}} {{B = {c.B}}} ");
+                    }
 
-                        if (idx == -1)
-                        {
-                            Debugger.Break();
-                        }
+                    //Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | fromArgb = {fromArgb.ToString()} | idx = {idx.ToString()}");
+                    Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | idx = {idx.ToString()}");
+
+                    if (idx == -1)
+                    {
+                        Debugger.Break();
+                    }
 
                     //allows us to see the exception's message from the SaveProjectToDateTimeDirectory() Invoke in SkaaEditorMainForm.cs
                     try
@@ -145,7 +150,7 @@ namespace SkaaGameDataLib
                         //there is no other byte to write out
                         if (!lastByte)
                         {
-                            indexedData[realOffset] = palColorByte;
+                            indexedData[realOffset] = (byte) palColorByte; //have to cast to non-nullable byte
                             realOffset++;
                         }
                     }
