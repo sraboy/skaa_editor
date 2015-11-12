@@ -46,7 +46,7 @@ namespace SkaaEditorControls
 {
     public partial class SkaaImageBox : ImageBox
     {
-         #region Private Vars
+        #region Private Vars
         private Boolean _editMode;
         private Boolean _isDrawing;
         private Color _activeColor;
@@ -82,7 +82,7 @@ namespace SkaaEditorControls
                 }
             }
         }
-        public bool IsDrawing
+        private bool IsDrawing
         {
             get
             {
@@ -169,6 +169,7 @@ namespace SkaaEditorControls
 
         public SkaaImageBox() : base()
         {
+            this._isDrawing = false;
             this._skaaTransparentColor = Color.FromArgb(0);
             this.ImageChanged += SkaaImageBox_ImageChanged;
         }

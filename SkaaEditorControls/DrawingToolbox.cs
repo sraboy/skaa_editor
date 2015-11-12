@@ -40,7 +40,7 @@ namespace SkaaEditorControls
             }
         }
 
-        private DrawingTools _selectedTool;
+        private DrawingTools _selectedTool = DrawingTools.None;
         public DrawingTools SelectedTool
         {
             get
@@ -78,6 +78,7 @@ namespace SkaaEditorControls
         public DrawingToolbox()
         {
             InitializeComponent();
+            this._selectedTool = DrawingTools.None;
             this._panToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PanToolCursor.cur"));
             this._pencilToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PencilToolCursor.cur"));
             this._paintBucketToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PaintBucketToolCursor.cur"));
@@ -95,6 +96,7 @@ namespace SkaaEditorControls
             else
             {
                 this.ToolCursor = null;
+                this.SelectedTool = DrawingTools.None;
             }
 
             ToggleCheckBoxes(sender);
@@ -106,12 +108,13 @@ namespace SkaaEditorControls
             {
                 //var resourceStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PencilToolCursor.cur"));
                 this.ToolCursor = new Cursor(this._pencilToolCursorStream);
-                this.SelectedTool = DrawingTools.Fill;
+                this.SelectedTool = DrawingTools.Pencil;
                 this._pencilToolCursorStream.Position = 0;
             }
             else
             {
                 this.ToolCursor = null;
+                this.SelectedTool = DrawingTools.None;
             }
 
             ToggleCheckBoxes(sender);
@@ -123,12 +126,13 @@ namespace SkaaEditorControls
             { 
                 //var resourceStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PaintBucketToolCursor.cur"));
                 this.ToolCursor = new Cursor(this._paintBucketToolCursorStream);
-                this.SelectedTool = DrawingTools.Fill;
+                this.SelectedTool = DrawingTools.PaintBucket;
                 this._paintBucketToolCursorStream.Position = 0;
             }
             else
             {
                 this.ToolCursor = null;
+                this.SelectedTool = DrawingTools.None;
             }
 
             ToggleCheckBoxes(sender);
@@ -140,7 +144,8 @@ namespace SkaaEditorControls
 
             foreach(CheckBox c in this.Controls)
             {
-                c.Checked = c.Name == cb.Name ? true : false;
+                //don't change the sender, set others to false
+                c.Checked = c.Name == cb.Name ? c.Checked : false;
             }
         }
     }

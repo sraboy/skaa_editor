@@ -8,8 +8,9 @@ namespace SkaaEditorControls
 {
     public enum DrawingTools
     {
+        None,
         Pan,
         Pencil,
-        Fill
+        PaintBucket
     };
 }
