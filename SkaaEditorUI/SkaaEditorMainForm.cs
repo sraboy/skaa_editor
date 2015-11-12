@@ -296,6 +296,7 @@ namespace SkaaEditorUI
                     break;
                 case DrawingTools.Pan:
                     this.imageEditorBox.EditMode = false;
+                    
                     break;
                 case DrawingTools.None:
                     this.imageEditorBox.EditMode = false;

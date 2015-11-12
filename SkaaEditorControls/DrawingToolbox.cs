@@ -88,7 +88,6 @@ namespace SkaaEditorControls
         {
             if ((sender as CheckBox).Checked == true)
             {
-                //var resourceStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PanToolCursor.cur"));
                 this.ToolCursor = new Cursor(this._panToolCursorStream);
                 this.SelectedTool = DrawingTools.Pan;
                 this._panToolCursorStream.Position = 0;
@@ -106,7 +105,6 @@ namespace SkaaEditorControls
         {
             if ((sender as CheckBox).Checked == true)
             {
-                //var resourceStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PencilToolCursor.cur"));
                 this.ToolCursor = new Cursor(this._pencilToolCursorStream);
                 this.SelectedTool = DrawingTools.Pencil;
                 this._pencilToolCursorStream.Position = 0;
@@ -124,7 +122,6 @@ namespace SkaaEditorControls
         {
             if((sender as CheckBox).Checked == true)
             { 
-                //var resourceStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PaintBucketToolCursor.cur"));
                 this.ToolCursor = new Cursor(this._paintBucketToolCursorStream);
                 this.SelectedTool = DrawingTools.PaintBucket;
                 this._paintBucketToolCursorStream.Position = 0;
