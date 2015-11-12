@@ -229,6 +229,7 @@ namespace SkaaEditorUI
         private DrawingTools _selectedTool;
         #endregion
 
+        #region Properties
         public Project ActiveProject
         {
             get
@@ -244,8 +245,11 @@ namespace SkaaEditorUI
                 }
             }
         }
+        #endregion
 
+        #region Constructors
         public SkaaEditorMainForm() { InitializeComponent(); }
+        #endregion
 
         #region Setup Methods
         protected override void OnLoad(EventArgs e)
@@ -284,18 +288,21 @@ namespace SkaaEditorUI
             this._selectedTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
             this.imageEditorBox.Cursor = this.drawingToolbox.ToolCursor == null ? Cursors.Default : this.drawingToolbox.ToolCursor;
 
-            //todo: needs more testing... still buggy
-
             switch(this._selectedTool)
             {
-                case DrawingTools.Fill:
+                case DrawingTools.PaintBucket:
                 case DrawingTools.Pencil:
                     this.imageEditorBox.EditMode = true;
                     break;
                 case DrawingTools.Pan:
                     this.imageEditorBox.EditMode = false;
                     break;
+                case DrawingTools.None:
+                    this.imageEditorBox.EditMode = false;
+                    this.imageEditorBox.Focus(); //prevents the button from remaining highlighted due to focus
+                    break;
                 default:
+                    Trace.WriteLine($"Unknown tool selected: {this._selectedTool.ToString()}");
                     this.imageEditorBox.EditMode = false;
                     break;
             }
@@ -324,6 +331,7 @@ namespace SkaaEditorUI
 
             ConfigSettingsDebug();
         }
+  
         /// <summary>
         /// Loads <see cref="Project.ActivePalette"/>, if specified, and enables/disables the form's <see cref="SkaaColorChooser"/> object based on whether or not a palette is loaded.
         /// </summary>
@@ -358,6 +366,7 @@ namespace SkaaEditorUI
                 this.colorGridChooser.Enabled = false;
             }
         }
+
         /// <summary>
         /// Sets/Resets various UI settings like menu options, etc.
         /// </summary>
@@ -381,7 +390,7 @@ namespace SkaaEditorUI
             this.timelineControl.Enabled = (this.ActiveProject?.ActiveSprite == null) ? false : true;
 
             //need a sprite to list a sprite's frames
-            this.cbMultiColumn.Enabled = this.cbMultiColumn.DataSource == null ? false : true;
+            //this.cbMultiColumn.Enabled = this.cbMultiColumn.DataSource == null ? false : true;
 
             //some help text until a sprite is loaded
             string help_text =
@@ -414,39 +423,36 @@ namespace SkaaEditorUI
             //    */ //todo: Should this event even be exposed? May cause confusion.
             //}
         }
-        private void PopulateMultiColumnComboBoxSpriteList()
-        {
-            //SFRAME column names:
-            //SPRITE ACTION DIR FRAME OFFSET_X OFFSET_Y WIDTH HEIGHT FILENAME BITMAPPTR
-            this.cbMultiColumn.DrawMode = DrawMode.OwnerDrawVariable;
-            
-            if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
-            {
-                this.cbMultiColumn.Enabled = true;
-           
-                // Have to set the DataSource to null before changing it;
-                // otherwise, it can't actually update.
-                this.cbMultiColumn.DataSource = null;
-                this.cbMultiColumn.DataSource = this.ActiveProject?.ActiveSprite?.Resource?.SpriteDataView;
 
-                this.cbMultiColumn.DisplayMember = "SPRITE";
-                this.cbMultiColumn.ValueMember = "ACTION";
-            }
-            else
-            {
-                this.cbMultiColumn.DataSource = null;
-                this.cbMultiColumn.Enabled = false;
-            }
-
-            // todo: try a GetRow(DataTable dt) to SpriteFrame
-            // it can iterate through the rows and look for 
-            // a matching offset, which needs to be calc'd/stored
-            // from the SPR file during reading. If there's no
-            // match, go through all the others first, then find
-            // the closest one and use that offset difference to 
-            // guess for the user, in case they open a previously
-            // edited sprite without having saved a GameSet.
-        }
+        //private void PopulateMultiColumnComboBoxSpriteList()
+        //{
+        //    //SFRAME column names:
+        //    //SPRITE ACTION DIR FRAME OFFSET_X OFFSET_Y WIDTH HEIGHT FILENAME BITMAPPTR
+        //    this.cbMultiColumn.DrawMode = DrawMode.OwnerDrawVariable;
+        //    if (this.ActiveProject != null && this.ActiveProject.ActiveSprite != null)
+        //    {
+        //        this.cbMultiColumn.Enabled = true;
+        //        // Have to set the DataSource to null before changing it;
+        //        // otherwise, it can't actually update.
+        //        this.cbMultiColumn.DataSource = null;
+        //        this.cbMultiColumn.DataSource = this.ActiveProject?.ActiveSprite?.Resource?.SpriteDataView;
+        //        this.cbMultiColumn.DisplayMember = "SPRITE";
+        //        this.cbMultiColumn.ValueMember = "ACTION";
+        //    }
+        //    else
+        //    {
+        //        this.cbMultiColumn.DataSource = null;
+        //        this.cbMultiColumn.Enabled = false;
+        //    }
+        //    // todo: try a GetRow(DataTable dt) to SpriteFrame
+        //    // it can iterate through the rows and look for 
+        //    // a matching offset, which needs to be calc'd/stored
+        //    // from the SPR file during reading. If there's no
+        //    // match, go through all the others first, then find
+        //    // the closest one and use that offset difference to 
+        //    // guess for the user, in case they open a previously
+        //    // edited sprite without having saved a GameSet.
+        //}
         #endregion
 
         #region Project Management    
@@ -565,7 +571,7 @@ namespace SkaaEditorUI
                 {
                     this.ActiveProject.ActiveSprite = null;
                     this.ActiveProject.ActiveGameSet = null;
-                    this.cbMultiColumn.DataSource = null;
+                    //this.cbMultiColumn.DataSource = null;
                 }
                 else
                 {
@@ -723,7 +729,7 @@ namespace SkaaEditorUI
         }
         private void ActiveSprite_SpriteUpdated(object sender, EventArgs e)
         {
-            PopulateMultiColumnComboBoxSpriteList();
+            //PopulateMultiColumnComboBoxSpriteList();
         }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
@@ -733,7 +739,7 @@ namespace SkaaEditorUI
 
             //since a sprite is loaded
             SetupUI();
-            PopulateMultiColumnComboBoxSpriteList();
+            //PopulateMultiColumnComboBoxSpriteList();
         }
         private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
         {
@@ -762,24 +768,22 @@ namespace SkaaEditorUI
         }
 
  
-        private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            DataRow selection;
-            int? offset = null;
-
-            if (/*this.ActiveProject != null &&*/
-                this.ActiveProject?.ActiveSprite != null)
-            {
-                selection = (this.cbMultiColumn.SelectedItem as DataRowView).Row;
-                offset = Convert.ToInt32(selection[9]);//selection.GetNullableUInt32FromIndex(9);
-                this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames.Find(sf => sf.SprBitmapOffset == offset);
-            }
-
-            if (this.ActiveProject?.ActiveFrame == null)
-            {
-                Error($"Unable to find matching offset in Sprite.Frames for \"{this.ActiveProject.ActiveSprite.SpriteId}\" and offset: {offset.ToString()}.");
-            }
-        }
+        //private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
+        //{
+        //    DataRow selection;
+        //    int? offset = null;
+        //    if (/*this.ActiveProject != null &&*/
+        //        this.ActiveProject?.ActiveSprite != null)
+        //    {
+        //        selection = (this.cbMultiColumn.SelectedItem as DataRowView).Row;
+        //        offset = Convert.ToInt32(selection[9]);//selection.GetNullableUInt32FromIndex(9);
+        //        this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames.Find(sf => sf.SprBitmapOffset == offset);
+        //    }
+        //    if (this.ActiveProject?.ActiveFrame == null)
+        //    {
+        //        Error($"Unable to find matching offset in Sprite.Frames for \"{this.ActiveProject.ActiveSprite.SpriteId}\" and offset: {offset.ToString()}.");
+        //    }
+        //}
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
             SetupUI();

@@ -61,73 +61,52 @@ namespace SkaaEditorUI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For MultiColumnComboBox:
-        ///http://www.codeproject.com/Articles/19781/A-data-bound-multi-column-combobox
-        ///
-        ////********************************************************************************
-        ///* Copyright (c) 2007, Nish Nishant
-        ///* All rights reserved.
-        ///* 
-        ///* Redistribution and use in source and binary forms, with or without 
-        ///* modification, are permitted provided that the following conditions are met:
-        ///* 
-        ///* 1. Redistributions of source code must retain the above copyright notice, 
-        ///*    this list of condition [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static string BSD_2_Clause_License {
+        internal static System.Drawing.Icon logo_modern {
             get {
-                return ResourceManager.GetString("BSD_2_Clause_License", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ********************************************************************************
-        ///
-        ///This license applies to all SkaaEditor and 7KAA content, unless otherwise noted.
-        ///
-        ///********************************************************************************
-        ///
-        ///                    GNU GENERAL PUBLIC LICENSE
-        ///                       Version 3, 29 June 2007
-        ///
-        /// Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
-        /// Everyone is permitted to copy and distribute verbatim copies
-        /// of this license document, bu [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string GPLv3 {
-            get {
-                return ResourceManager.GetString("GPLv3", resourceCulture);
+                object obj = ResourceManager.GetObject("logo_modern", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap logo_modern {
+        internal static System.Drawing.Bitmap MenuFileCloseIcon {
             get {
-                object obj = ResourceManager.GetObject("logo_modern", resourceCulture);
+                object obj = ResourceManager.GetObject("MenuFileCloseIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to *******************************************************************************
-        ///
-        ///This license applies to Cyotek Ltd&apos;s ImageBox which is bundled with SkaaEditor.
-        ///
-        ///*******************************************************************************
-        ///
-        ///The MIT License (MIT)
-        ///
-        ///Copyright © 2013-2015 Cyotek Ltd.
-        ///
-        ///Permission is hereby granted, free of charge, to any person obtaining a copy of
-        ///this software and associated documentation files (the &quot;Software&quot;), to deal in
-        ///the Software without restriction, includi [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string MIT_License {
+        internal static System.Drawing.Bitmap MenuFileNewIcon {
             get {
-                return ResourceManager.GetString("MIT_License", resourceCulture);
+                object obj = ResourceManager.GetObject("MenuFileNewIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MenuFileOpenIcon {
+            get {
+                object obj = ResourceManager.GetObject("MenuFileOpenIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MenuFileSaveIcon {
+            get {
+                object obj = ResourceManager.GetObject("MenuFileSaveIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -138,26 +117,6 @@ namespace SkaaEditorUI.Properties {
             get {
                 object obj = ResourceManager.GetObject("pal_std", resourceCulture);
                 return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon skaa {
-            get {
-                object obj = ResourceManager.GetObject("skaa", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon skaa_modern {
-            get {
-                object obj = ResourceManager.GetObject("skaa_modern", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         

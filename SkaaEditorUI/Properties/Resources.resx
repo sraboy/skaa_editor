@@ -118,28 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="skaa_modern" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\skaa_modern.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="skaa" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\skaa.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="logo_modern" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\logo_modern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="BSD_2_Clause_License" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BSD 2-Clause License.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="GPLv3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GPLv3.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="MIT_License" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\MIT License.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\logo_modern.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pal_std" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pal_std.res;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="std" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\std.set;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MenuFileNewIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MenuFileNewIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MenuFileCloseIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MenuFileCloseIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MenuFileOpenIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MenuFileOpenIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MenuFileSaveIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MenuFileSaveIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

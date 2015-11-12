@@ -116,8 +116,6 @@ namespace SkaaEditorUI
             // 
             // pbLogo
             // 
-            this.pbLogo.Image = global::SkaaEditorUI.Properties.Resources.logo_modern;
-            this.pbLogo.InitialImage = global::SkaaEditorUI.Properties.Resources.logo_modern;
             this.pbLogo.Location = new System.Drawing.Point(12, 12);
             this.pbLogo.Name = "pbLogo";
             this.pbLogo.Size = new System.Drawing.Size(73, 83);

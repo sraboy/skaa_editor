@@ -61,6 +61,11 @@
     </Compile>
     <Compile Include="Misc.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SkaaEditorMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,14 +89,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="SkaaSAVEditorTest.resx">
       <DependentUpon>SkaaSAVEditorTest.cs</DependentUpon>
     </EmbeddedResource>
@@ -106,13 +106,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Resources\std.set" />
+    <EmbeddedResource Include="Resources\std.set" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\pal_std.res" />
-    <None Include="Resources\skaa.ico" />
-    <None Include="Resources\skaa_modern.ico" />
-    <None Include="Resources\logo_modern.png" />
+    <EmbeddedResource Include="Resources\pal_std.res" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ColorPicker\ColorPicker.csproj">
@@ -129,16 +126,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\BSD 2-Clause License.txt" />
+    <EmbeddedResource Include="Resources\logo_modern.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\GPLv3.txt" />
+    <None Include="Resources\MenuFileNewIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\MIT License.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\VCKicks License.txt" />
+    <Content Include="Resources\MenuFileCloseIcon.png" />
+    <Content Include="Resources\MenuFileOpenIcon.png" />
+    <Content Include="Resources\MenuFileSaveIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
