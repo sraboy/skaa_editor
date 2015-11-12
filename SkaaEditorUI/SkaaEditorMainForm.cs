@@ -166,8 +166,6 @@ namespace SkaaEditorUI
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Hue);
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Brightness);
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
-
-            //CopySpriteAndSetToSkaaDirectory();
         }
 
         #endregion
@@ -307,7 +305,12 @@ namespace SkaaEditorUI
 
             if (this.ActiveProject?.ActivePalette != null)
             {
-                this.colorGridChooser.Colors = new ColorCollection(this.ActiveProject.ActivePalette.Entries.Distinct());
+                Color[] entries = this.ActiveProject.ActivePalette.Entries;
+                IEnumerable<Color> distinct = entries.Distinct();
+                //List<Color> test = distinct.ToList();
+                //var x = test.FindAll(c => c.ToArgb() == -201);
+                //this.colorGridChooser.Colors = new ColorCollection(entries.AsEnumerable());
+                this.colorGridChooser.Colors = new ColorCollection(distinct);
                 this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
                 this.colorGridChooser.Enabled = true;
             }
@@ -403,8 +406,7 @@ namespace SkaaEditorUI
         }
         #endregion
 
-        #region Project Management
-        
+        #region Project Management    
         private void NewProject(string paletteFilePath = null, string gameSetFilePath = null)//bool loadDefaults)
         {
             if (this.ActiveProject != null)
@@ -452,7 +454,6 @@ namespace SkaaEditorUI
             ActiveProject.LoadGameSet(setFiles.ElementAt(0));
             ActiveProject.LoadSprite(sprFiles.ElementAt(0));
         }
-
         private void CloseProject()
         {
             /* sraboy-10Nov15
@@ -478,7 +479,6 @@ namespace SkaaEditorUI
             //}
             SetupUI();
         }
-
         #endregion
 
         #region Loading/Opening Events

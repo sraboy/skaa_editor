@@ -36,7 +36,8 @@ namespace SkaaGameDataLib
         }
         public static void FrameBmpToSpr(SpriteFrame sf, ColorPalette pal)
         {
-            byte palColorByte;
+            //need it nullable for the try/catch block below since that's the only other assignment
+            byte? palColorByte = null;
             byte transparentByte = 0xf8;
             int transparentByteCount = 0;
             int realOffset = 8; //since our array offset is unaware of the SPR header data
@@ -79,11 +80,30 @@ namespace SkaaGameDataLib
                 {
                     Color pixel = sf.ImageBmp.GetPixel(x, y);
                     var pixARGB = pixel.ToArgb();
-                    palColorByte = Convert.ToByte(Palette.FindIndex(c => c == Color.FromArgb(pixARGB)));
+
+                    
+                        Color fromArgb = Color.FromArgb(pixARGB);
+                        int idx = Palette.FindIndex(c => c == fromArgb);
+
+                        Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | fromArgb = {fromArgb.ToString()} | idx = {idx.ToString()}");
+
+                        if (idx == -1)
+                        {
+                            Debugger.Break();
+                        }
+
+                    //allows us to see the exception's message from the SaveProjectToDateTimeDirectory() Invoke in SkaaEditorMainForm.cs
+                    try
+                    {
+                        palColorByte = Convert.ToByte(idx);
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine($"Exception in FrameBmpToSpr: {e.Message}");
+                    }
 
                     if (palColorByte > 0xf8) //0xf9 - 0xff are transparent
                         transparentByteCount++;
-
                     // Once we hit a non-zero pixel, we need to write out the transparent pixel marker
                     // and the count of transparent pixels. We then write out the current non-zero pixel.
                     // The second expression after || below is to check if we're on the last pixel of the
