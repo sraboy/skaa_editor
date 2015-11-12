@@ -66,11 +66,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveColorChangedEventArgs.cs" />
+    <Compile Include="DrawingTools.cs" />
+    <Compile Include="DrawingToolbox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DrawingToolbox.Designer.cs">
+      <DependentUpon>DrawingToolbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DrawingToolSelectedEventArgs.cs" />
     <Compile Include="MultiColumnComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MultiColumnComboBox.Designer.cs">
       <DependentUpon>MultiColumnComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SkaaColorChooser.cs">
       <SubType>Component</SubType>
@@ -90,6 +103,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DrawingToolbox.resx">
+      <DependentUpon>DrawingToolbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="SkaaColorChooser.resx">
       <DependentUpon>SkaaColorChooser.cs</DependentUpon>
     </EmbeddedResource>
@@ -114,6 +134,25 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\HandToolIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\PanToolIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\PencilToolIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\PaintBucketIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Cursor1.cur" />
+    <EmbeddedResource Include="Resources\PencilToolCursor.cur" />
+    <EmbeddedResource Include="Resources\PanToolCursorMouseDown.cur" />
+    <EmbeddedResource Include="Resources\PanToolCursor.cur" />
+    <EmbeddedResource Include="Resources\PaintBucketToolCursor.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -226,6 +226,7 @@ namespace SkaaEditorUI
         //todo: add Debug logging throughout
         private TextWriterTraceListener _debugTxtWriter;
         private Properties.Settings props = Properties.Settings.Default;
+        private DrawingTools _selectedTool;
         #endregion
 
         public Project ActiveProject
@@ -267,12 +268,40 @@ namespace SkaaEditorUI
             this.imageEditorBox.ShowPixelGrid = true;
             this.showGridToolStripMenuItem.Checked = true;
 
-            //don't want this until we load a palette
-            this.colorGridChooser.Enabled = false;
+            ////don't want this until we load a palette
+            //this.colorGridChooser.Enabled = false;
+
+            //need to adjust our actions based on the tool selected
+            this.drawingToolbox.SelectedToolChanged += DrawingToolbox_SelectedToolChanged;
+            
 
             ConfigSettings();
             NewProject();
         }
+
+        private void DrawingToolbox_SelectedToolChanged(object sender, EventArgs e)
+        {
+            this._selectedTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
+            this.imageEditorBox.Cursor = this.drawingToolbox.ToolCursor == null ? Cursors.Default : this.drawingToolbox.ToolCursor;
+
+            //todo: needs more testing... still buggy
+
+            switch(this._selectedTool)
+            {
+                case DrawingTools.Fill:
+                case DrawingTools.Pencil:
+                    this.imageEditorBox.EditMode = true;
+                    break;
+                case DrawingTools.Pan:
+                    this.imageEditorBox.EditMode = false;
+                    break;
+                default:
+                    this.imageEditorBox.EditMode = false;
+                    break;
+            }
+            
+        }
+    
         /// <summary>
         /// Provides for initial application settings like default directories, debug logging, etc.
         /// </summary>
@@ -322,7 +351,7 @@ namespace SkaaEditorUI
 
                 this.colorGridChooser.Colors = new ColorCollection(distinct);
                 this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
-                this.colorGridChooser.Enabled = true;
+                //this.colorGridChooser.Enabled = true;
             }
             else
             {
@@ -336,6 +365,10 @@ namespace SkaaEditorUI
         {
             //Can't load a sprite without at least a palette and project. Otherwise, we can always load a new sprite.
             this.openSpriteToolStripMenuItem.Enabled = (this.colorGridChooser.Enabled == false || this.ActiveProject == null) ? false : true;
+
+            //disable editing until we've got a frame
+            this.drawingToolbox.Enabled = this.ActiveProject?.ActiveFrame == null ? false : true;
+            this.colorGridChooser.Enabled = this.ActiveProject?.ActiveFrame == null ? false : true;
 
             //todo: allow opening a new/different set and handle issues accordingly
             this.openGameSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
@@ -494,8 +527,6 @@ namespace SkaaEditorUI
         #region Loading/Opening Events
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.colorGridChooser.Enabled == false)
-                return;
 #if DEBUG
             if(sender.ToString() == "OpenDefaultBallistaSprite")
             {
@@ -755,18 +786,19 @@ namespace SkaaEditorUI
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
-            // cbEdit.Checked is used as the equivalent of SkaaImageBox.IsDrawing, but IsDrawing 
-            // is already set to false by the time we get to here since the user is not actively 
-            // drawing and has released the mouse, firing the OnMouseUp event.
-            if (this.cbEdit.Checked)
+            //// cbEdit.Checked is used as the equivalent of SkaaImageBox.IsDrawing, but IsDrawing 
+            //// is already set to false by the time we get to here since the user is not actively 
+            //// drawing and has released the mouse, firing the OnMouseUp event.
+            //if (this.cbEdit.Checked)
+            if (this._selectedTool == DrawingTools.Pencil)
             {
                 FrameIsEdited(this.ActiveProject.ActiveFrame);
             }
         }
-        private void cbEdit_CheckedChanged(object sender, EventArgs e)
-        {
-            this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
-        }
+        //private void cbEdit_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
+        //}
         private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.imageEditorBox.ShowPixelGrid = !this.imageEditorBox.ShowPixelGrid;

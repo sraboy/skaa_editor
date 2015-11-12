@@ -89,6 +89,7 @@ namespace SkaaEditorControls
         public SkaaColorChooser(ColorCollection colors) : base(colors)
         {
             this.ColorDropper = new SkaaScreenColorPicker();
+            
             //this.ColorDropper.ColorChanged += Picker_ColorChanged;
         }
 
