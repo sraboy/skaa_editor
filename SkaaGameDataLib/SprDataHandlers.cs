@@ -84,17 +84,15 @@ namespace SkaaGameDataLib
                     //Color fromArgb = Color.FromArgb(pixARGB);
                     int idx = Palette.FindIndex(c => c == pixel);
 
-                    foreach(Color c in Palette)
-                    {
-                        Debug.WriteLine($"Color c = {c.ToString()} | {{A = {c.A}}} {{R = {c.R}}} {{G = {c.G}}} {{B = {c.B}}} ");
-                    }
-
-                    //Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | fromArgb = {fromArgb.ToString()} | idx = {idx.ToString()}");
-                    Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | idx = {idx.ToString()}");
+                    //foreach (Color c in Palette)
+                    //{
+                    //    Debug.WriteLine($"Color c = {c.ToString()}");
+                    //}
+                    //Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | idx = {idx.ToString()}");
 
                     if (idx == -1)
                     {
-                        Debugger.Break();
+                        throw new Exception($"Unknown color: {pixARGB}");
                     }
 
                     //allows us to see the exception's message from the SaveProjectToDateTimeDirectory() Invoke in SkaaEditorMainForm.cs

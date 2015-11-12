@@ -14,6 +14,7 @@ using System.Data;
 using System.Drawing.Imaging;
 using System.Drawing;
 using static SkaaEditorUI.Misc;
+using System.Diagnostics;
 
 namespace SkaaEditorUI
 {
@@ -235,7 +236,10 @@ namespace SkaaEditorUI
         public void LoadPalette(string filepath)
         {
             this._skaaEditorPalette = new PaletteResource();
-            this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
+
+            //have to keep the event from firing before the palette is loaded
+            ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
+            //this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
 
             using (FileStream fs = File.OpenRead(filepath))//filepath + '\\' + this._skaaEditorPalette.PaletteFileName))
             {
@@ -248,16 +252,21 @@ namespace SkaaEditorUI
                     int b = fs.ReadByte();
 
                     if (i < 0xf9) //0xf9 is the lowest transparent color byte
-                        this.ActivePalette.Entries[i] = Color.FromArgb(255, r, g, b);
+                        pal.Entries[i] = Color.FromArgb(255, r, g, b);
                     else          //0xf9 - 0xff
-                        this.ActivePalette.Entries[i] = Color.FromArgb(0, r, g, b);
+                        pal.Entries[i] = Color.FromArgb(0, r, g, b);
                 }
                 this._skaaEditorPalette.ResMemoryStream = new MemoryStream();
                 fs.Position = 0;
                 fs.CopyTo(this._skaaEditorPalette.ResMemoryStream);
             }
 
+            //foreach (Color c in pal.Entries)
+            //{
+            //    Debug.WriteLine($"Color c = {c.ToString()}");
+            //}
 
+            this.ActivePalette = pal;
             //return this.ActivePalette;
         }
         /// <summary>

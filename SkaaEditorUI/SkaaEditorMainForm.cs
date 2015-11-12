@@ -307,20 +307,19 @@ namespace SkaaEditorUI
             {
                 Color[] entries = this.ActiveProject.ActivePalette.Entries;
                 IEnumerable<Color> distinct = entries.Distinct();
-                //List<Color> test = distinct.ToList();
-                //var x = test.FindAll(c => c.ToArgb() == -201);
-                //this.colorGridChooser.Colors = new ColorCollection(entries.AsEnumerable());
-                foreach (Color c in entries)
-                {
-                    Debug.WriteLine($"Color c = {c.ToString()} | {{A = {c.A}}} {{R = {c.R}}} {{G = {c.G}}} {{B = {c.B}}} ");
-                }
-                Debug.WriteLine(@"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\  Sorted  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-                //List<Color> sorted = entries.AsEnumerable().ToList();
-                //sorted.Sort();
-                //foreach (Color c in sorted)
+                ////List<Color> test = distinct.ToList();
+                ////var x = test.FindAll(c => c.ToArgb() == -201);
+                ////this.colorGridChooser.Colors = new ColorCollection(entries.AsEnumerable());
+                //foreach (Color c in entries)
                 //{
-                //    Debug.WriteLine($"Color c = {c.ToString()} | {{A = {c.A}}} {{R = {c.R}}} {{G = {c.G}}} {{B = {c.B}}} ");
+                //    Debug.WriteLine($"Color c = {c.ToString()}");// | {{A = {c.A}}} {{R = {c.R}}} {{G = {c.G}}} {{B = {c.B}}} ");
                 //}
+                //Debug.WriteLine(@"////////////////////////////////////// ActivePalette.Entries //////////////////////////////////////");
+                //foreach (Color c in this.ActiveProject.ActivePalette.Entries)
+                //{
+                //    Debug.WriteLine($"Color c = {c.ToString()}");// | {{A = {c.A}}} {{R = {c.R}}} {{G = {c.G}}} {{B = {c.B}}} ");
+                //}
+
                 this.colorGridChooser.Colors = new ColorCollection(distinct);
                 this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
                 this.colorGridChooser.Enabled = true;
