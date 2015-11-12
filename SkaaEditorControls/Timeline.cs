@@ -115,7 +115,6 @@ namespace SkaaEditorControls
                     this.picBoxFrame = value;
             }
         }
-
         public Sprite ActiveSprite
         {
             get
@@ -156,7 +155,7 @@ namespace SkaaEditorControls
                 }
             }
         }
-
+        //public TrackBar FrameSlider
         public TimelineControl()
         {
             InitializeComponent();
@@ -164,7 +163,8 @@ namespace SkaaEditorControls
             this.ActiveFrameChanged += TimelineControl_ActiveFrameChanged;
 
             this.picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
-            this.SetSliderEnable(false);
+            //this.frameSlider.Enabled = false;// SetSliderEnable(false);
+            this.Enabled = false;
             this.animationTimer.Enabled = false;
             this.animationTimer.Tick += AnimationTimer_Tick;
             this.animationTimer.Interval = 150;
@@ -182,18 +182,10 @@ namespace SkaaEditorControls
             this.frameSlider.Value = this._activeFrameIndex;
         }
 
-        //private void SetMaxFrames(int frameCount)
+        //public void SetSliderEnable(bool enabled = true)
         //{
-        //    this.frameSlider.Maximum = frameCount;
+        //    this.frameSlider.Enabled = enabled;
         //}
-        //public int GetMaxFrames(int frameCount)
-        //{
-        //    return this.frameSlider.Maximum;
-        //}
-        public void SetSliderEnable(bool enabled = true)
-        {
-            this.frameSlider.Enabled = enabled;
-        }
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
         {

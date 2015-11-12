@@ -60,8 +60,15 @@ namespace SkaaEditorUI
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.spriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -106,10 +113,8 @@ namespace SkaaEditorUI
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
-            this.openGameSetToolStripMenuItem,
-            this.openSpriteToolStripMenuItem,
-            this.saveSpriteToolStripMenuItem,
-            this.saveGameSetToolStripMenuItem,
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
             this.closeProjectToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -119,11 +124,11 @@ namespace SkaaEditorUI
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newProjectToolStripMenuItem});
+            this.newProjectToolStripMenuItem,
+            this.spriteToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.newToolStripMenuItem.Text = "New";
-            this.newToolStripMenuItem.Visible = false;
             // 
             // newProjectToolStripMenuItem
             // 
@@ -132,45 +137,100 @@ namespace SkaaEditorUI
             this.newProjectToolStripMenuItem.Text = "Project";
             this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
+            // spriteToolStripMenuItem
+            // 
+            this.spriteToolStripMenuItem.Enabled = false;
+            this.spriteToolStripMenuItem.Name = "spriteToolStripMenuItem";
+            this.spriteToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.spriteToolStripMenuItem.Text = "Sprite";
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.projectToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.openGameSetToolStripMenuItem,
+            this.openSpriteToolStripMenuItem});
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            // 
+            // projectToolStripMenuItem
+            // 
+            this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
+            this.projectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.projectToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.projectToolStripMenuItem.Text = "&Project";
+            this.projectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(151, 6);
+            // 
             // openGameSetToolStripMenuItem
             // 
             this.openGameSetToolStripMenuItem.Name = "openGameSetToolStripMenuItem";
-            this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.openGameSetToolStripMenuItem.Text = "Open Game Set";
+            this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.openGameSetToolStripMenuItem.Text = "Game Set";
             this.openGameSetToolStripMenuItem.Click += new System.EventHandler(this.openGameSetToolStripMenuItem_Click);
             // 
             // openSpriteToolStripMenuItem
             // 
             this.openSpriteToolStripMenuItem.Name = "openSpriteToolStripMenuItem";
-            this.openSpriteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.openSpriteToolStripMenuItem.Text = "Open Sprite";
+            this.openSpriteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.openSpriteToolStripMenuItem.Text = "Sprite";
             this.openSpriteToolStripMenuItem.Click += new System.EventHandler(this.openSpriteToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveProjectToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.saveSpriteToolStripMenuItem,
+            this.saveGameSetToolStripMenuItem});
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            // 
+            // saveProjectToolStripMenuItem
+            // 
+            this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
+            this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveProjectToolStripMenuItem.Text = "&Project";
+            this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(148, 6);
             // 
             // saveSpriteToolStripMenuItem
             // 
             this.saveSpriteToolStripMenuItem.Name = "saveSpriteToolStripMenuItem";
-            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.saveSpriteToolStripMenuItem.Text = "Save Sprite";
+            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveSpriteToolStripMenuItem.Text = "Sprite";
             this.saveSpriteToolStripMenuItem.Click += new System.EventHandler(this.saveSpriteToolStripMenuItem_Click);
             // 
             // saveGameSetToolStripMenuItem
             // 
             this.saveGameSetToolStripMenuItem.Name = "saveGameSetToolStripMenuItem";
-            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.saveGameSetToolStripMenuItem.Text = "Save Game Set";
+            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveGameSetToolStripMenuItem.Text = "Game Set";
             this.saveGameSetToolStripMenuItem.Click += new System.EventHandler(this.saveGameSetToolStripMenuItem_Click);
             // 
             // closeProjectToolStripMenuItem
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.closeProjectToolStripMenuItem.Text = "Close Project";
             this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -354,7 +414,6 @@ namespace SkaaEditorUI
             this.Name = "SkaaEditorMainForm";
             this.Text = "Skaa Editor for 7KAA";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SkaaEditorMainForm_FormClosing);
-            this.Load += new System.EventHandler(this.skaaEditorMainForm_Load);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -382,10 +441,6 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
         private MultiColumnComboBox.MultiColumnComboBoxControl cbMultiColumn;
-        private System.Windows.Forms.ToolStripMenuItem openSpriteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openGameSetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportBmpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -394,5 +449,16 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ColorDialog colorDialog1;
         private SkaaColorChooser colorGridChooser;
         private System.Windows.Forms.ListBox lbDebugActions;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openGameSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem spriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }

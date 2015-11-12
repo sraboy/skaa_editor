@@ -179,8 +179,13 @@ namespace SkaaGameDataLib
         }
         public void Initialize()
         {
-            //this.PaletteUpdated += PaletteUpdated;
-            //this.SpriteObject = new Sprite();
+            this.PaletteUpdated += SpriteResource_PaletteUpdated;
+        }
+
+        private void SpriteResource_PaletteUpdated(object sender, EventArgs e)
+        {
+            //todo: rebuild the BMP with the new palette
+            Trace.WriteLine("SpriteFrame palette updated.");
         }
         #endregion
 
@@ -206,7 +211,8 @@ namespace SkaaGameDataLib
 
                 if (sf == null)
                 {
-                    Trace.WriteLine(string.Format("Unable to find matching offset in Sprite.Frames for {0} and offset: {1}.\n\nDid you forget to load the proper SET file for this sprite?", spr.SpriteId, offset.ToString()));
+                    //this should only happen when creating new sprites. for now, we'll just log it
+                    Trace.WriteLine(($"Unable to find matching offset in Sprite.Frames for {spr.SpriteId} and offset: {offset.ToString()}. nDid you forget to load the proper SET file for this sprite?"));
                     return false;
                 }
 
@@ -233,6 +239,8 @@ namespace SkaaGameDataLib
             {
                 SpriteFrame sf = spr.Frames[i];
                 offset += sf.FrameRawData.Length;
+                Debug.Assert(sf.FrameRawData != null, $"Sprite {sf.ParentSprite.SpriteId}'s SpriteFrame's FrameRawData is null!");
+                
                 //we depend on short-circuit evaluation here.If i isn't less then the Frames.Count - 1, 
                 //we'll end up with an out-of-bounds exception. We can't just test for PendingChanges because
                 //changes in one SpriteFrame will affect offsets in others, not in itself.
@@ -247,10 +255,8 @@ namespace SkaaGameDataLib
                         dr[9] = offset.ToString();
                         dr.AcceptChanges(); //calls EndEdit() implicitly
                     }
-
                     sf.PendingChanges = false;
                 }
-
                 //Killing two birds with one for loop. See below.
                 SpriteFrameDataArrays.Add(sf.FrameRawData);
             }
@@ -266,36 +272,6 @@ namespace SkaaGameDataLib
             }
 
             this._sprData = newSprData;
-        
-
-            //using (MemoryStream newSprData = new MemoryStream(offset)) 
-            //{
-            //    newSprData.SetLength(offset);
-            //    int count = 0;
-            //    int len = 0;
-            //    foreach (SpriteFrame sf in spr.Frames)
-            //    {
-            //        try
-            //        {
-            //            //newSprData.SetLength(newSprData.Length + sf.FrameRawData.Length);
-            //            newSprData.Write(sf.FrameRawData, (int) newSprData.Position, sf.FrameRawData.Length);
-            //            count++;
-            //            len += sf.FrameRawData.Length;
-            //        }
-            //        catch(Exception e)
-            //        {
-            //            Debugger.Break();
-            //        }
-            //    }
-            //    this._sprData = newSprData.GetBuffer();
-            //}
-            //this.BuildSpr();
-            //this._sprData = BuildSpr();
-            //OnSpriteObjectChanged(EventArgs.Empty);
         }
-
-        //private void PaletteUpdated(object sender, EventArgs e) { }
     }
-
-
 }

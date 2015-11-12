@@ -24,12 +24,12 @@ namespace SkaaEditorUI
         private Properties.Settings props = Properties.Settings.Default;
         private SpriteFrame _activeFrame;
         private SkaaGameSet _activeGameSet;
-
         private PaletteResource _skaaEditorPalette;
         private Sprite _activeSprite;
+        private string _projectName;
         #endregion
 
-        #region Event Handlers
+        #region Events
         [NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
@@ -167,18 +167,37 @@ namespace SkaaEditorUI
                 }
             }
         }
+        public string ProjectName
+        {
+            get
+            {
+                return this._projectName;
+            }
+            set
+            {
+                if (this._projectName != value)
+                {
+                    this._projectName = value;
+                }
+            }
+        }
         #endregion
 
-        /// <summary>
-        /// Creates a new project, optionally loading the default palette and game set.
-        /// </summary>
-        /// <param name="loadDefaults">True to load pal_std.res and std.set, false otherwise.</param>
-        public Project(bool loadDefaults)
+        public Project() { }
+        public Project(string paletteFilePath, string gameSetFilePath)
         {
-            if (loadDefaults)
-                Load(props.DataDirectory + props.DefaultPaletteFile, props.DataDirectory + props.DefaultGameSetFile);
+            Load(paletteFilePath, gameSetFilePath);
         }
-        public void Load(string paletteFilePath, string gameSetFilePath)
+        ///// <summary>
+        ///// Creates a new project, optionally loading the default palette and game set.
+        ///// </summary>
+        ///// <param name="loadDefaults">True to load pal_std.res and std.set, false otherwise.</param>
+        //public Project(bool loadDefaults)
+        //{
+        //    if (loadDefaults)
+        //        Load(props.DataDirectory + props.DefaultPaletteFile, props.DataDirectory + props.DefaultGameSetFile);
+        //}
+        private void Load(string paletteFilePath, string gameSetFilePath)
         {
             //this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
             //this.ActiveFrameChanged += Project_ActiveFrameChanged;
@@ -277,31 +296,6 @@ namespace SkaaEditorUI
             DataView dv = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
             spr.SetSpriteDataView(dv);
             this.ActiveSprite = spr;
-        }
-
-        /// <summary>
-        /// Serializes the project with a BinaryFormatter
-        /// </summary>
-        /// <returns>A MemoryStream containing the serialized project data</returns>
-        public Stream SaveProject()
-        {
-            return Serialization.Serialize(this);
-        }
-        public void SaveProject(string filepath)
-        {
-
-            //if (filepath == null)
-            //        ProjectZipper.ZipProject(this, this._workingFolder + '\\' + "new_project.skp");
-            //    else
-            //        ProjectZipper.ZipProject(this, filepath);
-        }
-        public static Project LoadProject(Stream str)
-        {
-            return (Project) Serialization.Deserialize(str);
-        }
-        public static Project LoadProject(string filePath)
-        {
-            return ProjectZipper.LoadZipProject(filePath);
         }
     }
 }

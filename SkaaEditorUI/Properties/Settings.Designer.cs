@@ -130,5 +130,17 @@ namespace SkaaEditorUI.Properties {
                 this["SkaaDataDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ProjectDirectory {
+            get {
+                return ((string)(this["ProjectDirectory"]));
+            }
+            set {
+                this["ProjectDirectory"] = value;
+            }
+        }
     }
 }
