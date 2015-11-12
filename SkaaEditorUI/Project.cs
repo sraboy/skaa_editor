@@ -184,10 +184,11 @@ namespace SkaaEditorUI
         #endregion
 
         public Project() { }
-        public Project(string paletteFilePath, string gameSetFilePath)
-        {
-            Load(paletteFilePath, gameSetFilePath);
-        }
+        //sraboy-11Nov15-Eliminated these because they end up bypassing the event subscriptions, which have to come after the constructor's called
+        //public Project(string paletteFilePath, string gameSetFilePath)
+        //{
+        //    Load(paletteFilePath, gameSetFilePath);
+        //}
         ///// <summary>
         ///// Creates a new project, optionally loading the default palette and game set.
         ///// </summary>
@@ -197,14 +198,13 @@ namespace SkaaEditorUI
         //    if (loadDefaults)
         //        Load(props.DataDirectory + props.DefaultPaletteFile, props.DataDirectory + props.DefaultGameSetFile);
         //}
-        private void Load(string paletteFilePath, string gameSetFilePath)
-        {
-            //this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
-            //this.ActiveFrameChanged += Project_ActiveFrameChanged;
-
-            LoadPalette(paletteFilePath);
-            LoadGameSet(gameSetFilePath);
-        }
+        //public void Load(string paletteFilePath, string gameSetFilePath)
+        //{
+        //    //this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
+        //    //this.ActiveFrameChanged += Project_ActiveFrameChanged;
+        //    LoadPalette(paletteFilePath);
+        //    LoadGameSet(gameSetFilePath);
+        //}
 
         /// <summary>
         /// Load the default game set file, <see cref="Properties.Settings.DefaultPaletteFile"/>.

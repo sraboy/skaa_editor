@@ -53,25 +53,19 @@ namespace SkaaEditorControls
                 _activeFrameChanged -= value;
             }
         }
-        protected virtual void OnActiveFrameChanged(EventArgs e)
+        protected virtual void RaiseActiveFrameChangedEvent(EventArgs e)
         {
             EventHandler handler = _activeFrameChanged;
+
+            this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
+            this.picBoxFrame.Image = this._activeFrame.ImageBmp;
+            this.frameSlider.Value = this._activeFrameIndex;
 
             if (handler != null)
             {
                 handler(this, e);
             }
         }
-        //public event EventHandler ActiveFrameChanged;
-        //protected virtual void OnActiveFrameChanged(EventArgs e)
-        //{
-        //    EventHandler handler = ActiveFrameChanged;
-
-        //    if (handler != null)
-        //    {
-        //        handler(this, e);
-        //    }
-        //}
         [field: NonSerialized]
         private EventHandler _activeSpriteChanged;
         public event EventHandler ActiveSpriteChanged
@@ -88,7 +82,7 @@ namespace SkaaEditorControls
                 _activeSpriteChanged -= value;
             }
         }
-        protected virtual void OnActiveSpriteChanged(EventArgs e)
+        protected virtual void RaiseActiveSpriteChangedEvent(EventArgs e)
         {
             EventHandler handler = _activeSpriteChanged;
 
@@ -126,10 +120,11 @@ namespace SkaaEditorControls
                 if(this._activeSprite != value)
                 {
                     this._activeSprite = value;
-                    OnActiveSpriteChanged(null);
+                    OnActiveSpriteChanged(EventArgs.Empty);
                 }
             }
         }
+
         public SpriteFrame ActiveFrame
         {
             get
@@ -144,54 +139,41 @@ namespace SkaaEditorControls
                 if (this._activeFrame != value)
                 {
                     this._activeFrame = value;
-                    //this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-                    //this.picBoxFrame.Image = this._activeFrame.ImageBmp;
-                    //this.frameSlider.Value = this._activeFrameIndex;
 
                     if (!this.animationTimer.Enabled)
-                        this.OnActiveFrameChanged(null);
-                    else
-                        TimelineControl_ActiveFrameChanged(null, null);
+                        OnActiveFrameChanged(EventArgs.Empty);
                 }
             }
         }
-        //public TrackBar FrameSlider
+        
         public TimelineControl()
         {
             InitializeComponent();
-            this.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
-            this.ActiveFrameChanged += TimelineControl_ActiveFrameChanged;
 
             this.picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
-            //this.frameSlider.Enabled = false;// SetSliderEnable(false);
-            this.Enabled = false;
             this.animationTimer.Enabled = false;
             this.animationTimer.Tick += AnimationTimer_Tick;
             this.animationTimer.Interval = 150;
         }
 
-        private void TimelineControl_ActiveSpriteChanged(object sender, EventArgs e)
+        private void OnActiveSpriteChanged(EventArgs empty)
         {
             this.frameSlider.Maximum = this.ActiveSprite.Frames.Count - 1;
         }
 
-        private void TimelineControl_ActiveFrameChanged(object sender, EventArgs e)
+        protected virtual void OnActiveFrameChanged(EventArgs e)
         {
             this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
             this.picBoxFrame.Image = this._activeFrame.ImageBmp;
             this.frameSlider.Value = this._activeFrameIndex;
         }
 
-        //public void SetSliderEnable(bool enabled = true)
-        //{
-        //    this.frameSlider.Enabled = enabled;
-        //}
-
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
         {
             if (ActiveFrame == null)
                 return;
 
+            //removed one-click navigation. causes accidental navigation on slower double-clicks or accidental clicks
             //if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
             //{
             //    _activeFrameIndex++;
@@ -204,10 +186,10 @@ namespace SkaaEditorControls
             //    _activeFrameIndex--;
             //    _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
             //    // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
-
             //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
             //}
             //else 
+
             if (e.Button == MouseButtons.Middle)
             {
                 if (picBoxFrame.SizeMode == PictureBoxSizeMode.CenterImage)

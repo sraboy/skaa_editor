@@ -246,10 +246,12 @@ namespace SkaaEditorUI
             }
         }
 
+        public SkaaEditorMainForm() { InitializeComponent(); }
+
         #region Setup Methods
-        public SkaaEditorMainForm()
+        protected override void OnLoad(EventArgs e)
         {
-            InitializeComponent();
+            base.OnLoad(e);
 
             //this has to happen early so NewProject() triggers the event.
             this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
@@ -267,7 +269,11 @@ namespace SkaaEditorUI
             this.imageEditorBox.ShowPixelGrid = true;
             this.showGridToolStripMenuItem.Checked = true;
 
+            //don't want this until we load a palette
+            this.colorGridChooser.Enabled = false;
+
             ConfigSettings();
+            NewProject();
         }
         /// <summary>
         /// Provides for initial application settings like default directories, debug logging, etc.
@@ -291,19 +297,19 @@ namespace SkaaEditorUI
 
             ConfigSettingsDebug();
         }
+        /// <summary>
+        /// Loads <see cref="Project.ActivePalette"/>, if specified, and enables/disables the form's <see cref="SkaaColorChooser"/> object based on whether or not a palette is loaded.
+        /// </summary>
         private void SetUpColorGrid()
         {
-            //if (this.ActiveProject == null)
-            //{
-            //    this.colorGridChooser.Enabled = false;
-            //    //this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
-            //}
-            /* else */
+            if (this.colorGridChooser.Enabled == true)
+                return;
+
             if (this.ActiveProject?.ActivePalette != null)
             {
-                this.colorGridChooser.Enabled = true;
                 this.colorGridChooser.Colors = new ColorCollection(this.ActiveProject.ActivePalette.Entries.Distinct());
                 this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+                this.colorGridChooser.Enabled = true;
             }
             else
             {
@@ -313,28 +319,23 @@ namespace SkaaEditorUI
         /// <summary>
         /// Sets/Resets various UI settings like menu options, etc.
         /// </summary>
-        /// <remarks>
-        /// This may be called any time to reset menu items and ensure event subscriptions 
-        /// are done. Either ensure EventHandlers already prevent multiple hooks (e.g.
-        /// <code>if(!PropertyChanged.GetInvocationList().Contains(value)) { }</code>) or ensure
-        /// event subscriptions are within the <code>if (!update)</code> block and call SetupUI(true).
-        /// </remarks>
         private void SetupUI()//bool update = false)
         {
-            //enables/disables colorGridChooser() based on whether or not a palette is loaded
-            SetUpColorGrid();
             //Can't load a sprite without at least a palette and project. Otherwise, we can always load a new sprite.
             this.openSpriteToolStripMenuItem.Enabled = (this.colorGridChooser.Enabled == false || this.ActiveProject == null) ? false : true;
+
             //todo: allow opening a new/different set and handle issues accordingly
             this.openGameSetToolStripMenuItem.Enabled = (this.ActiveProject == null || this.ActiveProject.ActiveGameSet == null) ? true : false;
+
             //can't save what's not there
             this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;            
             this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null) ? false : true;
+
             //need a sprite to navigate a sprite's frames
             this.timelineControl.Enabled = (this.ActiveProject?.ActiveSprite == null) ? false : true;
+
             //need a sprite to list a sprite's frames
             this.cbMultiColumn.Enabled = this.cbMultiColumn.DataSource == null ? false : true;
-            
 
             //some help text until a sprite is loaded
             string help_text =
@@ -346,6 +347,7 @@ namespace SkaaEditorUI
             this.imageEditorBox.Text = (this.imageEditorBox.Image == null) ? help_text : null;
 
             //sraboy-11Nov15-moved all the static subscriptions to the constructor and project subscriptions to NewProject()
+            //
             //if (!update) // Only subscribe to events on initial UI setup
             //{
             //    //event subscriptions
@@ -365,8 +367,6 @@ namespace SkaaEditorUI
             //    //this.timelineControl.ActiveSpriteChanged += TimelineControl_ActiveSpriteChanged;
             //    */ //todo: Should this event even be exposed? May cause confusion.
             //}
-            
-            
         }
         private void PopulateMultiColumnComboBoxSpriteList()
         {
@@ -416,11 +416,20 @@ namespace SkaaEditorUI
                 gameSetFilePath = props.DataDirectory + props.DefaultGameSetFile;
             }
 
-            this.ActiveProject = new Project(paletteFilePath, gameSetFilePath);
+            this.ActiveProject = new Project(); 
 
             this.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
             this.ActiveProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
+
+            this.ActiveProject.LoadPalette(paletteFilePath);
+            this.ActiveProject.LoadGameSet(gameSetFilePath);
+
+            
+            //enables / disables colorGridChooser based on whether or not we have an ActivePalette (and loads the palette if we do)
+            //needs to be called before SetupUI()'s first call
+            //SetUpColorGrid();
+            //SetupUI();
         }
         private void OpenProject(string projectPath)
         {
@@ -439,25 +448,23 @@ namespace SkaaEditorUI
             props.ProjectDirectory = projectPath;
             this.ActiveProject.ProjectName = Path.GetDirectoryName(projectPath);
 
+            ActiveProject.LoadPalette(props.DefaultPaletteFile);
             ActiveProject.LoadGameSet(setFiles.ElementAt(0));
+            ActiveProject.LoadSprite(sprFiles.ElementAt(0));
         }
 
         private void CloseProject()
         {
             /* sraboy-10Nov15
-            Whoops... Checked through some documentation: https://msdn.microsoft.com/en-us/library/ms366768(v=vs.140).aspx.
-                "To prevent your event handler from being invoked when the event is raised, unsubscribe from 
-                "the event. In order to prevent resource leaks, you should unsubscribe from events before 
-                "you dispose of a subscriber object."
+              Whoops... Checked through some documentation: https://msdn.microsoft.com/en-us/library/ms366768(v=vs.140).aspx.
+              Gotta unsubscribe even if we null it out.
             */
             this.ActiveProject.ActiveSpriteChanged -= ActiveProject_ActiveSpriteChanged;
             this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
 
             this.ActiveProject = null;
-
             
-
             //this.cbMultiColumn.DataSource = null;
             //this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
         }
@@ -469,13 +476,12 @@ namespace SkaaEditorUI
             //    this.cbMultiColumn.DataSource = null;
             //    this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
             //}
-
             SetupUI();
         }
 
         #endregion
 
-        #region Loading Methods
+        #region Loading/Opening Events
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.colorGridChooser.Enabled == false)
@@ -538,9 +544,18 @@ namespace SkaaEditorUI
                 }
             }
         }
+        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ActiveProject?.ActiveSprite != null)
+                if (MessageBox.Show("This will close the current sprite. Continue?", "Wait!", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                    return;
+
+            NewProject();
+            //this.cbMultiColumn.DataSource = null;
+        }
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(true) //todo: confirm user doesn't want to save the current changes
+            if (true) //todo: confirm user doesn't want to save the current changes
             {
                 using (FolderBrowserDialog dlg = new FolderBrowserDialog())
                 {
@@ -674,6 +689,8 @@ namespace SkaaEditorUI
             //todo: implement Undo/Redo from here with pairs of old/new sprites
             this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
             this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
+
+            //since a sprite is loaded
             SetupUI();
             PopulateMultiColumnComboBoxSpriteList();
         }
@@ -703,16 +720,7 @@ namespace SkaaEditorUI
             this.Close();
         }
 
-        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (this.ActiveProject?.ActiveSprite != null)
-                if(MessageBox.Show("This will close the current sprite. Continue?", "Wait!", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                    return;
-
-            NewProject();
-            //this.cbMultiColumn.DataSource = null;
-        }
-
+ 
         private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DataRow selection;
@@ -768,6 +776,10 @@ namespace SkaaEditorUI
                 SetupUI();
             }
         }
+        private void ActiveProject_PaletteChanged(object sender, EventArgs e)
+        {
+            SetUpColorGrid();
+        }
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Trace.WriteLine($"MainForm closed. Reason: {e.CloseReason}");
@@ -777,14 +789,6 @@ namespace SkaaEditorUI
             Trace.WriteLine($"Temp directory wiped: {props.TempDirectory}");
 #endif
         }
-
-        #region Future Features / Needs Work
-        private void ActiveProject_PaletteChanged(object sender, EventArgs e)
-        {
-            //SetupUI();
-            //SetUpColorGrid();   
-        }
-        #endregion
 
         #region Old Menu Items
         private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
@@ -914,11 +918,6 @@ namespace SkaaEditorUI
             this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
         }
 
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            SetupUI();
-            NewProject();
-        }
+      
     }
 }
