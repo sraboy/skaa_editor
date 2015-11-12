@@ -148,7 +148,6 @@
     <EmbeddedResource Include="Resources\PaintBucketIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Cursor1.cur" />
     <EmbeddedResource Include="Resources\PencilToolCursor.cur" />
     <EmbeddedResource Include="Resources\PanToolCursorMouseDown.cur" />
     <EmbeddedResource Include="Resources\PanToolCursor.cur" />
