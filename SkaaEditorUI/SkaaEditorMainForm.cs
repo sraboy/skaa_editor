@@ -722,6 +722,26 @@ namespace SkaaEditorUI
         {
             this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
         }
+        /// <summary>
+        /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,
+        /// the frame rebuilds its FrameRawData byte array.
+        /// </summary>
+        /// <param name="sf">The <see cref="SpriteFrame"/> to mark as requiring updates.</param>
+        /// <remarks>
+        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrame.FrameRawData"/> 
+        /// arrays for frames actually having edits. The only thing unedited framesmay  need to update is their new offset 
+        /// value for the SET file, if they follow any edited frames in the file, since the sizes of the preceding frames change.
+        /// </remarks>
+        private void FrameIsEdited(SpriteFrame sf)
+        {
+            //Currently only called from imageEditorBox_ImageUpdated
+            sf.PendingChanges = true;
+
+            //todo: implement an UpdateImage() method in Timelinecontrol
+            //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
+            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
+        }
+
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
             //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
@@ -953,19 +973,5 @@ namespace SkaaEditorUI
         {
             this.imageEditorBox.ActiveColor = c;
         }
-
-        //Currently only called from imageEditorBox_ImageUpdated
-        private void FrameIsEdited(SpriteFrame sf)
-        {
-            //This ensures the frame processes the changes (rebuilds its FrameRawData byte array)
-            //It also allows us to only rebuild the arrays for frames actually having edits. The only
-            //thing non-edited frames need to update is their new offset value for the SET file, if they
-            //follow any edited frames in the file.
-            sf.PendingChanges = true;
-            //Update the TimeLineControl so the user can see his/her changes in the size it will be viewed in the game
-            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
-        }
-
-      
     }
 }

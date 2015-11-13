@@ -44,10 +44,12 @@ namespace SkaaEditorControls
         private bool _editMode;
         private bool _isDrawing;
         private bool _panMode;
+        private bool _isPanning;
         private Color _activeColor;
         private Color _skaaTransparentColor;
         private int bmpWidth = 0, bmpHeight = 0;
         private FastBitmap fbmp;
+        private Point _startScrollPosition;
         #endregion
         #region Accessor Methods
         [DefaultValue(false)]
@@ -104,7 +106,55 @@ namespace SkaaEditorControls
                 }
             }
         }
+        /// <summary>
+        ///   Gets a value indicating whether this control is panning.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this control is panning; otherwise, <c>false</c>.
+        /// </value>
+        [DefaultValue(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [Browsable(false)]
+        public override bool IsPanning
+        {
+            get { return _isPanning; }
+            protected set
+            {
+                if (_isPanning != value)
+                {
+                    CancelEventArgs args;
+
+                    args = new CancelEventArgs();
+
+                    if (value)
+                    {
+                        this.OnPanStart(args);
+                    }
+                    else
+                    {
+                        this.OnPanEnd(EventArgs.Empty);
+                    }
+
+                    if (!args.Cancel)
+                    {
+                        _isPanning = value;
+
+                        if (value)
+                        {
+                            _startScrollPosition = this.AutoScrollPosition;
+                            //this.Cursor = Cursors.SizeAll; 
+                            //sraboy-12Nov15-we're handling the cursor in SkaaEditorMainForm for now
+                        }
+                        //else
+                        //{
+                        //    this.Cursor = Cursors.Default;
+                        //}
+                    }
+                }
+            }
+        }
         #endregion
+
 
         public event EventHandler ImageUpdated;
         protected void OnImageUpdated(EventArgs e)
