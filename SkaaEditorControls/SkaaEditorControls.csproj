@@ -18,6 +18,13 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
+    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <AssemblyFileVersionSettings>
+    </AssemblyFileVersionSettings>
+    <AssemblyInfoVersionSettings>
+    </AssemblyInfoVersionSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,10 +49,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cyotek.Windows.Forms.ImageBox, Version=1.1.5.1, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
-      <HintPath>..\packages\CyotekImageBox.1.1.5.1\lib\net20\Cyotek.Windows.Forms.ImageBox.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -66,14 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveColorChangedEventArgs.cs" />
-    <Compile Include="DrawingTools.cs" />
-    <Compile Include="DrawingToolbox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DrawingToolbox.Designer.cs">
-      <DependentUpon>DrawingToolbox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DrawingToolSelectedEventArgs.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -81,12 +76,6 @@
     </Compile>
     <Compile Include="SkaaColorChooser.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SkaaImageBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SkaaImageBox.Designer.cs">
-      <DependentUpon>SkaaImageBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Timeline.cs">
       <SubType>UserControl</SubType>
@@ -97,11 +86,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DrawingToolbox.resx">
-      <DependentUpon>DrawingToolbox.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SkaaColorChooser.resx">
@@ -117,9 +104,13 @@
       <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
       <Name>BitmapProcessing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ColorPicker\ColorPicker.csproj">
+    <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
       <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>
-      <Name>ColorPicker</Name>
+      <Name>Cyotek.Windows.Forms.ColorPicker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj">
+      <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
+      <Name>Capslock.WinForms.ImageEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\SkaaGameDataLib\SkaaGameDataLib.csproj">
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
@@ -127,26 +118,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="SkaaEditorControls.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\HandToolIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\PanToolIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\PencilToolIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\PaintBucketIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\PencilToolCursor.cur" />
-    <EmbeddedResource Include="Resources\PanToolCursorMouseDown.cur" />
-    <EmbeddedResource Include="Resources\PanToolCursor.cur" />
-    <EmbeddedResource Include="Resources\PaintBucketToolCursor.cur" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

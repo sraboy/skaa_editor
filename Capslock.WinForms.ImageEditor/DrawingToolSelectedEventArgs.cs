@@ -23,18 +23,28 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SkaaEditorControls
+namespace Capslock.WinForms.ImageEditor
 {
-    public enum DrawingTools
+    public class DrawingToolSelectedEventArgs : EventArgs
     {
-        None,
-        Pan,
-        Pencil,
-        PaintBucket
-    };
+        private ToolModes _selectedTool;
+        public ToolModes SelectedTool
+        {
+            get
+            {
+                return this._selectedTool;
+            }
+            private set
+            {
+                if (this._selectedTool != value)
+                    this._selectedTool = value;
+            }
+        }
+
+        public DrawingToolSelectedEventArgs(ToolModes selectedTool)
+        {
+            this.SelectedTool = selectedTool;
+        }
+    }
 }

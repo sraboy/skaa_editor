@@ -34,13 +34,17 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace SkaaEditorControls
+namespace Capslock.WinForms.ImageEditor
 {
     public partial class DrawingToolbox : UserControl
     {
         [NonSerialized]
         private EventHandler _selectedToolChanged;
-        public event EventHandler SelectedToolChanged
+        /// <summary>
+        /// This event is raised when the currently-selected tool changes. It's default <code>add</code> accessor protects against
+        /// multiple subscriptions from the same subscriber by checking its invocation list.
+        /// </summary>
+        public virtual event EventHandler SelectedToolChanged
         {
             add
             {
@@ -64,14 +68,20 @@ namespace SkaaEditorControls
             }
         }
 
-        private DrawingTools _selectedTool = DrawingTools.None;
-        public DrawingTools SelectedTool
+
+        private ToolModes _selectedTool = ToolModes.None;
+
+
+        /// <summary>
+        /// The currently-selected tool from <see cref="ToolModes"/>
+        /// </summary>
+        public virtual ToolModes SelectedTool
         {
             get
             {
                 return this._selectedTool;
             }
-            private set
+            protected set
             {
                 if (this._selectedTool != value)
                 {
@@ -80,93 +90,43 @@ namespace SkaaEditorControls
                 }
             }
         }
-        private Cursor _toolCursor;
-        public Cursor ToolCursor
-        {
-            get
-            {
-                return this._toolCursor;
-            }
-            private set
-            {
-                if (this._toolCursor != value)
-                    this._toolCursor = value;
-            }
-        }
-
-
-        private Stream _panToolCursorStream;
-        private Stream _pencilToolCursorStream;
-        private Stream _paintBucketToolCursorStream;
 
         public DrawingToolbox()
         {
             InitializeComponent();
-            this._selectedTool = DrawingTools.None;
-            this._panToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PanToolCursor.cur"));
-            this._pencilToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PencilToolCursor.cur"));
-            this._paintBucketToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.PaintBucketToolCursor.cur"));
+
+            this._selectedTool = ToolModes.None;
         }
 
-        private void btnPanTool_Click(object sender, EventArgs e)
+        private void btnTool_Click(object sender, EventArgs e)
         {
-            if ((sender as CheckBox).Checked == true)
+            CheckBox cb = (sender as CheckBox);
+            switch(cb.Name)
             {
-                this.ToolCursor = new Cursor(this._panToolCursorStream);
-                this.SelectedTool = DrawingTools.Pan;
-                this._panToolCursorStream.Position = 0;
+                case "btnPanTool":
+                    this.SelectedTool = ToolModes.Pan;
+                    break;
+                case "btnPencilTool":
+                    this.SelectedTool = ToolModes.Pencil;
+                    break;
+                case "btnPaintBucketTool":
+                    this.SelectedTool = ToolModes.PaintBucket;
+                    break;
+                default:
+                    this.SelectedTool = ToolModes.None;
+                    break;
             }
-            else
-            {
-                this.ToolCursor = null;
-                this.SelectedTool = DrawingTools.None;
-            }
-
-            ToggleCheckBoxes(sender);
-        }
-
-        private void btnPencilTool_Click(object sender, EventArgs e)
-        {
-            if ((sender as CheckBox).Checked == true)
-            {
-                this.ToolCursor = new Cursor(this._pencilToolCursorStream);
-                this.SelectedTool = DrawingTools.Pencil;
-                this._pencilToolCursorStream.Position = 0;
-            }
-            else
-            {
-                this.ToolCursor = null;
-                this.SelectedTool = DrawingTools.None;
-            }
-
-            ToggleCheckBoxes(sender);
-        }
-
-        private void btnFillTool_Click(object sender, EventArgs e)
-        {
-            if((sender as CheckBox).Checked == true)
-            { 
-                this.ToolCursor = new Cursor(this._paintBucketToolCursorStream);
-                this.SelectedTool = DrawingTools.PaintBucket;
-                this._paintBucketToolCursorStream.Position = 0;
-            }
-            else
-            {
-                this.ToolCursor = null;
-                this.SelectedTool = DrawingTools.None;
-            }
-
             ToggleCheckBoxes(sender);
         }
 
         private void ToggleCheckBoxes(object sender)
         {
-            CheckBox cb = sender as CheckBox;
+            CheckBox senderCheckBox = sender as CheckBox;
 
             foreach(CheckBox c in this.Controls)
             {
                 //don't change the sender, set others to false
-                c.Checked = c.Name == cb.Name ? c.Checked : false;
+                c.Checked = c.Name == senderCheckBox.Name ? c.Checked : false;
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace SkaaEditorControls
+﻿namespace Capslock.WinForms.ImageEditor
 {
     public partial class SkaaImageBox
     {

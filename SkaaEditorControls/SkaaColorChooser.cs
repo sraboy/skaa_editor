@@ -84,6 +84,9 @@ namespace SkaaEditorControls
 
         public new ColorCollection CustomColors = null;
 
+        //todo: add ActivePrimaryColor & ActiveSecondaryColor, right-click to select secondary
+        //todo: automatically deduce Black and Transparent ARGB values based on palette to provide as defaults
+
         public SkaaColorChooser() : base ()
         {
             //turns off the empty boxes at the bottom of the grid

@@ -33,21 +33,15 @@ using SkaaGameDataLib;
 using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
-using System.Data;
-using System.Text;
 using System.Diagnostics;
-using System.Resources;
-using static SkaaEditorUI.Misc;
-using System.Threading.Tasks;
-using System.Threading;
 using Cyotek.Windows.Forms;
-using System.IO.Compression;
+using Capslock.WinForms.ImageEditor;
 
 namespace SkaaEditorUI
 {
     public partial class SkaaEditorMainForm : Form
     {
-        //todo: change all exceptions to Error()
+        //todo: change all exceptions to Misc.Error()
         //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
 
         #region Debugging
@@ -78,21 +72,33 @@ namespace SkaaEditorUI
         private void ConfigSettingsDebug()
         {
             this._debugArgs = new List<DebugArgs>();
-            props.SkaaDataDirectory = @"E:\Programming\GitHubVisualStudio\7kaa\data\";
+
+            if (Directory.Exists(@"E:\Programming\GitHubVisualStudio\7kaa\data\"))
+            {
+                //preset for MILKENVY
+                props.SkaaDataDirectory = @"E:\Programming\GitHubVisualStudio\7kaa\data\";
+            }
+            else if (Directory.Exists(@"E:\Documents\Visual Studio 2015\Projects\7kaa\data"))
+            {
+                //preset for LEMMIWINKS
+                props.SkaaDataDirectory = @"E:\Documents\Visual Studio 2015\Projects\7kaa\data";
+            }
+            
+            if(props.SkaaDataDirectory != string.Empty)
+                this.lbDebugActions.Items.Add("CopySpriteAndSetToSkaaDirectory");
 
             this.btnDebugAction.Visible = true;
             this.btnDebugAction.Click += btnDebugAction_Click;
             this.lbDebugActions.Visible = true;
             //this.lbDebugActions.SelectedValueChanged += LbDebugActions_SelectedValueChanged;
 
-            this.lbDebugActions.Items.Add("CopySpriteAndSetToSkaaDirectory");
             this.lbDebugActions.Items.Add("OpenDefaultBallistaSprite");
             this.lbDebugActions.Items.Add("SaveProjectToDateTimeDirectory");
         }
         [Conditional("DEBUG")]
         private void CopySpriteAndSetToSkaaDirectory()
         {
-            string sender = GetCurrentMethod();
+            string sender = Misc.GetCurrentMethod();
             this.saveSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
             this.saveGameSetToolStripMenuItem_Click(sender, EventArgs.Empty);
 
@@ -131,7 +137,7 @@ namespace SkaaEditorUI
         [Conditional("DEBUG")]
         private void OpenDefaultBallistaSprite()
         {
-            string sender = GetCurrentMethod();
+            string sender = Misc.GetCurrentMethod();
             this._debugArgs = new List<DebugArgs>() { new DebugArgs() { MethodName = "OpenDefaultBallistaSprite", Arg = props.DataDirectory + "ballista.spr" } };
             this.openSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
             this._debugArgs = null;
@@ -146,8 +152,8 @@ namespace SkaaEditorUI
             if (!Directory.Exists(props.ProjectDirectory))
                 Directory.CreateDirectory(props.ProjectDirectory);
 
-            this.saveSpriteToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
-            this.saveGameSetToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
+            this.saveSpriteToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
+            this.saveGameSetToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
         }
         private void btnDebugAction_Click(object sender, EventArgs e)
         {
@@ -225,7 +231,7 @@ namespace SkaaEditorUI
         //todo: add Debug logging throughout
         private TextWriterTraceListener _debugTxtWriter;
         private Properties.Settings props = Properties.Settings.Default;
-        private DrawingTools _selectedTool;
+        private ToolModes _selectedTool;
         #endregion
 
         #region Properties
@@ -283,32 +289,7 @@ namespace SkaaEditorUI
 
         private void DrawingToolbox_SelectedToolChanged(object sender, EventArgs e)
         {
-            this._selectedTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
-            this.imageEditorBox.Cursor = this.drawingToolbox.ToolCursor == null ? Cursors.Default : this.drawingToolbox.ToolCursor;
-
-            switch(this._selectedTool)
-            {
-                case DrawingTools.PaintBucket: //todo: need to detect this and fill, not just pencil draw
-                    break;
-                case DrawingTools.Pencil:
-                    this.imageEditorBox.PanMode = false;
-                    this.imageEditorBox.EditMode = true;
-                    break;
-                case DrawingTools.Pan:
-                    this.imageEditorBox.EditMode = false;
-                    this.imageEditorBox.PanMode = true;
-                    break;
-                case DrawingTools.None:
-                    this.imageEditorBox.PanMode = false;
-                    this.imageEditorBox.EditMode = false;
-                    this.imageEditorBox.Focus(); //prevents the button from remaining highlighted due to focus
-                    break;
-                default:
-                    this.imageEditorBox.EditMode = false;
-                    this.imageEditorBox.PanMode = false;
-                    Trace.WriteLine($"Unknown tool selected: {this._selectedTool.ToString()}");
-                    break;
-            }
+            this.imageEditorBox.ChangeToolMode(sender, e);// (e as DrawingToolSelectedEventArgs).SelectedTool);
         }
     
         /// <summary>
@@ -361,7 +342,6 @@ namespace SkaaEditorUI
 
                 this.colorGridChooser.Colors = new ColorCollection(distinct);
                 this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
-                //this.colorGridChooser.Enabled = true;
             }
             else
             {
@@ -624,7 +604,7 @@ namespace SkaaEditorUI
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                Error("The SkaaImageBox.Image object cannot be null!");
+                Misc.Error("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -639,7 +619,7 @@ namespace SkaaEditorUI
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     if(sender.ToString() == "CopySpriteAndSetToSkaaDirectory") //debugging
-                        AddDebugArg( GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                        AddDebugArg( Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
 
                     this.toolStripStatLbl.Text = "Building Sprite...";
                     ProcessSpriteUpdates();
@@ -656,7 +636,7 @@ namespace SkaaEditorUI
         private void saveGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
-                Error("ActiveProject cannot be null!");
+                Misc.Error("ActiveProject cannot be null!");
 
 
             using (SaveFileDialog dlg = new SaveFileDialog())
@@ -684,7 +664,7 @@ namespace SkaaEditorUI
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     if (sender.ToString() == "CopySpriteAndSetToSkaaDirectory")
-                        AddDebugArg(GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                        AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
 
                     this.toolStripStatLbl.Text = "Saving Game Set...";
                     this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
@@ -695,7 +675,7 @@ namespace SkaaEditorUI
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
-                Error("There is no ActiveProject!");
+                Misc.Error("There is no ActiveProject!");
 
             using (FolderBrowserDialog dlg = new FolderBrowserDialog())
             {
@@ -710,8 +690,8 @@ namespace SkaaEditorUI
                     if (!Directory.Exists(props.ProjectDirectory))
                         Directory.CreateDirectory(props.ProjectDirectory);
 
-                    this.saveSpriteToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
-                    this.saveGameSetToolStripMenuItem_Click(GetCurrentMethod(), EventArgs.Empty);
+                    this.saveSpriteToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
+                    this.saveGameSetToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
                 }
             }
         }       
@@ -803,7 +783,7 @@ namespace SkaaEditorUI
         //    }
         //    if (this.ActiveProject?.ActiveFrame == null)
         //    {
-        //        Error($"Unable to find matching offset in Sprite.Frames for \"{this.ActiveProject.ActiveSprite.SpriteId}\" and offset: {offset.ToString()}.");
+        //        Misc.Error($"Unable to find matching offset in Sprite.Frames for \"{this.ActiveProject.ActiveSprite.SpriteId}\" and offset: {offset.ToString()}.");
         //    }
         //}
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
@@ -812,11 +792,8 @@ namespace SkaaEditorUI
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
-            //// cbEdit.Checked is used as the equivalent of SkaaImageBox.IsDrawing, but IsDrawing 
-            //// is already set to false by the time we get to here since the user is not actively 
-            //// drawing and has released the mouse, firing the OnMouseUp event.
-            //if (this.cbEdit.Checked)
-            if (this._selectedTool == DrawingTools.Pencil)
+            if (this.imageEditorBox.ToolMode != ToolModes.Pan && 
+                this.imageEditorBox.ToolMode != ToolModes.None)
             {
                 FrameIsEdited(this.ActiveProject.ActiveFrame);
             }
@@ -847,6 +824,10 @@ namespace SkaaEditorUI
         private void ActiveProject_PaletteChanged(object sender, EventArgs e)
         {
             SetUpColorGrid();
+            
+            this.imageEditorBox.ActivePrimaryColor = Color.FromArgb(255, 0, 0, 0);
+            this.imageEditorBox.ActiveSecondaryColor = Color.FromArgb(0, 0, 0, 0);
+            //todo: detect transparent color. Color.Transparent is {0,255,255,255} (trans white) but we use {0,0,0,0} (trans black) in pal_std.res.
         }
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -862,7 +843,7 @@ namespace SkaaEditorUI
         private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                Error("The SkaaImageBox.Image object cannot be null!");
+                Misc.Error("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -941,7 +922,7 @@ namespace SkaaEditorUI
         private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                Error("The SkaaImageBox.Image object cannot be null!");
+                Misc.Error("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -971,7 +952,7 @@ namespace SkaaEditorUI
         /// </remarks>
         private void SetActiveColor(Color c)
         {
-            this.imageEditorBox.ActiveColor = c;
+            this.imageEditorBox.ActivePrimaryColor = c;
         }
     }
 }

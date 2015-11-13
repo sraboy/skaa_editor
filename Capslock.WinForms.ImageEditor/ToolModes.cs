@@ -1,10 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<!--
-***************************************************************************
-*   This file is part of SkaaEditor, a binary file editor for 7KAA.
-*
-*   Copyright (C) 2015  Steven Lavoie  steven.lavoiejr@gmail.com
+﻿#region Copyright Notice
+/***************************************************************************
+*   Copyright (C) 2015 Steven Lavoie  steven.lavoiejr@gmail.com
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -24,8 +20,21 @@
 *   Enlight Software's Seven Kingdoms: Ancient Adversaries (7KAA). All code
 *  	is licensed under GPLv3, including any code from Enlight Software. For
 *  	information on 7KAA, visit http://www.7kfans.com.
-***************************************************************************
--->
-<packages>
-  <package id="CyotekImageBox" version="1.1.5.1" targetFramework="net46" />
-</packages>
+***************************************************************************/
+#endregion
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Capslock.WinForms.ImageEditor
+{
+    public enum ToolModes
+    {
+        None,
+        Pan,
+        Pencil,
+        PaintBucket
+    };
+}

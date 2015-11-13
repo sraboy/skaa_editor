@@ -86,10 +86,10 @@ namespace SkaaEditorUI
             this.toolStripStatLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnDebugAction = new System.Windows.Forms.Button();
             this.lbDebugActions = new System.Windows.Forms.ListBox();
-            this.drawingToolbox = new SkaaEditorControls.DrawingToolbox();
+            this.drawingToolbox = new Capslock.WinForms.ImageEditor.DrawingToolbox();
             this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
             this.timelineControl = new SkaaEditorControls.TimelineControl();
-            this.imageEditorBox = new SkaaEditorControls.SkaaImageBox();
+            this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
@@ -377,7 +377,7 @@ namespace SkaaEditorUI
             // 
             // imageEditorBox
             // 
-            this.imageEditorBox.ActiveColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
             this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -478,7 +478,7 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private SkaaEditorControls.SkaaImageBox imageEditorBox;
+        private Capslock.WinForms.ImageEditor.ImageEditorBox imageEditorBox;
         private System.Windows.Forms.Button btnDebugAction;
         private SkaaEditorControls.TimelineControl timelineControl;
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
@@ -489,7 +489,6 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exportAllFramesTo32bppBmpToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatLbl;
-        private System.Windows.Forms.ColorDialog colorDialog1;
         private SkaaColorChooser colorGridChooser;
         private System.Windows.Forms.ListBox lbDebugActions;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -503,7 +502,7 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private DrawingToolbox drawingToolbox;
+        private Capslock.WinForms.ImageEditor.DrawingToolbox drawingToolbox;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripButton toolStripButton2;

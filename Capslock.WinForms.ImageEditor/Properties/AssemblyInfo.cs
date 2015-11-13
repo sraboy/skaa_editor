@@ -25,17 +25,16 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SkaaEditorControls")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Capslock.WinForms.ImageEditor")]
+[assembly: AssemblyDescription("An editable implementation of Cyotek's ImageBox with supporting classes.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © Steven Lavoie")]
+[assembly: AssemblyProduct("Capslock.WinForms.ImageEditor")]
+[assembly: AssemblyCopyright("Copyright © 2015 Steven Lavoie")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -45,7 +44,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("818bbde0-1494-4e7e-9cb3-4e5519a9cdbc")]
+[assembly: Guid("89f261ab-a077-4198-9640-24d6728f0451")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -58,5 +57,4 @@ using System.Resources;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.15317.11")]
-[assembly: NeutralResourcesLanguageAttribute("en-US")]
+[assembly: AssemblyFileVersion("1.0.15317.13")]
