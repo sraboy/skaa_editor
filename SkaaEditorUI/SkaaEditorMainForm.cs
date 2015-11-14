@@ -496,6 +496,10 @@ namespace SkaaEditorUI
             this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
             this.ActiveProject = null;
+
+            this.timelineControl.ActiveFrame = null;
+            this.timelineControl.ActiveSprite = null;
+            this.imageEditorBox.Image = null;
         }
 
         #endregion
@@ -750,7 +754,6 @@ namespace SkaaEditorUI
             if(!CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite))
             {
                 CloseProject();
-                SetupUI();
             }
             else
             {
