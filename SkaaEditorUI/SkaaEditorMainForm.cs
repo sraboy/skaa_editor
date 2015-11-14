@@ -295,7 +295,7 @@ namespace SkaaEditorUI
         {
             props.ApplicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + '\\';
             Trace.AutoFlush = true;
-            Misc.Logger.TraceInformation($"Log started: {string.Concat(DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString())}");
+            Misc.Logger.TraceEvent(TraceEventType.Start, 0, $"Log started: {string.Concat(DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString())}");
 
             props.DataDirectory = props.ApplicationDirectory + "data\\";
             props.TempDirectory = props.ApplicationDirectory + "temp\\";
