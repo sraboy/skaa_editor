@@ -294,6 +294,8 @@ namespace Capslock.WinForms.ImageEditor
 
         protected virtual void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
+            //courtesy http://rosettacode.org/wiki/Bitmap/Flood_fill
+
             Queue<Point> q = new Queue<Point>();
             q.Enqueue(pt);
 
@@ -323,68 +325,6 @@ namespace Capslock.WinForms.ImageEditor
                 }
             }
         }
-
-        //protected virtual void Fill(Point node, Color targetPixelColor, Color replacementColor)
-        //{
-        //    bool alpha = targetPixelColor.A == replacementColor.A;
-        //    bool red = targetPixelColor.R == replacementColor.R;
-        //    bool green = targetPixelColor.G == replacementColor.G;
-        //    bool blue = targetPixelColor.B == replacementColor.B;
-        //    if (alpha && red && green && blue)
-        //        return;
-        //    Queue<Point> points = new Queue<Point>();
-        //    points.Enqueue(node);
-        //    Point editingPoint, north, south, east, west;
-        //    while (points.Count > 0)
-        //    {
-        //        editingPoint = points.Dequeue();
-        //        targetPixelColor = this.fbmp.GetPixel(editingPoint.X, editingPoint.Y);
-        //        alpha = targetPixelColor.A == replacementColor.A;
-        //        red = targetPixelColor.R == replacementColor.R;
-        //        green = targetPixelColor.G == replacementColor.G;
-        //        blue = targetPixelColor.B == replacementColor.B;
-        //        if (!(alpha && red && green && blue))
-        //            this.fbmp.SetPixel(editingPoint.X, editingPoint.Y, replacementColor);
-        //        else //they're the same
-        //        {
-        //            if(points.Count > 0)
-        //                points.Dequeue();
-        //            continue;
-        //        }
-        //        if (editingPoint.Y - 1 > 0)
-        //        {
-        //            north = editingPoint;
-        //            north.Y--;
-        //            points.Enqueue(north);
-        //        }
-        //        else
-        //            north = Point.Empty;
-        //        if (editingPoint.Y + 1 < this.Image.Height)
-        //        {
-        //            south = editingPoint;
-        //            south.Y++;
-        //            points.Enqueue(south);
-        //        }
-        //        else
-        //            south = Point.Empty;
-        //        if (editingPoint.X + 1 < this.Image.Width)
-        //        {
-        //            east = editingPoint;
-        //            east.X++;
-        //            points.Enqueue(east);
-        //        }
-        //        else
-        //            east = Point.Empty;
-        //        if (editingPoint.X - 1 > 0)
-        //        {
-        //            west = editingPoint;
-        //            west.X--;
-        //            points.Enqueue(west);
-        //        }
-        //        else
-        //            west = Point.Empty;
-        //    }            
-        //}
 
         protected virtual void PencilDraw(MouseEventArgs e)
         {
