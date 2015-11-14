@@ -193,6 +193,7 @@ namespace SkaaGameDataLib
         /// <summary>
         /// Saves the new 32-bit BMP and generates new SPR data based on the edited <see cref="Bitmap"/>
         /// </summary>
+        /// <param name="bmp">The <see cref="Bitmap"/> object from which to get updates.</param>
         internal void ProcessUpdates(Bitmap bmp)
         {
             if (this.PendingChanges == true)

@@ -145,19 +145,25 @@ namespace SkaaEditorUI
         [Conditional("DEBUG")]
         private void OpenDefaultBallistaSprite()
         {
-            string sender = Misc.GetCurrentMethod();
-            this._debugArgs = new List<DebugArgs>() { new DebugArgs() { MethodName = "OpenDefaultBallistaSprite", Arg = props.DataDirectory + "ballista.spr" } };
-            this.openSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
-            this._debugArgs = null;
+            NewProject();
+
+            if (this.ActiveProject.LoadSprite(props.DataDirectory + "ballista.spr") != null)
+            {
+                this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+                this.exportBmpToolStripMenuItem.Enabled = true;
+                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+            }
+            
         }
         [Conditional("DEBUG")]
         private void SaveProjectToDateTimeDirectory()
         {
-            string projectName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHmm");
-            props.ProjectDirectory = props.ProjectsDirectory + projectName;
+            //string projectName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHmm");
+            //props.ProjectDirectory = props.ProjectsDirectory + projectName;
 
-            if (!Directory.Exists(props.ProjectDirectory))
-                Directory.CreateDirectory(props.ProjectDirectory);
+            //if (!Directory.Exists(props.ProjectDirectory))
+            //    Directory.CreateDirectory(props.ProjectDirectory);
 
             object sender = Misc.GetCurrentMethod();
 
@@ -234,7 +240,6 @@ namespace SkaaEditorUI
 
         #region Private Members
         private Project _activeProject;
-        //private TextWriterTraceListener _debugTxtWriter;
         private Properties.Settings props = Properties.Settings.Default;
         #endregion
 
@@ -399,17 +404,6 @@ namespace SkaaEditorUI
         }
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-#if DEBUG
-            if (sender.ToString() == "OpenDefaultBallistaSprite")
-            {
-                this.ActiveProject.LoadSprite(this._debugArgs[0].Arg.ToString());
-                this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                this.exportBmpToolStripMenuItem.Enabled = true;
-                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-                return;
-            }
-#endif
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
@@ -418,12 +412,13 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    this.ActiveProject.LoadSprite(dlg.FileName);
-                    this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-
-                    this.exportBmpToolStripMenuItem.Enabled = true;
-                    this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                    this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                    if (this.ActiveProject.LoadSprite(dlg.FileName) != null)
+                    {
+                        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+                        this.exportBmpToolStripMenuItem.Enabled = true;
+                        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                    }
                 }
             }
         }
@@ -464,27 +459,31 @@ namespace SkaaEditorUI
             if (this.imageEditorBox.Image == null)
                 Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
 
-            using (SaveFileDialog dlg = new SaveFileDialog())
+            bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+            if (changes)
             {
-                dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
-                dlg.DefaultExt = props.SpriteFileExtension;
-                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
-                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
-
-                if (dlg.ShowDialog() == DialogResult.OK)
+                using (SaveFileDialog dlg = new SaveFileDialog())
                 {
-                    this.toolStripStatLbl.Text = "Building Sprite...";
-                    ProcessSpriteUpdates();
+                    dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
+                    dlg.DefaultExt = props.SpriteFileExtension;
+                    dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
+                    dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
 
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
+                    if (dlg.ShowDialog() == DialogResult.OK)
                     {
-                        byte[] save = this.ActiveProject.ActiveSprite.Resource.SprData;
-                        fs.Write(save, 0, Buffer.ByteLength(save));
+                        this.toolStripStatLbl.Text = "Building Sprite...";
+                        ProcessSpriteUpdates();
 
-                        AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                        using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
+                        {
+                            byte[] save = this.ActiveProject.ActiveSprite.Resource.SprData;
+                            fs.Write(save, 0, Buffer.ByteLength(save));
+
+                            AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                        }
+                        this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
+                        this.toolStripStatLbl.Text = string.Empty;
                     }
-                    this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
-                    this.toolStripStatLbl.Text = string.Empty;
                 }
             }
         }
@@ -493,30 +492,34 @@ namespace SkaaEditorUI
             if (this.ActiveProject == null)
                 Misc.LogMessage("ActiveProject cannot be null!");
 
-            using (SaveFileDialog dlg = new SaveFileDialog())
+            bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+            if (changes)
             {
-                dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
-                dlg.DefaultExt = props.GameSetFileExtension;
-                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
-
-                if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
+                using (SaveFileDialog dlg = new SaveFileDialog())
                 {
-                    this.toolStripStatLbl.Text = "Building Sprite...";
-                    ProcessSpriteUpdates();
-                    this.toolStripStatLbl.Text = string.Empty;
-                }
-                else
-                    return;
+                    dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
+                    dlg.DefaultExt = props.GameSetFileExtension;
+                    dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
 
-                dlg.FileName = "std.set";
+                    if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
+                    {
+                        this.toolStripStatLbl.Text = "Building Sprite...";
+                        ProcessSpriteUpdates();
+                        this.toolStripStatLbl.Text = string.Empty;
+                    }
+                    else
+                        return;
 
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    this.toolStripStatLbl.Text = "Saving Game Set...";
-                    this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
-                    this.toolStripStatLbl.Text = string.Empty;
+                    dlg.FileName = "std.set";
 
-                    AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        this.toolStripStatLbl.Text = "Saving Game Set...";
+                        this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
+                        this.toolStripStatLbl.Text = string.Empty;
+
+                        AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                    }
                 }
             }
         }
@@ -730,7 +733,8 @@ namespace SkaaEditorUI
         
         private void ProcessSpriteUpdates()
         {
-            this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            this.ActiveProject.ProcessUpdates(this.ActiveProject.ActiveFrame, this.imageEditorBox.Image as Bitmap);
+            //this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
         }
         /// <summary>
         /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,

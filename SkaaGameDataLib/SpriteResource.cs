@@ -179,7 +179,21 @@ namespace SkaaGameDataLib
 
             return true;
         }
-
+        /// <summary>
+        /// Calls <see cref="SpriteFrame.ProcessUpdates(Bitmap)"/> on the specified <see cref="SpriteFrame"/> and
+        /// updates <see cref="SpriteFrame.SprBitmapOffset"/> in order to rebuild <see cref="SpriteResource._sprData"/>.
+        /// </summary>
+        /// <param name="frameToUpdate">The frame that needs to be updated</param>
+        /// <param name="bmpWithChanges">The <see cref="Bitmap"/> from which to get the updates</param>
+        /// <remarks>
+        /// Since the <see cref="SpriteFrame"/> is never edited directly (a <see cref="Bitmap"/> representation is what 
+        /// gets presented to the user), the UI must pass this updated <see cref="Bitmap"/> to the <see cref="SpriteFrame"/>
+        /// so that it can update itself internally.
+        /// 
+        /// This should not be done manually, by calling <see cref="SpriteFrame.ProcessUpdates(Bitmap)"/>, unless the 
+        /// <see cref="SpriteFrame"/> is 100% stand-alone. If it's part of a <see cref="Sprite"/>, the other <see cref="SpriteFrame"/>
+        /// objects must have their offsets updated.
+        /// </remarks>
         public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
         {
             //update the bitmap, if frameToUpdate.PendingChanges is true
@@ -198,7 +212,7 @@ namespace SkaaGameDataLib
                 offset += sf.FrameRawData.Length;
                 Debug.Assert(sf.FrameRawData != null, $"Sprite {sf.ParentSprite.SpriteId}'s SpriteFrame's FrameRawData is null!");
                 
-                //we depend on short-circuit evaluation here.If i isn't less then the Frames.Count - 1, 
+                //we depend on short-circuit evaluation here. If i isn't less then the Frames.Count - 1, 
                 //we'll end up with an out-of-bounds exception. We can't just test for PendingChanges because
                 //changes in one SpriteFrame will affect offsets in others, not in itself.
                 if ((i < spr.Frames.Count - 1) && (spr.Frames[i + 1].SprBitmapOffset != offset))

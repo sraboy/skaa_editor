@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SkaaGameDataLib")]
-[assembly: AssemblyDescription("This library contains C# ports of some classes from Seven Kingdoms: Ancient Adversaries and other classes for the use of game binaries.")]
+[assembly: AssemblyTitle("UnitTestProject1")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SkaaGameDataLib")]
-[assembly: AssemblyCopyright("Copyright © Steven Lavoie 2015")]
+[assembly: AssemblyProduct("UnitTestProject1")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("883cd968-177f-4ec4-a421-cd7c7313a72f")]
+[assembly: Guid("a00cb25f-5df6-4430-b2a3-4c871dd5df4d")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.15318.13")]
+[assembly: AssemblyFileVersion("1.0.15318.26")]

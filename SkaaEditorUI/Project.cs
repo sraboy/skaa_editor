@@ -287,7 +287,10 @@ namespace SkaaEditorUI
         public Sprite LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
+            { 
                 Misc.LogMessage("Cannot load a Sprite if the ActivePalette is null.");
+                return null;
+            }
 
             //have to keep the event from firing before the sprite is loaded, so don't mess with ActiveSprite yet
             Sprite spr = new Sprite(this.ActivePalette);
@@ -329,7 +332,13 @@ namespace SkaaEditorUI
         /// </remarks>
         public void LoadNewSprite(string filepath)
         {
-            this.UnsavedSprites.Add(this.LoadSprite(filepath));
+            Sprite spr = this.LoadSprite(filepath);
+            this.UnsavedSprites.Add(spr);
+        }
+
+        public void ProcessUpdates(SpriteFrame sf, Bitmap bmp)
+        {
+            this.ActiveSprite.Resource.ProcessUpdates(sf, bmp);
         }
     }
 }
