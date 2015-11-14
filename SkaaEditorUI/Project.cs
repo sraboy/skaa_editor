@@ -232,6 +232,7 @@ namespace SkaaEditorUI
                 filepath = props.DataDirectory + props.DefaultGameSetFile;
 
             this.ActiveGameSet = new SkaaGameSet(filepath, props.TempDirectory);
+            GetSetSpriteDataView();
         }
 
         /// <summary>
@@ -304,12 +305,18 @@ namespace SkaaEditorUI
 
             spr.Resource.FileName = Path.GetFileName(filepath);
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-            DataView dv = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
-            spr.SetSpriteDataView(dv);
 
             this.ActiveSprite = spr;
-
+            GetSetSpriteDataView();
             return spr;
+        }
+        private void GetSetSpriteDataView()
+        {
+            if (this.ActiveSprite != null)
+            {
+                DataView dv = this.ActiveGameSet?.GetSpriteDataView(this.ActiveSprite.SpriteId);
+                this.ActiveSprite.SetSpriteDataView(dv);
+            }
         }
         /// <summary>
         /// Serves as a wrapper to <see cref="Project.LoadSprite(string)"/> and adds the loaded sprite to 

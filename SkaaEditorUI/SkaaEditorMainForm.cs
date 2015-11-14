@@ -42,6 +42,7 @@ namespace SkaaEditorUI
     {
         //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
         //todo: add Debug logging throughout, eliminate "Calculating colors..."
+
         #region Debugging
 #if DEBUG
         //Keep all variables, etc in the #if/#endif tags and create [Conditional("DEBUG")]
@@ -318,6 +319,7 @@ namespace SkaaEditorUI
                 IEnumerable<Color> distinct = entries.Distinct();
                 this.colorGridChooser.Colors = new ColorCollection(distinct);
                 this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+                this.colorGridChooser.Enabled = true;
             }
             else
             {
@@ -628,7 +630,7 @@ namespace SkaaEditorUI
         }
         private void ActiveProject_PaletteChanged(object sender, EventArgs e)
         {
-            SetUpColorGrid();
+            SetupUI();
             SetDefaultActiveColors();
         }
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
