@@ -117,7 +117,6 @@ namespace SkaaGameDataLib
             }
         }
         #endregion
-        //public bool PendingChanges;
 
         #region Constructors
         public Sprite(ColorPalette pal)
@@ -129,8 +128,16 @@ namespace SkaaGameDataLib
 
         public bool SetSpriteDataView(DataView dv)
         {
-            this.Resource.SpriteDataView = dv;
-            return this.Resource.MatchFrameOffsets(this);
+            if (dv != null)
+            {
+                this.Resource.SpriteDataView = dv;
+                return this.Resource.MatchFrameOffsets(this);
+            }
+            else
+            {
+                Trace.WriteLine($"No DataView assigned to {this.SpriteId}");
+                return false;
+            }
         }
     }
 }
