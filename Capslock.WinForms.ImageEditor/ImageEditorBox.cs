@@ -265,6 +265,15 @@ namespace Capslock.WinForms.ImageEditor
         }
         #endregion
 
+        public ImageEditorBox() : base()
+        {
+            //have to load these dynamically since they're not just black/white
+            var str = this.GetType().Assembly.GetManifestResourceNames();
+            this._panCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur")));
+            this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
+            this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
+        }
+
         protected virtual void PaintBucketFill(MouseEventArgs e)
         {
             this.IsDrawing = true;
@@ -279,7 +288,7 @@ namespace Capslock.WinForms.ImageEditor
                 {
                     this.fbmp = new FastBitmap(this.Image as Bitmap);
                     this.fbmp.LockImage();
-                    FloodFill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y),this.ActivePrimaryColor);
+                    FloodFill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y), this.ActivePrimaryColor);
                     this.fbmp.UnlockImage();
                 }
 
@@ -289,7 +298,7 @@ namespace Capslock.WinForms.ImageEditor
 
         private static bool ColorMatch(Color a, Color b)
         {
-            return (a.ToArgb() & 0xffffff) == (b.ToArgb() & 0xffffff);
+            return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff);
         }
 
         protected virtual void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
@@ -357,21 +366,6 @@ namespace Capslock.WinForms.ImageEditor
                 
                 this.Invalidate(this.ViewPortRectangle);
             }
-        }
-
-        public ImageEditorBox() : base()
-        {
-            //have to load these dynamically since they're not just black/white
-            var str = this.GetType().Assembly.GetManifestResourceNames();
-            this._panCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur")));
-            this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
-            this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
-            
-            //this._panToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur"));
-            //this._pencilToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur"));
-            //this._paintBucketToolCursorStream = this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur"));
-
-            //this.ImageChanged += ImageEditorBox_ImageChanged;
         }
 
         public virtual void ChangeToolMode(object sender, EventArgs e)//ToolModes vm)
