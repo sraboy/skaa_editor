@@ -44,18 +44,12 @@ namespace SkaaEditorUI
         //todo: add Debug logging throughout, eliminate "Calculating colors..."
 
         #region Debugging
-#if DEBUG
-        //Keep all variables, etc in the #if/#endif tags and create [Conditional("DEBUG")]
-        //methods outside the tags. This will prevent us from having to remove/comment out 
-        //all the debug-only members as calls to the methods can remain and will not be
-        //built in the Release configuration.
         private List<DebugArgs> _debugArgs;
         private class DebugArgs
         {
             public string MethodName;
             public object Arg;
         }
-#endif
 
         /* Keep methods outside the #if so we don't have to remove calls 
          * to them throughout the code or use #if checks there. They'll 

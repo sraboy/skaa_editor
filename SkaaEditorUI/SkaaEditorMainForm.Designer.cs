@@ -91,10 +91,10 @@ namespace SkaaEditorUI
             this.timelineControl = new SkaaEditorControls.TimelineControl();
             this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripBtnNewProject = new System.Windows.Forms.ToolStripButton();
+            this.toolStripBtnOpenProject = new System.Windows.Forms.ToolStripButton();
+            this.toolStripBtnSaveProject = new System.Windows.Forms.ToolStripButton();
+            this.toolStripBtnCloseProject = new System.Windows.Forms.ToolStripButton();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -378,6 +378,7 @@ namespace SkaaEditorUI
             // imageEditorBox
             // 
             this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
             this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -391,51 +392,59 @@ namespace SkaaEditorUI
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.toolStripButton2,
-            this.toolStripButton3,
-            this.toolStripButton4});
+            this.toolStripBtnNewProject,
+            this.toolStripBtnOpenProject,
+            this.toolStripBtnSaveProject,
+            this.toolStripBtnCloseProject});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1023, 25);
             this.toolStrip1.TabIndex = 17;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripButton1
+            // toolStripBtnNewProject
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::SkaaEditorUI.Properties.Resources.MenuFileNewIcon;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripBtnNewProject.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripBtnNewProject.Image = global::SkaaEditorUI.Properties.Resources.MenuFileNewIcon;
+            this.toolStripBtnNewProject.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripBtnNewProject.Name = "toolStripBtnNewProject";
+            this.toolStripBtnNewProject.Size = new System.Drawing.Size(23, 22);
+            this.toolStripBtnNewProject.Text = "toolStripButton1";
+            this.toolStripBtnNewProject.ToolTipText = "New Project";
+            this.toolStripBtnNewProject.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
-            // toolStripButton2
+            // toolStripBtnOpenProject
             // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = global::SkaaEditorUI.Properties.Resources.MenuFileOpenIcon;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton2.Text = "toolStripButton2";
+            this.toolStripBtnOpenProject.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripBtnOpenProject.Image = global::SkaaEditorUI.Properties.Resources.MenuFileOpenIcon;
+            this.toolStripBtnOpenProject.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripBtnOpenProject.Name = "toolStripBtnOpenProject";
+            this.toolStripBtnOpenProject.Size = new System.Drawing.Size(23, 22);
+            this.toolStripBtnOpenProject.Text = "toolStripButton2";
+            this.toolStripBtnOpenProject.ToolTipText = "Open Project";
+            this.toolStripBtnOpenProject.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
             // 
-            // toolStripButton3
+            // toolStripBtnSaveProject
             // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = global::SkaaEditorUI.Properties.Resources.MenuFileSaveIcon;
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton3.Text = "toolStripButton3";
+            this.toolStripBtnSaveProject.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripBtnSaveProject.Image = global::SkaaEditorUI.Properties.Resources.MenuFileSaveIcon;
+            this.toolStripBtnSaveProject.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripBtnSaveProject.Name = "toolStripBtnSaveProject";
+            this.toolStripBtnSaveProject.Size = new System.Drawing.Size(23, 22);
+            this.toolStripBtnSaveProject.Text = "toolStripButton3";
+            this.toolStripBtnSaveProject.ToolTipText = "Save Project";
+            this.toolStripBtnSaveProject.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
-            // toolStripButton4
+            // toolStripBtnCloseProject
             // 
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton4.Image = global::SkaaEditorUI.Properties.Resources.MenuFileCloseIcon;
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton4.Text = "toolStripButton4";
+            this.toolStripBtnCloseProject.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripBtnCloseProject.Image = global::SkaaEditorUI.Properties.Resources.MenuFileCloseIcon;
+            this.toolStripBtnCloseProject.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripBtnCloseProject.Name = "toolStripBtnCloseProject";
+            this.toolStripBtnCloseProject.Size = new System.Drawing.Size(23, 22);
+            this.toolStripBtnCloseProject.Text = "toolStripButton4";
+            this.toolStripBtnCloseProject.ToolTipText = "Close Project";
+            this.toolStripBtnCloseProject.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
             // SkaaEditorMainForm
             // 
@@ -504,9 +513,9 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private Capslock.WinForms.ImageEditor.DrawingToolbox drawingToolbox;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
-        private System.Windows.Forms.ToolStripButton toolStripButton3;
-        private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.ToolStripButton toolStripBtnNewProject;
+        private System.Windows.Forms.ToolStripButton toolStripBtnOpenProject;
+        private System.Windows.Forms.ToolStripButton toolStripBtnSaveProject;
+        private System.Windows.Forms.ToolStripButton toolStripBtnCloseProject;
     }
 }
