@@ -163,7 +163,7 @@ namespace SkaaEditorControls
 
         protected virtual void OnActiveFrameChanged(EventArgs e)
         {
-            this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
+            this._activeFrameIndex = this.ActiveSprite == null ? 0 : this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
             this.picBoxFrame.Image = this._activeFrame?.ImageBmp;
             this.frameSlider.Value = this._activeFrameIndex >= 0 ? this._activeFrameIndex : 0;
         }
