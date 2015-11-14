@@ -258,9 +258,133 @@ namespace Capslock.WinForms.ImageEditor
                 OnImageUpdated(EventArgs.Empty);
             }
 
+            if(this.ToolMode == ToolModes.PaintBucket)
+                this.PaintBucketFill(e);
+           
             base.OnMouseUp(e);
         }
         #endregion
+
+        protected virtual void PaintBucketFill(MouseEventArgs e)
+        {
+            this.IsDrawing = true;
+            this.IsSelecting = false;
+            this.IsPanning = false;
+
+            Point currentPoint = this.PointToImage(e.X, e.Y);
+
+            if ((currentPoint.X < Image.Width && currentPoint.Y < Image.Height) && (currentPoint.X >= 0 && currentPoint.Y >= 0))
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    this.fbmp = new FastBitmap(this.Image as Bitmap);
+                    this.fbmp.LockImage();
+                    FloodFill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y),this.ActivePrimaryColor);
+                    this.fbmp.UnlockImage();
+                }
+
+                this.Invalidate(this.ViewPortRectangle);
+            }
+        }
+
+        private static bool ColorMatch(Color a, Color b)
+        {
+            return (a.ToArgb() & 0xffffff) == (b.ToArgb() & 0xffffff);
+        }
+
+        protected virtual void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        {
+            Queue<Point> q = new Queue<Point>();
+            q.Enqueue(pt);
+
+            while (q.Count > 0)
+            {
+                Point n = q.Dequeue();
+                if (!ColorMatch(this.fbmp.GetPixel(n.X, n.Y), targetColor))
+                    continue;
+                Point w = n, e = new Point(n.X + 1, n.Y);
+                while ((w.X > 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y), targetColor))
+                {
+                    this.fbmp.SetPixel(w.X, w.Y, replacementColor);
+                    if ((w.Y > 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y - 1), targetColor))
+                        q.Enqueue(new Point(w.X, w.Y - 1));
+                    if ((w.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y + 1), targetColor))
+                        q.Enqueue(new Point(w.X, w.Y + 1));
+                    w.X--;
+                }
+                while ((e.X < bmp.Width - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y), targetColor))
+                {
+                    this.fbmp.SetPixel(e.X, e.Y, replacementColor);
+                    if ((e.Y > 0) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y - 1), targetColor))
+                        q.Enqueue(new Point(e.X, e.Y - 1));
+                    if ((e.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y + 1), targetColor))
+                        q.Enqueue(new Point(e.X, e.Y + 1));
+                    e.X++;
+                }
+            }
+        }
+
+        //protected virtual void Fill(Point node, Color targetPixelColor, Color replacementColor)
+        //{
+        //    bool alpha = targetPixelColor.A == replacementColor.A;
+        //    bool red = targetPixelColor.R == replacementColor.R;
+        //    bool green = targetPixelColor.G == replacementColor.G;
+        //    bool blue = targetPixelColor.B == replacementColor.B;
+        //    if (alpha && red && green && blue)
+        //        return;
+        //    Queue<Point> points = new Queue<Point>();
+        //    points.Enqueue(node);
+        //    Point editingPoint, north, south, east, west;
+        //    while (points.Count > 0)
+        //    {
+        //        editingPoint = points.Dequeue();
+        //        targetPixelColor = this.fbmp.GetPixel(editingPoint.X, editingPoint.Y);
+        //        alpha = targetPixelColor.A == replacementColor.A;
+        //        red = targetPixelColor.R == replacementColor.R;
+        //        green = targetPixelColor.G == replacementColor.G;
+        //        blue = targetPixelColor.B == replacementColor.B;
+        //        if (!(alpha && red && green && blue))
+        //            this.fbmp.SetPixel(editingPoint.X, editingPoint.Y, replacementColor);
+        //        else //they're the same
+        //        {
+        //            if(points.Count > 0)
+        //                points.Dequeue();
+        //            continue;
+        //        }
+        //        if (editingPoint.Y - 1 > 0)
+        //        {
+        //            north = editingPoint;
+        //            north.Y--;
+        //            points.Enqueue(north);
+        //        }
+        //        else
+        //            north = Point.Empty;
+        //        if (editingPoint.Y + 1 < this.Image.Height)
+        //        {
+        //            south = editingPoint;
+        //            south.Y++;
+        //            points.Enqueue(south);
+        //        }
+        //        else
+        //            south = Point.Empty;
+        //        if (editingPoint.X + 1 < this.Image.Width)
+        //        {
+        //            east = editingPoint;
+        //            east.X++;
+        //            points.Enqueue(east);
+        //        }
+        //        else
+        //            east = Point.Empty;
+        //        if (editingPoint.X - 1 > 0)
+        //        {
+        //            west = editingPoint;
+        //            west.X--;
+        //            points.Enqueue(west);
+        //        }
+        //        else
+        //            west = Point.Empty;
+        //    }            
+        //}
 
         protected virtual void PencilDraw(MouseEventArgs e)
         {
