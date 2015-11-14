@@ -37,7 +37,6 @@ using System.Runtime.Serialization;
 using System.Data;
 using System.Drawing.Imaging;
 using System.Drawing;
-using static SkaaEditorUI.Misc;
 using System.Diagnostics;
 
 namespace SkaaEditorUI
@@ -307,7 +306,7 @@ namespace SkaaEditorUI
         public void LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
-                throw new Exception("Cannot load a Sprite if the ActivePalette is null.");
+                Misc.Error("Cannot load a Sprite if the ActivePalette is null.");
 
             //cant use the property here or we'll fire the event before we've finished loading
             Sprite spr = new Sprite(this.ActivePalette);

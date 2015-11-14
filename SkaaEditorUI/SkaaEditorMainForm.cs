@@ -46,20 +46,30 @@ namespace SkaaEditorUI
 
         #region Debugging
 #if DEBUG
+        //Keep all variables, etc in the #if/#endif tags and create [Conditional("DEBUG")]
+        //methods outside the tags. This will prevent us from having to remove/comment out 
+        //all the debug-only members as calls to the methods can remain and will not be
+        //built in the Release configuration.
         private List<DebugArgs> _debugArgs;
         private class DebugArgs
         {
             public string MethodName;
             public object Arg;
         }
-        //private List<string> DebugActions;
 #endif
-        
+
         /* Keep methods outside the #if so we don't have to remove calls 
          * to them throughout the code or use #if checks there. They'll 
          * always get built but won't be called in release mode. This 
          * isn't possible with non-void methods or event handlers.
          */
+        /// <summary>
+        /// When debugging, creates and adds a new <see cref="DebugArgs"/> object 
+        /// to the <see cref="SkaaEditorMainForm._debugArgs"/> List. This is 
+        /// essentially a dirty hack for easy debugging with a global variable.
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <param name="arg"></param>
         [Conditional("DEBUG")]
         private void AddDebugArg(string methodName, object arg)
         {
@@ -68,39 +78,40 @@ namespace SkaaEditorUI
 
             this._debugArgs.Add(new DebugArgs() { MethodName = methodName, Arg = arg });
         }
+        /// <summary>
+        /// Configures settings for debugging/development.
+        /// </summary>
         [Conditional("DEBUG")]
         private void ConfigSettingsDebug()
         {
             this._debugArgs = new List<DebugArgs>();
-
-            if (Directory.Exists(@"E:\Programming\GitHubVisualStudio\7kaa\data\"))
-            {
-                //preset for MILKENVY
-                props.SkaaDataDirectory = @"E:\Programming\GitHubVisualStudio\7kaa\data\";
-            }
-            else if (Directory.Exists(@"E:\Documents\Visual Studio 2015\Projects\7kaa\data"))
-            {
-                //preset for LEMMIWINKS
-                props.SkaaDataDirectory = @"E:\Documents\Visual Studio 2015\Projects\7kaa\data";
-            }
-            
-            if(props.SkaaDataDirectory != string.Empty)
-                this.lbDebugActions.Items.Add("CopySpriteAndSetToSkaaDirectory");
-
             this.btnDebugAction.Visible = true;
             this.btnDebugAction.Click += btnDebugAction_Click;
             this.lbDebugActions.Visible = true;
-            //this.lbDebugActions.SelectedValueChanged += LbDebugActions_SelectedValueChanged;
+
+            //////////////////////// sraboy-targets on my dev boxes ////////////////////////
+            string skaaMilkEnvy = @"E:\Programming\GitHubVisualStudio\7kaa\data\";
+            string skaaLemmiwinks = @"E:\Nerd\c_and_c++\7kaa\data";
+            if (Directory.Exists(skaaMilkEnvy))
+                props.SkaaDataDirectory = skaaMilkEnvy;
+            else if (Directory.Exists(skaaLemmiwinks))
+                props.SkaaDataDirectory = skaaLemmiwinks;
+            if(props.SkaaDataDirectory != string.Empty)
+                this.lbDebugActions.Items.Add("SaveAndCopyProject");
+            ////////////////////////////////////////////////////////////////////////////////
 
             this.lbDebugActions.Items.Add("OpenDefaultBallistaSprite");
             this.lbDebugActions.Items.Add("SaveProjectToDateTimeDirectory");
         }
+        /// <summary>
+        /// Saves the current project files and copies them to the relevant 7KAA
+        /// data directories so we can just run 7KAA and ensure the files are 
+        /// in the correct format.
+        /// </summary>
         [Conditional("DEBUG")]
-        private void CopySpriteAndSetToSkaaDirectory()
+        private void SaveAndCopyProject() 
         {
-            string sender = Misc.GetCurrentMethod();
-            this.saveSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
-            this.saveGameSetToolStripMenuItem_Click(sender, EventArgs.Empty);
+            SaveProjectToDateTimeDirectory();
 
             foreach (DebugArgs arg in this._debugArgs)
             {
@@ -130,8 +141,6 @@ namespace SkaaEditorUI
                         File.Copy((string) arg.Arg, ballistaFile, true);
                         break;
                 }
-
-                this._debugArgs = null;
             }
         }
         [Conditional("DEBUG")]
@@ -145,15 +154,17 @@ namespace SkaaEditorUI
         [Conditional("DEBUG")]
         private void SaveProjectToDateTimeDirectory()
         {
-            ProcessSpriteUpdates();
-            string projectName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHMM");
+            //ProcessSpriteUpdates();
+            string projectName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHmm");
             props.ProjectDirectory = props.ProjectsDirectory + projectName;
 
             if (!Directory.Exists(props.ProjectDirectory))
                 Directory.CreateDirectory(props.ProjectDirectory);
 
-            this.saveSpriteToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
-            this.saveGameSetToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
+            object sender = Misc.GetCurrentMethod();
+
+            this.saveSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
+            this.saveGameSetToolStripMenuItem_Click(sender, EventArgs.Empty);
         }
         private void btnDebugAction_Click(object sender, EventArgs e)
         {
@@ -164,15 +175,14 @@ namespace SkaaEditorUI
                 debugMethod.Invoke(this, null);
             }
 
+            this._debugArgs = null;
             //SkaaSAVEditorTest savEditor = new SkaaSAVEditorTest();
             //savEditor.Show();
 
-            //UpdateSprite();
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Hue);
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Brightness);
             //this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
         }
-
         #endregion
 
         #region Event Handlers
@@ -468,15 +478,15 @@ namespace SkaaEditorUI
         {
             IEnumerable<string> setFiles = Directory.EnumerateFiles(projectPath, "*.set");
             if (setFiles.Count() > 1) //todo: allow user to select which to load
-                throw new Exception("Please select a directory with only one SET file!");
+                Misc.Error("Please select a directory with only one SET file!");
             else if (setFiles.Count() == 0)
-                throw new Exception("Please select a directory with at least one SET file!");
+                Misc.Error("Please select a directory with at least one SET file!");
 
             IEnumerable<string> sprFiles = Directory.EnumerateFiles(projectPath, "*.spr");
             if (sprFiles.Count() > 1) //todo: allow user to select which to load
-                throw new Exception("Please select a directory with only one SPR file!");
+                Misc.Error("Please select a directory with only one SPR file!");
             else if (sprFiles.Count() == 0)
-                throw new Exception("Please select a directory with at least one SPR file!");
+                Misc.Error("Please select a directory with at least one SPR file!");
 
             props.ProjectDirectory = projectPath;
             this.ActiveProject.ProjectName = Path.GetDirectoryName(projectPath);
@@ -611,16 +621,15 @@ namespace SkaaEditorUI
                 dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
                 dlg.DefaultExt = props.SpriteFileExtension;
                 dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
-#if DEBUG
-                dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + '.' + dlg.DefaultExt;
-#else
                 dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId;
+
+#if DEBUG
+                //string[] filename = dlg.FileName.Split('.');
+                //dlg.FileName = string.Concat(filename[0], '_', DateTime.Now.ToString("yyyyMMddHHmm"), '.', filename[1]);
+                dlg.FileName = string.Concat(dlg.FileName, '_', DateTime.Now.ToString("yyyyMMddHHmm"));
 #endif
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    if(sender.ToString() == "CopySpriteAndSetToSkaaDirectory") //debugging
-                        AddDebugArg( Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
-
                     this.toolStripStatLbl.Text = "Building Sprite...";
                     ProcessSpriteUpdates();
 
@@ -628,6 +637,8 @@ namespace SkaaEditorUI
                     {
                         byte[] save = this.ActiveProject.ActiveSprite.Resource.SprData;
                         fs.Write(save, 0, Buffer.ByteLength(save));
+                        //if (sender.ToString() == "SaveProjectToDateTimeDirectory")
+                        AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
                     }
                     this.toolStripStatLbl.Text = string.Empty;
                 }
@@ -637,7 +648,6 @@ namespace SkaaEditorUI
         {
             if (this.ActiveProject == null)
                 Misc.Error("ActiveProject cannot be null!");
-
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -655,20 +665,20 @@ namespace SkaaEditorUI
                 }
                 else
                     return;
-#if DEBUG
-                dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId + DateTime.Now.ToString("yyyyMMddHHMM") + '.' + dlg.DefaultExt;
-#else
+
                 dlg.FileName = "new_set-" + this.ActiveProject.ActiveSprite.SpriteId;
+
+#if DEBUG
+                dlg.FileName = string.Concat(dlg.FileName, '_', DateTime.Now.ToString("yyyyMMddHHmm"));
 #endif
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    if (sender.ToString() == "CopySpriteAndSetToSkaaDirectory")
-                        AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
-
                     this.toolStripStatLbl.Text = "Saving Game Set...";
                     this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
                     this.toolStripStatLbl.Text = string.Empty;
+                    //if (sender.ToString() == "SaveProjectToDateTimeDirectory")
+                    AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
                 }
             }
         }
@@ -684,7 +694,7 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    string projectName = Path.GetDirectoryName(dlg.SelectedPath); //"new_project_" + DateTime.Now.ToString("yyyyMMddHHMM");
+                    string projectName = Path.GetDirectoryName(dlg.SelectedPath); //"new_project_" + DateTime.Now.ToString("yyyyMMddHHmm");
                     props.ProjectDirectory = dlg.SelectedPath;// props.ProjectsDirectory + projectName;
 
                     if (!Directory.Exists(props.ProjectDirectory))
@@ -904,7 +914,7 @@ namespace SkaaEditorUI
             //var hex = BitConverter.ToString(frame.FrameData);
 
             if (this.imageEditorBox.Image == null)
-                throw new Exception("The SkaaImageBox.Image object cannot be null!");
+                Misc.Error("ImageEditorBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {

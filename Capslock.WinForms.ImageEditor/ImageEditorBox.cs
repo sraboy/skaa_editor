@@ -312,8 +312,9 @@ namespace Capslock.WinForms.ImageEditor
 
         public virtual void ChangeToolMode(object sender, EventArgs e)//ToolModes vm)
         {
-            this.ToolMode = (e as DrawingToolSelectedEventArgs).SelectedTool;
             this.Focus();
+            this.ToolMode = (e as DrawingToolSelectedEventArgs).SelectedTool;
+            ChangeCursor();
         }
 
         protected virtual void ChangeCursor()
