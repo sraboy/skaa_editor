@@ -158,14 +158,14 @@ namespace SkaaEditorControls
 
         private void OnActiveSpriteChanged(EventArgs empty)
         {
-            this.frameSlider.Maximum = this.ActiveSprite.Frames.Count - 1;
+            this.frameSlider.Maximum = this.ActiveSprite == null || this.ActiveSprite.Frames.Count == 0 ? 0 : this.ActiveSprite.Frames.Count - 1;
         }
 
         protected virtual void OnActiveFrameChanged(EventArgs e)
         {
             this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-            this.picBoxFrame.Image = this._activeFrame.ImageBmp;
-            this.frameSlider.Value = this._activeFrameIndex;
+            this.picBoxFrame.Image = this._activeFrame?.ImageBmp;
+            this.frameSlider.Value = this._activeFrameIndex >= 0 ? this._activeFrameIndex : 0;
         }
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
