@@ -146,11 +146,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Resources\std.set" />
     <None Include="SkaaEditorUI.licenseheader" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\pal_std.res" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">

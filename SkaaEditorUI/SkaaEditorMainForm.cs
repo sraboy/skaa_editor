@@ -36,12 +36,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Cyotek.Windows.Forms;
 using Capslock.WinForms.ImageEditor;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SkaaEditorUI
 {
     public partial class SkaaEditorMainForm : Form
     {
-        //todo: change all exceptions to Misc.Error()
         //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
 
         #region Debugging
@@ -296,11 +297,6 @@ namespace SkaaEditorUI
             ConfigSettings();
             NewProject();
         }
-
-        private void DrawingToolbox_SelectedToolChanged(object sender, EventArgs e)
-        {
-            this.imageEditorBox.ChangeToolMode(sender, e);// (e as DrawingToolSelectedEventArgs).SelectedTool);
-        }
     
         /// <summary>
         /// Provides for initial application settings like default directories, debug logging, etc.
@@ -448,7 +444,7 @@ namespace SkaaEditorUI
         #endregion
 
         #region Project Management    
-        private void NewProject(string paletteFilePath = null, string gameSetFilePath = null)//bool loadDefaults)
+        private void NewProject(string paletteFilePath = null, string gameSetFilePath = null)
         {
             if (this.ActiveProject != null)
                 CloseProject();
@@ -467,15 +463,12 @@ namespace SkaaEditorUI
 
             this.ActiveProject.LoadPalette(paletteFilePath);
             this.ActiveProject.LoadGameSet(gameSetFilePath);
-
-            
-            //enables / disables colorGridChooser based on whether or not we have an ActivePalette (and loads the palette if we do)
-            //needs to be called before SetupUI()'s first call
-            //SetUpColorGrid();
-            //SetupUI();
         }
         private void OpenProject(string projectPath)
         {
+            props.ProjectDirectory = projectPath;
+            this.ActiveProject.ProjectName = Path.GetFileName(projectPath); //GetFileName just assumes the last thing is a "file" and will give us the directory name
+
             IEnumerable<string> setFiles = Directory.EnumerateFiles(projectPath, "*.set");
             if (setFiles.Count() > 1) //todo: allow user to select which to load
                 Misc.Error("Please select a directory with only one SET file!");
@@ -488,45 +481,97 @@ namespace SkaaEditorUI
             else if (sprFiles.Count() == 0)
                 Misc.Error("Please select a directory with at least one SPR file!");
 
-            props.ProjectDirectory = projectPath;
-            this.ActiveProject.ProjectName = Path.GetDirectoryName(projectPath);
+            string paletteFile = props.ProjectDirectory + props.DefaultPaletteFile;
+            if (!File.Exists(paletteFile))
+                paletteFile = props.DataDirectory + props.DefaultPaletteFile;
 
-            ActiveProject.LoadPalette(props.DefaultPaletteFile);
+            ActiveProject.LoadPalette(paletteFile);
             ActiveProject.LoadGameSet(setFiles.ElementAt(0));
             ActiveProject.LoadSprite(sprFiles.ElementAt(0));
         }
         private void CloseProject()
         {
-            /* sraboy-10Nov15
-              Whoops... Checked through some documentation: https://msdn.microsoft.com/en-us/library/ms366768(v=vs.140).aspx.
-              Gotta unsubscribe even if we null it out.
-            */
+            //Note to self: Unsubscribe even if you null the object https://msdn.microsoft.com/en-us/library/ms366768(v=vs.140).aspx.
             this.ActiveProject.ActiveSpriteChanged -= ActiveProject_ActiveSpriteChanged;
             this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
-
             this.ActiveProject = null;
-            
-            //this.cbMultiColumn.DataSource = null;
-            //this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
         }
-        private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
-        {
-            //if (this.ActiveProject?.ActivePalette == null)
-            //{ 
-            //    this.imageEditorBox.Image = null;
-            //    this.cbMultiColumn.DataSource = null;
-            //    this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.None;
-            //}
-            SetupUI();
-        }
+
         #endregion
 
         #region Loading/Opening Events
+
+        #endregion
+
+
+        #region Update Sprite/Frame Methods
+        private void ProcessSpriteUpdates()
+        {
+            this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+        }
+        /// <summary>
+        /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,
+        /// the frame rebuilds its FrameRawData byte array.
+        /// </summary>
+        /// <param name="sf">The <see cref="SpriteFrame"/> to mark as requiring updates.</param>
+        /// <remarks>
+        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrame.FrameRawData"/> 
+        /// arrays for frames actually having edits. The only thing unedited framesmay  need to update is their new offset 
+        /// value for the SET file, if they follow any edited frames in the file, since the sizes of the preceding frames change.
+        /// </remarks>
+        private void FrameIsEdited(SpriteFrame sf)
+        {
+            //Currently only called from imageEditorBox_ImageUpdated
+            sf.PendingChanges = true;
+
+            //todo: implement an UpdateImage() method in Timelinecontrol
+            //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
+            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
+        }
+
+        private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
+            // but it's needed for the tracking bar to be able to make this update
+
+            this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
+        }
+        private void ActiveSprite_SpriteUpdated(object sender, EventArgs e)
+        {
+            //PopulateMultiColumnComboBoxSpriteList();
+        }
+        private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
+        {
+            //todo: implement Undo/Redo from here with pairs of old/new sprites
+            this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
+
+            //since a sprite is loaded
+            SetupUI();
+            //PopulateMultiColumnComboBoxSpriteList();
+        }
+        private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            if (this.ActiveProject?.ActiveFrame == null)
+            {
+                this.imageEditorBox.Image = null;
+                this.timelineControl.ActiveFrame = null;
+            }
+            else
+            {
+                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
+                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+            }
+        }
+        #endregion
+
+        #region Menu/Toolstrip Button Clicks
+        ////////////////////////////// Opening Things //////////////////////////////
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
 #if DEBUG
-            if(sender.ToString() == "OpenDefaultBallistaSprite")
+            if (sender.ToString() == "OpenDefaultBallistaSprite")
             {
                 this.ActiveProject.LoadSprite(this._debugArgs[0].Arg.ToString());
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
@@ -608,9 +653,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-        #endregion
-
-        #region Saving Events
+        //////////////////////////////// Saving Things ////////////////////////////////
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
@@ -624,8 +667,6 @@ namespace SkaaEditorUI
                 dlg.FileName = "new_" + this.ActiveProject.ActiveSprite.SpriteId;
 
 #if DEBUG
-                //string[] filename = dlg.FileName.Split('.');
-                //dlg.FileName = string.Concat(filename[0], '_', DateTime.Now.ToString("yyyyMMddHHmm"), '.', filename[1]);
                 dlg.FileName = string.Concat(dlg.FileName, '_', DateTime.Now.ToString("yyyyMMddHHmm"));
 #endif
                 if (dlg.ShowDialog() == DialogResult.OK)
@@ -637,7 +678,7 @@ namespace SkaaEditorUI
                     {
                         byte[] save = this.ActiveProject.ActiveSprite.Resource.SprData;
                         fs.Write(save, 0, Buffer.ByteLength(save));
-                        //if (sender.ToString() == "SaveProjectToDateTimeDirectory")
+
                         AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
                     }
                     this.toolStripStatLbl.Text = string.Empty;
@@ -660,8 +701,6 @@ namespace SkaaEditorUI
                     this.toolStripStatLbl.Text = "Building Sprite...";
                     ProcessSpriteUpdates();
                     this.toolStripStatLbl.Text = string.Empty;
-                    //if (UpdateSprite().Result)
-                    //    Interlocked.Exchange(ref _buildingSprite, 0);
                 }
                 else
                     return;
@@ -677,7 +716,7 @@ namespace SkaaEditorUI
                     this.toolStripStatLbl.Text = "Saving Game Set...";
                     this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
                     this.toolStripStatLbl.Text = string.Empty;
-                    //if (sender.ToString() == "SaveProjectToDateTimeDirectory")
+
                     AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
                 }
             }
@@ -704,71 +743,30 @@ namespace SkaaEditorUI
                     this.saveGameSetToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
                 }
             }
-        }       
-        #endregion
-
-        #region Update Sprite/Frame Methods
-        private void ProcessSpriteUpdates()
-        {
-            this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
-        }
-        /// <summary>
-        /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,
-        /// the frame rebuilds its FrameRawData byte array.
-        /// </summary>
-        /// <param name="sf">The <see cref="SpriteFrame"/> to mark as requiring updates.</param>
-        /// <remarks>
-        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrame.FrameRawData"/> 
-        /// arrays for frames actually having edits. The only thing unedited framesmay  need to update is their new offset 
-        /// value for the SET file, if they follow any edited frames in the file, since the sizes of the preceding frames change.
-        /// </remarks>
-        private void FrameIsEdited(SpriteFrame sf)
-        {
-            //Currently only called from imageEditorBox_ImageUpdated
-            sf.PendingChanges = true;
-
-            //todo: implement an UpdateImage() method in Timelinecontrol
-            //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
-            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
         }
 
-        private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
+        private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
-            // but it's needed for the tracking bar to be able to make this update
-
-            this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
-        }
-        private void ActiveSprite_SpriteUpdated(object sender, EventArgs e)
-        {
-            //PopulateMultiColumnComboBoxSpriteList();
-        }
-        private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
-        {
-            //todo: implement Undo/Redo from here with pairs of old/new sprites
-            this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[0];
-
-            //since a sprite is loaded
-            SetupUI();
-            //PopulateMultiColumnComboBoxSpriteList();
-        }
-        private void ActiveProject_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            if (this.ActiveProject?.ActiveFrame == null)
+            if(!CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite))
             {
-                this.imageEditorBox.Image = null;
-                this.timelineControl.ActiveFrame = null;
+                CloseProject();
+                SetupUI();
             }
             else
             {
-                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
-                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                switch(MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel))
+                {
+                    case DialogResult.Yes:
+                        saveProjectToolStripMenuItem_Click(sender, e);
+                        break;
+                    case DialogResult.No:
+                        CloseProject();
+                        break;
+                    case DialogResult.Cancel:
+                        break;
+                }
             }
         }
-        #endregion
-
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (AboutForm abt = new AboutForm())
@@ -778,24 +776,17 @@ namespace SkaaEditorUI
         {
             this.Close();
         }
+        private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.imageEditorBox.ShowPixelGrid = !this.imageEditorBox.ShowPixelGrid;
+            (sender as ToolStripMenuItem).Checked = this.imageEditorBox.ShowPixelGrid;
+        }
+        #endregion
 
- 
-        //private void cbMultiColumn_SelectionChangeCommitted(object sender, EventArgs e)
-        //{
-        //    DataRow selection;
-        //    int? offset = null;
-        //    if (/*this.ActiveProject != null &&*/
-        //        this.ActiveProject?.ActiveSprite != null)
-        //    {
-        //        selection = (this.cbMultiColumn.SelectedItem as DataRowView).Row;
-        //        offset = Convert.ToInt32(selection[9]);//selection.GetNullableUInt32FromIndex(9);
-        //        this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames.Find(sf => sf.SprBitmapOffset == offset);
-        //    }
-        //    if (this.ActiveProject?.ActiveFrame == null)
-        //    {
-        //        Misc.Error($"Unable to find matching offset in Sprite.Frames for \"{this.ActiveProject.ActiveSprite.SpriteId}\" and offset: {offset.ToString()}.");
-        //    }
-        //}
+        private void DrawingToolbox_SelectedToolChanged(object sender, EventArgs e)
+        {
+            this.imageEditorBox.ChangeToolMode(sender, e);
+        }
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
             SetupUI();
@@ -808,36 +799,23 @@ namespace SkaaEditorUI
                 FrameIsEdited(this.ActiveProject.ActiveFrame);
             }
         }
-        //private void cbEdit_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    this.imageEditorBox.EditMode = !this.imageEditorBox.EditMode;
-        //}
-        private void showGridToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.imageEditorBox.ShowPixelGrid = !this.imageEditorBox.ShowPixelGrid;
-            (sender as ToolStripMenuItem).Checked = this.imageEditorBox.ShowPixelGrid;
-        }
-        
         private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
         {
-            //this.imageEditorBox.ActiveColor = (sender as ColorGrid).Color;
-            SetActiveColor((sender as ColorGrid).Color);
+            //todo: update this call with the secondary color, once implemented
+            SetActiveColors((sender as ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
         }
-        private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SkaaEditorMainForm_ActiveProjectChanged(object sender, EventArgs e)
         {
-            if(true) //todo: confirm save changes
-            {
-                CloseProject();
-                SetupUI();
-            }
+            SetupUI();
         }
+        
+        
+
+        
         private void ActiveProject_PaletteChanged(object sender, EventArgs e)
         {
             SetUpColorGrid();
-            
-            this.imageEditorBox.ActivePrimaryColor = Color.FromArgb(255, 0, 0, 0);
-            this.imageEditorBox.ActiveSecondaryColor = Color.FromArgb(0, 0, 0, 0);
-            //todo: detect transparent color. Color.Transparent is {0,255,255,255} (trans white) but we use {0,0,0,0} (trans black) in pal_std.res.
+            SetDefaultActiveColors();
         }
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -850,6 +828,7 @@ namespace SkaaEditorUI
         }
 
         #region Old Menu Items
+        //todo: re-implement these features
         private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
@@ -953,6 +932,44 @@ namespace SkaaEditorUI
         }
         #endregion
 
+        private bool CheckSpriteForPendingChanges(Sprite spr)
+        {
+            if (spr == null) return false;
+
+            bool frameHasChanges = false;
+            foreach(SpriteFrame sf in spr.Frames)
+            {
+                frameHasChanges = sf.PendingChanges | frameHasChanges;
+            }
+
+            return frameHasChanges;
+        }
+        private void SetDefaultActiveColors()
+        {
+            Color primary = Color.Black, secondary = Color.FromArgb(0,0,0,0);
+
+            //todo: detect transparent color in palette: Color.Transparent is {0,255,255,255} (trans white) but we use {0,0,0,0} (trans black) in pal_std.res.
+            //The comparisons are based on the Color.Name property, which our palette does not provide. Will need to search based on ARGB values instead.
+
+            //Task<bool> FindBlack = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.Black));
+            //Task<bool> FindWhiteTrans = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.Transparent));
+            //Task<bool> FindBlackTrans = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.FromArgb(0, 255, 255, 255)));
+            //Task<Color> NotBlack = Task<Color>.Factory.StartNew(() => this.colorGridChooser.Colors.First(c => c != Color.Black && c != Color.Transparent && c != Color.FromArgb(0, 255, 255, 255)));
+
+            //if (FindBlack.Result == true)
+            //    primary = Color.Black;
+            //else
+            //    primary = NotBlack.Result;
+
+            //if (FindWhiteTrans.Result == true)
+            //    secondary = Color.FromArgb(0, 255, 255, 255);
+            //else if (FindBlackTrans.Result == true)
+            //    secondary = Color.FromArgb(0, 0, 0, 0);
+            //else
+            //    secondary = NotBlack.Result;
+
+            SetActiveColors(primary, secondary);
+        }
         /// <summary>
         /// Sets the <see cref="SkaaImageBox.ActiveColor"/> property. This is the color assigned to the drawing tools.
         /// </summary>
@@ -960,9 +977,10 @@ namespace SkaaEditorUI
         /// <remarks>
         /// Ensure the chosen Color is a color represented by the currently loaded palette, <see cref="Project.ActivePalette"/>.
         /// </remarks>
-        private void SetActiveColor(Color c)
+        private void SetActiveColors(Color primary, Color secondary)
         {
-            this.imageEditorBox.ActivePrimaryColor = c;
+            this.imageEditorBox.ActivePrimaryColor = primary;
+            this.imageEditorBox.ActiveSecondaryColor = secondary;
         }
     }
 }

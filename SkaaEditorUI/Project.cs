@@ -236,7 +236,7 @@ namespace SkaaEditorUI
         public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.DefaultGameSetFile);
 
         /// <summary>
-        /// This function will open a 7KAA SET file. 
+        /// This function will open the specified 7KAA SET file.
         /// </summary>
         /// <param name="filepath">The complete path to the SET file.</param>
         /// <remarks>
@@ -244,6 +244,9 @@ namespace SkaaEditorUI
         /// </remarks>
         public void LoadGameSet(string filepath)
         {
+            if (!File.Exists(filepath))
+                filepath = props.DataDirectory + props.DefaultGameSetFile;
+
             this.ActiveGameSet = new SkaaGameSet(filepath, props.TempDirectory);
         }
 
@@ -260,11 +263,10 @@ namespace SkaaEditorUI
         {
             this._skaaEditorPalette = new PaletteResource();
 
-            //have to keep the event from firing before the palette is loaded
+            //have to keep the event from firing before the palette is loaded, so don't mess with ActivePalette yet
             ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
-            //this.ActivePalette = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
 
-            using (FileStream fs = File.OpenRead(filepath))//filepath + '\\' + this._skaaEditorPalette.PaletteFileName))
+            using (FileStream fs = File.OpenRead(filepath))
             {
                 fs.Seek(8, SeekOrigin.Begin);
 
@@ -284,13 +286,7 @@ namespace SkaaEditorUI
                 fs.CopyTo(this._skaaEditorPalette.ResMemoryStream);
             }
 
-            //foreach (Color c in pal.Entries)
-            //{
-            //    Debug.WriteLine($"Color c = {c.ToString()}");
-            //}
-
             this.ActivePalette = pal;
-            //return this.ActivePalette;
         }
         /// <summary>
         /// Opens an SPR file and creates a <see cref="SpriteResource"/> object for it
@@ -308,9 +304,8 @@ namespace SkaaEditorUI
             if (this.ActivePalette == null)
                 Misc.Error("Cannot load a Sprite if the ActivePalette is null.");
 
-            //cant use the property here or we'll fire the event before we've finished loading
+            //have to keep the event from firing before the sprite is loaded, so don't mess with ActiveSprite yet
             Sprite spr = new Sprite(this.ActivePalette);
-            //this._activeSprite = new Sprite(this.ActivePalette);
             
             using (FileStream spritestream = File.OpenRead(filepath))
             {
