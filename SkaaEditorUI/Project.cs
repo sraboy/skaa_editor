@@ -26,18 +26,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
 using SkaaGameDataLib;
-using System.IO.Compression;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
 using System.Data;
 using System.Drawing.Imaging;
 using System.Drawing;
-using System.Diagnostics;
 
 namespace SkaaEditorUI
 {
@@ -51,6 +43,7 @@ namespace SkaaEditorUI
         private PaletteResource _skaaEditorPalette;
         private Sprite _activeSprite;
         private string _projectName;
+        private List<Sprite> _unsavedSprites;
         #endregion
 
         #region Events
@@ -136,7 +129,7 @@ namespace SkaaEditorUI
         {
             get
             {
-                return this._activeSprite;// == null ? null : this._skaaEditorSprite.SpriteObject;
+                return this._activeSprite;
             }
             set
             {
@@ -166,7 +159,7 @@ namespace SkaaEditorUI
         {
             get
             {
-                return this._skaaEditorPalette.ColorPaletteObject;
+                return this._skaaEditorPalette?.ColorPaletteObject;
             }
             set
             {
@@ -191,6 +184,18 @@ namespace SkaaEditorUI
                 }
             }
         }
+        public List<Sprite> UnsavedSprites
+        {
+            get
+            {
+                return this._unsavedSprites;
+            }
+            private set
+            {
+                if (this._unsavedSprites != value)
+                    this._unsavedSprites = value;
+            }
+        }
         public string ProjectName
         {
             get
@@ -207,29 +212,8 @@ namespace SkaaEditorUI
         }
         #endregion
 
-        public Project() { }
-        //sraboy-11Nov15-Eliminated these because they end up bypassing the event subscriptions, which have to come after the constructor's called
-        //public Project(string paletteFilePath, string gameSetFilePath)
-        //{
-        //    Load(paletteFilePath, gameSetFilePath);
-        //}
-        ///// <summary>
-        ///// Creates a new project, optionally loading the default palette and game set.
-        ///// </summary>
-        ///// <param name="loadDefaults">True to load pal_std.res and std.set, false otherwise.</param>
-        //public Project(bool loadDefaults)
-        //{
-        //    if (loadDefaults)
-        //        Load(props.DataDirectory + props.DefaultPaletteFile, props.DataDirectory + props.DefaultGameSetFile);
-        //}
-        //public void Load(string paletteFilePath, string gameSetFilePath)
-        //{
-        //    //this.ActiveSpriteChanged += Project_ActiveSpriteChanged;
-        //    //this.ActiveFrameChanged += Project_ActiveFrameChanged;
-        //    LoadPalette(paletteFilePath);
-        //    LoadGameSet(gameSetFilePath);
-        //}
-
+        public Project() { this.UnsavedSprites = new List<Sprite>(); }
+        
         /// <summary>
         /// Load the default game set file, <see cref="Properties.Settings.DefaultPaletteFile"/>.
         /// </summary>
@@ -299,7 +283,7 @@ namespace SkaaEditorUI
         /// no need to follow the call into <code>File::file_open()</code> in OFILE.cpp. Though the files are 
         /// well-structured, they are considered FLAT by 7KAA.
         /// </remarks>
-        public void LoadSprite(string filepath)
+        public Sprite LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
                 Misc.Error("Cannot load a Sprite if the ActivePalette is null.");
@@ -322,7 +306,23 @@ namespace SkaaEditorUI
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
             DataView dv = this.ActiveGameSet.GetSpriteDataView(spr.SpriteId);
             spr.SetSpriteDataView(dv);
+
             this.ActiveSprite = spr;
+
+            return spr;
+        }
+        /// <summary>
+        /// Serves as a wrapper to <see cref="Project.LoadSprite(string)"/> and adds the loaded sprite to 
+        /// <see cref="Project.UnsavedSprites"/> to assist in tracking project changes.
+        /// </summary>
+        /// <remarks>
+        /// This was necessary because, in the UI, <see cref="SpriteFrame.PendingChanges"/> is the only way
+        /// to identify <see cref="Sprite"/> objects that need to be saved/updated. This allows for identifying
+        /// a <see cref="Project"/> that needs saving.
+        /// </remarks>
+        public void LoadNewSprite(string filepath)
+        {
+            this.UnsavedSprites.Add(this.LoadSprite(filepath));
         }
     }
 }

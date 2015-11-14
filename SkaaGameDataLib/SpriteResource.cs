@@ -4,12 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BitmapProcessing;
-using SkaaGameDataLib;
 
 namespace SkaaGameDataLib
 {
@@ -20,8 +15,6 @@ namespace SkaaGameDataLib
         private ColorPalette _pallet;
         private byte[] _sprData;
         private string _fileName;
-        //private MemoryStream _sprMemoryStream;
-        //private Sprite _spriteObject;
         private DataView _spriteDataView;
         #endregion
 
@@ -92,35 +85,6 @@ namespace SkaaGameDataLib
                 }
             }
         }
-        //public MemoryStream SprMemoryStream
-        //{
-        //    get
-        //    {
-        //        return this._sprMemoryStream;
-        //    }
-        //    set
-        //    {
-        //        if (this._sprMemoryStream != value)
-        //        {
-        //            this._sprMemoryStream = value;
-        //        }
-        //    }
-        //}
-        //public Sprite SpriteObject
-        //{
-        //    get
-        //    {
-        //        return this._spriteObject;
-        //    }
-        //    set
-        //    {
-        //        if (this._spriteObject != value)
-        //        {
-        //            this._spriteObject = value;
-        //            OnSpriteObjectChanged(EventArgs.Empty);
-        //        }
-        //    }
-        //}
         public DataView SpriteDataView
         {
             get
@@ -189,13 +153,6 @@ namespace SkaaGameDataLib
         }
         #endregion
 
-        //public SpriteFrame AddFrame(SpriteFrame sf)
-        //{
-        //    this._spriteObject.Frames.Add(sf);
-        //    //sf.FrameUpdated += SpriteFrameUpdated;
-        //    return sf;
-        //}
-
         /// <summary>
         /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
         /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRows"/>
@@ -211,7 +168,7 @@ namespace SkaaGameDataLib
 
                 if (sf == null)
                 {
-                    //this should only happen when creating new sprites. for now, we'll just log it
+                    //this should only happen when creating new sprites. 
                     Trace.WriteLine(($"Unable to find matching offset in Sprite.Frames for {spr.SpriteId} and offset: {offset.ToString()}. nDid you forget to load the proper SET file for this sprite?"));
                     return false;
                 }
@@ -247,7 +204,6 @@ namespace SkaaGameDataLib
                 if ((i < spr.Frames.Count - 1) && (spr.Frames[i + 1].SprBitmapOffset != offset))
                 {
                     spr.Frames[i + 1].SprBitmapOffset = offset;
-                    //this.PendingChanges = true;
 
                     foreach (DataRow dr in spr.Frames[i + 1].GameSetDataRows)
                     {

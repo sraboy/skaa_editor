@@ -118,16 +118,21 @@ namespace Capslock.WinForms.ImageEditor
             }
             ToggleCheckBoxes(sender);
         }
-
         private void ToggleCheckBoxes(object sender)
         {
-            CheckBox senderCheckBox = sender as CheckBox;
+            string senderCheckBoxName = (sender as CheckBox)?.Name;
 
             foreach(CheckBox c in this.Controls)
             {
                 //don't change the sender, set others to false
-                c.Checked = c.Name == senderCheckBox.Name ? c.Checked : false;
+                c.Checked = c.Name == senderCheckBoxName ? c.Checked : false;
             }
+        }
+
+        public void CloseSelectedTool()
+        {
+            this.SelectedTool = ToolModes.None;
+            ToggleCheckBoxes(null);
         }
     }
 }
