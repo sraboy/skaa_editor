@@ -287,7 +287,7 @@ namespace SkaaEditorUI
         public Sprite LoadSprite(string filepath)
         {
             if (this.ActivePalette == null)
-                Misc.Error("Cannot load a Sprite if the ActivePalette is null.");
+                Misc.LogMessage("Cannot load a Sprite if the ActivePalette is null.");
 
             //have to keep the event from firing before the sprite is loaded, so don't mess with ActiveSprite yet
             Sprite spr = new Sprite(this.ActivePalette);

@@ -234,7 +234,7 @@ namespace SkaaEditorUI
 
         #region Private Members
         private Project _activeProject;
-        private TextWriterTraceListener _debugTxtWriter;
+        //private TextWriterTraceListener _debugTxtWriter;
         private Properties.Settings props = Properties.Settings.Default;
         #endregion
 
@@ -294,10 +294,8 @@ namespace SkaaEditorUI
         private void ConfigSettings()
         {
             props.ApplicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + '\\';
-
-            _debugTxtWriter = new TextWriterTraceListener(props.ApplicationDirectory + "debug_log.txt");
             Trace.AutoFlush = true;
-            Trace.Listeners.Add(_debugTxtWriter);
+            Misc.Logger.TraceInformation($"Log started: {string.Concat(DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString())}");
 
             props.DataDirectory = props.ApplicationDirectory + "data\\";
             props.TempDirectory = props.ApplicationDirectory + "temp\\";
@@ -464,7 +462,7 @@ namespace SkaaEditorUI
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                Misc.Error("The SkaaImageBox.Image object cannot be null!");
+                Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -493,7 +491,7 @@ namespace SkaaEditorUI
         private void saveGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
-                Misc.Error("ActiveProject cannot be null!");
+                Misc.LogMessage("ActiveProject cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -525,7 +523,7 @@ namespace SkaaEditorUI
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
-                Misc.Error("There is no ActiveProject!");
+                Misc.LogMessage("There is no ActiveProject!");
 
             using (FolderBrowserDialog dlg = new FolderBrowserDialog())
             {
@@ -649,7 +647,7 @@ namespace SkaaEditorUI
         private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                Misc.Error("The SkaaImageBox.Image object cannot be null!");
+                Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -689,7 +687,7 @@ namespace SkaaEditorUI
             //var hex = BitConverter.ToString(frame.FrameData);
 
             if (this.imageEditorBox.Image == null)
-                Misc.Error("ImageEditorBox.Image object cannot be null!");
+                Misc.LogMessage("ImageEditorBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -707,7 +705,7 @@ namespace SkaaEditorUI
         private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
-                Misc.Error("The SkaaImageBox.Image object cannot be null!");
+                Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -806,7 +804,7 @@ namespace SkaaEditorUI
                 }
                 else
                 {
-                    Misc.Error("No directory created!");
+                    Misc.LogMessage("No directory created!");
                     dir = props.ProjectsDirectory + DateTime.Now.ToString("yyyyMMddHHmmfff");
                     Directory.CreateDirectory(dir);
                 }
@@ -819,11 +817,11 @@ namespace SkaaEditorUI
 
             List<string> setFiles = Directory.EnumerateFiles(projectPath, "*.set").ToList();
             if (setFiles.Count > 1) //todo: allow user to select which to load
-                Misc.Error("Please select a directory with only one SET file!");
+                Misc.LogMessage("Please select a directory with only one SET file!");
 
             List<string> sprFiles = Directory.EnumerateFiles(projectPath, "*.spr").ToList();
             if (sprFiles.Count > 1) //todo: allow user to select which to load
-                Misc.Error("Please select a directory with only one SPR file!");
+                Misc.LogMessage("Please select a directory with only one SPR file!");
 
 
             string paletteFile = props.ProjectDirectory + props.DefaultPaletteFile;

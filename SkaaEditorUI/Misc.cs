@@ -57,6 +57,8 @@ namespace SkaaEditorUI
     }
     public static class Misc
     {
+        public static TraceSource Logger = new TraceSource("skaaeditor", SourceLevels.All);
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static string GetCurrentMethod()
         {
@@ -64,9 +66,10 @@ namespace SkaaEditorUI
             StackFrame sf = st.GetFrame(1);
             return sf.GetMethod().Name;
         }
-        public static void Error(string message)
+        public static void LogMessage(string message)
         {
-            Trace.WriteLine(message);
+            //Trace.WriteLine(message);
+            Logger.TraceInformation(message);
         }
     }
 }
