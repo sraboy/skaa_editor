@@ -274,6 +274,9 @@ namespace Capslock.WinForms.ImageEditor
             this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
         }
 
+        
+
+        
         protected virtual void PaintBucketFill(MouseEventArgs e)
         {
             this.IsDrawing = true;
@@ -295,46 +298,6 @@ namespace Capslock.WinForms.ImageEditor
                 this.Invalidate(this.ViewPortRectangle);
             }
         }
-
-        private static bool ColorMatch(Color a, Color b)
-        {
-            return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff);
-        }
-
-        protected virtual void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
-        {
-            //courtesy http://rosettacode.org/wiki/Bitmap/Flood_fill
-
-            Queue<Point> q = new Queue<Point>();
-            q.Enqueue(pt);
-
-            while (q.Count > 0)
-            {
-                Point n = q.Dequeue();
-                if (!ColorMatch(this.fbmp.GetPixel(n.X, n.Y), targetColor))
-                    continue;
-                Point w = n, e = new Point(n.X + 1, n.Y);
-                while ((w.X > 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y), targetColor))
-                {
-                    this.fbmp.SetPixel(w.X, w.Y, replacementColor);
-                    if ((w.Y > 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y - 1), targetColor))
-                        q.Enqueue(new Point(w.X, w.Y - 1));
-                    if ((w.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y + 1), targetColor))
-                        q.Enqueue(new Point(w.X, w.Y + 1));
-                    w.X--;
-                }
-                while ((e.X < bmp.Width - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y), targetColor))
-                {
-                    this.fbmp.SetPixel(e.X, e.Y, replacementColor);
-                    if ((e.Y > 0) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y - 1), targetColor))
-                        q.Enqueue(new Point(e.X, e.Y - 1));
-                    if ((e.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y + 1), targetColor))
-                        q.Enqueue(new Point(e.X, e.Y + 1));
-                    e.X++;
-                }
-            }
-        }
-
         protected virtual void PencilDraw(MouseEventArgs e)
         {
             this.IsDrawing = true;
@@ -375,6 +338,42 @@ namespace Capslock.WinForms.ImageEditor
             ChangeCursor();
         }
 
+        protected virtual void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        {
+            Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
+
+            //mostly courtesy http://rosettacode.org/wiki/Bitmap/Flood_fill
+            //some off-by-one errors: (w.X >= 0) and (e.X <= bmp.Width - 1) were only > and <
+
+            Queue<Point> q = new Queue<Point>();
+            q.Enqueue(pt);
+
+            while (q.Count > 0)
+            {
+                Point n = q.Dequeue();
+                if (!ColorMatch(this.fbmp.GetPixel(n.X, n.Y), targetColor))
+                    continue;
+                Point w = n, e = new Point(n.X + 1, n.Y);
+                while ((w.X >= 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y), targetColor))
+                {
+                    this.fbmp.SetPixel(w.X, w.Y, replacementColor);
+                    if ((w.Y > 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y - 1), targetColor))
+                        q.Enqueue(new Point(w.X, w.Y - 1));
+                    if ((w.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y + 1), targetColor))
+                        q.Enqueue(new Point(w.X, w.Y + 1));
+                    w.X--;
+                }
+                while ((e.X <= bmp.Width - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y), targetColor))
+                {
+                    this.fbmp.SetPixel(e.X, e.Y, replacementColor);
+                    if ((e.Y > 0) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y - 1), targetColor))
+                        q.Enqueue(new Point(e.X, e.Y - 1));
+                    if ((e.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y + 1), targetColor))
+                        q.Enqueue(new Point(e.X, e.Y + 1));
+                    e.X++;
+                }
+            }
+        }
         protected virtual void ChangeCursor()
         {
             switch (this.ToolMode)
