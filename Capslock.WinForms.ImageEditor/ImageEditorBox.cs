@@ -208,6 +208,12 @@ namespace Capslock.WinForms.ImageEditor
                 handler(this, e);
             }
         }
+        protected override void OnImageChanged(EventArgs e)
+        {
+            this.fbmp = new FastBitmap((Bitmap) this.Image);
+            base.OnImageChanged(e);
+        }
+
         #endregion
 
         #region Overidden Mouse Events
@@ -224,9 +230,9 @@ namespace Capslock.WinForms.ImageEditor
                 {
                     //if editing, we don't want to call base.OnMouseDown() because
                     //the control defaults to panning since it wasn't made for editing
-                    case ToolModes.Pencil:
-                        this.PencilDraw(e);
-                        break;
+                    //case ToolModes.Pencil:
+                    //    this.PencilDraw(e);
+                    //    break;
                     case ToolModes.Pan:
                         base.OnMouseDown(e);
                         break;
@@ -241,9 +247,9 @@ namespace Capslock.WinForms.ImageEditor
                 {
                     //if editing, we don't want to call base.OnMouseMove() because
                     //the control defaults to panning since it wasn't made for editing
-                    case ToolModes.Pencil:
-                        this.PencilDraw(e);
-                        break;
+                    //case ToolModes.Pencil:
+                    //    this.PencilDraw(e);
+                    //    break;
                     case ToolModes.Pan:
                         base.OnMouseMove(e);
                         break;
@@ -258,13 +264,20 @@ namespace Capslock.WinForms.ImageEditor
                 OnImageUpdated(EventArgs.Empty);
             }
 
-            if(this.ToolMode == ToolModes.PaintBucket)
-                this.PaintBucketFill(e);
-           
+            switch (this.ToolMode)
+            {
+                case ToolModes.PaintBucket:
+                    this.BeginPaintBucketFill(e);
+                    break;
+                case ToolModes.Pencil:
+                    this.PencilDraw(e);
+                    break;
+            }
             base.OnMouseUp(e);
         }
         #endregion
 
+        #region Constructor
         public ImageEditorBox() : base()
         {
             //have to load these dynamically since they're not just black/white
@@ -273,11 +286,9 @@ namespace Capslock.WinForms.ImageEditor
             this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
             this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
         }
-
+        #endregion
         
-
-        
-        protected virtual void PaintBucketFill(MouseEventArgs e)
+        protected virtual void BeginPaintBucketFill(MouseEventArgs e)
         {
             this.IsDrawing = true;
             this.IsSelecting = false;
@@ -291,7 +302,7 @@ namespace Capslock.WinForms.ImageEditor
                 {
                     this.fbmp = new FastBitmap(this.Image as Bitmap);
                     this.fbmp.LockImage();
-                    FloodFill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y), this.ActivePrimaryColor);
+                    PaintBucketFill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y), this.ActivePrimaryColor);
                     this.fbmp.UnlockImage();
                 }
 
@@ -337,8 +348,7 @@ namespace Capslock.WinForms.ImageEditor
             this.ToolMode = (e as DrawingToolSelectedEventArgs).SelectedTool;
             ChangeCursor();
         }
-
-        protected virtual void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        protected virtual void PaintBucketFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
             Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
 
