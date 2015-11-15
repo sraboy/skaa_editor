@@ -82,10 +82,10 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ToolbarIcons\HandToolIcon.png" />
     <None Include="Capslock.WinForms.ImageEditor.licenseheader" />
   </ItemGroup>
   <ItemGroup>
