@@ -225,8 +225,8 @@ copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"
 mkdir "$(ProjectDir)$(OutDir)projects"
 mkdir "$(ProjectDir)$(OutDir)projects\edited"
 copy "$(ProjectDir)..\other\test_projects\edited\*" "$(ProjectDir)$(OutDir)projects\edited"
-mkdir "$(ProjectDir)$(OutDir)projects\good"
-copy "$(ProjectDir)..\other\test_projects\good\*" "$(ProjectDir)$(OutDir)projects\good"
+mkdir "$(ProjectDir)$(OutDir)projects\example"
+copy "$(ProjectDir)..\other\test_projects\example\*" "$(ProjectDir)$(OutDir)projects\example"
 mkdir "$(ProjectDir)$(OutDir)projects\junk"
 copy "$(ProjectDir)..\other\test_projects\junk\*" "$(ProjectDir)$(OutDir)projects\junk"</PostBuildEvent>
   </PropertyGroup>
