@@ -486,9 +486,9 @@ namespace SkaaEditorUI
             if (this.ActiveProject == null)
                 Misc.LogMessage("ActiveProject cannot be null!");
 
-            bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
-            if (changes)
-            {
+            //bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+            //if (changes)
+            //{
                 using (SaveFileDialog dlg = new SaveFileDialog())
                 {
                     dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
@@ -515,7 +515,7 @@ namespace SkaaEditorUI
                         AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
                     }
                 }
-            }
+            //}
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
