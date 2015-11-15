@@ -219,42 +219,13 @@ namespace Capslock.WinForms.ImageEditor
         #region Overidden Mouse Events
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if(this.Image != null)
-            {
-                if (!this.Focused)
-                {
-                    this.Focus();
-                }
-
-                switch (this.ToolMode)
-                {
-                    //if editing, we don't want to call base.OnMouseDown() because
-                    //the control defaults to panning since it wasn't made for editing
-                    //case ToolModes.Pencil:
-                    //    this.PencilDraw(e);
-                    //    break;
-                    case ToolModes.Pan:
-                        base.OnMouseDown(e);
-                        break;
-                }
-            }
+            if(!this.IsDrawing)
+                base.OnMouseDown(e);
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (this.Image != null)
-            {
-                switch (this.ToolMode)
-                {
-                    //if editing, we don't want to call base.OnMouseMove() because
-                    //the control defaults to panning since it wasn't made for editing
-                    //case ToolModes.Pencil:
-                    //    this.PencilDraw(e);
-                    //    break;
-                    case ToolModes.Pan:
-                        base.OnMouseMove(e);
-                        break;
-                }
-            }
+            if (!this.IsDrawing)
+                base.OnMouseMove(e);
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
