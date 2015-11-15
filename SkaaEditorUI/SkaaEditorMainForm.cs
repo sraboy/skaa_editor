@@ -607,8 +607,8 @@ namespace SkaaEditorUI
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
-            if (this.imageEditorBox.ToolMode != ToolModes.Pan && 
-                this.imageEditorBox.ToolMode != ToolModes.None)
+            if (this.imageEditorBox.SelectedTool != DrawingTools.Pan && 
+                this.imageEditorBox.SelectedTool != DrawingTools.None)
             {
                 FrameIsEdited(this.ActiveProject.ActiveFrame);
             }

@@ -38,6 +38,7 @@ namespace Capslock.WinForms.ImageEditor
 {
     public partial class DrawingToolbox : UserControl
     {
+        #region Events
         [NonSerialized]
         private EventHandler _selectedToolChanged;
         /// <summary>
@@ -67,15 +68,13 @@ namespace Capslock.WinForms.ImageEditor
                 handler(this, e);
             }
         }
+        #endregion
 
-
-        private ToolModes _selectedTool = ToolModes.None;
-
-
+        private DrawingTools _selectedTool = DrawingTools.None;
         /// <summary>
-        /// The currently-selected tool from <see cref="ToolModes"/>
+        /// The currently-selected tool from <see cref="DrawingTools"/>
         /// </summary>
-        public virtual ToolModes SelectedTool
+        public virtual DrawingTools SelectedTool
         {
             get
             {
@@ -91,29 +90,34 @@ namespace Capslock.WinForms.ImageEditor
             }
         }
 
+
         public DrawingToolbox()
         {
             InitializeComponent();
 
-            this._selectedTool = ToolModes.None;
+            this._selectedTool = DrawingTools.None;
         }
+
 
         private void btnTool_Click(object sender, EventArgs e)
         {
             CheckBox cb = (sender as CheckBox);
-            switch(cb.Name)
+            switch (cb.Name)
             {
                 case "btnPanTool":
-                    this.SelectedTool = ToolModes.Pan;
+                    this.SelectedTool = DrawingTools.Pan;
                     break;
                 case "btnPencilTool":
-                    this.SelectedTool = ToolModes.Pencil;
+                    this.SelectedTool = DrawingTools.Pencil;
                     break;
                 case "btnPaintBucketTool":
-                    this.SelectedTool = ToolModes.PaintBucket;
+                    this.SelectedTool = DrawingTools.PaintBucket;
+                    break;
+                case "btnLineTool":
+                    this.SelectedTool = DrawingTools.Line;
                     break;
                 default:
-                    this.SelectedTool = ToolModes.None;
+                    this.SelectedTool = DrawingTools.None;
                     break;
             }
             ToggleCheckBoxes(sender);
@@ -129,9 +133,15 @@ namespace Capslock.WinForms.ImageEditor
             }
         }
 
+        /// <summary>
+        /// This method will change the <see cref="SelectedTool"/> to <see cref="DrawingTools.None"/>.
+        /// </summary>
+        /// <remarks>
+        /// Use this if the user's current activity makes them ineligible to use a tool (e.g., the image has been closed).
+        /// </remarks>
         public void CloseSelectedTool()
         {
-            this.SelectedTool = ToolModes.None;
+            this.SelectedTool = DrawingTools.None;
             ToggleCheckBoxes(null);
         }
     }

@@ -63,6 +63,16 @@ namespace Capslock.WinForms.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap LineToolIcon {
+            get {
+                object obj = ResourceManager.GetObject("LineToolIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap PaintBucketIcon {
             get {
                 object obj = ResourceManager.GetObject("PaintBucketIcon", resourceCulture);
