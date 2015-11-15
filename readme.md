@@ -1,7 +1,7 @@
 # skaa_editor
 SkaaEditor seeks to provide non-technical users (e.g., non-programmers) the ability to re-skin the game to their liking. The project is currently in its infancy and battles three other projects that vie for my time.
 
-![screenshot](https://github.com/sraboy/skaa_editor/blob/master/other/skaa_editor.png)
+![screenshot](other/screenshot.png)
 
 ## getting started
 You may download the current alphaV3 release [here](https://github.com/sraboy/skaa_editor/blob/master/other/SkaaEditor_x86_alphav3.zip). The release includes debug information (PDB files) included to help you help us with more helpful error messages if the application throws an exception. Please report bugs here by submitting an issue or by emailing me at steven.lavoiejr@gmail.com.
