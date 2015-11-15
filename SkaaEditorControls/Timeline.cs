@@ -139,9 +139,7 @@ namespace SkaaEditorControls
                 if (this._activeFrame != value)
                 {
                     this._activeFrame = value;
-
-                    if (!this.animationTimer.Enabled)
-                        OnActiveFrameChanged(EventArgs.Empty);
+                    OnActiveFrameChanged(EventArgs.Empty);
                 }
             }
         }
@@ -166,7 +164,9 @@ namespace SkaaEditorControls
             this._activeFrameIndex = this.ActiveSprite == null ? 0 : this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
             this.picBoxFrame.Image = this._activeFrame?.ImageBmp;
             this.frameSlider.Value = this._activeFrameIndex >= 0 ? this._activeFrameIndex : 0;
-            RaiseActiveFrameChangedEvent(e);
+
+            if (!this.animationTimer.Enabled)
+                RaiseActiveFrameChangedEvent(e);
         }
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
@@ -174,24 +174,21 @@ namespace SkaaEditorControls
             if (ActiveFrame == null)
                 return;
 
-            //removed one-click navigation. causes accidental navigation on slower double-clicks or accidental clicks
-            //if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
-            //{
-            //    _activeFrameIndex++;
-            //    _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
-            //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-            //    //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
-            //}
-            //else if (!this.animationTimer.Enabled && e.Button == MouseButtons.Right)
-            //{
-            //    _activeFrameIndex--;
-            //    _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
-            //    // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
-            //    this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-            //}
-            //else 
-
-            if (e.Button == MouseButtons.Middle)
+            if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
+            {
+                _activeFrameIndex++;
+                _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
+                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+                //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
+            }
+            else if (!this.animationTimer.Enabled && e.Button == MouseButtons.Right)
+            {
+                _activeFrameIndex--;
+                _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
+                // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
+                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+            }
+            else if (e.Button == MouseButtons.Middle)
             {
                 if (picBoxFrame.SizeMode == PictureBoxSizeMode.CenterImage)
                     picBoxFrame.SizeMode = PictureBoxSizeMode.Zoom;
