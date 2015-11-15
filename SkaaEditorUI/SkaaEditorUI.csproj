@@ -89,7 +89,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework" />
@@ -161,6 +161,10 @@
     <None Include="SkaaEditorUI.licenseheader" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj">
+      <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
+      <Name>Capslock.WinForms.ImageEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
       <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>
       <Name>Cyotek.Windows.Forms.ColorPicker</Name>
@@ -168,10 +172,6 @@
     <ProjectReference Include="..\Cyotek.Windows.Forms.ImageBox\Cyotek.Windows.Forms.ImageBox.csproj">
       <Project>{4159c8d3-c18d-4bed-8be6-9bad1b0ca4f6}</Project>
       <Name>Cyotek.Windows.Forms.ImageBox</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj">
-      <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
-      <Name>Capslock.WinForms.ImageEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\SkaaEditorControls\SkaaEditorControls.csproj">
       <Project>{a6836ea4-c3ca-4179-bc90-c6768fcead6f}</Project>
