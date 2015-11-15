@@ -37,9 +37,13 @@ using System.Drawing.Imaging;
 using BitmapProcessing;
 using System.Diagnostics;
 using System.IO;
+using System.Drawing.Drawing2D;
 
 namespace Capslock.WinForms.ImageEditor
 {
+    [DefaultProperty("Image")]
+    [ToolboxBitmap(typeof(ImageBox), "ImageBox.bmp")]
+    [ToolboxItem(true)]
     public partial class ImageEditorBox : ImageBox
     {
         #region Private Vars
@@ -213,6 +217,8 @@ namespace Capslock.WinForms.ImageEditor
 
             this._linePoints = new Queue<Point>();
             this._drawLinePoints = new List<Point>();
+
+            ScaleM = new Matrix();
         }
         #endregion
 
@@ -462,26 +468,48 @@ namespace Capslock.WinForms.ImageEditor
 
                 if (this._drawLinePoints.Count > 1)
                 {
-                    //Point bmpOne = this.PointToImage(this._drawLinePoints[0]);
-                    //Point bmpTwo = this.PointToImage(this._drawLinePoints[1]);
-
-                    //using (Graphics g = Graphics.FromImage(this.Image))
-                    //{
-                    //    using (Pen p = new Pen(this.ActivePrimaryColor, 1))
-                    //        g.DrawLine(p, bmpOne, bmpTwo);
-                    //}
-
-                    //using (Pen p = new Pen(this.ActivePrimaryColor, 1))
+                    ////Image overDraw = new Bitmap(this.Image.Width, this.Image.Height);
+                    ////Point bmpOne = this.PointToImage(this._drawLinePoints[0]);
+                    ////Point bmpTwo = this.PointToImage(this._drawLinePoints[1]);
+                    ////RectangleF rect;
+                    ////e.Graphics.SetClip(this.GetInsideViewPort(true));
+                    ////rect = this.GetOffsetRectangle(this.SelectionRegion);
+                    ////using (Graphics g = Graphics.FromImage(overDraw))
+                    ////{
+                    ////    g.Clear(Color.FromArgb(0, 255, 255, 255));
+                    ////    using (Pen p = new Pen(this.ActivePrimaryColor, 1))
+                    ////        g.DrawLine(p, bmpOne, bmpTwo);
+                    ////    e.Graphics.DrawImage(overDraw, rect.Location);
+                    ////}
+                    e.Graphics.MultiplyTransform(ScaleM);
+                    using (Pen pen = new Pen(Color.Red, 10f))
+                    {
+                        PointF center = new PointF(this.ViewPortRectangle.Width / 2f,
+                                                   this.ViewPortRectangle.Height / 2f);
+                        center = new PointF((float)(center.X / this.ZoomFactor), (float) (center.Y / this.ZoomFactor));
+                        foreach (PointF pt in this._drawLinePoints)
+                        {
+                    
+                            using (SolidBrush brush = new SolidBrush(pen.Color))
+                            {
+                                float pw = pen.Width;
+                                float pr = pw / 2f;
+                                e.Graphics.FillEllipse(brush, new RectangleF(pt.X - pr, pt.Y - pr, pw, pw));
+                            }
+                            e.Graphics.DrawLine(Pens.Yellow, center, pt);
+                        }
+                    }
+                    //using (Pen p = new Pen(this.ActivePrimaryColor, (int) (this.ZoomFactor / 2)))
                     //    e.Graphics.DrawLine(p, this._drawLinePoints[0], this._drawLinePoints[1]);
+
 
                     this._drawLinePoints.Remove(this._drawLinePoints[1]);
                 }
 
-                base.BeginUpdate();
                 base.OnPaint(e);
-                base.EndUpdate();
             }
         }
         #endregion
+        Matrix ScaleM;
     }
 }
