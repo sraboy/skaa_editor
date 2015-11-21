@@ -549,7 +549,10 @@ namespace SkaaEditorUI
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (AboutForm abt = new AboutForm())
-                abt.Show();
+            {
+                abt.StartPosition = FormStartPosition.CenterParent;
+                abt.ShowDialog();
+            }
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
