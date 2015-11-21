@@ -63,6 +63,16 @@ namespace SkaaEditorUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Kazuya_Hartless {
+            get {
+                object obj = ResourceManager.GetObject("Kazuya-Hartless", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap MenuFileCloseIcon {
             get {
                 object obj = ResourceManager.GetObject("MenuFileCloseIcon", resourceCulture);
