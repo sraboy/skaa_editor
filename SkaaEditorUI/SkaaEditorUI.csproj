@@ -183,9 +183,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\logo_modern.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\MenuFileNewIcon.png" />
   </ItemGroup>
   <ItemGroup>
