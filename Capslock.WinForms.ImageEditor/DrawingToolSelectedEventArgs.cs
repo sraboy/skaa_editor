@@ -28,8 +28,8 @@ namespace Capslock.WinForms.ImageEditor
 {
     public class DrawingToolSelectedEventArgs : EventArgs
     {
-        private ToolModes _selectedTool;
-        public ToolModes SelectedTool
+        private DrawingTools _selectedTool;
+        public DrawingTools SelectedTool
         {
             get
             {
@@ -42,7 +42,7 @@ namespace Capslock.WinForms.ImageEditor
             }
         }
 
-        public DrawingToolSelectedEventArgs(ToolModes selectedTool)
+        public DrawingToolSelectedEventArgs(DrawingTools selectedTool)
         {
             this.SelectedTool = selectedTool;
         }

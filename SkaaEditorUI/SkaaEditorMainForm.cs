@@ -144,7 +144,7 @@ namespace SkaaEditorUI
             if (this.ActiveProject.LoadSprite(props.DataDirectory + "ballista.spr") != null)
             {
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                this.exportBmpToolStripMenuItem.Enabled = true;
+                this.exportPngToolStripMenuItem.Enabled = true;
                 this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
@@ -347,7 +347,7 @@ namespace SkaaEditorUI
 
             //can't save what's not there
             this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;            
-            this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;
+            this.exportPngToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;
             this.saveGameSetToolStripMenuItem.Enabled = (this.ActiveProject?.ActiveGameSet == null) ? false : true;
 
             //need a sprite to navigate a sprite's frames
@@ -409,7 +409,7 @@ namespace SkaaEditorUI
                     if (this.ActiveProject.LoadSprite(dlg.FileName) != null)
                     {
                         this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                        this.exportBmpToolStripMenuItem.Enabled = true;
+                        this.exportPngToolStripMenuItem.Enabled = true;
                         this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                         this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
                     }
@@ -475,7 +475,6 @@ namespace SkaaEditorUI
 
                             AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
                         }
-                        this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
                         this.toolStripStatLbl.Text = string.Empty;
                     }
                 }
@@ -545,6 +544,58 @@ namespace SkaaEditorUI
             if(this.ActiveProject != null)
                 TrySaveCloseProject(sender, e);
         }
+        private void exportAllFramesToPngToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.imageEditorBox.Image == null)
+                Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
+
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.DefaultExt = ".png";
+                dlg.Filter = "PNG Images (*.png)|*.png";
+                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ProcessSpriteUpdates();
+
+                    using (Bitmap bmp = SprDataHandlers.SpriteToBmp(this.ActiveProject.ActiveSprite))
+                    {
+                        //using (Image img = Image.FromHbitmap(bmp.GetHbitmap()))
+                        //{
+                            using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
+                            {
+                                bmp.Save(fs, ImageFormat.Png);
+                            }
+                        //}
+                    }
+                }
+            }
+        }
+        private void exportCurFrameToPngToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.imageEditorBox.Image == null)
+                Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
+
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                dlg.DefaultExt = ".png";
+                dlg.Filter = "PNG Images (*.png)|*.png";
+                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ProcessSpriteUpdates();
+                    //updates this frame's ImageBmp based on changes
+                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
+                        this.imageEditorBox.Image.Save(fs, ImageFormat.Png);
+                }
+            }
+        }
         //////////////////////////////// Other Things ////////////////////////////////
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -610,8 +661,8 @@ namespace SkaaEditorUI
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
-            if (this.imageEditorBox.ToolMode != ToolModes.Pan && 
-                this.imageEditorBox.ToolMode != ToolModes.None)
+            if (this.imageEditorBox.SelectedTool != DrawingTools.Pan && 
+                this.imageEditorBox.SelectedTool != DrawingTools.None)
             {
                 FrameIsEdited(this.ActiveProject.ActiveFrame);
             }
@@ -644,28 +695,6 @@ namespace SkaaEditorUI
 
         #region Old Menu Items
         //todo: re-implement these features
-        private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (this.imageEditorBox.Image == null)
-                Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
-
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = ".bmp";
-                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
-                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
-
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    ProcessSpriteUpdates();
-
-                    using (Bitmap bmp = SprDataHandlers.SpriteToBmp(this.ActiveProject.ActiveSprite))
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
-                        bmp.Save(fs, ImageFormat.Bmp);
-                }
-            }
-        }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog dlg = new OpenFileDialog())
@@ -702,28 +731,6 @@ namespace SkaaEditorUI
                 }
             }
         }
-        private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (this.imageEditorBox.Image == null)
-                Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
-
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = ".bmp";
-                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
-                dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
-
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    //updates this frame's ImageBmp based on changes
-                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
-
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
-                        this.imageEditorBox.Image.Save(fs, ImageFormat.Bmp);
-                }
-            }
-        }
         #endregion
 
         #region Helper Methods
@@ -731,7 +738,7 @@ namespace SkaaEditorUI
         private void ProcessSpriteUpdates()
         {
             this.ActiveProject.ProcessUpdates(this.ActiveProject.ActiveFrame, this.imageEditorBox.Image as Bitmap);
-            //this.ActiveProject.ActiveSprite.Resource.ProcessUpdates(this.ActiveProject.ActiveFrame, imageEditorBox.Image as Bitmap);
+            this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
         }
         /// <summary>
         /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,

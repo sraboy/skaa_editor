@@ -74,7 +74,7 @@ namespace SkaaEditorUI
             this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportBmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportPngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentFrameTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exportAllFramesTo32bppBmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -241,37 +241,39 @@ namespace SkaaEditorUI
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportBmpToolStripMenuItem});
+            this.exportPngToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
-            // exportBmpToolStripMenuItem
+            // exportPngToolStripMenuItem
             // 
-            this.exportBmpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportPngToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.currentFrameTobmp32bppToolStripMenuItem,
             this.toolStripSeparator2,
             this.exportAllFramesTo32bppBmpToolStripMenuItem});
-            this.exportBmpToolStripMenuItem.Name = "exportBmpToolStripMenuItem";
-            this.exportBmpToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.exportBmpToolStripMenuItem.Text = "Export 32-bit BMP";
+            this.exportPngToolStripMenuItem.Name = "exportPngToolStripMenuItem";
+            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportPngToolStripMenuItem.Text = "Export PNG";
             // 
             // currentFrameTobmp32bppToolStripMenuItem
             // 
             this.currentFrameTobmp32bppToolStripMenuItem.Name = "currentFrameTobmp32bppToolStripMenuItem";
-            this.currentFrameTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.currentFrameTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.currentFrameTobmp32bppToolStripMenuItem.Text = "Current Frame";
+            this.currentFrameTobmp32bppToolStripMenuItem.Click += new System.EventHandler(this.exportCurFrameToPngToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(147, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
             // exportAllFramesTo32bppBmpToolStripMenuItem
             // 
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Name = "exportAllFramesTo32bppBmpToolStripMenuItem";
-            this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Text = "All Frames";
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Click += new System.EventHandler(this.exportAllFramesToPngToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -493,7 +495,7 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportBmpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportPngToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exportAllFramesTo32bppBmpToolStripMenuItem;

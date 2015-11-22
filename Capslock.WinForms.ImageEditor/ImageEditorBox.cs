@@ -37,9 +37,13 @@ using System.Drawing.Imaging;
 using BitmapProcessing;
 using System.Diagnostics;
 using System.IO;
+using System.Drawing.Drawing2D;
 
 namespace Capslock.WinForms.ImageEditor
 {
+    [DefaultProperty("Image")]
+    [ToolboxBitmap(typeof(ImageBox), "ImageBox.bmp")]
+    [ToolboxItem(true)]
     public partial class ImageEditorBox : ImageBox
     {
         #region Private Vars
@@ -52,32 +56,18 @@ namespace Capslock.WinForms.ImageEditor
         private Color _activeSecondaryColor;
         private FastBitmap fbmp;
         private Point _startScrollPosition;
-        private ToolModes _toolMode;
-        private Stream _panToolCursorStream;
-        private Stream _pencilToolCursorStream;
-        private Stream _paintBucketToolCursorStream;
+        private DrawingTools _toolMode;
         private Cursor _panCursor;
         private Cursor _pencilCursor;
         private Cursor _paintBucketCursor;
+        private Queue<Point> _linePoints;
+        private List<Point> _drawLinePoints;
         #endregion
 
         [DefaultValue("false")]
         [Category("Behavior")]
         protected virtual bool IsDrawing { get; set; }
-        //{
-        //    get
-        //    {
-        //        return this._isDrawing;
-        //    }
-        //    set
-        //    {
-        //        if (this._isDrawing != value)
-        //        {
-        //            this._isDrawing = value;
-        //        }
-        //    }
-        //}
-
+ 
         #region Public Accessors
         //[DefaultValue(false)]
         //[Category("Behavior")]
@@ -132,7 +122,7 @@ namespace Capslock.WinForms.ImageEditor
         }
         [DefaultValue("None")]
         [Category("Behavior")]
-        public ToolModes ToolMode
+        public DrawingTools SelectedTool
         {
             get { return _toolMode; }
             protected set
@@ -198,8 +188,8 @@ namespace Capslock.WinForms.ImageEditor
         {
             Bitmap bmp = this.Image as Bitmap;
             this.fbmp = new FastBitmap(bmp);
-            this.bmpWidth = bmp.Width;
-            this.bmpHeight = bmp.Height;
+            //this.bmpWidth = bmp.Width;
+            //this.bmpHeight = bmp.Height;
 
             EventHandler handler = ImageUpdated;
 
@@ -208,46 +198,54 @@ namespace Capslock.WinForms.ImageEditor
                 handler(this, e);
             }
         }
+
+        protected override void OnImageChanged(EventArgs e)
+        {
+            this.fbmp = new FastBitmap((Bitmap) this.Image);
+            base.OnImageChanged(e);
+        }
+        #endregion
+
+        #region Constructor
+        public ImageEditorBox() : base()
+        {
+            //have to load these dynamically since they're not just black/white
+            //var str = this.GetType().Assembly.GetManifestResourceNames();
+            this._panCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur")));
+            this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
+            this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
+
+            this._linePoints = new Queue<Point>();
+            this._drawLinePoints = new List<Point>();
+
+            ScaleM = new Matrix();
+        }
         #endregion
 
         #region Overidden Mouse Events
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if(this.Image != null)
-            {
-                if (!this.Focused)
-                {
-                    this.Focus();
-                }
+            if(!this.IsDrawing)
+                base.OnMouseDown(e);
 
-                switch (this.ToolMode)
-                {
-                    //if editing, we don't want to call base.OnMouseDown() because
-                    //the control defaults to panning since it wasn't made for editing
-                    case ToolModes.Pencil:
-                        this.PencilDraw(e);
-                        break;
-                    case ToolModes.Pan:
-                        base.OnMouseDown(e);
-                        break;
-                }
+            if (this.SelectedTool == DrawingTools.Line)
+            {
+                this._linePoints.Enqueue(e.Location);
+                this._drawLinePoints.Add(e.Location);
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (this.Image != null)
+            if (!this.IsDrawing && e.Button == MouseButtons.Left && this.SelectedTool == DrawingTools.Pan)
+                this.IsPanning = true;
+
+            if (!this.IsDrawing)
+                base.OnMouseMove(e);
+
+            if (this.SelectedTool == DrawingTools.Line && (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right))
             {
-                switch (this.ToolMode)
-                {
-                    //if editing, we don't want to call base.OnMouseMove() because
-                    //the control defaults to panning since it wasn't made for editing
-                    case ToolModes.Pencil:
-                        this.PencilDraw(e);
-                        break;
-                    case ToolModes.Pan:
-                        base.OnMouseMove(e);
-                        break;
-                }
+                this._drawLinePoints.Add(e.Location);
+                this.Invalidate();
             }
         }
         protected override void OnMouseUp(MouseEventArgs e)
@@ -258,27 +256,38 @@ namespace Capslock.WinForms.ImageEditor
                 OnImageUpdated(EventArgs.Empty);
             }
 
-            if(this.ToolMode == ToolModes.PaintBucket)
-                this.PaintBucketFill(e);
-           
+            switch (this.SelectedTool)
+            {
+                case DrawingTools.PaintBucket:
+                    this.BeginPaintBucketFill(e);
+                    break;
+                case DrawingTools.Pencil:
+                    this.PencilDraw(e);
+                    break;
+                case DrawingTools.Line:
+                    this._linePoints.Enqueue(e.Location);
+                    this._drawLinePoints.Clear();
+                    this.LineDraw(e);
+                    break;
+            }
+
             base.OnMouseUp(e);
         }
         #endregion
 
-        public ImageEditorBox() : base()
+        #region Public Methods
+        public virtual void ChangeToolMode(object sender, EventArgs e)
         {
-            //have to load these dynamically since they're not just black/white
-            var str = this.GetType().Assembly.GetManifestResourceNames();
-            this._panCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur")));
-            this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
-            this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
+            this.Focus();
+            this.SelectedTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
+            ChangeDrawingToolCursor(this.SelectedTool);
         }
+        #endregion
 
-        
+        #region Drawing Methods
+        protected virtual void BeginPaintBucketFill(MouseEventArgs e)
+        {        //todo: Debug.Assert(this.IsSelecting==false) and this.IsPanning...
 
-        
-        protected virtual void PaintBucketFill(MouseEventArgs e)
-        {
             this.IsDrawing = true;
             this.IsSelecting = false;
             this.IsPanning = false;
@@ -289,17 +298,54 @@ namespace Capslock.WinForms.ImageEditor
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    this.fbmp = new FastBitmap(this.Image as Bitmap);
+                    //this.fbmp = new FastBitmap(this.Image as Bitmap);
                     this.fbmp.LockImage();
-                    FloodFill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y), this.ActivePrimaryColor);
+                    PaintBucketFill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y), this.ActivePrimaryColor);
                     this.fbmp.UnlockImage();
                 }
 
                 this.Invalidate(this.ViewPortRectangle);
             }
         }
+        protected virtual void LineDraw(MouseEventArgs e)
+        {        //todo: Debug.Assert(this.IsSelecting==false) and this.IsPanning...
+            this.IsDrawing = true;
+            this.IsSelecting = false;
+            this.IsPanning = false;
+
+            Color col;
+
+            switch(e.Button)
+            {
+                case MouseButtons.Left:
+                    col = this.ActivePrimaryColor;
+                    break;
+                case MouseButtons.Right:
+                    col = this.ActiveSecondaryColor;
+                    break;
+                default:
+                    col = this.ActivePrimaryColor;
+                    break;
+            }
+
+            if (this._linePoints.Count > 1)
+            {
+                Point bmpOne = this.PointToImage(this._linePoints.Dequeue());
+                Point bmpTwo = this.PointToImage(this._linePoints.Dequeue());
+
+                using (Graphics g = Graphics.FromImage(this.Image))
+                {
+                    using (Pen p = new Pen(col, 1))
+                        g.DrawLine(p, bmpOne, bmpTwo);
+                }
+
+                this.Invalidate();
+            }
+
+            this._linePoints.Clear();
+        }
         protected virtual void PencilDraw(MouseEventArgs e)
-        {
+        {        //todo: Debug.Assert(this.IsSelecting==false) and this.IsPanning...
             this.IsDrawing = true;
             this.IsSelecting = false;
             this.IsPanning = false;
@@ -310,35 +356,21 @@ namespace Capslock.WinForms.ImageEditor
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    //replaced slow SetPixel with FastBitmap from BitmapProcessing lib
-                    //(this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this.ActiveColor);
-                    this.fbmp = new FastBitmap(this.Image as Bitmap);
                     this.fbmp.LockImage();
                     this.fbmp.SetPixel(currentPixel.X, currentPixel.Y, this.ActivePrimaryColor);
                     this.fbmp.UnlockImage();
                 }
                 if (e.Button == MouseButtons.Right)
                 {
-                    //replaced slow SetPixel with FastBitmap from BitmapProcessing lib
-                    //(this.Image as Bitmap).SetPixel(currentPixel.X, currentPixel.Y, this._skaaTransparentColor);
-                    this.fbmp = new FastBitmap(this.Image as Bitmap);
                     this.fbmp.LockImage();
                     this.fbmp.SetPixel(currentPixel.X, currentPixel.Y, this.ActiveSecondaryColor);
                     this.fbmp.UnlockImage();
                 }
-                
+
                 this.Invalidate(this.ViewPortRectangle);
             }
         }
-
-        public virtual void ChangeToolMode(object sender, EventArgs e)//ToolModes vm)
-        {
-            this.Focus();
-            this.ToolMode = (e as DrawingToolSelectedEventArgs).SelectedTool;
-            ChangeCursor();
-        }
-
-        protected virtual void FloodFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        protected virtual void PaintBucketFill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
             Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
 
@@ -374,31 +406,110 @@ namespace Capslock.WinForms.ImageEditor
                 }
             }
         }
-        protected virtual void ChangeCursor()
+        protected virtual void ChangeDrawingToolCursor(DrawingTools tool)
         {
-            switch (this.ToolMode)
+            switch (tool)
             {
-                case ToolModes.PaintBucket: //todo: need to detect this and fill, not just pencil draw
-                    this.Cursor = this._paintBucketCursor;//new Cursor(this._paintBucketToolCursorStream);
+                case DrawingTools.PaintBucket:
+                    this.Cursor = this._paintBucketCursor;
                     break;
-                case ToolModes.Pencil:
-                    this.Cursor = this._pencilCursor;//new Cursor(this._pencilToolCursorStream);
+                case DrawingTools.Pencil:
+                    this.Cursor = this._pencilCursor;
                     break;
-                case ToolModes.Pan:
-                    this.Cursor = this._panCursor;//new Cursor(this._panToolCursorStream);
+                case DrawingTools.Pan:
+                    this.Cursor = this._panCursor;
                     break;
-                case ToolModes.None:
+                case DrawingTools.Line:
+                    this.Cursor = Cursors.Cross;
+                    break;
+                case DrawingTools.None:
                     this.Cursor = this.DefaultCursor;
                     break;
             }
         }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (this.AllowPainting)
+            {
+                // draw the background
+                this.DrawBackground(e);
 
-        //private void ImageEditorBox_ImageChanged(object sender, EventArgs e)
-        //{
-        //    Bitmap bmp = this.Image as Bitmap;
-        //    this.fbmp = new FastBitmap(bmp);
-        //    this.bmpWidth = bmp.Width;
-        //    this.bmpHeight = bmp.Height;
-        //}
+                // draw the image
+                if (!this.ViewSize.IsEmpty)
+                {
+                    this.DrawImageBorder(e.Graphics);
+                }
+                if (this.VirtualMode)
+                {
+                    this.OnVirtualDraw(e);
+                }
+                else if (this.Image != null)
+                {
+                    this.DrawImage(e.Graphics);
+                }
+
+                // draw the grid
+                if (this.ShowPixelGrid && !this.VirtualMode)
+                {
+                    this.DrawPixelGrid(e.Graphics);
+                }
+
+                // draw the selection
+                if (this.SelectionRegion != Rectangle.Empty)
+                {
+                    this.DrawSelection(e);
+                }
+
+                // text
+                if (!string.IsNullOrEmpty(this.Text) && this.TextDisplayMode != ImageBoxGridDisplayMode.None)
+                {
+                    this.DrawText(e);
+                }
+
+                //if (this._drawLinePoints.Count > 1)
+                //{
+                //    ////Image overDraw = new Bitmap(this.Image.Width, this.Image.Height);
+                //    ////Point bmpOne = this.PointToImage(this._drawLinePoints[0]);
+                //    ////Point bmpTwo = this.PointToImage(this._drawLinePoints[1]);
+                //    ////RectangleF rect;
+                //    ////e.Graphics.SetClip(this.GetInsideViewPort(true));
+                //    ////rect = this.GetOffsetRectangle(this.SelectionRegion);
+                //    ////using (Graphics g = Graphics.FromImage(overDraw))
+                //    ////{
+                //    ////    g.Clear(Color.FromArgb(0, 255, 255, 255));
+                //    ////    using (Pen p = new Pen(this.ActivePrimaryColor, 1))
+                //    ////        g.DrawLine(p, bmpOne, bmpTwo);
+                //    ////    e.Graphics.DrawImage(overDraw, rect.Location);
+                //    ////}
+                //    e.Graphics.MultiplyTransform(ScaleM);
+                //    using (Pen pen = new Pen(Color.Red, 10f))
+                //    {
+                //        PointF center = new PointF(this.ViewPortRectangle.Width / 2f,
+                //                                   this.ViewPortRectangle.Height / 2f);
+                //        center = new PointF((float)(center.X / this.ZoomFactor), (float) (center.Y / this.ZoomFactor));
+                //        foreach (PointF pt in this._drawLinePoints)
+                //        {
+                    
+                //            using (SolidBrush brush = new SolidBrush(pen.Color))
+                //            {
+                //                float pw = pen.Width;
+                //                float pr = pw / 2f;
+                //                e.Graphics.FillEllipse(brush, new RectangleF(pt.X - pr, pt.Y - pr, pw, pw));
+                //            }
+                //            e.Graphics.DrawLine(Pens.Yellow, center, pt);
+                //        }
+                //    }
+                //    //using (Pen p = new Pen(this.ActivePrimaryColor, (int) (this.ZoomFactor / 2)))
+                //    //    e.Graphics.DrawLine(p, this._drawLinePoints[0], this._drawLinePoints[1]);
+
+
+                //    this._drawLinePoints.Remove(this._drawLinePoints[1]);
+                //}
+
+                base.OnPaint(e);
+            }
+        }
+        #endregion
+        Matrix ScaleM;
     }
 }

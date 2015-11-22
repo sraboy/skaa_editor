@@ -28,21 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button2 = new System.Windows.Forms.CheckBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DrawingToolbox));
+            this.btnLineTool = new System.Windows.Forms.CheckBox();
             this.btnPaintBucketTool = new System.Windows.Forms.CheckBox();
             this.btnPencilTool = new System.Windows.Forms.CheckBox();
             this.btnPanTool = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
-            // button2
+            // btnLineTool
             // 
-            this.button2.Appearance = System.Windows.Forms.Appearance.Button;
-            this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(81, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(25, 25);
-            this.button2.TabIndex = 3;
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnLineTool.Appearance = System.Windows.Forms.Appearance.Button;
+            this.btnLineTool.Image = ((System.Drawing.Image)(resources.GetObject("btnLineTool.Image")));
+            this.btnLineTool.Location = new System.Drawing.Point(81, 3);
+            this.btnLineTool.Name = "btnLineTool";
+            this.btnLineTool.Size = new System.Drawing.Size(25, 25);
+            this.btnLineTool.TabIndex = 3;
+            this.btnLineTool.UseVisualStyleBackColor = true;
+            this.btnLineTool.CheckedChanged += new System.EventHandler(this.btnTool_Click);
             // 
             // btnPaintBucketTool
             // 
@@ -81,7 +83,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.btnLineTool);
             this.Controls.Add(this.btnPaintBucketTool);
             this.Controls.Add(this.btnPencilTool);
             this.Controls.Add(this.btnPanTool);
@@ -96,7 +98,7 @@
         //private System.Windows.Forms.Button btnPanTool;
         private System.Windows.Forms.CheckBox btnPanTool;
         private System.Windows.Forms.CheckBox btnPencilTool;
-        private System.Windows.Forms.CheckBox button2;
+        private System.Windows.Forms.CheckBox btnLineTool;
         private System.Windows.Forms.CheckBox btnPaintBucketTool;
     }
 }
