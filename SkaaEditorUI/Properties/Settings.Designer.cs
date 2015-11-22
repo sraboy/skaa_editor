@@ -38,18 +38,6 @@ namespace SkaaEditorUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string TempDirectory {
-            get {
-                return ((string)(this["TempDirectory"]));
-            }
-            set {
-                this["TempDirectory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ProjectsDirectory {
             get {
                 return ((string)(this["ProjectsDirectory"]));
@@ -140,6 +128,18 @@ namespace SkaaEditorUI.Properties {
             }
             set {
                 this["ProjectDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TempDirectory {
+            get {
+                return ((string)(this["TempDirectory"]));
+            }
+            set {
+                this["TempDirectory"] = value;
             }
         }
     }

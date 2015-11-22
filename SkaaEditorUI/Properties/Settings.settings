@@ -5,9 +5,6 @@
     <Setting Name="DataDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="TempDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="ProjectsDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -30,6 +27,9 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ProjectDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TempDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

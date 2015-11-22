@@ -139,6 +139,7 @@ namespace SkaaEditorUI
         [Conditional("DEBUG")]
         private void OpenDefaultBallistaSprite()
         {
+            ConfigSettings();
             NewProject();
 
             if (this.ActiveProject.LoadSprite(props.DataDirectory + "ballista.spr") != null)
@@ -148,7 +149,8 @@ namespace SkaaEditorUI
                 this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
-            
+
+            this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set");
         }
         [Conditional("DEBUG")]
         private void SaveProjectToDateTimeDirectory()
@@ -235,6 +237,8 @@ namespace SkaaEditorUI
         #region Private Members
         private Project _activeProject;
         private Properties.Settings props = Properties.Settings.Default;
+        private bool _tempProjectFolder = false;
+        private List<string> _tempFiles;
         #endregion
 
         #region Properties
@@ -256,7 +260,11 @@ namespace SkaaEditorUI
         #endregion
 
         #region Constructors
-        public SkaaEditorMainForm() { InitializeComponent(); }
+        public SkaaEditorMainForm()
+        {
+            InitializeComponent();
+            this._tempFiles = new List<string>();
+        }
         #endregion
 
         #region Setup Methods
@@ -283,6 +291,7 @@ namespace SkaaEditorUI
             //need to adjust our actions based on the tool selected
             this.drawingToolbox.SelectedToolChanged += DrawingToolbox_SelectedToolChanged;
 
+            ConfigSettingsDebug();
             ConfigSettings();
             SetupUI();
         }
@@ -297,12 +306,9 @@ namespace SkaaEditorUI
             Misc.Logger.TraceEvent(TraceEventType.Start, 0, $"Log started: {string.Concat(DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString())}");
 
             props.DataDirectory = props.ApplicationDirectory + "data\\";
-            props.TempDirectory = props.ApplicationDirectory + "temp\\";
             props.ProjectsDirectory = props.ApplicationDirectory + "projects\\";
             Directory.CreateDirectory(props.ProjectsDirectory);
-            Directory.CreateDirectory(props.TempDirectory);
-
-            ConfigSettingsDebug();
+            MakeTempFolder();
         }
   
         /// <summary>
@@ -458,7 +464,7 @@ namespace SkaaEditorUI
             {
                 using (SaveFileDialog dlg = new SaveFileDialog())
                 {
-                    dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
+                    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                     dlg.DefaultExt = props.SpriteFileExtension;
                     dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
                     dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
@@ -490,7 +496,7 @@ namespace SkaaEditorUI
             //{
                 using (SaveFileDialog dlg = new SaveFileDialog())
                 {
-                    dlg.InitialDirectory = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
+                    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                     dlg.DefaultExt = props.GameSetFileExtension;
                     dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
 
@@ -524,12 +530,14 @@ namespace SkaaEditorUI
             using (FolderBrowserDialog dlg = new FolderBrowserDialog())
             {
                 dlg.Description = "Choose or create a directory in which to store your new files.";
-                dlg.SelectedPath = props.ProjectDirectory == null ? props.ProjectsDirectory : props.ProjectDirectory;
+                dlg.SelectedPath = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     string projectName = Path.GetDirectoryName(dlg.SelectedPath);
+
                     props.ProjectDirectory = dlg.SelectedPath;
+                    this._tempProjectFolder = false;
 
                     if (!Directory.Exists(props.ProjectDirectory))
                         Directory.CreateDirectory(props.ProjectDirectory);
@@ -684,12 +692,16 @@ namespace SkaaEditorUI
         }
         private void SkaaEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Trace.WriteLine($"MainForm closed. Reason: {e.CloseReason}");
+            Trace.WriteLine($"MainForm closing. Reason: {e.CloseReason}");
 
-#if !DEBUG
-            Directory.Delete(props.TempDirectory, true);
-            Trace.WriteLine($"Temp directory wiped: {props.TempDirectory}");
-#endif
+            foreach(string dir in this._tempFiles)
+            {
+                if (Directory.Exists(dir))
+                {
+                    Directory.Delete(dir, true);
+                    Trace.WriteLine($"Temp directory wiped: {dir}");
+                }
+            }
         }
         #endregion
 
@@ -733,62 +745,27 @@ namespace SkaaEditorUI
         }
         #endregion
 
-        #region Helper Methods
-        
-        private void ProcessSpriteUpdates()
-        {
-            this.ActiveProject.ProcessUpdates(this.ActiveProject.ActiveFrame, this.imageEditorBox.Image as Bitmap);
-            this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
-        }
-        /// <summary>
-        /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,
-        /// the frame rebuilds its FrameRawData byte array.
-        /// </summary>
-        /// <param name="sf">The <see cref="SpriteFrame"/> to mark as requiring updates.</param>
-        /// <remarks>
-        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrame.FrameRawData"/> 
-        /// arrays for frames actually having edits. The only thing unedited framesmay  need to update is their new offset 
-        /// value for the SET file, if they follow any edited frames in the file, since the sizes of the preceding frames change.
-        /// </remarks>
-        private void FrameIsEdited(SpriteFrame sf)
-        {
-            //Currently only called from imageEditorBox_ImageUpdated
-            sf.PendingChanges = true;
-
-            //todo: implement an UpdateImage() method in Timelinecontrol
-            //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
-            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
-        }
-        private void SetDefaultActiveColors()
-        {
-            Color primary = Color.Black, secondary = Color.FromArgb(0,0,0,0);
-            SetActiveColors(primary, secondary);
-
-            //todo: detect transparent color in palette: Color.Transparent is {0,255,255,255} (trans white) but we use {0,0,0,0} (trans black) in pal_std.res.
-
-            //Re:below - The comparisons are based on the Color.Name property, which our palette does not provide. Will need to search based on ARGB values instead.
-            //Task<bool> FindBlack = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.Black));
-            //Task<bool> FindWhiteTrans = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.Transparent));
-            //Task<bool> FindBlackTrans = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.FromArgb(0, 255, 255, 255)));
-            //Task<Color> NotBlack = Task<Color>.Factory.StartNew(() => this.colorGridChooser.Colors.First(c => c != Color.Black && c != Color.Transparent && c != Color.FromArgb(0, 255, 255, 255)));
-            //if (FindBlack.Result == true)
-            //    primary = Color.Black;
-            //else
-            //    primary = NotBlack.Result;
-            //if (FindWhiteTrans.Result == true)
-            //    secondary = Color.FromArgb(0, 255, 255, 255);
-            //else if (FindBlackTrans.Result == true)
-            //    secondary = Color.FromArgb(0, 0, 0, 0);
-            //else
-            //    secondary = NotBlack.Result;
-        }
-        private void SetActiveColors(Color primary, Color secondary)
-        {
-            this.imageEditorBox.ActivePrimaryColor = primary;
-            this.imageEditorBox.ActiveSecondaryColor = secondary;
-        }
-
         #region Project Management    
+        private void MakeTempFolder()
+        {
+            if (props.TempDirectory == string.Empty)
+            {
+                string tempPath = Path.GetTempPath();
+                props.TempDirectory = tempPath + "SkaaEditor." + Path.GetRandomFileName() + '\\';//DateTime.Now.ToString("yyyyMMddHHmm");
+            }
+            
+
+            if (!Directory.Exists(props.TempDirectory))
+            {
+                if (Directory.CreateDirectory(props.TempDirectory) != null)
+                {
+                    this._tempFiles.Add(props.TempDirectory);
+                    this._tempProjectFolder = true;
+                }
+                else
+                    throw new Exception($"Failed to create temporary directory: {props.TempDirectory}");
+            }
+        }
         private void NewProject(string paletteFilePath = null, string gameSetFilePath = null)
         {
             if (paletteFilePath == null || gameSetFilePath == null)
@@ -800,24 +777,15 @@ namespace SkaaEditorUI
             OpenProject(string.Empty);
         }
         private void OpenProject(string projectPath)
-        { 
+        {
             Project open = new Project();
 
+            //use a temporary folder until the user saves
             if (projectPath == string.Empty || projectPath == props.ProjectsDirectory)
             {
-                string dir = props.ProjectsDirectory + DateTime.Now.ToString("yyyyMMddHHmm");
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-                else
-                {
-                    Misc.LogMessage("No directory created!");
-                    dir = props.ProjectsDirectory + DateTime.Now.ToString("yyyyMMddHHmmfff");
-                    Directory.CreateDirectory(dir);
-                }
-
-                projectPath = dir;
+                projectPath = props.TempDirectory + "\\project_" + DateTime.Now.ToString("yyyyMMddHHmm");
+                Directory.CreateDirectory(projectPath);
+                this._tempFiles.Add(projectPath);
             }
 
             props.ProjectDirectory = projectPath;
@@ -913,7 +881,62 @@ namespace SkaaEditorUI
             return frameHasChanges;
         }
         #endregion
+        
+        #region Helper Methods
+        private void ProcessSpriteUpdates()
+        {
+            this.ActiveProject.ProcessUpdates(this.ActiveProject.ActiveFrame, this.imageEditorBox.Image as Bitmap);
+            this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
+        }
+        /// <summary>
+        /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,
+        /// the frame rebuilds its FrameRawData byte array.
+        /// </summary>
+        /// <param name="sf">The <see cref="SpriteFrame"/> to mark as requiring updates.</param>
+        /// <remarks>
+        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrame.FrameRawData"/> 
+        /// arrays for frames actually having edits. The only thing unedited framesmay  need to update is their new offset 
+        /// value for the SET file, if they follow any edited frames in the file, since the sizes of the preceding frames change.
+        /// </remarks>
+        private void FrameIsEdited(SpriteFrame sf)
+        {
+            //Currently only called from imageEditorBox_ImageUpdated
+            sf.PendingChanges = true;
 
+            //todo: implement an UpdateImage() method in Timelinecontrol
+            //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
+            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
+        }
+        private void SetDefaultActiveColors()
+        {
+            Color primary = Color.Black, secondary = Color.FromArgb(0,0,0,0);
+            SetActiveColors(primary, secondary);
+
+            //todo: detect transparent color in palette: Color.Transparent is {0,255,255,255} (trans white) but we use {0,0,0,0} (trans black) in pal_std.res.
+
+            //Re:below - The comparisons are based on the Color.Name property, which our palette does not provide. Will need to search based on ARGB values instead.
+            //Task<bool> FindBlack = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.Black));
+            //Task<bool> FindWhiteTrans = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.Transparent));
+            //Task<bool> FindBlackTrans = Task<bool>.Factory.StartNew(() => this.colorGridChooser.Colors.Contains(Color.FromArgb(0, 255, 255, 255)));
+            //Task<Color> NotBlack = Task<Color>.Factory.StartNew(() => this.colorGridChooser.Colors.First(c => c != Color.Black && c != Color.Transparent && c != Color.FromArgb(0, 255, 255, 255)));
+            //if (FindBlack.Result == true)
+            //    primary = Color.Black;
+            //else
+            //    primary = NotBlack.Result;
+            //if (FindWhiteTrans.Result == true)
+            //    secondary = Color.FromArgb(0, 255, 255, 255);
+            //else if (FindBlackTrans.Result == true)
+            //    secondary = Color.FromArgb(0, 0, 0, 0);
+            //else
+            //    secondary = NotBlack.Result;
+        }
+        private void SetActiveColors(Color primary, Color secondary)
+        {
+            this.imageEditorBox.ActivePrimaryColor = primary;
+            this.imageEditorBox.ActiveSecondaryColor = secondary;
+        }
         #endregion
+
+        
     }
 }
