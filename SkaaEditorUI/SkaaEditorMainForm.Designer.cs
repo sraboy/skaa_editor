@@ -259,19 +259,21 @@ namespace SkaaEditorUI
             // currentFrameTobmp32bppToolStripMenuItem
             // 
             this.currentFrameTobmp32bppToolStripMenuItem.Name = "currentFrameTobmp32bppToolStripMenuItem";
-            this.currentFrameTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.currentFrameTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.currentFrameTobmp32bppToolStripMenuItem.Text = "Current Frame";
+            this.currentFrameTobmp32bppToolStripMenuItem.Click += new System.EventHandler(this.exportCurFrameTo32bppBmpToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(147, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
             // exportAllFramesTo32bppBmpToolStripMenuItem
             // 
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Name = "exportAllFramesTo32bppBmpToolStripMenuItem";
-            this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Text = "All Frames";
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Click += new System.EventHandler(this.exportAllFramesTo32bppBmpToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -284,7 +286,7 @@ namespace SkaaEditorUI
             // showGridToolStripMenuItem
             // 
             this.showGridToolStripMenuItem.Name = "showGridToolStripMenuItem";
-            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.showGridToolStripMenuItem.Text = "Show Grid";
             this.showGridToolStripMenuItem.Click += new System.EventHandler(this.showGridToolStripMenuItem_Click);
             // 
