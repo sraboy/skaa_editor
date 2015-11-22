@@ -144,7 +144,7 @@ namespace SkaaEditorUI
             if (this.ActiveProject.LoadSprite(props.DataDirectory + "ballista.spr") != null)
             {
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                this.exportBmpToolStripMenuItem.Enabled = true;
+                this.exportPngToolStripMenuItem.Enabled = true;
                 this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
@@ -347,7 +347,7 @@ namespace SkaaEditorUI
 
             //can't save what's not there
             this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;            
-            this.exportBmpToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;
+            this.exportPngToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;
             this.saveGameSetToolStripMenuItem.Enabled = (this.ActiveProject?.ActiveGameSet == null) ? false : true;
 
             //need a sprite to navigate a sprite's frames
@@ -409,7 +409,7 @@ namespace SkaaEditorUI
                     if (this.ActiveProject.LoadSprite(dlg.FileName) != null)
                     {
                         this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                        this.exportBmpToolStripMenuItem.Enabled = true;
+                        this.exportPngToolStripMenuItem.Enabled = true;
                         this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                         this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
                     }
@@ -544,7 +544,7 @@ namespace SkaaEditorUI
             if(this.ActiveProject != null)
                 TrySaveCloseProject(sender, e);
         }
-        private void exportAllFramesTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportAllFramesToPngToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
                 Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
@@ -552,8 +552,8 @@ namespace SkaaEditorUI
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = ".bmp";
-                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
+                dlg.DefaultExt = ".png";
+                dlg.Filter = "PNG Images (*.png)|*.png";
                 dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
@@ -561,12 +561,19 @@ namespace SkaaEditorUI
                     ProcessSpriteUpdates();
 
                     using (Bitmap bmp = SprDataHandlers.SpriteToBmp(this.ActiveProject.ActiveSprite))
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
-                        bmp.Save(fs, ImageFormat.Bmp);
+                    {
+                        //using (Image img = Image.FromHbitmap(bmp.GetHbitmap()))
+                        //{
+                            using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
+                            {
+                                bmp.Save(fs, ImageFormat.Png);
+                            }
+                        //}
+                    }
                 }
             }
         }
-        private void exportCurFrameTo32bppBmpToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportCurFrameToPngToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
                 Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
@@ -574,8 +581,8 @@ namespace SkaaEditorUI
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = ".bmp";
-                dlg.Filter = $"Bitmap Images (.bmp)|*bmp";
+                dlg.DefaultExt = ".png";
+                dlg.Filter = "PNG Images (*.png)|*.png";
                 dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
@@ -585,7 +592,7 @@ namespace SkaaEditorUI
                     this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
-                        this.imageEditorBox.Image.Save(fs, ImageFormat.Bmp);
+                        this.imageEditorBox.Image.Save(fs, ImageFormat.Png);
                 }
             }
         }

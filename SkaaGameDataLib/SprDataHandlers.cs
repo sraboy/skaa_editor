@@ -174,7 +174,6 @@ namespace SkaaGameDataLib
         }
         public static void SprStreamToSpriteFrame(SpriteFrame sf, Stream stream)
         {
-
             sf.SprBitmapOffset = (int) stream.Position;
             //Read Header
             byte[] frame_size_bytes = new byte[8];
@@ -250,25 +249,33 @@ namespace SkaaGameDataLib
             Array.Resize<byte>(ref resizeMe, bytesRead);
             sf.FrameRawData = resizeMe;
         }
+        /// <summary>
+        /// Builds a <see cref="Bitmap"/> sprite sheet containing all the frames of the specified <see cref="Sprite"/>
+        /// with no padding between frames. The number of rows/columns of frames is the square root of the number of frames
+        /// with an additional row added when the number of frames is not a perfect square.
+        /// </summary>
+        /// <param name="spr">The <see cref="Sprite"/> for which to generate a <see cref="Bitmap"/></param>
+        /// <returns>The newly-generated <see cref="Bitmap"/></returns>
         public static Bitmap SpriteToBmp(Sprite spr)
         {
             int totalFrames = spr.Frames.Count;
-            int spriteWidth = 0, spriteHeight = 0, high = 0, low = 0;
+            int spriteWidth = 0, spriteHeight = 0, columns = 0, rows = 0;
 
-            double sqrt = Math.Sqrt((double) totalFrames);
+            double sqrt = Math.Sqrt(totalFrames);
 
+            //figure out how many rows we need
             if (totalFrames % 1 != 0) //totalFrames is a perfect square
             {
-                low = (int) sqrt;
-                high = (int) sqrt;
+                rows = (int) sqrt;
+                columns = (int) sqrt;
             }
             else
             {
-                low = (int) Math.Floor(sqrt) + 1; //adds an additional row
-                high = (int) Math.Ceiling(sqrt);
+                rows = (int) Math.Floor(sqrt) + 1; //adds an additional row
+                columns = (int) Math.Ceiling(sqrt);
             }
 
-            //need the largest height and width to tile the export
+            //need the largest tile (by height and width) to set the row/column heights
             foreach (SpriteFrame sf in spr.Frames)
             {
                 if (sf.Width > spriteWidth)
@@ -277,30 +284,29 @@ namespace SkaaGameDataLib
                     spriteHeight = sf.Height;
             }
 
-            //calculated height and width of the bitmap
-            //based on tiles of the largest possible size
-            int exportWidth = high * spriteWidth,
-                exportHeight = low * spriteHeight;
+            //the total height/width of the image to be created
+            int exportWidth = columns * spriteWidth,
+                exportHeight = rows * spriteHeight;
 
-            using (Bitmap bitmap = new Bitmap(exportWidth, exportHeight))
+            Bitmap bitmap = new Bitmap(exportWidth, exportHeight);
+            
+            using (Graphics g = Graphics.FromImage(bitmap))
             {
-                using (Graphics g = Graphics.FromImage(bitmap))
-                {
-                    int frameIndex = 0;
+                int frameIndex = 0;
 
-                    for (int y = 0; y < exportHeight; y += spriteHeight)
+                for (int y = 0; y < exportHeight; y += spriteHeight)
+                {
+                    //once we hit the max frames, just break
+                    for (int x = 0; x < exportWidth && frameIndex < spr.Frames.Count; x += spriteWidth)
                     {
-                        //once we hit the max frames, just break
-                        for (int x = 0; x < exportWidth && frameIndex < spr.Frames.Count; x += spriteWidth)
-                        {
-                            g.DrawImage(spr.Frames[frameIndex].ImageBmp, new Point(x, y));
-                            frameIndex++;
-                        }
+                        g.DrawImage(spr.Frames[frameIndex].ImageBmp, new Point(x, y));
+                        frameIndex++;
                     }
                 }
-
-                return bitmap;
             }
+
+            return bitmap;
+            
         }
     }
 }
