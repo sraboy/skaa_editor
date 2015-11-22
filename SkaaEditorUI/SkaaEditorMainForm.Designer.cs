@@ -86,15 +86,15 @@ namespace SkaaEditorUI
             this.toolStripStatLbl = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnDebugAction = new System.Windows.Forms.Button();
             this.lbDebugActions = new System.Windows.Forms.ListBox();
-            this.drawingToolbox = new Capslock.WinForms.ImageEditor.DrawingToolbox();
-            this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
-            this.timelineControl = new SkaaEditorControls.TimelineControl();
-            this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripBtnNewProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnOpenProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnSaveProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnCloseProject = new System.Windows.Forms.ToolStripButton();
+            this.drawingToolbox = new Capslock.WinForms.ImageEditor.DrawingToolbox();
+            this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
+            this.timelineControl = new SkaaEditorControls.TimelineControl();
+            this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -253,25 +253,25 @@ namespace SkaaEditorUI
             this.toolStripSeparator2,
             this.exportAllFramesTo32bppBmpToolStripMenuItem});
             this.exportPngToolStripMenuItem.Name = "exportPngToolStripMenuItem";
-            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.exportPngToolStripMenuItem.Text = "Export PNG";
             // 
             // currentFrameTobmp32bppToolStripMenuItem
             // 
             this.currentFrameTobmp32bppToolStripMenuItem.Name = "currentFrameTobmp32bppToolStripMenuItem";
-            this.currentFrameTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.currentFrameTobmp32bppToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.currentFrameTobmp32bppToolStripMenuItem.Text = "Current Frame";
             this.currentFrameTobmp32bppToolStripMenuItem.Click += new System.EventHandler(this.exportCurFrameToPngToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(147, 6);
             // 
             // exportAllFramesTo32bppBmpToolStripMenuItem
             // 
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Name = "exportAllFramesTo32bppBmpToolStripMenuItem";
-            this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Text = "All Frames";
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Click += new System.EventHandler(this.exportAllFramesToPngToolStripMenuItem_Click);
             // 
@@ -345,52 +345,6 @@ namespace SkaaEditorUI
             this.lbDebugActions.TabIndex = 15;
             this.lbDebugActions.Visible = false;
             // 
-            // drawingToolbox
-            // 
-            this.drawingToolbox.Location = new System.Drawing.Point(1, 52);
-            this.drawingToolbox.Margin = new System.Windows.Forms.Padding(2);
-            this.drawingToolbox.Name = "drawingToolbox";
-            this.drawingToolbox.Size = new System.Drawing.Size(175, 69);
-            this.drawingToolbox.TabIndex = 16;
-            // 
-            // colorGridChooser
-            // 
-            this.colorGridChooser.AutoAddColors = false;
-            this.colorGridChooser.CellSize = new System.Drawing.Size(18, 18);
-            this.colorGridChooser.Columns = 8;
-            this.colorGridChooser.EditMode = Cyotek.Windows.Forms.ColorEditingMode.None;
-            this.colorGridChooser.Location = new System.Drawing.Point(0, 127);
-            this.colorGridChooser.Name = "colorGridChooser";
-            this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.Standard256;
-            this.colorGridChooser.ShowCustomColors = false;
-            this.colorGridChooser.Size = new System.Drawing.Size(175, 679);
-            this.colorGridChooser.TabIndex = 14;
-            this.colorGridChooser.ColorChanged += new System.EventHandler(this.ColorGridChooser_ColorChanged);
-            // 
-            // timelineControl
-            // 
-            this.timelineControl.ActiveFrame = null;
-            this.timelineControl.ActiveSprite = null;
-            this.timelineControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.timelineControl.Location = new System.Drawing.Point(888, 27);
-            this.timelineControl.Name = "timelineControl";
-            this.timelineControl.Size = new System.Drawing.Size(129, 172);
-            this.timelineControl.TabIndex = 12;
-            // 
-            // imageEditorBox
-            // 
-            this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
-            this.imageEditorBox.GridCellSize = 12;
-            this.imageEditorBox.Location = new System.Drawing.Point(181, 52);
-            this.imageEditorBox.Name = "imageEditorBox";
-            this.imageEditorBox.Size = new System.Drawing.Size(706, 777);
-            this.imageEditorBox.TabIndex = 8;
-            // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -447,6 +401,53 @@ namespace SkaaEditorUI
             this.toolStripBtnCloseProject.Text = "toolStripButton4";
             this.toolStripBtnCloseProject.ToolTipText = "Close Project";
             this.toolStripBtnCloseProject.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
+            // 
+            // drawingToolbox
+            // 
+            this.drawingToolbox.Location = new System.Drawing.Point(1, 52);
+            this.drawingToolbox.Margin = new System.Windows.Forms.Padding(2);
+            this.drawingToolbox.Name = "drawingToolbox";
+            this.drawingToolbox.Size = new System.Drawing.Size(175, 69);
+            this.drawingToolbox.TabIndex = 16;
+            // 
+            // colorGridChooser
+            // 
+            this.colorGridChooser.AutoAddColors = false;
+            this.colorGridChooser.CellSize = new System.Drawing.Size(18, 18);
+            this.colorGridChooser.Columns = 8;
+            this.colorGridChooser.EditMode = Cyotek.Windows.Forms.ColorEditingMode.None;
+            this.colorGridChooser.Location = new System.Drawing.Point(0, 127);
+            this.colorGridChooser.Name = "colorGridChooser";
+            this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.Standard256;
+            this.colorGridChooser.ShowCustomColors = false;
+            this.colorGridChooser.Size = new System.Drawing.Size(175, 679);
+            this.colorGridChooser.TabIndex = 14;
+            this.colorGridChooser.ColorChanged += new System.EventHandler(this.ColorGridChooser_ColorChanged);
+            // 
+            // timelineControl
+            // 
+            this.timelineControl.ActiveFrame = null;
+            this.timelineControl.ActiveSprite = null;
+            this.timelineControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.timelineControl.Location = new System.Drawing.Point(888, 27);
+            this.timelineControl.Name = "timelineControl";
+            this.timelineControl.Size = new System.Drawing.Size(129, 172);
+            this.timelineControl.TabIndex = 12;
+            // 
+            // imageEditorBox
+            // 
+            this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.imageEditorBox.AutoPan = false;
+            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
+            this.imageEditorBox.GridCellSize = 12;
+            this.imageEditorBox.Location = new System.Drawing.Point(181, 52);
+            this.imageEditorBox.Name = "imageEditorBox";
+            this.imageEditorBox.Size = new System.Drawing.Size(706, 754);
+            this.imageEditorBox.TabIndex = 8;
             // 
             // SkaaEditorMainForm
             // 

@@ -51,11 +51,12 @@ namespace Capslock.WinForms.ImageEditor
         private Color _activePrimaryColor;
         private Color _activeSecondaryColor;
         private FastBitmap fbmp;
-        private Point _startScrollPosition;
         private DrawingTools _toolMode;
         private Cursor _panCursor;
         private Cursor _pencilCursor;
         private Cursor _paintBucketCursor;
+        private Point _startMousePosition;
+        private Point _startScrollPosition;
         private Queue<Point> _linePoints;
         #endregion
 
@@ -64,33 +65,6 @@ namespace Capslock.WinForms.ImageEditor
         protected virtual bool IsDrawing { get; set; }
  
         #region Public Accessors
-        //[DefaultValue(false)]
-        //[Category("Behavior")]
-        //public bool EditMode
-        //{
-        //    get { return _editMode; }
-        //    set
-        //    {
-        //        if (_editMode != value)
-        //        {
-        //            _editMode = value;
-        //            //this.OnEditModeChanged(EventArgs.Empty);
-        //        }
-        //    }
-        //}
-        //[DefaultValue(false)]
-        //[Category("Behavior")]
-        //public bool PanMode
-        //{
-        //    get { return _panMode; }
-        //    set
-        //    {
-        //        if (_panMode != value)
-        //        {
-        //            _panMode = value;
-        //        }
-        //    }
-        //}
         [Category("Behavior")]
         public Color ActivePrimaryColor
         {
@@ -163,7 +137,7 @@ namespace Capslock.WinForms.ImageEditor
 
                         if (value)
                         {
-                            _startScrollPosition = this.AutoScrollPosition;
+                            this._startScrollPosition = this.AutoScrollPosition;
                         }
                     }
                 }
@@ -201,9 +175,9 @@ namespace Capslock.WinForms.ImageEditor
             this._panCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur")));
             this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
             this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
-
             this._linePoints = new Queue<Point>();
-            //this._pencilPoints = new Queue<Point>();
+
+            this.AutoPan = false; //the base constructor sets this to true
         }
         #endregion
 
@@ -233,19 +207,16 @@ namespace Capslock.WinForms.ImageEditor
                 case DrawingTools.Pencil:
                     this.PencilDraw(e);
                     break;
+                case DrawingTools.Pan:
+                    this._startMousePosition = e.Location;
+                    break;
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (!this.IsDrawing && e.Button == MouseButtons.Left && this.SelectedTool == DrawingTools.Pan)
-                this.IsPanning = true;
+            //if (!this.IsDrawing)
+            base.OnMouseMove(e);
 
-            if (!this.IsDrawing)
-            {
-                base.OnMouseMove(e); //can't call this at all if drawing
-            }
-            
-            //no else clause since this may be the first time we'll set IsDrawing
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
                 switch (this.SelectedTool)
@@ -260,6 +231,8 @@ namespace Capslock.WinForms.ImageEditor
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            base.OnMouseUp(e);
+
             if (this.IsDrawing)
             {
                 this.IsDrawing = false;
@@ -277,21 +250,62 @@ namespace Capslock.WinForms.ImageEditor
                     this.LineDraw(e);
                     break;
             }
-
-            base.OnMouseUp(e);
         }
         #endregion
+
+        /// <summary>
+        /// Overrides base to perform tool-based panning instead of auto-panning with the mouse
+        /// </summary>
+        /// <param name="e">
+        ///   The <see cref="MouseEventArgs" /> instance containing the event data.
+        /// </param>
+        protected override void ProcessPanning(MouseEventArgs e)
+        {
+            if (this.SelectedTool == DrawingTools.Pan)
+            {
+                if (!this.ViewSize.IsEmpty && this.SelectionMode == ImageBoxSelectionMode.None)
+                {
+                    if (!this.IsPanning && (this.HScroll | this.VScroll))
+                    {
+                        this._startMousePosition = e.Location;
+                        this.IsPanning = true;
+                    }
+
+                    if (this.IsPanning)
+                    {
+                        int x;
+                        int y;
+                        Point position;
+
+                        if (!this.InvertMouse)
+                        {
+                            x = -_startScrollPosition.X + (_startMousePosition.X - e.Location.X);
+                            y = -_startScrollPosition.Y + (_startMousePosition.Y - e.Location.Y);
+                        }
+                        else
+                        {
+                            x = -(_startScrollPosition.X + (_startMousePosition.X - e.Location.X));
+                            y = -(_startScrollPosition.Y + (_startMousePosition.Y - e.Location.Y));
+                        }
+
+                        position = new Point(x, y);
+
+                        this.UpdateScrollPosition(position);
+                    }
+                }
+            }
+        }
 
         #region Public Methods
         public virtual void ChangeToolMode(object sender, EventArgs e)
         {
             this.Focus();
             this.SelectedTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
-            ChangeDrawingToolCursor(this.SelectedTool);
+            this.ChangeDrawingToolCursor(this.SelectedTool);
         }
         #endregion
 
-        #region Protected Drawing Methods
+        #region Drawing Methods
         protected virtual void LineDraw(MouseEventArgs e)
         {
             this.IsDrawing = true;
@@ -329,7 +343,6 @@ namespace Capslock.WinForms.ImageEditor
                 this.Invalidate();
             }
         }
-
         protected virtual void PencilDraw(MouseEventArgs e)
         {
             this.IsDrawing = true;
@@ -384,6 +397,44 @@ namespace Capslock.WinForms.ImageEditor
                 this.Invalidate(this.ViewPortRectangle);
             }
         }
+        private void Fill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        {
+            Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
+            this.fbmp = new FastBitmap(bmp);
+
+            //original algorithm courtesy http://rosettacode.org/wiki/Bitmap/Flood_fill
+
+            Queue<Point> q = new Queue<Point>();
+            q.Enqueue(pt);
+
+            while (q.Count > 0)
+            {
+                Point n = q.Dequeue();
+                if (!ColorMatch(this.fbmp.GetPixel(n.X, n.Y), targetColor))
+                    continue;
+                Point w = n, e = new Point(n.X + 1, n.Y);
+                while ((w.X >= 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y), targetColor))
+                {
+                    this.fbmp.SetPixel(w.X, w.Y, replacementColor);
+                    if ((w.Y > 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y - 1), targetColor))
+                        q.Enqueue(new Point(w.X, w.Y - 1));
+                    if ((w.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y + 1), targetColor))
+                        q.Enqueue(new Point(w.X, w.Y + 1));
+                    w.X--;
+                }
+                while ((e.X <= bmp.Width - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y), targetColor))
+                {
+                    this.fbmp.SetPixel(e.X, e.Y, replacementColor);
+                    if ((e.Y > 0) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y - 1), targetColor))
+                        q.Enqueue(new Point(e.X, e.Y - 1));
+                    if ((e.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y + 1), targetColor))
+                        q.Enqueue(new Point(e.X, e.Y + 1));
+                    e.X++;
+                }
+            }
+        }
+        #endregion
+
         protected virtual void ChangeDrawingToolCursor(DrawingTools tool)
         {
             switch (tool)
@@ -467,7 +518,7 @@ namespace Capslock.WinForms.ImageEditor
                 //        center = new PointF((float)(center.X / this.ZoomFactor), (float) (center.Y / this.ZoomFactor));
                 //        foreach (PointF pt in this._drawLinePoints)
                 //        {
-                    
+
                 //            using (SolidBrush brush = new SolidBrush(pen.Color))
                 //            {
                 //                float pw = pen.Width;
@@ -487,43 +538,5 @@ namespace Capslock.WinForms.ImageEditor
                 base.OnPaint(e);
             }
         }
-
-        private void Fill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
-        {
-            Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
-            this.fbmp = new FastBitmap(bmp);
-
-            //original algorithm courtesy http://rosettacode.org/wiki/Bitmap/Flood_fill
-
-            Queue<Point> q = new Queue<Point>();
-            q.Enqueue(pt);
-
-            while (q.Count > 0)
-            {
-                Point n = q.Dequeue();
-                if (!ColorMatch(this.fbmp.GetPixel(n.X, n.Y), targetColor))
-                    continue;
-                Point w = n, e = new Point(n.X + 1, n.Y);
-                while ((w.X >= 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y), targetColor))
-                {
-                    this.fbmp.SetPixel(w.X, w.Y, replacementColor);
-                    if ((w.Y > 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y - 1), targetColor))
-                        q.Enqueue(new Point(w.X, w.Y - 1));
-                    if ((w.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y + 1), targetColor))
-                        q.Enqueue(new Point(w.X, w.Y + 1));
-                    w.X--;
-                }
-                while ((e.X <= bmp.Width - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y), targetColor))
-                {
-                    this.fbmp.SetPixel(e.X, e.Y, replacementColor);
-                    if ((e.Y > 0) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y - 1), targetColor))
-                        q.Enqueue(new Point(e.X, e.Y - 1));
-                    if ((e.Y < bmp.Height - 1) && ColorMatch(this.fbmp.GetPixel(e.X, e.Y + 1), targetColor))
-                        q.Enqueue(new Point(e.X, e.Y + 1));
-                    e.X++;
-                }
-            }
-        }
-        #endregion
     }
 }
