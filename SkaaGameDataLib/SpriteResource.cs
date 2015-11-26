@@ -117,25 +117,7 @@ namespace SkaaGameDataLib
 
 
         #region Constructors
-        public SpriteResource()
-        {
-            //Initialize();
-        }
-        //public SpriteResource(ColorPalette pal)
-        //{
-        //    //this.Palette = pal;
-        //    Initialize();
-        //}
-        //public void Initialize()
-        //{
-        //    //this.PaletteUpdated += SpriteResource_PaletteUpdated;
-        //}
-
-        //private void SpriteResource_PaletteUpdated(object sender, EventArgs e)
-        //{
-        //    ////todo: rebuild the BMP with the new palette
-        //    //Trace.WriteLine("SpriteFrame palette updated.");
-        //}
+        public SpriteResource() { }
         #endregion
 
         /// <summary>
@@ -187,8 +169,8 @@ namespace SkaaGameDataLib
 
             List<byte[]> SpriteFrameDataArrays = new List<byte[]>();
 
-            //update the SprBitmapOffset since changes will change the size of the  
-            //FrameRawData when it gets written to an SPR. The game depends on having 
+            //update the BitmapOffset since changes will change the size of the  
+            //ResRawData when it gets written to an SPR file. The game depends on having 
             //the exact offsets to the SPR data.
             int offset = 0;
             for (int i = 0; i < spr.Frames.Count; i++)

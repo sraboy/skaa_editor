@@ -56,6 +56,7 @@ namespace SkaaGameDataLib
             }
         }        
 
+        public SkaaGameSet() { }
         public SkaaGameSet(string setFileDirectory, string tempDirectory)
         {
             this.SetFile = new GameSetFile(setFileDirectory, tempDirectory);
@@ -65,14 +66,14 @@ namespace SkaaGameDataLib
 
         public DataView GetSpriteDataView(string spriteId)
         {
-            DataView dv = new DataView(this.GameDataSet.Tables["SFRAME"]);// , "BALLISTA",)
+            DataView dv = new DataView(this.GameDataSet.Tables["SFRAME"]);
             dv.RowFilter = string.Format("SPRITE = '{0}'", spriteId);
             
             return dv;
         }
         public void SaveGameSet(string filename)
         {
-            this.SetFile.SaveGameSetToFile(filename);//, this);
+            this.SetFile.SaveGameSetToFile(filename);
         }
 
     }//end GameSet

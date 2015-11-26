@@ -43,8 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ButtonResource.cs" />
+    <Compile Include="ResourceDatabase.cs" />
     <Compile Include="IndexedBitmap.cs" />
-    <Compile Include="SprDataHandlers.cs" />
     <Compile Include="PaletteResource.cs" />
     <Compile Include="DatabaseContainer.cs" />
     <Compile Include="DbaseIIIDataColumn.cs">

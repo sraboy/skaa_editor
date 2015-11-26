@@ -323,7 +323,7 @@ namespace SkaaGameDataLib
             stream.Read(frame_size_bytes, 0, 8);
             int idxImgSize = BitConverter.ToInt32(frame_size_bytes, 0);
             this.Width = BitConverter.ToInt16(frame_size_bytes, 4);
-            this.Height = BitConverter.ToInt16(frame_size_bytes, 6);
+            this.Height = BitConverter.ToUInt16(frame_size_bytes, 6);
             this.PixelSize = this.Height * this.Width;
             this.ResBmpData = new byte[this.PixelSize];
             this.ResRawData = new byte[this.PixelSize];

@@ -489,17 +489,39 @@ namespace SkaaEditorUI
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
                 //dlg.DefaultExt = props.SprFileExtension;
-                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|7KAA Game Set Files (.set)|*{props.SetFileExtension}|7KAA Resource Files (.res)|*{props.ResFileExtension}";
+                dlg.Filter = $"7KAA Resource Files (.res)|*{props.ResFileExtension}";//$"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|7KAA Game Set Files (.set)|*{props.SetFileExtension}|7KAA Resource Files (.res)|*{props.ResFileExtension}";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    if (this.ActiveProject.LoadSprite(dlg.FileName) != null)
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Open))
                     {
-                        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                        this.exportPngToolStripMenuItem.Enabled = true;
-                        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                        this.ActiveProject.ActiveGameSet = new SkaaGameSet();
+                        Sprite res = new Sprite();
+
+                        Dictionary<string, uint> dic = ResourceDatabase.ReadDatabaseDefinitions(fs, 8);//, 4);
+
+                        //todo: figure out the wonky offsets for dic[33] and on
+                        foreach (string key in dic.Keys)//KeyValuePair<string, uint> kv in dic)
+                        {
+                            fs.Position = dic[key];
+                            SpriteFrameResource sf = new SpriteFrameResource(res, this.ActiveProject.ActivePalette);
+
+                            fs.Position -= 4; //backup due to the int32 size StreamToIndexedBitmap() expects for sprites
+                            sf.StreamToIndexedBitmap(fs);
+
+                            sf.UpdateRawToBmp();
+                            res.Frames.Add(sf);
+                            res.SpriteId = key;
+                        }
+
+                        this.ActiveProject.ActiveSprite = res;
                     }
+
+                    this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+                    this.exportPngToolStripMenuItem.Enabled = true;
+                    this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                    this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                    
                 }
             }
         }

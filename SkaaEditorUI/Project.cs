@@ -233,9 +233,7 @@ namespace SkaaEditorUI
         private void Initialize() { this.UnsavedSprites = new List<Sprite>(); }
         #endregion
 
-        /// <summary>
-        /// Load the default game set file, <see cref="Properties.Settings.PalStd"/>.
-        /// </summary>
+        
         public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.SetStd);
 
         /// <summary>
@@ -316,7 +314,7 @@ namespace SkaaEditorUI
             }
 
             //have to keep the event from firing before the sprite is loaded, so don't mess with ActiveSprite yet
-            Sprite spr = new Sprite();// this.ActivePalette);
+            Sprite spr = new Sprite();
             
             using (FileStream spritestream = File.OpenRead(filepath))
             {
@@ -324,13 +322,11 @@ namespace SkaaEditorUI
                 {
                     SpriteFrameResource sf = new SpriteFrameResource(spr, this.ActivePalette);
                     sf.StreamToIndexedBitmap(spritestream);
-                    //SprDataHandlers.SprStreamToSpriteFrame(sf, spritestream);
-                    sf.UpdateRawToBmp();// ImageBmp = SprDataHandlers.FrameSprToBmp(sf, this.ActivePalette);
+                    sf.UpdateRawToBmp();
                     spr.Frames.Add(sf);
                 }
             }
 
-            //spr.Resource.FileName = Path.GetFileName(filepath);
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
 
             this.ActiveSprite = spr;
