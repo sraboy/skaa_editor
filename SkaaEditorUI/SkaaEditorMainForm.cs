@@ -498,7 +498,7 @@ namespace SkaaEditorUI
                         this.ActiveProject.ActiveGameSet = new SkaaGameSet();
                         Sprite res = new Sprite();
 
-                        Dictionary<string, uint> dic = ResourceDatabase.ReadDatabaseDefinitions(fs, 8);//, 4);
+                        Dictionary<string, uint> dic = ResourceDatabase.ReadDatabaseDefinitions(fs);
 
                         //todo: figure out the wonky offsets for dic[33] and on
                         foreach (string key in dic.Keys)//KeyValuePair<string, uint> kv in dic)
@@ -853,12 +853,13 @@ namespace SkaaEditorUI
             string paletteFile = string.Empty;
             switch (newProject.ProjectType)
             {
+                case ProjectTypes.Menu:
                 case ProjectTypes.Sprite:
                     paletteFile = props.DataDirectory + props.PalStd;
                     break;
-                case ProjectTypes.Menu:
-                    paletteFile = props.DataDirectory + props.PalMenu;
-                    break;
+                //case ProjectTypes.Menu:
+                //    paletteFile = props.DataDirectory + props.PalMenu;
+                //    break;
             }
             
             this.ActiveProject = newProject;
