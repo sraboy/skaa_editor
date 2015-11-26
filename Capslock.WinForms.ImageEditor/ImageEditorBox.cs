@@ -389,6 +389,7 @@ namespace Capslock.WinForms.ImageEditor
             {
                 if (e.Button == MouseButtons.Left)
                 {
+                    this.fbmp = new FastBitmap(this.Image as Bitmap);
                     this.fbmp.LockImage();
                     Fill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y), this.ActivePrimaryColor);
                     this.fbmp.UnlockImage();
@@ -400,7 +401,6 @@ namespace Capslock.WinForms.ImageEditor
         private void Fill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
             Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
-            this.fbmp = new FastBitmap(bmp);
 
             //original algorithm courtesy http://rosettacode.org/wiki/Bitmap/Flood_fill
 
