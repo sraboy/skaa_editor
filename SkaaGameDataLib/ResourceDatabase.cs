@@ -20,8 +20,8 @@ namespace SkaaGameDataLib
          */
 
         //private string _tempDirectory, _dbfDirectory, _setFilePath;
-        //private const int _rowNameSize = 9;
-        //private const int _resIndexSize = 13;
+        private const int _rowNameSize = 9;
+        private const int _resIndexSize = 13;
 
         //public List<DatabaseContainer> DatabaseContainers;
         //public MemoryStream RawDataStream;
@@ -51,7 +51,7 @@ namespace SkaaGameDataLib
                 RawDataStream.Position = 0;
             }
 
-            Dictionary<string, uint> dic = ReadDatabaseDefinitions(RawDataStream, 9);
+            Dictionary<string, uint> dic = ReadDatabaseDefinitions(RawDataStream);//, 9);
 
             var DatabaseContainers = new List<DatabaseContainer>(dic.Count);
 
@@ -61,9 +61,9 @@ namespace SkaaGameDataLib
             return BuildDataSetFromDbfFiles(Path.GetFileName(filePath), DatabaseContainers, RawDataStream, tempDirectory);
         }
 
-        public static Dictionary<string, uint> ReadDatabaseDefinitions(Stream RawDataStream, int nameSize)//, int offSetSize)
+        public static Dictionary<string, uint> ReadDatabaseDefinitions(Stream RawDataStream)//, int nameSize)//, int offSetSize)
         {
-            int definitionSize = nameSize + 5; //4-byte int plus null
+            //int definitionSize = nameSize + 4; //4-byte int plus null
 
             byte[] recCount = new byte[2];
             RawDataStream.Read(recCount, 0, 2);
@@ -72,23 +72,17 @@ namespace SkaaGameDataLib
             Dictionary<string, uint> dbContainers = new Dictionary<string, uint>(recordCount);
 
             //need (recordCount + 1) because there's always an extra (empty) row/record at the end of the header
-            while (RawDataStream.Position < (recordCount) * definitionSize)
+            while (RawDataStream.Position < (recordCount) * _resIndexSize)
             {
                 DatabaseContainer db = new DatabaseContainer();
-                byte[] name = new byte[nameSize];
+                byte[] name = new byte[_rowNameSize];
                 byte[] offset = new byte[4];
 
-                RawDataStream.Read(name, 0, nameSize); //offset is 0 from ms.Position
+                RawDataStream.Read(name, 0, _rowNameSize); //offset is 0 from ms.Position
                 RawDataStream.Read(offset, 0, 4);
 
                 db.Name = Encoding.GetEncoding(1252).GetString(name).Trim('\0');
-
-                var sh1 = BitConverter.ToInt16(offset.Reverse().ToArray(), 0);
-                var sh2 = BitConverter.ToInt16(offset.Reverse().ToArray(), 2);
-                var all = sh1 + sh2;
-                db.Offset = all;//BitConverter.ToInt32(offset.Reverse().ToArray(), 0);
-
-                RawDataStream.ReadByte(); //a null at the end of every definition
+                db.Offset = BitConverter.ToInt32(offset, 0);
 
                 if (db.Name == "") //always the final "record" with nulls for name and the file's size for the offset
                 {
