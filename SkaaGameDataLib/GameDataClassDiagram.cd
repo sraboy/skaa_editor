@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SkaaGameDataLib.ButtonResource">
+    <Position X="1" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ButtonResource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.DatabaseContainer">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAQAQAAAAAAAEAAAAAAAAAgAA=</HashCode>
+      <FileName>DatabaseContainer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.DbfFile">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="SkaaGameDataLib.DbfFile.DbfPreHeader" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DbfFile.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="SkaaGameDataLib.DbfFile.FieldDescriptor" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DbfFile.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>BAAgAQAAQABAEAAABAAAAACAAAAAEgAEAASAAUABAEE=</HashCode>
+      <FileName>DbfFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.SkaaGameSet">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAMCBAAAAAAAAAAAA=</HashCode>
+      <FileName>GameSet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.GameSetFile">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAMAUAaABAAIAAiAAAAACAAAABgAAAAAAAAAA=</HashCode>
+      <FileName>GameSetFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.IndexedBitmap">
+    <Position X="2" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ARAACAAABACAXEAIAAggAGAACBgAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IndexedBitmap.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.Misc" Collapsed="true">
+    <Position X="11.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Misc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.PaletteResource">
+    <Position X="9.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAICAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>PaletteResource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.ResourceDatabase" Collapsed="true">
+    <Position X="11.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAMAAAAAAgAAAAAAAAAAAAAAEBgAAAAAAAAAA=</HashCode>
+      <FileName>ResourceDatabase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.Sprite">
+    <Position X="6" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAIAEAAAAIAACEAAAAAAAAAAAAAAACgAUAAAE=</HashCode>
+      <FileName>Sprite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.SpriteFrameResource">
+    <Position X="3" Y="7.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAGAAAAAIAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpriteFrameResource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.SpriteResource">
+    <Position X="7.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAQQAAAAAAEQQJBAAAAAACAAIAAAAAAIAAIBAAAA=</HashCode>
+      <FileName>SpriteResource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkaaGameDataLib.DbaseIIIDataColumn">
+    <Position X="11.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbaseIIIDataColumn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

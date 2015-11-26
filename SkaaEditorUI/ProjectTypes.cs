@@ -9,6 +9,6 @@ namespace SkaaEditorUI
     public enum ProjectTypes
     {
         Sprite,
-        Menu
+        Interface
     }
 }

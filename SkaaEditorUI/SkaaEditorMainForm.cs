@@ -157,7 +157,7 @@ namespace SkaaEditorUI
         private void OpenDefaultButtonResource()
         {
             ConfigSettings();
-            NewProject(ProjectTypes.Menu);
+            NewProject(ProjectTypes.Interface);
 
             if (this.ActiveProject.LoadSprite(props.DataDirectory + "i_button.res") != null)
             {
@@ -409,10 +409,10 @@ namespace SkaaEditorUI
             if (this.ActiveProject != null)
             {
                 if (TrySaveCloseProject(null, null))
-                    NewProject(ProjectTypes.Menu);
+                    NewProject(ProjectTypes.Interface);
             }
             else
-                NewProject(ProjectTypes.Menu);
+                NewProject(ProjectTypes.Interface);
         }
         //////////////////////////////// Opening Things ////////////////////////////////
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -483,7 +483,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-        private void openResFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openInterfaceResFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
@@ -493,35 +493,12 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Open))
-                    {
-                        this.ActiveProject.ActiveGameSet = new SkaaGameSet();
-                        Sprite res = new Sprite();
-
-                        Dictionary<string, uint> dic = ResourceDatabase.ReadDatabaseDefinitions(fs);
-
-                        //todo: figure out the wonky offsets for dic[33] and on
-                        foreach (string key in dic.Keys)//KeyValuePair<string, uint> kv in dic)
-                        {
-                            fs.Position = dic[key];
-                            SpriteFrameResource sf = new SpriteFrameResource(res, this.ActiveProject.ActivePalette);
-
-                            fs.Position -= 4; //backup due to the int32 size StreamToIndexedBitmap() expects for sprites
-                            sf.StreamToIndexedBitmap(fs);
-
-                            sf.UpdateRawToBmp();
-                            res.Frames.Add(sf);
-                            res.SpriteId = key;
-                        }
-
-                        this.ActiveProject.ActiveSprite = res;
-                    }
+                    this.ActiveProject.ActiveSprite = this.ActiveProject.LoadInterfaceResource(dlg.FileName);
 
                     this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
                     this.exportPngToolStripMenuItem.Enabled = true;
                     this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
                     this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-                    
                 }
             }
         }
@@ -853,7 +830,7 @@ namespace SkaaEditorUI
             string paletteFile = string.Empty;
             switch (newProject.ProjectType)
             {
-                case ProjectTypes.Menu:
+                case ProjectTypes.Interface:
                 case ProjectTypes.Sprite:
                     paletteFile = props.DataDirectory + props.PalStd;
                     break;
@@ -899,7 +876,7 @@ namespace SkaaEditorUI
                 case ProjectTypes.Sprite:
                     paletteFile = props.ProjectDirectory + props.PalStd;
                     break;
-                case ProjectTypes.Menu:
+                case ProjectTypes.Interface:
                     paletteFile = props.ProjectDirectory + props.PalMenu;
                     break;
             }

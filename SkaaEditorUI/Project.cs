@@ -235,7 +235,6 @@ namespace SkaaEditorUI
 
         
         public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.SetStd);
-
         /// <summary>
         /// This function will open the specified 7KAA SET file.
         /// </summary>
@@ -252,14 +251,8 @@ namespace SkaaEditorUI
             GetSetSpriteDataView();
         }
 
-        /// <summary>
-        /// Load the default standard palette file, <see cref="Properties.Settings.PalStd"/>.
-        /// </summary>
-        public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);
-        /// <summary>
-        /// Load the default menu palette file, <see cref="Properties.Settings.PalMenu"/>.
-        /// </summary>
-        public void LoadDefaultMenuPalette() => LoadPalette(props.DataDirectory + props.PalMenu);
+        //public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);
+        //public void LoadDefaultMenuPalette() => LoadPalette(props.DataDirectory + props.PalMenu);
         /// <summary>
         /// Loads a palette file.
         /// </summary>
@@ -321,8 +314,9 @@ namespace SkaaEditorUI
                 while (spritestream.Position < spritestream.Length)
                 {
                     SpriteFrameResource sf = new SpriteFrameResource(spr, this.ActivePalette);
-                    sf.StreamToIndexedBitmap(spritestream);
-                    sf.UpdateRawToBmp();
+                    spritestream.Position += 4; //skip the int32 size value at the start
+                    sf.Bitmap = sf.StreamToIndexedBitmap(spritestream);
+                    //sf.UpdateRawToBmp();
                     spr.Frames.Add(sf);
                 }
             }
@@ -332,6 +326,32 @@ namespace SkaaEditorUI
             this.ActiveSprite = spr;
             GetSetSpriteDataView();
             return spr;
+        }
+        public Sprite LoadInterfaceResource(string filepath)
+        {
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            {
+                this.ActiveGameSet = new SkaaGameSet();
+                Sprite res = new Sprite();
+
+                Dictionary<string, uint> dic = ResourceDatabase.ReadDatabaseDefinitions(fs);
+
+                //todo: figure out the wonky offsets for dic[33] and on
+                foreach (string key in dic.Keys)//KeyValuePair<string, uint> kv in dic)
+                {
+                    fs.Position = dic[key];
+                    SpriteFrameResource sf = new SpriteFrameResource(res, this.ActivePalette);
+
+                    //fs.Position -= 4; //backup due to the int32 size StreamToIndexedBitmap() expects for sprites
+                    sf.Bitmap = sf.StreamToIndexedBitmap(fs);
+
+                    //sf.UpdateRawToBmp();
+                    res.Frames.Add(sf);
+                    res.SpriteId = key;
+                }
+
+                return res;
+            }
         }
         private void GetSetSpriteDataView()
         {
