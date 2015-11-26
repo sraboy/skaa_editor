@@ -155,8 +155,8 @@ namespace SkaaGameDataLib
 
         /// <summary>
         /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
-        /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRows"/>
-        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.SprBitmapOffset"/>.
+        /// sets each of this sprite's <see cref="SpriteFrameResource"/>'s <see cref="SpriteFrameResource.GameSetDataRows"/>
+        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrameResource.SprBitmapOffset"/>.
         /// </summary>
         /// <returns>False if any frame did not have a match in the DataView. True otherwise.</returns>
         internal bool MatchFrameOffsets(Sprite spr)
@@ -164,7 +164,7 @@ namespace SkaaGameDataLib
             foreach (DataRowView drv in this.SpriteDataView)
             {
                 int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
-                SpriteFrame sf = spr.Frames.Find(f => f.SprBitmapOffset == offset);
+                SpriteFrameResource sf = spr.Frames.Find(f => f.SprBitmapOffset == offset);
 
                 if (sf == null)
                 {
@@ -180,21 +180,21 @@ namespace SkaaGameDataLib
             return true;
         }
         /// <summary>
-        /// Calls <see cref="SpriteFrame.ProcessUpdates(Bitmap)"/> on the specified <see cref="SpriteFrame"/> and
-        /// updates <see cref="SpriteFrame.SprBitmapOffset"/> in order to rebuild <see cref="SpriteResource._sprData"/>.
+        /// Calls <see cref="SpriteFrameResource.ProcessUpdates(Bitmap)"/> on the specified <see cref="SpriteFrameResource"/> and
+        /// updates <see cref="SpriteFrameResource.SprBitmapOffset"/> in order to rebuild <see cref="SpriteResource._sprData"/>.
         /// </summary>
         /// <param name="frameToUpdate">The frame that needs to be updated</param>
         /// <param name="bmpWithChanges">The <see cref="Bitmap"/> from which to get the updates</param>
         /// <remarks>
-        /// Since the <see cref="SpriteFrame"/> is never edited directly (a <see cref="Bitmap"/> representation is what 
-        /// gets presented to the user), the UI must pass this updated <see cref="Bitmap"/> to the <see cref="SpriteFrame"/>
+        /// Since the <see cref="SpriteFrameResource"/> is never edited directly (a <see cref="Bitmap"/> representation is what 
+        /// gets presented to the user), the UI must pass this updated <see cref="Bitmap"/> to the <see cref="SpriteFrameResource"/>
         /// so that it can update itself internally.
         /// 
-        /// This should not be done manually, by calling <see cref="SpriteFrame.ProcessUpdates(Bitmap)"/>, unless the 
-        /// <see cref="SpriteFrame"/> is 100% stand-alone. If it's part of a <see cref="Sprite"/>, the other <see cref="SpriteFrame"/>
+        /// This should not be done manually, by calling <see cref="SpriteFrameResource.ProcessUpdates(Bitmap)"/>, unless the 
+        /// <see cref="SpriteFrameResource"/> is 100% stand-alone. If it's part of a <see cref="Sprite"/>, the other <see cref="SpriteFrameResource"/>
         /// objects must have their offsets updated.
         /// </remarks>
-        public void ProcessUpdates(SpriteFrame frameToUpdate, Bitmap bmpWithChanges)
+        public void ProcessUpdates(SpriteFrameResource frameToUpdate, Bitmap bmpWithChanges)
         {
             //update the bitmap, if frameToUpdate.PendingChanges is true
             frameToUpdate.ProcessUpdates(bmpWithChanges);
@@ -208,9 +208,9 @@ namespace SkaaGameDataLib
             int offset = 0;
             for (int i = 0; i < spr.Frames.Count; i++)
             {
-                SpriteFrame sf = spr.Frames[i];
-                offset += sf.FrameRawData.Length;
-                Debug.Assert(sf.FrameRawData != null, $"Sprite {sf.ParentSprite.SpriteId}'s SpriteFrame's FrameRawData is null!");
+                SpriteFrameResource sf = spr.Frames[i];
+                offset += sf.ResRawData.Length;
+                Debug.Assert(sf.ResRawData != null, $"Sprite {sf.ParentSprite.SpriteId}'s SpriteFrame's FrameRawData is null!");
                 
                 //we depend on short-circuit evaluation here. If i isn't less then the Frames.Count - 1, 
                 //we'll end up with an out-of-bounds exception. We can't just test for PendingChanges because
@@ -228,7 +228,7 @@ namespace SkaaGameDataLib
                     sf.PendingChanges = false;
                 }
                 //Killing two birds with one for loop. See below.
-                SpriteFrameDataArrays.Add(sf.FrameRawData);
+                SpriteFrameDataArrays.Add(sf.ResRawData);
             }
 
             //convert the List<byte[]> to a byte[]

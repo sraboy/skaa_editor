@@ -93,7 +93,7 @@ namespace SkaaEditorControls
         }
 
         private Sprite _activeSprite;
-        private SpriteFrame _activeFrame;
+        private SpriteFrameResource _activeFrame;
         private int _activeFrameIndex;
         private int _preAnimateActiveFrameIndex;
 
@@ -125,7 +125,7 @@ namespace SkaaEditorControls
             }
         }
 
-        public SpriteFrame ActiveFrame
+        public SpriteFrameResource ActiveFrame
         {
             get
             {

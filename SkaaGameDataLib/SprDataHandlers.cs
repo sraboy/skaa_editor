@@ -13,7 +13,7 @@ namespace SkaaGameDataLib
 {
     public static class SprDataHandlers
     {
-        public static Bitmap FrameSprToBmp(SpriteFrame sf, ColorPalette pal)
+        public static Bitmap FrameSprToBmp(SpriteFrameResource sf, ColorPalette pal)
         {
             int idx;
             Bitmap bmp = new Bitmap(sf.Width, sf.Height);
@@ -24,7 +24,7 @@ namespace SkaaGameDataLib
             {
                 for (int x = 0; x < sf.Width; x++)
                 {
-                    idx = sf.FrameBmpData[y * sf.Width + x];
+                    idx = sf.ResBmpData[y * sf.Width + x];
                     Color pixel = pal.Entries[idx];
                     fbmp.SetPixel(x, y, pixel);
                 }
@@ -34,145 +34,8 @@ namespace SkaaGameDataLib
             bmp.MakeTransparent(transparentByte);
             return bmp;
         }
-        public static void FrameBmpToSpr(SpriteFrame sf, ColorPalette pal)
-        {
-            //need it nullable for the try/catch block below since that's the only other assignment
-            byte? palColorByte = null;
-            byte transparentByte = 0xf8;
-            int transparentByteCount = 0;
-            int realOffset = 8; //since our array offset is unaware of the SPR header data
-            byte[] indexedData = new byte[sf.PixelSize + 4];
-
-            // todo: will have to recalculate height/width if bitmap size changes
-            byte[] width = BitConverter.GetBytes((short) sf.Width);
-            byte[] height = BitConverter.GetBytes((short) sf.Height);
-
-            /**************************************************************************
-            *  BitConverter is required, rather than Convert.ToByte(), so we can 
-            *  get the full 16- or 32-bit representations of the values. This is also  
-            *  why Height and Width are both cast to short, to ensure we get a 16-bit
-            *  representation of each value to match the binary's file format of:
-            *  ____________________________________________________________ 
-            *  | 4 byte Size | 2 byte Width | 2 byte Height | byte[] data |
-            **************************************************************************/
-            int seek_pos = 4; //first four bytes are for SprSize, at the end of the function
-            Buffer.BlockCopy(width, 0, indexedData, seek_pos, width.Length);
-            seek_pos += width.Length;
-            Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
-            seek_pos += height.Length;
-
-            List<Color> Palette = new List<Color>();
-            foreach (Color c in pal.Entries)
-            {
-                Palette.Add(c);
-            }
-
-            ////BuildBitmap8bppIndexed() may be called to save the 
-            ////current image before making changes. So we build  
-            ////a 32-bit BMP with current FrameData so it can be used 
-            ////below and to build this SPR to return to the caller. 
-            //if (sf.ImageBmp == null)
-            //    FrameSprToBmp(sf);
-
-            for (int y = 0; y < sf.ImageBmp.Height; ++y)
-            {
-                for (int x = 0; x < sf.ImageBmp.Width; ++x)
-                {
-                    Color pixel = sf.ImageBmp.GetPixel(x, y);
-                    
-                    int pixARGB = pixel.ToArgb();
-                    //Color fromArgb = Color.FromArgb(pixARGB);
-                    int idx = Palette.FindIndex(c => c == pixel);
-
-                    //foreach (Color c in Palette)
-                    //{
-                    //    Debug.WriteLine($"Color c = {c.ToString()}");
-                    //}
-                    //Debug.WriteLine($"pixel = {pixel.ToString()} pixARGB = {pixARGB} ({pixARGB.ToString()}) | idx = {idx.ToString()}");
-
-                    if (idx == -1)
-                    {
-                        throw new Exception($"Unknown color: {pixARGB}");
-                    }
-
-                    //allows us to see the exception's message from the SaveProjectToDateTimeDirectory() Invoke in SkaaEditorMainForm.cs
-                    try
-                    {
-                        palColorByte = Convert.ToByte(idx);
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine($"Exception in FrameBmpToSpr: {e.Message}");
-                    }
-
-                    if (palColorByte > 0xf8) //0xf9 - 0xff are transparent
-                        transparentByteCount++;
-                    // Once we hit a non-zero pixel, we need to write out the transparent pixel marker
-                    // and the count of transparent pixels. We then write out the current non-zero pixel.
-                    // The second expression after || below is to check if we're on the last pixel of the
-                    // image. If so, and the final pixels were colored, there won't be a next pixel to be 
-                    // below 0xf8 so we need to write it out anyway.
-                    bool lastByte = (x == (sf.Width - 1) && (y == (sf.Height - 1)));
-
-                    if (palColorByte <= 0xf8 || lastByte)
-                    {
-                        if (transparentByteCount > 0)
-                        {
-                            // Write 0xf8[dd] where [dd] is transparent byte count, unless the
-                            // number of transparent bytes is 6 or less, then just use the other
-                            // codes below. Seems like the devs were pretty ruthless in trying to 
-                            // save disk space back in 1997.
-                            if (transparentByteCount > 7)
-                            {
-                                indexedData[realOffset] = transparentByte;
-                                realOffset++;
-                                indexedData[realOffset] = Convert.ToByte(transparentByteCount);
-                                realOffset++;
-                                transparentByteCount = 0;
-                            }
-                            else
-                            {
-                                //less than 8 and 7kaa cuts down on file size by just writing one byte      
-                                //transparentByteCount = 2: 0xfe
-                                //transparentByteCount = 3: 0xfd
-                                //transparentByteCount = 4: 0xfc
-                                //transparentByteCount = 5: 0xfb
-                                //transparentByteCount = 6: 0xfa
-                                //transparentByteCount = 7: 0xf9
-                                indexedData[realOffset] = Convert.ToByte(0xff - (transparentByteCount - 1));
-                                realOffset++;
-                                transparentByteCount = 0;
-                            }
-                        }
-
-                        //there is no other byte to write out
-                        if (!lastByte)
-                        {
-                            indexedData[realOffset] = (byte) palColorByte; //have to cast to non-nullable byte
-                            realOffset++;
-                        }
-                    }
-                }//end inner for
-            }//end outer for
-
-            //subtract four because the int32 size in the header is exclusive of those bytes used for the int32 size
-            byte[] size = BitConverter.GetBytes(realOffset - 4);
-            if (size.Length > 4)
-            {
-                string error = $"SPR size must be Int32! Size for {sf.ParentSprite.SpriteId}'s SpriteFrame at offset {realOffset} is {size.ToString()}";
-                Trace.WriteLine(error);
-                throw new Exception(error);
-            }
-            Buffer.BlockCopy(size, 0, indexedData, 0, size.Length);
-
-            //Since FrameData is set to ((Width * Height) + 4), its length will
-            //be based on the real pixels, not the "compressed" length with
-            //the transparent pixels. This makes it impossible to calculate the
-            //offsets of the next frames in the sprite to build a new game set.
-            Array.Resize<byte>(ref indexedData, realOffset);
-            sf.FrameRawData = indexedData;
-        }
-        public static void SprStreamToSpriteFrame(SpriteFrame sf, Stream stream)
+        
+        public static void SprStreamToSpriteFrame(SpriteFrameResource sf, Stream stream)
         {
             sf.SprBitmapOffset = (int) stream.Position;
             //Read Header
@@ -182,15 +45,15 @@ namespace SkaaGameDataLib
             sf.Width = BitConverter.ToInt16(frame_size_bytes, 4);
             sf.Height = BitConverter.ToInt16(frame_size_bytes, 6);
             sf.PixelSize = sf.Height * sf.Width;
-            sf.FrameBmpData = new byte[sf.PixelSize];
-            sf.FrameRawData = new byte[sf.PixelSize];
+            sf.ResBmpData = new byte[sf.PixelSize];
+            sf.ResRawData = new byte[sf.PixelSize];
 
             //initialize it to an unused transparent-pixel-marker
             //todo: Verify 0xff is/isn't used in any of the other sprites
-            sf.FrameBmpData = Enumerable.Repeat<byte>(0xff, sf.PixelSize).ToArray();
-            sf.FrameRawData = Enumerable.Repeat<byte>(0xff, sf.PixelSize).ToArray();
+            sf.ResBmpData = Enumerable.Repeat<byte>(0xff, sf.PixelSize).ToArray();
+            sf.ResRawData = Enumerable.Repeat<byte>(0xff, sf.PixelSize).ToArray();
 
-            Buffer.BlockCopy(frame_size_bytes, 0, sf.FrameRawData, 0, 8);
+            Buffer.BlockCopy(frame_size_bytes, 0, sf.ResRawData, 0, 8);
 
             int pixelsToSkip = 0;
             int bytesRead = 8; //start after the header info
@@ -215,27 +78,27 @@ namespace SkaaGameDataLib
                     try
                     {
                         pixel = Convert.ToByte(stream.ReadByte());
-                        sf.FrameRawData[bytesRead] = pixel;
+                        sf.ResRawData[bytesRead] = pixel;
                         bytesRead++;
                     }
                     catch
                     {
                         //got -1 for EOF
-                        byte[] resize = sf.FrameRawData;
+                        byte[] resize = sf.ResRawData;
                         Array.Resize<byte>(ref resize, bytesRead);
-                        sf.FrameRawData = resize;
+                        sf.ResRawData = resize;
                         return;
                     }
 
                     if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
                     {
-                        sf.FrameBmpData[sf.Width * y + x] = pixel;
+                        sf.ResBmpData[sf.Width * y + x] = pixel;
                     }
                     else if (pixel == 0xf8)//MANY_TRANSPARENT_CODE)
                     {
                         pixel = Convert.ToByte(stream.ReadByte());
                         pixelsToSkip = pixel - 1;
-                        sf.FrameRawData[bytesRead] = pixel;
+                        sf.ResRawData[bytesRead] = pixel;
                         bytesRead++;
                     }
                     else //f9,fa,fb,fc,fd,fe,ff
@@ -245,9 +108,108 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
 
-            byte[] resizeMe = sf.FrameRawData;
+            byte[] resizeMe = sf.ResRawData;
             Array.Resize<byte>(ref resizeMe, bytesRead);
-            sf.FrameRawData = resizeMe;
+            sf.ResRawData = resizeMe;
+        }
+
+        public static void ResStreamToSpriteFrame(SpriteFrameResource res, Stream stream)
+        {
+            //todo: read number of records before getting here
+            //todo: set object name
+            
+            //Read Header
+            byte[] frame_size_bytes = new byte[8];
+            stream.Read(frame_size_bytes, 0, 8);
+            int sprSize = BitConverter.ToInt32(frame_size_bytes, 0);
+            res.Width = BitConverter.ToInt16(frame_size_bytes, 4);
+            res.Height = BitConverter.ToInt16(frame_size_bytes, 6);
+            res.PixelSize = res.Height * res.Width;
+            res.ResBmpData = new byte[res.PixelSize];
+            res.ResRawData = new byte[res.PixelSize];
+
+            string resourceName;
+            byte[] resoure_name = new byte[8];
+            stream.Read(resoure_name, 0, 8);
+            resourceName = Encoding.GetEncoding(1252).GetString(resoure_name, 0, 8).TrimEnd('\0');
+
+            byte[] resource_offset = new byte[8];
+            stream.Read(resource_offset, 0, 8); //need to read 8 else the byte array returned is too short
+            stream.Position -= 3; //backup due to above. the offsets are only 5 bytes
+            res.SprBitmapOffset = (int) BitConverter.ToUInt64(resource_offset, 0);
+
+
+            //int sprSize = BitConverter.ToInt32(frame_size_bytes, 0);
+            //sf.Width = BitConverter.ToInt16(frame_size_bytes, 4);
+            //sf.Height = BitConverter.ToInt16(frame_size_bytes, 6);
+            res.PixelSize = res.Height * res.Width;
+            res.ResBmpData = new byte[res.PixelSize];
+            res.ResRawData = new byte[res.PixelSize];
+
+
+            //initialize it to an unused transparent-pixel-marker
+            //todo: Verify 0xff is/isn't used in any of the other sprites
+            res.ResBmpData = Enumerable.Repeat<byte>(0xff, res.PixelSize).ToArray();
+            res.ResRawData = Enumerable.Repeat<byte>(0xff, res.PixelSize).ToArray();
+
+            //Buffer.BlockCopy(frame_size_bytes, 0, sf.FrameRawData, 0, 8);
+
+            int pixelsToSkip = 0;
+            int bytesRead = 8; //start after the header info
+            byte pixel;
+
+            for (int y = 0; y < res.Height; ++y)
+            {
+                for (int x = 0; x < res.Width; ++x)
+                {
+                    if (pixelsToSkip != 0)  //only if we've previously identified transparent bits
+                    {
+                        if (pixelsToSkip >= res.Width - x) //greater than one line
+                        {
+                            pixelsToSkip -= (res.Width - x); // skip to next line
+                            break;
+                        }
+
+                        x += pixelsToSkip;  //skip reading the indicated amount of bytes for transparent pictures
+                        pixelsToSkip = 0;
+                    }
+
+                    try
+                    {
+                        pixel = Convert.ToByte(stream.ReadByte());
+                        res.ResRawData[bytesRead] = pixel;
+                        bytesRead++;
+                    }
+                    catch
+                    {
+                        //got -1 for EOF
+                        byte[] resize = res.ResRawData;
+                        Array.Resize<byte>(ref resize, bytesRead);
+                        res.ResRawData = resize;
+                        return;
+                    }
+
+                    if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
+                    {
+                        res.ResBmpData[res.Width * y + x] = pixel;
+                    }
+                    else if (pixel == 0xf8)//MANY_TRANSPARENT_CODE)
+                    {
+                        pixel = Convert.ToByte(stream.ReadByte());
+                        pixelsToSkip = pixel - 1;
+                        res.ResRawData[bytesRead] = pixel;
+                        bytesRead++;
+                    }
+                    else //f9,fa,fb,fc,fd,fe,ff
+                    {
+                        pixelsToSkip = 256 - pixel - 1;	// skip (neg al) pixels
+                    }
+                }//end inner for
+            }//end outer for
+
+            byte[] resizeMe = res.ResRawData;
+            Array.Resize<byte>(ref resizeMe, bytesRead);
+            res.ResRawData = resizeMe;
         }
         /// <summary>
         /// Builds a <see cref="Bitmap"/> sprite sheet containing all the frames of the specified <see cref="Sprite"/>
@@ -276,7 +238,7 @@ namespace SkaaGameDataLib
             }
 
             //need the largest tile (by height and width) to set the row/column heights
-            foreach (SpriteFrame sf in spr.Frames)
+            foreach (SpriteFrameResource sf in spr.Frames)
             {
                 if (sf.Width > spriteWidth)
                     spriteWidth = sf.Width;

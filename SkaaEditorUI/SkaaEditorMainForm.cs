@@ -41,7 +41,7 @@ namespace SkaaEditorUI
     public partial class SkaaEditorMainForm : Form
     {
         //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
-        //todo: add Debug logging throughout, eliminate "Calculating colors..."
+        //todo: add Debug logging throughout
 
         #region Debugging
         private List<DebugArgs> _debugArgs;
@@ -95,6 +95,7 @@ namespace SkaaEditorUI
 
             this.lbDebugActions.Items.Add("OpenDefaultBallistaSprite");
             this.lbDebugActions.Items.Add("SaveProjectToDateTimeDirectory");
+            this.lbDebugActions.Items.Add("OpenDefaultButtonResource"); 
         }
         /// <summary>
         /// Saves the current project files and copies them to the relevant 7KAA
@@ -140,9 +141,25 @@ namespace SkaaEditorUI
         private void OpenDefaultBallistaSprite()
         {
             ConfigSettings();
-            NewProject();
+            NewProject(ProjectTypes.Sprite);
 
             if (this.ActiveProject.LoadSprite(props.DataDirectory + "ballista.spr") != null)
+            {
+                this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+                this.exportPngToolStripMenuItem.Enabled = true;
+                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+            }
+
+            this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set");
+        }
+        [Conditional("DEBUG")]
+        private void OpenDefaultButtonResource()
+        {
+            ConfigSettings();
+            NewProject(ProjectTypes.Menu);
+
+            if (this.ActiveProject.LoadSprite(props.DataDirectory + "i_button.res") != null)
             {
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
                 this.exportPngToolStripMenuItem.Enabled = true;
@@ -306,7 +323,7 @@ namespace SkaaEditorUI
             Misc.Logger.TraceEvent(TraceEventType.Start, 0, $"Log started: {string.Concat(DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString())}");
 
             props.DataDirectory = props.ApplicationDirectory + "data\\";
-            props.ProjectsDirectory = props.ApplicationDirectory + "projects\\";
+            props.ProjectsDirectory = props.DataDirectory + "projects\\";
             Directory.CreateDirectory(props.ProjectsDirectory);
             MakeTempFolder();
         }
@@ -374,17 +391,30 @@ namespace SkaaEditorUI
         #endregion
 
         #region Menu/Toolstrip Button Clicks
-        ////////////////////////////// Opening Things //////////////////////////////
-        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        ////////////////////////////////// New Things //////////////////////////////////
+        private void newSpriteProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //todo: this is ugly and hackish. Move null check into TrySaveCloseProject or elsewhere
             if (this.ActiveProject != null)
             {
                 if (TrySaveCloseProject(null, null))
-                    NewProject();
+                    NewProject(ProjectTypes.Sprite);
             }
             else
-                NewProject();      
+                NewProject(ProjectTypes.Sprite);
         }
+        private void newMenuProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //todo: this is ugly and hackish. Move null check into TrySaveCloseProject or elsewhere
+            if (this.ActiveProject != null)
+            {
+                if (TrySaveCloseProject(null, null))
+                    NewProject(ProjectTypes.Menu);
+            }
+            else
+                NewProject(ProjectTypes.Menu);
+        }
+        //////////////////////////////// Opening Things ////////////////////////////////
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(this.ActiveProject != null)
@@ -407,8 +437,8 @@ namespace SkaaEditorUI
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = props.SpriteFileExtension;
-                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
+                dlg.DefaultExt = props.SprFileExtension;
+                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -428,7 +458,7 @@ namespace SkaaEditorUI
             //todo: ask user to associate set to sprite
             if (this.ActiveProject?.ActiveSprite != null && this.ActiveProject?.ActiveGameSet != null)
             {
-                string msg = "This will close the current sprite. Continue?";
+                string msg = "This will close the currently open file. Continue?";
 
                 if (MessageBox.Show(msg, "Wait!", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
@@ -444,12 +474,32 @@ namespace SkaaEditorUI
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = props.GameSetFileExtension;
-                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
+                dlg.DefaultExt = props.SetFileExtension;
+                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     this.ActiveProject.LoadGameSet(dlg.FileName);
+                }
+            }
+        }
+        private void openResFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.InitialDirectory = props.ApplicationDirectory;
+                //dlg.DefaultExt = props.SprFileExtension;
+                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|7KAA Game Set Files (.set)|*{props.SetFileExtension}|7KAA Resource Files (.res)|*{props.ResFileExtension}";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    if (this.ActiveProject.LoadSprite(dlg.FileName) != null)
+                    {
+                        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+                        this.exportPngToolStripMenuItem.Enabled = true;
+                        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+                        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                    }
                 }
             }
         }
@@ -465,8 +515,8 @@ namespace SkaaEditorUI
                 using (SaveFileDialog dlg = new SaveFileDialog())
                 {
                     dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                    dlg.DefaultExt = props.SpriteFileExtension;
-                    dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SpriteFileExtension}";
+                    dlg.DefaultExt = props.SprFileExtension;
+                    dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
                     dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
 
                     if (dlg.ShowDialog() == DialogResult.OK)
@@ -497,8 +547,8 @@ namespace SkaaEditorUI
                 using (SaveFileDialog dlg = new SaveFileDialog())
                 {
                     dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                    dlg.DefaultExt = props.GameSetFileExtension;
-                    dlg.Filter = $"7KAA Game Set Files (.set)|*{props.GameSetFileExtension}";
+                    dlg.DefaultExt = props.SetFileExtension;
+                    dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
 
                     if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
                     {
@@ -737,7 +787,7 @@ namespace SkaaEditorUI
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
                         ProcessSpriteUpdates();
-                        byte[] spr_data = this.ActiveProject.ActiveFrame.FrameRawData;
+                        byte[] spr_data = this.ActiveProject.ActiveFrame.ResRawData;
                         fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     }
                 }
@@ -751,66 +801,91 @@ namespace SkaaEditorUI
             if (props.TempDirectory == string.Empty)
             {
                 string tempPath = Path.GetTempPath();
-                props.TempDirectory = tempPath + "SkaaEditor." + Path.GetRandomFileName() + '\\';//DateTime.Now.ToString("yyyyMMddHHmm");
+                string randomFile = Path.GetRandomFileName();
+                props.TempDirectory = tempPath + "SkaaEditor." + randomFile + '\\';
             }
-            
 
             if (!Directory.Exists(props.TempDirectory))
             {
                 if (Directory.CreateDirectory(props.TempDirectory) != null)
                 {
                     this._tempFiles.Add(props.TempDirectory);
-                    this._tempProjectFolder = true;
+                    this._tempProjectFolder = true; //todo: this is hackish. Should be more along the lines of bool _projectSavedByUser, _projectAutoSaved
                 }
                 else
                     throw new Exception($"Failed to create temporary directory: {props.TempDirectory}");
             }
         }
-        private void NewProject(string paletteFilePath = null, string gameSetFilePath = null)
+        private void NewProject(ProjectTypes projectType)//, string paletteFilePath = null, string gameSetFilePath = null)
         {
-            if (paletteFilePath == null || gameSetFilePath == null)
-            {
-                paletteFilePath = props.DataDirectory + props.DefaultPaletteFile;
-                gameSetFilePath = props.DataDirectory + props.DefaultGameSetFile;
-            }
+            //use a temporary folder until the user saves
+            string projectPath = props.TempDirectory + "\\project_" + DateTime.Now.ToString("yyyyMMddHHmm");
+            Directory.CreateDirectory(projectPath);
+            this._tempFiles.Add(projectPath);
 
-            OpenProject(string.Empty);
+            Project newProject = new Project(projectType);
+
+            //need these events to fire before loading the objects
+            newProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
+            newProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
+            newProject.PaletteChanged += ActiveProject_PaletteChanged;
+
+            //figure out which palette to use
+            string paletteFile = string.Empty;
+            switch (newProject.ProjectType)
+            {
+                case ProjectTypes.Sprite:
+                    paletteFile = props.DataDirectory + props.PalStd;
+                    break;
+                case ProjectTypes.Menu:
+                    paletteFile = props.DataDirectory + props.PalMenu;
+                    break;
+            }
+            
+            this.ActiveProject = newProject;
+            this.ActiveProject.LoadPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
         }
         private void OpenProject(string projectPath)
         {
+            Debug.Assert(projectPath != null, "Failed to specify a path to open!");
+            
+            //todo: enumerate the files to see what ProjectType it is
             Project open = new Project();
-
-            //use a temporary folder until the user saves
-            if (projectPath == string.Empty || projectPath == props.ProjectsDirectory)
-            {
-                projectPath = props.TempDirectory + "\\project_" + DateTime.Now.ToString("yyyyMMddHHmm");
-                Directory.CreateDirectory(projectPath);
-                this._tempFiles.Add(projectPath);
-            }
 
             props.ProjectDirectory = projectPath;
             open.ProjectName = Path.GetFileName(projectPath); //GetFileName just assumes the last thing is a "file" and will give us the directory name
-
-            List<string> setFiles = Directory.EnumerateFiles(projectPath, "*.set").ToList();
-            if (setFiles.Count > 1) //todo: allow user to select which to load
-                Misc.LogMessage("Please select a directory with only one SET file!");
-
-            List<string> sprFiles = Directory.EnumerateFiles(projectPath, "*.spr").ToList();
-            if (sprFiles.Count > 1) //todo: allow user to select which to load
-                Misc.LogMessage("Please select a directory with only one SPR file!");
-
-
-            string paletteFile = props.ProjectDirectory + props.DefaultPaletteFile;
-            if (!File.Exists(paletteFile))
-                paletteFile = props.DataDirectory + props.DefaultPaletteFile;
-
+            
+            //need these events to fire before loading the objects
             open.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
             open.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
             open.PaletteChanged += ActiveProject_PaletteChanged;
 
+            List<string> setFiles = Directory.EnumerateFiles(projectPath, "*.set").ToList();
+            if (setFiles.Count > 1) //todo: allow user to select which to load
+                Misc.LogMessage($"User selected a directory with more than one SET file: {projectPath}");
+
+            List<string> sprFiles = Directory.EnumerateFiles(projectPath, "*.spr").ToList();
+            if (sprFiles.Count > 1) //todo: allow user to select which to load
+                Misc.LogMessage($"User selected a directory with more than one SPR file: {projectPath}");
+
+            List<string> resFiles = Directory.EnumerateFiles(projectPath, "*.res").ToList();
+            if (resFiles.Count > 1) //todo: allow user to select which to load
+                Misc.LogMessage($"User selected a directory with more than one RES file: {projectPath}");
+
+            //figure out which palette to use
+            string paletteFile = string.Empty;
+            switch (open.ProjectType)
+            {
+                case ProjectTypes.Sprite:
+                    paletteFile = props.ProjectDirectory + props.PalStd;
+                    break;
+                case ProjectTypes.Menu:
+                    paletteFile = props.ProjectDirectory + props.PalMenu;
+                    break;
+            }
+
             if (setFiles.Count > 0)
                 open.LoadGameSet(setFiles.ElementAt(0));
-
 
             this.ActiveProject = open;
             open.LoadPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
@@ -873,7 +948,7 @@ namespace SkaaEditorUI
             if (spr == null) return false;
 
             bool frameHasChanges = false;
-            foreach (SpriteFrame sf in spr.Frames)
+            foreach (SpriteFrameResource sf in spr.Frames)
             {
                 frameHasChanges = sf.PendingChanges | frameHasChanges;
             }
@@ -892,13 +967,13 @@ namespace SkaaEditorUI
         /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,
         /// the frame rebuilds its FrameRawData byte array.
         /// </summary>
-        /// <param name="sf">The <see cref="SpriteFrame"/> to mark as requiring updates.</param>
+        /// <param name="sf">The <see cref="SpriteFrameResource"/> to mark as requiring updates.</param>
         /// <remarks>
-        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrame.FrameRawData"/> 
+        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrameResource.FrameRawData"/> 
         /// arrays for frames actually having edits. The only thing unedited framesmay  need to update is their new offset 
         /// value for the SET file, if they follow any edited frames in the file, since the sizes of the preceding frames change.
         /// </remarks>
-        private void FrameIsEdited(SpriteFrame sf)
+        private void FrameIsEdited(SpriteFrameResource sf)
         {
             //Currently only called from imageEditorBox_ImageUpdated
             sf.PendingChanges = true;
@@ -935,8 +1010,7 @@ namespace SkaaEditorUI
             this.imageEditorBox.ActivePrimaryColor = primary;
             this.imageEditorBox.ActiveSecondaryColor = secondary;
         }
-        #endregion
 
-        
+        #endregion
     }
 }

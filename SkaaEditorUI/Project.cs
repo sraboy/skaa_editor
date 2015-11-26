@@ -38,12 +38,13 @@ namespace SkaaEditorUI
     {
         #region Private Members
         private Properties.Settings props = Properties.Settings.Default;
-        private SpriteFrame _activeFrame;
+        private SpriteFrameResource _activeFrame;
         private SkaaGameSet _activeGameSet;
         private PaletteResource _skaaEditorPalette;
         private Sprite _activeSprite;
         private string _projectName;
         private List<Sprite> _unsavedSprites;
+        private ProjectTypes _projectType;
         #endregion
 
         #region Events
@@ -140,7 +141,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public SpriteFrame ActiveFrame
+        public SpriteFrameResource ActiveFrame
         {
             get
             {
@@ -184,6 +185,7 @@ namespace SkaaEditorUI
                 }
             }
         }
+        //todo: this should be a generic list
         public List<Sprite> UnsavedSprites
         {
             get
@@ -210,14 +212,31 @@ namespace SkaaEditorUI
                 }
             }
         }
+        public ProjectTypes ProjectType
+        {
+            get
+            {
+                return _projectType;
+            }
+
+            set
+            {
+                if(this._projectType != value)
+                    this._projectType = value;
+            }
+        }
         #endregion
 
-        public Project() { this.UnsavedSprites = new List<Sprite>(); }
-        
+        #region Constructors & Initialization
+        public Project() { this.Initialize(); }
+        public Project(ProjectTypes type) { this.ProjectType = type; this.Initialize(); }
+        private void Initialize() { this.UnsavedSprites = new List<Sprite>(); }
+        #endregion
+
         /// <summary>
-        /// Load the default game set file, <see cref="Properties.Settings.DefaultPaletteFile"/>.
+        /// Load the default game set file, <see cref="Properties.Settings.PalStd"/>.
         /// </summary>
-        public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.DefaultGameSetFile);
+        public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.SetStd);
 
         /// <summary>
         /// This function will open the specified 7KAA SET file.
@@ -229,16 +248,20 @@ namespace SkaaEditorUI
         public void LoadGameSet(string filepath)
         {
             if (!File.Exists(filepath))
-                filepath = props.DataDirectory + props.DefaultGameSetFile;
+                filepath = props.DataDirectory + props.SetStd;
 
             this.ActiveGameSet = new SkaaGameSet(filepath, props.TempDirectory);
             GetSetSpriteDataView();
         }
 
         /// <summary>
-        /// Load the default palette file, <see cref="Properties.Settings.DefaultGameSetFile"/>.
+        /// Load the default standard palette file, <see cref="Properties.Settings.PalStd"/>.
         /// </summary>
-        public void LoadPalette() => LoadPalette(props.DataDirectory + props.DefaultGameSetFile);
+        public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);
+        /// <summary>
+        /// Load the default menu palette file, <see cref="Properties.Settings.PalMenu"/>.
+        /// </summary>
+        public void LoadDefaultMenuPalette() => LoadPalette(props.DataDirectory + props.PalMenu);
         /// <summary>
         /// Loads a palette file.
         /// </summary>
@@ -299,7 +322,7 @@ namespace SkaaEditorUI
             {
                 while (spritestream.Position < spritestream.Length)
                 {
-                    SpriteFrame sf = new SpriteFrame(spr);
+                    SpriteFrameResource sf = new SpriteFrameResource(spr);
                     SprDataHandlers.SprStreamToSpriteFrame(sf, spritestream);
                     sf.ImageBmp = SprDataHandlers.FrameSprToBmp(sf, this.ActivePalette);
                     spr.Frames.Add(sf);
@@ -326,7 +349,7 @@ namespace SkaaEditorUI
         /// <see cref="Project.UnsavedSprites"/> to assist in tracking project changes.
         /// </summary>
         /// <remarks>
-        /// This was necessary because, in the UI, <see cref="SpriteFrame.PendingChanges"/> is the only way
+        /// This was necessary because, in the UI, <see cref="SpriteFrameResource.PendingChanges"/> is the only way
         /// to identify <see cref="Sprite"/> objects that need to be saved/updated. This allows for identifying
         /// a <see cref="Project"/> that needs saving.
         /// </remarks>
@@ -336,7 +359,7 @@ namespace SkaaEditorUI
             this.UnsavedSprites.Add(spr);
         }
 
-        public void ProcessUpdates(SpriteFrame sf, Bitmap bmp)
+        public void ProcessUpdates(SpriteFrameResource sf, Bitmap bmp)
         {
             this.ActiveSprite.Resource.ProcessUpdates(sf, bmp);
         }

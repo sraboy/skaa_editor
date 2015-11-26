@@ -62,48 +62,48 @@ namespace SkaaEditorUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("pal_std.res")]
-        public string DefaultPaletteFile {
+        public string PalStd {
             get {
-                return ((string)(this["DefaultPaletteFile"]));
+                return ((string)(this["PalStd"]));
             }
             set {
-                this["DefaultPaletteFile"] = value;
+                this["PalStd"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("std.set")]
-        public string DefaultGameSetFile {
+        public string SetStd {
             get {
-                return ((string)(this["DefaultGameSetFile"]));
+                return ((string)(this["SetStd"]));
             }
             set {
-                this["DefaultGameSetFile"] = value;
+                this["SetStd"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(".set")]
-        public string GameSetFileExtension {
+        public string SetFileExtension {
             get {
-                return ((string)(this["GameSetFileExtension"]));
+                return ((string)(this["SetFileExtension"]));
             }
             set {
-                this["GameSetFileExtension"] = value;
+                this["SetFileExtension"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(".spr")]
-        public string SpriteFileExtension {
+        public string SprFileExtension {
             get {
-                return ((string)(this["SpriteFileExtension"]));
+                return ((string)(this["SprFileExtension"]));
             }
             set {
-                this["SpriteFileExtension"] = value;
+                this["SprFileExtension"] = value;
             }
         }
         
@@ -140,6 +140,66 @@ namespace SkaaEditorUI.Properties {
             }
             set {
                 this["TempDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pal_win.res")]
+        public string PalWin {
+            get {
+                return ((string)(this["PalWin"]));
+            }
+            set {
+                this["PalWin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pal_enc.res")]
+        public string PalEnc {
+            get {
+                return ((string)(this["PalEnc"]));
+            }
+            set {
+                this["PalEnc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pal_menu.res")]
+        public string PalMenu {
+            get {
+                return ((string)(this["PalMenu"]));
+            }
+            set {
+                this["PalMenu"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".pal")]
+        public string PalFileExtension {
+            get {
+                return ((string)(this["PalFileExtension"]));
+            }
+            set {
+                this["PalFileExtension"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".res")]
+        public string ResFileExtension {
+            get {
+                return ((string)(this["ResFileExtension"]));
+            }
+            set {
+                this["ResFileExtension"] = value;
             }
         }
     }

@@ -68,13 +68,13 @@ namespace SkaaGameDataLib
         #endregion
 
         #region Private Members
-        private List<SpriteFrame> _frames;
+        private List<SpriteFrameResource> _frames;
         private string _spriteId;
         private SpriteResource _resource;
         #endregion
         
         #region Public Properties
-        public List<SpriteFrame> Frames
+        public List<SpriteFrameResource> Frames
         {
             get
             {
@@ -121,7 +121,7 @@ namespace SkaaGameDataLib
         #region Constructors
         public Sprite(ColorPalette pal)
         {
-            this.Frames = new List<SpriteFrame>();
+            this.Frames = new List<SpriteFrameResource>();
             this.Resource = new SpriteResource(pal);
         }
         #endregion

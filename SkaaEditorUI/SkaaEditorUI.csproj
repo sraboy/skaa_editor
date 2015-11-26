@@ -113,6 +113,7 @@
     </Compile>
     <Compile Include="Misc.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="ProjectTypes.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -221,14 +222,7 @@
     <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(ProjectDir)$(OutDir)data"
-copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"
-mkdir "$(ProjectDir)$(OutDir)projects"
-mkdir "$(ProjectDir)$(OutDir)projects\edited"
-copy "$(ProjectDir)..\other\test_projects\edited\*" "$(ProjectDir)$(OutDir)projects\edited"
-mkdir "$(ProjectDir)$(OutDir)projects\example"
-copy "$(ProjectDir)..\other\test_projects\example\*" "$(ProjectDir)$(OutDir)projects\example"
-mkdir "$(ProjectDir)$(OutDir)projects\junk"
-copy "$(ProjectDir)..\other\test_projects\junk\*" "$(ProjectDir)$(OutDir)projects\junk"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /y "$(ProjectDir)..\other\test_projects\*.*" "$(ProjectDir)$(OutDir)data\projects\"
+copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
