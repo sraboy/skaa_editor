@@ -58,8 +58,8 @@ namespace SkaaEditorControls
             EventHandler handler = _activeFrameChanged;
 
             this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-            this.picBoxFrame.Image = this._activeFrame.Bitmap;
-            this.frameSlider.Value = this._activeFrameIndex;
+            this.picBoxFrame.Image = this._activeFrame?.Bitmap;
+            this.frameSlider.Value = this._activeFrameIndex == -1 ? 0 : this._activeFrameIndex;
 
             if (handler != null)
             {
