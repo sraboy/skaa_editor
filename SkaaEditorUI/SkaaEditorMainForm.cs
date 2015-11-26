@@ -618,15 +618,12 @@ namespace SkaaEditorUI
                 {
                     ProcessSpriteUpdates();
 
-                    using (Bitmap bmp = SprDataHandlers.SpriteToBmp(this.ActiveProject.ActiveSprite))
+                    using (Bitmap bmp = this.ActiveProject.ActiveSprite.ToBitmap())
                     {
-                        //using (Image img = Image.FromHbitmap(bmp.GetHbitmap()))
-                        //{
-                            using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
-                            {
-                                bmp.Save(fs, ImageFormat.Png);
-                            }
-                        //}
+                        using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
+                        {
+                            bmp.Save(fs, ImageFormat.Png);
+                        }
                     }
                 }
             }
@@ -647,7 +644,7 @@ namespace SkaaEditorUI
                 {
                     ProcessSpriteUpdates();
                     //updates this frame's ImageBmp based on changes
-                    this.ActiveProject.ActiveFrame.ImageBmp = (this.imageEditorBox.Image as Bitmap);
+                    this.ActiveProject.ActiveFrame.Bitmap = (this.imageEditorBox.Image as Bitmap);
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
                         this.imageEditorBox.Image.Save(fs, ImageFormat.Png);
@@ -704,7 +701,7 @@ namespace SkaaEditorUI
             }
             else
             {
-                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
+                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.Bitmap;
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
         }

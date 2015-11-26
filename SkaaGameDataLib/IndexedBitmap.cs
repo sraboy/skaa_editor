@@ -4,9 +4,11 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BitmapProcessing;
 
 namespace SkaaGameDataLib
 {
@@ -129,31 +131,31 @@ namespace SkaaGameDataLib
                     this._palette = value;
             }
         }
-        public Bitmap ImageBmp;
+        public Bitmap Bitmap;
         public bool PendingChanges;
         #endregion
 
         #region Constructors
-        public IndexedBitmap() { }
+        public IndexedBitmap(ColorPalette pal) { this.Palette = pal; }
         #endregion
 
         /// <summary>
-        /// Saves the new 32-bit BMP and generates new SPR data based on the edited <see cref="Bitmap"/>
+        /// Saves the new 32-bit BMP and generates new SPR data based on the edited <see cref="System.Drawing.Bitmap"/>
         /// </summary>
-        /// <param name="bmp">The <see cref="Bitmap"/> object from which to get updates.</param>
+        /// <param name="bmp">The <see cref="System.Drawing.Bitmap"/> object from which to get updates.</param>
         internal void ProcessUpdates(Bitmap bmp)
         {
             if (this.PendingChanges == true)
             {
-                this.ImageBmp = bmp;
-                UpdateResRawData();// this, this.Palette);
+                this.Bitmap = bmp;
+                UpdateBmpToRaw();// this, this.Palette);
                 this.PendingChanges = false;
 
                 OnImageUpdated(EventArgs.Empty);  //this doesn't get triggered by FrameBmpToSpr()
             }
         }
         
-        public void UpdateResRawData()//IndexedBitmap bmp, ColorPalette pal)
+        private void UpdateBmpToRaw()//IndexedBitmap bmp, ColorPalette pal)
         {
             //need it nullable for the try/catch block below since that's the only other assignment
             byte? palColorByte = null;
@@ -193,11 +195,11 @@ namespace SkaaGameDataLib
             //if (sf.ImageBmp == null)
             //    FrameSprToBmp(sf);
 
-            for (int y = 0; y < this.ImageBmp.Height; ++y)
+            for (int y = 0; y < this.Bitmap.Height; ++y)
             {
-                for (int x = 0; x < this.ImageBmp.Width; ++x)
+                for (int x = 0; x < this.Bitmap.Width; ++x)
                 {
-                    Color pixel = this.ImageBmp.GetPixel(x, y);
+                    Color pixel = this.Bitmap.GetPixel(x, y);
 
                     int pixARGB = pixel.ToArgb();
                     //Color fromArgb = Color.FromArgb(pixARGB);
@@ -290,6 +292,105 @@ namespace SkaaGameDataLib
             //offsets of the next frames in the sprite to build a new game set.
             Array.Resize<byte>(ref indexedData, realOffset);
             this.ResRawData = indexedData;
+        }
+
+        public void UpdateRawToBmp()//SpriteFrameResource sf, ColorPalette pal)
+        {
+            int idx;
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
+            FastBitmap fbmp = new FastBitmap(bmp);
+            fbmp.LockImage();
+
+            for (int y = 0; y < this.Height; y++)
+            {
+                for (int x = 0; x < this.Width; x++)
+                {
+                    idx = this.ResBmpData[y * this.Width + x];
+                    Color pixel = this.Palette.Entries[idx];
+                    fbmp.SetPixel(x, y, pixel);
+                }
+            }
+            fbmp.UnlockImage();
+            Color transparentByte = Color.FromArgb(0xff);
+            bmp.MakeTransparent(transparentByte);
+            this.Bitmap = bmp;
+        }
+
+        public void StreamToIndexedBitmap(/*SpriteFrameResource sf,*/ Stream stream)
+        {
+            //Read Header
+            byte[] frame_size_bytes = new byte[8];
+            stream.Read(frame_size_bytes, 0, 8);
+            int idxImgSize = BitConverter.ToInt32(frame_size_bytes, 0);
+            this.Width = BitConverter.ToInt16(frame_size_bytes, 4);
+            this.Height = BitConverter.ToInt16(frame_size_bytes, 6);
+            this.PixelSize = this.Height * this.Width;
+            this.ResBmpData = new byte[this.PixelSize];
+            this.ResRawData = new byte[this.PixelSize];
+
+            //initialize it to an unused transparent-pixel-marker
+            //todo: Verify 0xff is/isn't used in any of the other sprites
+            this.ResBmpData = Enumerable.Repeat<byte>(0xff, this.PixelSize).ToArray();
+            this.ResRawData = Enumerable.Repeat<byte>(0xff, this.PixelSize).ToArray();
+
+            Buffer.BlockCopy(frame_size_bytes, 0, this.ResRawData, 0, 8);
+
+            int pixelsToSkip = 0;
+            int bytesRead = 8; //start after the header info
+            byte pixel;
+
+            for (int y = 0; y < this.Height; ++y)
+            {
+                for (int x = 0; x < this.Width; ++x)
+                {
+                    if (pixelsToSkip != 0)  //only if we've previously identified transparent bits
+                    {
+                        if (pixelsToSkip >= this.Width - x) //greater than one line
+                        {
+                            pixelsToSkip -= (this.Width - x); // skip to next line
+                            break;
+                        }
+
+                        x += pixelsToSkip;  //skip reading the indicated amount of bytes for transparent pictures
+                        pixelsToSkip = 0;
+                    }
+
+                    try
+                    {
+                        pixel = Convert.ToByte(stream.ReadByte());
+                        this.ResRawData[bytesRead] = pixel;
+                        bytesRead++;
+                    }
+                    catch
+                    {
+                        //got -1 for EOF
+                        byte[] resize = this.ResRawData;
+                        Array.Resize<byte>(ref resize, bytesRead);
+                        this.ResRawData = resize;
+                        return;
+                    }
+
+                    if (pixel < 0xf8)//MIN_TRANSPARENT_CODE) //normal pixel
+                    {
+                        this.ResBmpData[this.Width * y + x] = pixel;
+                    }
+                    else if (pixel == 0xf8)//MANY_TRANSPARENT_CODE)
+                    {
+                        pixel = Convert.ToByte(stream.ReadByte());
+                        pixelsToSkip = pixel - 1;
+                        this.ResRawData[bytesRead] = pixel;
+                        bytesRead++;
+                    }
+                    else //f9,fa,fb,fc,fd,fe,ff
+                    {
+                        pixelsToSkip = 256 - pixel - 1;	// skip (neg al) pixels
+                    }
+                }//end inner for
+            }//end outer for
+
+            byte[] resizeMe = this.ResRawData;
+            Array.Resize<byte>(ref resizeMe, bytesRead);
+            this.ResRawData = resizeMe;
         }
     }
 }

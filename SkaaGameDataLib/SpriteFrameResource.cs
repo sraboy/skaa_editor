@@ -54,22 +54,28 @@ namespace SkaaGameDataLib
             }
         }
         public List<DataRow> GameSetDataRows;
-        public int SprBitmapOffset;
+        public long BitmapOffset;
 
         /// <summary>
         /// Initializes a new <see cref="SpriteFrameResource"/>.
         /// </summary>
         /// <param name="parentSprite">The <see cref="Sprite"/> containing this <see cref="SpriteFrameResource"/></param>
         /// <param name="stream"></param>
-        public SpriteFrameResource(Sprite parentSprite) : base()
+        public SpriteFrameResource(Sprite parentSprite, ColorPalette pal) : base(pal)
         {
             this.ParentSprite = parentSprite;
             this.GameSetDataRows = new List<DataRow>();
         }
-        public SpriteFrameResource(int sprOffset) : base()
+        public SpriteFrameResource(int sprOffset, ColorPalette pal) : base(pal)
         {
-            this.SprBitmapOffset = sprOffset;
+            this.BitmapOffset = sprOffset;
             this.GameSetDataRows = new List<DataRow>();
+        }
+
+        public void SprStreamToSpriteFrame(SpriteFrameResource sf, Stream stream)
+        {
+            this.BitmapOffset = stream.Position;
+            this.StreamToIndexedBitmap(stream);
         }
     }
 }

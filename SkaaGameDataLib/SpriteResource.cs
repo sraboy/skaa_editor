@@ -12,7 +12,7 @@ namespace SkaaGameDataLib
     {
         #region Private Members
         [NonSerialized]
-        private ColorPalette _pallet;
+        //private ColorPalette _pallet;
         private byte[] _sprData;
         private string _fileName;
         private DataView _spriteDataView;
@@ -115,48 +115,33 @@ namespace SkaaGameDataLib
         }
         #endregion
 
-        internal ColorPalette Palette
-        {
-            get
-            {
-                return this._pallet;
-            }
-            set
-            {
-                if (this._pallet != value)
-                {
-                    this._pallet = value;
-                    OnPaletteUpdated(EventArgs.Empty);
-                }
-            }
-        }
 
         #region Constructors
         public SpriteResource()
         {
-            Initialize();
+            //Initialize();
         }
-        public SpriteResource(ColorPalette pal)
-        {
-            this.Palette = pal;
-            Initialize();
-        }
-        public void Initialize()
-        {
-            this.PaletteUpdated += SpriteResource_PaletteUpdated;
-        }
+        //public SpriteResource(ColorPalette pal)
+        //{
+        //    //this.Palette = pal;
+        //    Initialize();
+        //}
+        //public void Initialize()
+        //{
+        //    //this.PaletteUpdated += SpriteResource_PaletteUpdated;
+        //}
 
-        private void SpriteResource_PaletteUpdated(object sender, EventArgs e)
-        {
-            //todo: rebuild the BMP with the new palette
-            Trace.WriteLine("SpriteFrame palette updated.");
-        }
+        //private void SpriteResource_PaletteUpdated(object sender, EventArgs e)
+        //{
+        //    ////todo: rebuild the BMP with the new palette
+        //    //Trace.WriteLine("SpriteFrame palette updated.");
+        //}
         #endregion
 
         /// <summary>
         /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
         /// sets each of this sprite's <see cref="SpriteFrameResource"/>'s <see cref="SpriteFrameResource.GameSetDataRows"/>
-        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrameResource.SprBitmapOffset"/>.
+        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrameResource.BitmapOffset"/>.
         /// </summary>
         /// <returns>False if any frame did not have a match in the DataView. True otherwise.</returns>
         internal bool MatchFrameOffsets(Sprite spr)
@@ -164,7 +149,7 @@ namespace SkaaGameDataLib
             foreach (DataRowView drv in this.SpriteDataView)
             {
                 int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
-                SpriteFrameResource sf = spr.Frames.Find(f => f.SprBitmapOffset == offset);
+                SpriteFrameResource sf = spr.Frames.Find(f => f.BitmapOffset == offset);
 
                 if (sf == null)
                 {
@@ -181,7 +166,7 @@ namespace SkaaGameDataLib
         }
         /// <summary>
         /// Calls <see cref="SpriteFrameResource.ProcessUpdates(Bitmap)"/> on the specified <see cref="SpriteFrameResource"/> and
-        /// updates <see cref="SpriteFrameResource.SprBitmapOffset"/> in order to rebuild <see cref="SpriteResource._sprData"/>.
+        /// updates <see cref="SpriteFrameResource.BitmapOffset"/> in order to rebuild <see cref="SpriteResource._sprData"/>.
         /// </summary>
         /// <param name="frameToUpdate">The frame that needs to be updated</param>
         /// <param name="bmpWithChanges">The <see cref="Bitmap"/> from which to get the updates</param>
@@ -215,9 +200,9 @@ namespace SkaaGameDataLib
                 //we depend on short-circuit evaluation here. If i isn't less then the Frames.Count - 1, 
                 //we'll end up with an out-of-bounds exception. We can't just test for PendingChanges because
                 //changes in one SpriteFrame will affect offsets in others, not in itself.
-                if ((i < spr.Frames.Count - 1) && (spr.Frames[i + 1].SprBitmapOffset != offset))
+                if ((i < spr.Frames.Count - 1) && (spr.Frames[i + 1].BitmapOffset != offset))
                 {
-                    spr.Frames[i + 1].SprBitmapOffset = offset;
+                    spr.Frames[i + 1].BitmapOffset = offset;
 
                     foreach (DataRow dr in spr.Frames[i + 1].GameSetDataRows)
                     {

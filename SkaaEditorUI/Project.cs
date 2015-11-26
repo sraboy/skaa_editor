@@ -316,20 +316,21 @@ namespace SkaaEditorUI
             }
 
             //have to keep the event from firing before the sprite is loaded, so don't mess with ActiveSprite yet
-            Sprite spr = new Sprite(this.ActivePalette);
+            Sprite spr = new Sprite();// this.ActivePalette);
             
             using (FileStream spritestream = File.OpenRead(filepath))
             {
                 while (spritestream.Position < spritestream.Length)
                 {
-                    SpriteFrameResource sf = new SpriteFrameResource(spr);
-                    SprDataHandlers.SprStreamToSpriteFrame(sf, spritestream);
-                    sf.ImageBmp = SprDataHandlers.FrameSprToBmp(sf, this.ActivePalette);
+                    SpriteFrameResource sf = new SpriteFrameResource(spr, this.ActivePalette);
+                    sf.StreamToIndexedBitmap(spritestream);
+                    //SprDataHandlers.SprStreamToSpriteFrame(sf, spritestream);
+                    sf.UpdateRawToBmp();// ImageBmp = SprDataHandlers.FrameSprToBmp(sf, this.ActivePalette);
                     spr.Frames.Add(sf);
                 }
             }
 
-            spr.Resource.FileName = Path.GetFileName(filepath);
+            //spr.Resource.FileName = Path.GetFileName(filepath);
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
 
             this.ActiveSprite = spr;
