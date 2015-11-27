@@ -237,7 +237,8 @@ namespace SkaaGameDataLib
             int width = BitConverter.ToUInt16(frame_size_bytes, 0);
             int height = BitConverter.ToUInt16(frame_size_bytes, 2);
             int size = height * width;
-
+            if (size > 6000000 || width > 2000 || height > 2000)
+                throw new FormatException($"File is too large: {size} bytes, width: {width}, height: {height}");
             byte[] resBmpData = new byte[size];
             //byte[] resRawData = new byte[size];
 
@@ -253,11 +254,11 @@ namespace SkaaGameDataLib
             int bytesRead = 8; //start after the header info
             byte? pixel = null; //init to null or compiler complains about lack of assignment since assignment is in a try block
 
-            bool eof = false;
+            //bool eof = false;
 
-            for (int y = 0; y < height && eof == false; ++y)
+            for (int y = 0; y < height/* && eof == false*/; ++y)
             {
-                for (int x = 0; x < width && eof == false; ++x)
+                for (int x = 0; x < width/* && eof == false*/; ++x)
                 {
                     if (pixelsToSkip != 0)  //only if we've previously identified transparent bits
                     {
@@ -271,21 +272,23 @@ namespace SkaaGameDataLib
                         pixelsToSkip = 0;
                     }
 
-                    try
-                    {
+                    //try
+                    //{
                         pixel = (byte)stream.ReadByte();
                         //resRawData[bytesRead] = (byte)pixel;
                         bytesRead++;
-                    }
-                    catch
-                    {
-                        //got -1 for EOF
-                        //byte[] resize = resRawData;
-                        //Array.Resize<byte>(ref resize, bytesRead);
-                        //resRawData = resize;
-                        eof = true;
-                        break;
-                    }
+                    if (bytesRead > stream.Length)
+                        throw new FormatException("File is not in the proper format!");
+                    //}
+                    //catch
+                    //{
+                    //    //got -1 for EOF
+                    //    //byte[] resize = resRawData;
+                    //    //Array.Resize<byte>(ref resize, bytesRead);
+                    //    //resRawData = resize;
+                    //    eof = true;
+                    //    break;
+                    //}
 
                     Debug.Assert(pixel != null, "pixel was unassigned!");
 

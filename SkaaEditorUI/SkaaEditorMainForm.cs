@@ -978,5 +978,36 @@ namespace SkaaEditorUI
             this.imageEditorBox.ActiveSecondaryColor = secondary;
         }
         #endregion
+
+        private void btnCheckFiles_Click(object sender, EventArgs e)
+        {
+            IEnumerable<string> dirs = Directory.EnumerateDirectories(props.SkaaDataDirectory);
+
+            using (StreamWriter sw = new StreamWriter("file_types.csv"))
+            {
+                sw.WriteLine("Directory,File,FileExt,Format,Header");
+
+                foreach (string dir in dirs)
+                {
+                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+
+                    foreach (string file in files)
+                    {
+                        object[] data = SkaaGameDataLib.Misc.CheckFileType(file);
+                        string header;
+
+                        if (data[1] == null)
+                            data[1] = FileFormat.Unknown;
+                        header = BitConverter.ToString((byte[]) data[0]);
+
+                        if (header == "68-65-61-64-65-72-20-6E-6F-74-20-72-65-61-64")
+                            header = "header not read";
+
+                        sw.WriteLine($"{Path.GetFileName(dir)},{Path.GetFileName(file)},{Path.GetExtension(file)},{((FileFormat) data[1]).ToString()},{header}");
+                    }
+
+                }
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace SkaaGameDataLib
     [Serializable]
     public class DbfFile
     {
-        private class DbfFileHeader
+        public class DbfFileHeader
         {
             /* Header example
             03 version
@@ -266,14 +266,9 @@ namespace SkaaGameDataLib
                 table.Columns.Add(col);
             }
         }
-        private DbfFileHeader ReadHeader(Stream str)
+        public static DbfFileHeader ReadHeader(Stream str)
         {
             DbfFileHeader header = new DbfFileHeader();
-            //header.LastEdited = new byte[3];
-            //header.ReservedOne = new byte[2];
-            //header.FreeRecordThread = new byte[4];
-            //header.ReservedMultiUser = new byte[8];
-            //header.ReservedTwo = new byte[2];
 
             header.Version = (byte) str.ReadByte();
             str.Read(header.LastEdited, 0, 3);
