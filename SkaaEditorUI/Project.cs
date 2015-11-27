@@ -242,15 +242,26 @@ namespace SkaaEditorUI
         /// <remarks>
         ///  A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
         /// </remarks>
-        public void LoadGameSet(string filepath)
+        public bool LoadGameSet(string filepath)
         {
             if (!File.Exists(filepath))
                 filepath = props.DataDirectory + props.SetStd;
 
             using (FileStream fs = GameSetFile.Open(filepath))
-                this.ActiveGameSet = GameSetFile.ReadAll(fs);
+            {
+                //todo: test reading additional set files into the same DataSet
+                if(this.ActiveGameSet == null)
+                    this.ActiveGameSet = new DataSet();
+
+                this.ActiveGameSet.ReadSetFile(fs);
+            }
 
             SetActiveSpriteDataView();
+
+            if (this.ActiveGameSet != null)
+                return true;
+            else
+                return false;
         }
 
         //public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);

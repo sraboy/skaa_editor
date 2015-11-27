@@ -151,7 +151,8 @@ namespace SkaaEditorUI
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
 
-            this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set");
+            if (this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set"))
+                this.saveGameSetToolStripMenuItem.Enabled = true;
         }
         [Conditional("DEBUG")]
         private void OpenDefaultButtonResource()
@@ -182,6 +183,37 @@ namespace SkaaEditorUI
 
             this.saveSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
             this.saveGameSetToolStripMenuItem_Click(sender, EventArgs.Empty);
+        }
+        [Conditional("DEBUG")]
+        private void CheckFiles()
+        {
+            IEnumerable<string> dirs = Directory.EnumerateDirectories(props.SkaaDataDirectory);
+
+            using (StreamWriter sw = new StreamWriter("file_types.csv"))
+            {
+                sw.WriteLine("Directory,File,FileExt,Format,Header");
+
+                foreach (string dir in dirs)
+                {
+                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+
+                    foreach (string file in files)
+                    {
+                        object[] data = SkaaGameDataLib.Misc.CheckFileType(file);
+                        string header;
+
+                        if (data[1] == null)
+                            data[1] = FileFormat.Unknown;
+                        header = BitConverter.ToString((byte[]) data[0]);
+
+                        if (header == "68-65-61-64-65-72-20-6E-6F-74-20-72-65-61-64")
+                            header = "header not read";
+
+                        sw.WriteLine($"{Path.GetFileName(dir)},{Path.GetFileName(file)},{Path.GetExtension(file)},{((FileFormat) data[1]).ToString()},{header}");
+                    }
+
+                }
+            }
         }
         private void btnDebugAction_Click(object sender, EventArgs e)
         {
@@ -403,7 +435,7 @@ namespace SkaaEditorUI
             else
                 NewProject(ProjectTypes.Sprite);
         }
-        private void newMenuProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void newInterfaceProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //todo: this is ugly and hackish. Move null check into TrySaveCloseProject or elsewhere
             if (this.ActiveProject != null)
@@ -507,55 +539,18 @@ namespace SkaaEditorUI
             if (this.imageEditorBox.Image == null)
                 Misc.LogMessage("The SkaaImageBox.Image object cannot be null!");
 
+            
             bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
             if (changes)
             {
-                using (SaveFileDialog dlg = new SaveFileDialog())
-                {
-                    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                    dlg.DefaultExt = props.SprFileExtension;
-                    dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
-                    dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
-
-                    if (dlg.ShowDialog() == DialogResult.OK)
-                    {
-                        this.toolStripStatLbl.Text = "Saving Sprite...";
-                        this.ActiveProject.ActiveSprite.ToBitmap().Save(dlg.FileName);
-                        this.toolStripStatLbl.Text = string.Empty;
-                    }
-                }
+                SaveFile(FileFormat.Sprite);
             }
         }
         private void saveGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
                 Misc.LogMessage("ActiveProject cannot be null!");
-
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                dlg.DefaultExt = props.SetFileExtension;
-                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
-
-                if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
-                {
-                    this.toolStripStatLbl.Text = "Building Sprite...";
-                    this.toolStripStatLbl.Text = string.Empty;
-                }
-                else
-                    return;
-
-                dlg.FileName = "std.set";
-
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    this.toolStripStatLbl.Text = "Saving Game Set...";
-                    //this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
-                    this.toolStripStatLbl.Text = string.Empty;
-
-                    AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
-                }
-            }
+            this.SaveFile(FileFormat.GameSet);
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -634,6 +629,74 @@ namespace SkaaEditorUI
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
                         this.imageEditorBox.Image.Save(fs, ImageFormat.Png);
                 }
+            }
+        }
+        private void saveSpriteFrameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //todo: add export ASCII art
+            //With ballista adds \n after every 62d character). 
+            //var hex = BitConverter.ToString(frame.FrameData);
+
+            if (this.imageEditorBox.Image == null)
+                Misc.LogMessage("ImageEditorBox.Image object cannot be null!");
+
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
+                    {
+                        //ProcessSpriteUpdates();
+                        byte[] spr_data = IndexedBitmap.GetRleBytesFromBitmap(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
+                        fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+                    }
+                }
+            }
+        }
+        private void SaveFile(FileFormat format)
+        {
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                switch (format)
+                {
+                    case FileFormat.GameSet:
+                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+                        dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
+                        dlg.DefaultExt = props.SetFileExtension;
+                        dlg.FileName = "std.set";
+                        ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveGameSet.Save(dlg.FileName));
+                        break;
+                    case FileFormat.Sprite:
+                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+                        dlg.DefaultExt = props.SprFileExtension;
+                        dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
+                        dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
+                        ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveSprite.ToBitmap().Save(dlg.FileName));
+                        break;
+                    case FileFormat.DbaseIII:
+                        break;
+                    case FileFormat.ResBmp: //for some resources as well as saving a single frame of a Sprite
+                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+                        dlg.DefaultExt = props.SprFileExtension;
+                        dlg.Filter = $"7KAA Sprite Files (.res)|*{props.ResFileExtension}";
+                        dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + "_frame";
+                        ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap.Save(dlg.FileName));
+                        break;
+                    case FileFormat.ResMultiBmp:
+                        break;
+                    case FileFormat.Unknown:
+                        break;
+                }
+            }
+        }
+        private void ShowSaveFileDialog(SaveFileDialog dlg, Action save)
+        {
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                this.toolStripStatLbl.Text = "Saving...";
+                save();
+                this.toolStripStatLbl.Text = string.Empty;
+                //AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
             }
         }
         //////////////////////////////// Other Things ////////////////////////////////
@@ -755,28 +818,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-        private void saveSPRFrameToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //todo: add export ASCII art
-            //With ballista adds \n after every 62d character). 
-            //var hex = BitConverter.ToString(frame.FrameData);
 
-            if (this.imageEditorBox.Image == null)
-                Misc.LogMessage("ImageEditorBox.Image object cannot be null!");
-
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
-                    {
-                        //ProcessSpriteUpdates();
-                        byte[] spr_data = IndexedBitmap.GetRleBytesFromBitmap(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
-                        fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
-                    }
-                }
-            }
-        }
         #endregion
 
         #region Project Management    
@@ -981,33 +1023,7 @@ namespace SkaaEditorUI
 
         private void btnCheckFiles_Click(object sender, EventArgs e)
         {
-            IEnumerable<string> dirs = Directory.EnumerateDirectories(props.SkaaDataDirectory);
-
-            using (StreamWriter sw = new StreamWriter("file_types.csv"))
-            {
-                sw.WriteLine("Directory,File,FileExt,Format,Header");
-
-                foreach (string dir in dirs)
-                {
-                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
-
-                    foreach (string file in files)
-                    {
-                        object[] data = SkaaGameDataLib.Misc.CheckFileType(file);
-                        string header;
-
-                        if (data[1] == null)
-                            data[1] = FileFormat.Unknown;
-                        header = BitConverter.ToString((byte[]) data[0]);
-
-                        if (header == "68-65-61-64-65-72-20-6E-6F-74-20-72-65-61-64")
-                            header = "header not read";
-
-                        sw.WriteLine($"{Path.GetFileName(dir)},{Path.GetFileName(file)},{Path.GetExtension(file)},{((FileFormat) data[1]).ToString()},{header}");
-                    }
-
-                }
-            }
+            CheckFiles();
         }
     }
 }

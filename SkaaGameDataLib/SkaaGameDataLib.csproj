@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ButtonResource.cs" />
+    <Compile Include="DbfFileWriter.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="ResourceDatabase.cs" />
     <Compile Include="IndexedBitmap.cs" />

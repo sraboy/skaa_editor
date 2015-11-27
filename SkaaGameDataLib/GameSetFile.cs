@@ -28,29 +28,56 @@ namespace SkaaGameDataLib
             return fs;
         }
 
-        public static DataSet ReadAll(Stream str)
+        public static void ReadSetFile(this DataSet ds, Stream str)
         {
             var defs = ResourceDatabase.ReadDefinitions(str);
-
-            DataSet ds = new DataSet();
 
             foreach (KeyValuePair<string, uint> kv in defs)
             {
                 str.Position = kv.Value; //the DBF's offset value in the set file
-                DbfFile file = new DbfFile(kv.Key);
+                DbfFile file = new DbfFile();
                 file.ReadStream(str);
-                DataTable dt = file.DataTable;
-                dt.TableName = Path.GetFileNameWithoutExtension(kv.Key + ".dbf");
-                ds.Tables.Add(dt);
+                file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);// + ".dbf");
+                ds.Tables.Add(file.DataTable);
             }
-
-            return ds;
         }
 
-        public static void WriteSet(DataSet ds)
+        public static void Save(this DataSet ds, string filepath)
         {
+            int rowcount = 0;
 
+            foreach (DataTable dt in ds.Tables)
+                rowcount += dt.Rows.Count;
+
+            //rowcount + 1 for the additional empty record
+            //sizeof(short) for the first two bytes, representing the number of records
+            int setHeaderSize = ((rowcount + 1) * ResourceDatabase.DefinitionSize) + sizeof(short);
+
+            Dictionary<string, int> dic = new Dictionary<string, int>();
+
+            using (FileStream setStream = new FileStream(filepath, FileMode.Create))
+            {
+                //setStream.Seek(setHeaderSize, SeekOrigin.Begin); //leave room for the header
+
+                using (MemoryStream dbfStream = new MemoryStream())//new FileStream(filepath, FileMode.Create))
+                {
+                    dbfStream.Write(BitConverter.GetBytes(rowcount), 0, 2);
+
+                    foreach (DataTable dt in ds.Tables)
+                    {
+                        dt.WriteDefinition(setStream, (uint)dbfStream.Position); //writes dt's definition to the SET header
+                        dt.Save(dbfStream);
+                    }
+
+                    //write SET file header-trailer (9 nulls followed by int filesize).
+                    for (int i = 0; i < 13; i++)
+                        setStream.WriteByte(0x0);
+
+                    dbfStream.CopyTo(dbfStream);
+                }
+            }
         }
+
 //        public static Stream SaveGameSetToFile(DataSet ds)// string filePath)//, GameSet set)
 //        {
 //            using (FileStream fs = new FileStream(filePath, FileMode.Create))

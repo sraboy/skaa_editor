@@ -14,7 +14,7 @@ namespace SkaaGameDataLib
         /// should be padded on the right with spaces (0x20) while number fields should be padded
         /// on the left with nulls (0x00). This is separate and unrelated to <see cref="DataColumn.MaxLength"/>
         /// </summary>
-        public int ByteLength;
+        public byte ByteLength;
 
         public DbaseIIIDataColumn() : base() { }
         public DbaseIIIDataColumn(string columnName) : base(columnName) { }

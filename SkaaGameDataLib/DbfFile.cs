@@ -19,7 +19,7 @@ namespace SkaaGameDataLib
     [Serializable]
     public class DbfFile
     {
-        public class DbfFileHeader
+        internal class DbfFileHeader
         {
             /* Header example
             03 version
@@ -72,22 +72,23 @@ namespace SkaaGameDataLib
                 return header;
             }
         }
-        private class FieldDescriptor
+        internal class FieldDescriptor
         {
+            public const byte Terminator = 0xD; //follows a list of FieldDescriptor in a DBF file
+
             public string FieldName; //char[11]
             public char FieldType;
-            public byte[] FieldDataAddress;
+            public byte[] FieldDataAddress = new byte[4];
             public byte FieldLength;
             public byte DecimalCount;
-            public byte[] ReservedMultiUserOne;
+            public byte[] ReservedMultiUserOne = new byte[2];
             public byte WorkAreaId;
-            public byte[] ReservedMultiUserTwo;
+            public byte[] ReservedMultiUserTwo = new byte[2];
             public byte FlagSetFields;
-            public byte[] Reserved;
+            public byte[] Reserved = new byte[7];
             public byte IndexFieldFlag;
         }
 
-        //private MemoryStream _memoryStream;
         private byte _eofMarker = 0x1a;
         private byte _recordIsValidMarker = 0x20; //vs 0x2a for "is deleted"
         private DataTable _dataTable;
@@ -96,56 +97,156 @@ namespace SkaaGameDataLib
         private string _tableName;
         private int _dataSize;
 
-        public DataTable DataTable
+        internal DataTable DataTable
         {
             get
             {
                 return _dataTable;
             }
-
             private set
             {
                 this._dataTable = value;
             }
         }
-
-        public DbfFile() { this._fieldDescriptors = new List<FieldDescriptor>(); }
-        public DbfFile(string tableName)
+        internal byte EofMarker
         {
-            this._fieldDescriptors = new List<FieldDescriptor>();
-            this._tableName = tableName;
-            this.DataTable = new DataTable();
+            get
+            {
+                return _eofMarker;
+            }
+
+            set
+            {
+                this._eofMarker = value;
+            }
+        }
+        internal byte RecordIsValidMarker
+        {
+            get
+            {
+                return _recordIsValidMarker;
+            }
+
+            set
+            {
+                this._recordIsValidMarker = value;
+            }
+        }
+        internal DbfFileHeader Header
+        {
+            get
+            {
+                return _header;
+            }
+
+            set
+            {
+                this._header = value;
+            }
+        }
+        internal List<FieldDescriptor> FieldDescriptors
+        {
+            get
+            {
+                return _fieldDescriptors;
+            }
+
+            set
+            {
+                this._fieldDescriptors = value;
+            }
+        }
+        internal string TableName
+        {
+            get
+            {
+                return _tableName;
+            }
+
+            set
+            {
+                this._tableName = value;
+            }
+        }
+        internal int DataSize
+        {
+            get
+            {
+                return _dataSize;
+            }
+
+            set
+            {
+                this._dataSize = value;
+            }
         }
 
-        public static DbfFile FromDataTable(DataTable dt)
+        #region Constructors
+        public DbfFile() { this._dataTable = new DataTable(); }
+        public DbfFile(DataTable dt)
         {
-            DbfFile file = new DbfFile();
-            file._fieldDescriptors = new List<FieldDescriptor>();
-
             int millenium = 2000; //Free Y3K bug 
 
-            file._header = DbfFileHeader.GetDefaultHeader();
-            file._header.NumberOfRecords = dt.Rows.Count + 1;
-            file._header.LastEdited = new byte[] { (byte) (DateTime.Today.Year - millenium), (byte) DateTime.Today.Month, (byte) DateTime.Today.Day };
-            file.DataTable = dt;
-
-            return file;
+            this.Header = DbfFileHeader.GetDefaultHeader();
+            this.Header.NumberOfRecords = dt.Rows.Count + 1;
+            this.Header.LastEdited = new byte[] { (byte) (DateTime.Today.Year - millenium), (byte) DateTime.Today.Month, (byte) DateTime.Today.Day };
+            this._dataTable = dt;
         }
+        #endregion
 
-        public int GetSize() { return _dataSize; }
-        private void SetTable()
-        {
+        //public static DbfFile FromDataTable(DataTable dt)
+        //{
+        //    DbfFile file = new DbfFile();
+        //    file._fieldDescriptors = new List<FieldDescriptor>();
+        //    int millenium = 2000; //Free Y3K bug 
+        //    file._header = DbfFileHeader.GetDefaultHeader();
+        //    file._header.NumberOfRecords = dt.Rows.Count + 1;
+        //    file._header.LastEdited = new byte[] { (byte) (DateTime.Today.Year - millenium), (byte) DateTime.Today.Month, (byte) DateTime.Today.Day };
+        //    file.DataTable = dt;
+        //    return file;
+        //}
 
-        }
+        //public int GetSize() { return _dataSize; }
 
         #region Reading DBF Files
+        //todo: make these static extensions to DataTable
         public void ReadStream(Stream str)
         {
-            this._header = ReadHeader(str);
-            this._dataSize = this._header.LengthOfHeader + (this._header.LengthOfRecord * this._header.NumberOfRecords);
-            this._fieldDescriptors = ReadFieldDescriptors(str);
+            this.Header = ReadHeader(str);
+            this.DataSize = this.Header.LengthOfHeader + (this.Header.LengthOfRecord * this.Header.NumberOfRecords);
+            this.FieldDescriptors = ReadFieldDescriptors(str);
             this.FillSchemaFromFieldDescriptorList(this.DataTable);
-            this.DataTable = ReadTableData(str);
+            this._dataTable = ReadTableData(str);
+        }
+        internal static DbfFileHeader ReadHeader(Stream str)
+        {
+            DbfFileHeader header = new DbfFileHeader();
+
+            header.Version = (byte) str.ReadByte();
+            str.Read(header.LastEdited, 0, 3);
+
+            byte[] numRecs = new byte[4];
+            str.Read(numRecs, 0, 4);
+            header.NumberOfRecords = BitConverter.ToInt32(numRecs, 0);
+
+            byte[] lenHeader = new byte[2];
+            str.Read(lenHeader, 0, 2);
+            header.LengthOfHeader = BitConverter.ToInt16(lenHeader, 0);
+
+            byte[] lenRecord = new byte[2];
+            str.Read(lenRecord, 0, 2);
+            header.LengthOfRecord = BitConverter.ToInt16(lenRecord, 0);
+
+            str.Read(header.ReservedOne, 0, 2);
+            header.IncompleteTransaction = (byte) str.ReadByte();
+            header.EncryptionFlag = (byte) str.ReadByte();
+            str.Read(header.FreeRecordThread, 0, 4);
+            str.Read(header.ReservedMultiUser, 0, 8);
+            header.MdxFlag = (byte) str.ReadByte();
+            header.Language = (byte) str.ReadByte();
+            str.Read(header.ReservedTwo, 0, 2);
+
+            return header;
         }
         /// <summary>
         /// Fills a DataTable based on the dBaseIII field descriptor information.
@@ -160,18 +261,18 @@ namespace SkaaGameDataLib
                 this.DataTable.Rows.Add(row);
 
                 byte check = (byte) str.ReadByte();
-                if (check != this._recordIsValidMarker)
+                if (check != this.RecordIsValidMarker)
                 {
                     //check EOF first
-                    if (check == this._eofMarker || str.Position < str.Length)
+                    if (check == this.EofMarker || str.Position < str.Length)
                         break;
                     else
                         throw new Exception(string.Format("Record is not marked as valid (preceded by 0x20)! Byte is {0}.", check.ToString()));
                 }
 
-                for (int i = 0; i < this._fieldDescriptors.Count; i++)
+                for (int i = 0; i < this.FieldDescriptors.Count; i++)
                 {
-                    FieldDescriptor fd = this._fieldDescriptors[i];
+                    FieldDescriptor fd = this.FieldDescriptors[i];
                     byte[] bytes = new byte[fd.FieldLength];
                     str.Read(bytes, 0, bytes.Length);
                     row.BeginEdit();
@@ -211,22 +312,22 @@ namespace SkaaGameDataLib
 
                     row.AcceptChanges();
 
-                    if (i != 0 && i % _fieldDescriptors.Count == 0) //only after getting all columns, so at the end of each row
+                    if (i != 0 && i % FieldDescriptors.Count == 0) //only after getting all columns, so at the end of each row
                     {
                         check = (byte) str.ReadByte();
-                        if (check != this._recordIsValidMarker)
+                        if (check != this.RecordIsValidMarker)
                             throw new Exception(string.Format("Record is not marked as valid (preceded by 0x20)! Byte is {0}.", check.ToString()));
                     }
                 }
             }
 
-            this.DataTable.AcceptChanges();
-            this.DataTable = this.DataTable;
+            this._dataTable.AcceptChanges();
+            this._dataTable = this.DataTable;
             return this.DataTable;
         }
         private void FillSchemaFromFieldDescriptorList(DataTable table)
         {
-            foreach (FieldDescriptor fd in this._fieldDescriptors)
+            foreach (FieldDescriptor fd in this.FieldDescriptors)
             {
                 //DataColumn col = new DataColumn(fd.FieldName);
                 DbaseIIIDataColumn col = new DbaseIIIDataColumn(fd.FieldName);
@@ -252,7 +353,7 @@ namespace SkaaGameDataLib
                     case 'D': //YYYYMMDD
                         throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
                         break;
-                    case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
+                    case '@': //long1 = days since 1-Jan-4713 BC, long2 = hrs * 3600000 + min * 60000 + sec * 1000
                         throw new NotImplementedException("Encountered /'@/' for time!");
                         break;
                     case 'O': //double (8 bytes)
@@ -266,46 +367,15 @@ namespace SkaaGameDataLib
                 table.Columns.Add(col);
             }
         }
-        public static DbfFileHeader ReadHeader(Stream str)
-        {
-            DbfFileHeader header = new DbfFileHeader();
-
-            header.Version = (byte) str.ReadByte();
-            str.Read(header.LastEdited, 0, 3);
-
-            byte[] numRecs = new byte[4];
-            str.Read(numRecs, 0, 4);
-            header.NumberOfRecords = BitConverter.ToInt32(numRecs, 0);
-
-            byte[] lenHeader = new byte[2];
-            str.Read(lenHeader, 0, 2);
-            header.LengthOfHeader = BitConverter.ToInt16(lenHeader, 0);
-
-            byte[] lenRecord = new byte[2];
-            str.Read(lenRecord, 0, 2);
-            header.LengthOfRecord = BitConverter.ToInt16(lenRecord, 0);
-
-            str.Read(header.ReservedOne, 0, 2);
-            header.IncompleteTransaction = (byte) str.ReadByte();
-            header.EncryptionFlag = (byte) str.ReadByte();
-            str.Read(header.FreeRecordThread, 0, 4);
-            str.Read(header.ReservedMultiUser, 0, 8);
-            header.MdxFlag = (byte) str.ReadByte();
-            header.Language = (byte) str.ReadByte();
-            str.Read(header.ReservedTwo, 0, 2);
-
-            return header;
-        }
         private List<FieldDescriptor> ReadFieldDescriptors(Stream str)
         {
-            //todo: document this... I have no idea what I did here.
             List<FieldDescriptor> fdlist = new List<FieldDescriptor>();
 
-            byte check = 0x0;
+            byte checkForTerminator = 0x0;
 
-            while (check != 0xD)
+            while (checkForTerminator != FieldDescriptor.Terminator)
             {
-                if(check != 0x0)
+                if(checkForTerminator != 0x0)
                     str.Position--; //backup since we read an extra byte to get the check value
 
                 FieldDescriptor fd = new FieldDescriptor();
@@ -316,150 +386,34 @@ namespace SkaaGameDataLib
 
                 fd.FieldType = (char) str.ReadByte();
 
-                fd.FieldDataAddress = new byte[4];
+                //fd.FieldDataAddress = new byte[4];
                 str.Read(fd.FieldDataAddress, 0, 4);
 
                 fd.FieldLength = (byte) str.ReadByte();
                 fd.DecimalCount = (byte) str.ReadByte();
 
-                fd.ReservedMultiUserOne = new byte[2];
+                //fd.ReservedMultiUserOne = new byte[2];
                 str.Read(fd.ReservedMultiUserOne, 0, 2);
 
                 fd.WorkAreaId = (byte) str.ReadByte();
 
-                fd.ReservedMultiUserTwo = new byte[2];
+                //fd.ReservedMultiUserTwo = new byte[2];
                 str.Read(fd.ReservedMultiUserTwo, 0, 2);
 
                 fd.FlagSetFields = (byte) str.ReadByte();
 
-                fd.Reserved = new byte[7];
+                //fd.Reserved = new byte[7];
                 str.Read(fd.Reserved, 0, 7);
 
                 fd.IndexFieldFlag = (byte) str.ReadByte();
 
                 fdlist.Add(fd);
 
-                check = (byte) str.ReadByte();               
+                checkForTerminator = (byte) str.ReadByte();               
             }
 
             return fdlist;
         }
         #endregion
-
-        public void WriteToStream(Stream fs)
-        {
-            WriteHeader(fs);
-            WriteFieldDescriptors(fs);
-            WriteDataTableToStream(fs);
-        }
-        public void WriteAndClose(string path)
-        {
-            string fileName = this._tableName + ".dbf";
-            using (FileStream fs = new FileStream(path + '\\' + fileName, FileMode.Create))
-            { 
-                WriteHeader(fs);
-                WriteFieldDescriptors(fs);
-                WriteDataTableToStream(fs);
-            }
-        }
-
-        private void WriteHeader(Stream str)
-        {
-            str.WriteByte(this._header.Version);
-            str.Write(this._header.LastEdited, 0, 3);
-            str.Write(BitConverter.GetBytes(this._header.NumberOfRecords), 0, 4);
-            str.Write(BitConverter.GetBytes(this._header.LengthOfHeader), 0, 2);
-            str.Write(BitConverter.GetBytes(this._header.LengthOfRecord), 0, 2);
-            str.Write(this._header.ReservedOne, 0, 2);
-            str.WriteByte(this._header.IncompleteTransaction);
-            str.WriteByte(this._header.EncryptionFlag);
-            str.Write(this._header.FreeRecordThread, 0, 4);
-            str.Write(this._header.ReservedMultiUser, 0, 8);
-            str.WriteByte(this._header.MdxFlag);
-            str.WriteByte(this._header.Language);
-            str.Write(this._header.ReservedTwo, 0, 2);
-        }
-        private void WriteFieldDescriptors(Stream str)
-        {
-            foreach (FieldDescriptor fd in this._fieldDescriptors)
-            {
-                StringBuilder sb = new StringBuilder(fd.FieldName);
-                sb.Append((char) 0x0, 11 - fd.FieldName.Length);
-                string writeme = sb.ToString();
-                str.Write(Encoding.UTF8.GetBytes(writeme), 0, 11);
-
-                str.WriteByte((byte) fd.FieldType);
-                str.Write(fd.FieldDataAddress, 0, 4);
-                str.WriteByte(fd.FieldLength);
-                str.WriteByte(fd.DecimalCount);
-                str.Write(fd.ReservedMultiUserOne, 0, 2);
-                str.WriteByte(fd.WorkAreaId);
-                str.Write(fd.ReservedMultiUserTwo, 0, 2);
-                str.WriteByte(fd.FlagSetFields);
-                str.Write(fd.Reserved, 0, 7);
-                str.WriteByte(fd.IndexFieldFlag);
-            }
-
-            str.WriteByte(0xD);
-        }
-        private void WriteDataTableToStream(Stream str)
-        {
-            foreach(DataRow dr in this.DataTable.Rows)
-            {
-                str.WriteByte(this._recordIsValidMarker); //row divider
-                foreach (DbaseIIIDataColumn col in this.DataTable.Columns)
-                {
-                    string value;
-                    if (col.DataType == typeof(string))
-                    {
-                        byte[] bytes = new byte[col.ByteLength];
-                        value = (string) dr[col];
-
-                        if (col.ColumnName.EndsWith("PTR"))
-                        {
-                            int val = value == "0" ? 0 : Convert.ToInt32(value);
-                            bytes = BitConverter.GetBytes(val);
-                        }
-                        else
-                        {
-                            value = (string) dr[col];
-                            value.PadRight(col.ByteLength, ' ');
-                            bytes = Encoding.GetEncoding(1252).GetBytes(value);
-                        }
-                        str.Write(bytes, 0, col.ByteLength);
-                    }
-                    else if (col.DataType == typeof(long))
-                    {
-                        long val = (long) dr[col];
-                        value = val.ToString();
-                        value = value.PadLeft(col.ByteLength, ' ');
-                        byte[] bytes = new byte[col.ByteLength];
-                        Encoding.GetEncoding(1252).GetBytes(value, 0, col.ByteLength, bytes, 0);
-                        str.Write(bytes, 0, col.ByteLength);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException(string.Format("Unknown DataColumn Type: {0}", col.DataType.ToString()));
-                        //case 'L': //nullable bool, byte
-                        //    throw new NotImplementedException("Encountered /'L/' for nullable bool!");
-                        //    break;
-                        //case 'D': //YYYYMMDD
-                        //    throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
-                        //    break;
-                        //case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
-                        //    throw new NotImplementedException("Encountered /'@/' for time!");
-                        //    break;
-                        //case 'O': //double (8 bytes)
-                        //    throw new NotImplementedException("Encountered /'O/' for double!");
-                        //    break;
-                        //case '+': //auto-increment (long)
-                        //    throw new NotImplementedException("Encountered /'+/' for auto-increment!");
-                        //    break;
-                    }
-                }
-            }
-
-            str.WriteByte(this._eofMarker);
-        }
     }
 }
