@@ -37,45 +37,22 @@ using BitmapProcessing;
 
 namespace SkaaGameDataLib
 {
-    public class SpriteFrameResource : IndexedBitmap
+    public class SpriteFrame : Frame
     {
         private Sprite _parentSprite;
 
-        public Sprite ParentSprite
-        {
-            get
-            {
-                return this._parentSprite;
-            }
-            set
-            {
-                if (this._parentSprite != value)
-                    this._parentSprite = value;
-            }
-        }
+        public Sprite ParentSprite;
         public List<DataRow> GameSetDataRows;
-        public long BitmapOffset;
 
         /// <summary>
-        /// Initializes a new <see cref="SpriteFrameResource"/>.
+        /// Initializes a new <see cref="SpriteFrame"/>.
         /// </summary>
-        /// <param name="parentSprite">The <see cref="Sprite"/> containing this <see cref="SpriteFrameResource"/></param>
+        /// <param name="parentSprite">The <see cref="Sprite"/> containing this <see cref="SpriteFrame"/></param>
         /// <param name="stream"></param>
-        public SpriteFrameResource(Sprite parentSprite, ColorPalette pal) : base(pal)
+        public SpriteFrame(Sprite parentSprite)
         {
             this.ParentSprite = parentSprite;
             this.GameSetDataRows = new List<DataRow>();
-        }
-        public SpriteFrameResource(int sprOffset, ColorPalette pal) : base(pal)
-        {
-            this.BitmapOffset = sprOffset;
-            this.GameSetDataRows = new List<DataRow>();
-        }
-
-        public void SprStreamToSpriteFrame(SpriteFrameResource sf, Stream stream)
-        {
-            this.BitmapOffset = stream.Position;
-            this.StreamToIndexedBitmap(stream);
         }
     }
 }

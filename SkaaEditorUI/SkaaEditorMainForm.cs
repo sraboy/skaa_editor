@@ -523,13 +523,7 @@ namespace SkaaEditorUI
                         this.toolStripStatLbl.Text = "Building Sprite...";
                         ProcessSpriteUpdates();
 
-                        using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
-                        {
-                            byte[] save = this.ActiveProject.ActiveSprite.Resource.SprData;
-                            fs.Write(save, 0, Buffer.ByteLength(save));
-
-                            AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
-                        }
+                        this.ActiveProject.ActiveSprite.ToBitmap().Save(dlg.FileName);
                         this.toolStripStatLbl.Text = string.Empty;
                     }
                 }
@@ -563,7 +557,7 @@ namespace SkaaEditorUI
                     if (dlg.ShowDialog() == DialogResult.OK)
                     {
                         this.toolStripStatLbl.Text = "Saving Game Set...";
-                        this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
+                        //this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
                         this.toolStripStatLbl.Text = string.Empty;
 
                         AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
@@ -642,8 +636,8 @@ namespace SkaaEditorUI
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     ProcessSpriteUpdates();
-                    //updates this frame's ImageBmp based on changes
-                    this.ActiveProject.ActiveFrame.Bitmap = (this.imageEditorBox.Image as Bitmap);
+                    
+                    this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap = (this.imageEditorBox.Image as Bitmap);
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
                         this.imageEditorBox.Image.Save(fs, ImageFormat.Png);
@@ -700,7 +694,9 @@ namespace SkaaEditorUI
             }
             else
             {
-                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.Bitmap;
+                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap;
+                //todo: implement an UpdateImage() method in Timelinecontrol
+                //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
         }
@@ -718,7 +714,8 @@ namespace SkaaEditorUI
             if (this.imageEditorBox.SelectedTool != DrawingTools.Pan && 
                 this.imageEditorBox.SelectedTool != DrawingTools.None)
             {
-                FrameIsEdited(this.ActiveProject.ActiveFrame);
+                this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
+                this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
             }
         }
         private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
@@ -783,7 +780,7 @@ namespace SkaaEditorUI
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
                         ProcessSpriteUpdates();
-                        byte[] spr_data = this.ActiveProject.ActiveFrame.ResRawData;
+                        byte[] spr_data = IndexedBitmap.GetRleBytesFromBitmap(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
                         fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     }
                 }
@@ -812,7 +809,7 @@ namespace SkaaEditorUI
                     throw new Exception($"Failed to create temporary directory: {props.TempDirectory}");
             }
         }
-        private void NewProject(ProjectTypes projectType)//, string paletteFilePath = null, string gameSetFilePath = null)
+        private void NewProject(ProjectTypes projectType)
         {
             //use a temporary folder until the user saves
             string projectPath = props.TempDirectory + "\\project_" + DateTime.Now.ToString("yyyyMMddHHmm");
@@ -945,9 +942,9 @@ namespace SkaaEditorUI
             if (spr == null) return false;
 
             bool frameHasChanges = false;
-            foreach (SpriteFrameResource sf in spr.Frames)
+            foreach (Frame sf in spr.Frames)
             {
-                frameHasChanges = sf.PendingChanges | frameHasChanges;
+                frameHasChanges = sf.IndexedBitmap.PendingChanges | frameHasChanges;
             }
 
             return frameHasChanges;
@@ -960,25 +957,7 @@ namespace SkaaEditorUI
             this.ActiveProject.ProcessUpdates(this.ActiveProject.ActiveFrame, this.imageEditorBox.Image as Bitmap);
             this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
         }
-        /// <summary>
-        /// This method marks the frame as requiring updates. When the parent sprite processes edits/changes,
-        /// the frame rebuilds its FrameRawData byte array.
-        /// </summary>
-        /// <param name="sf">The <see cref="SpriteFrameResource"/> to mark as requiring updates.</param>
-        /// <remarks>
-        /// Setting <see cref="Sprite.PendingChanges"/> ensures we only rebuild the <see cref="SpriteFrameResource.FrameRawData"/> 
-        /// arrays for frames actually having edits. The only thing unedited framesmay  need to update is their new offset 
-        /// value for the SET file, if they follow any edited frames in the file, since the sizes of the preceding frames change.
-        /// </remarks>
-        private void FrameIsEdited(SpriteFrameResource sf)
-        {
-            //Currently only called from imageEditorBox_ImageUpdated
-            sf.PendingChanges = true;
 
-            //todo: implement an UpdateImage() method in Timelinecontrol
-            //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
-            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
-        }
         private void SetDefaultActiveColors()
         {
             Color primary = Color.Black, secondary = Color.FromArgb(0,0,0,0);

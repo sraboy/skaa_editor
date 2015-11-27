@@ -11,135 +11,61 @@ namespace SkaaGameDataLib
 {
     public static class ResourceDatabase
     {
-        //private Properties.Settings props = Properties.Settings.Default;
+        private class dBaseContainer
+        {
+            //Lifted from ORESX.h
+            public string Name; //char[9] in std.set
+            public int Offset;
+            public DataTable Table;
+            public DbfFile DbfFileObject;
+        }
 
         /* ----  SET File Format  ----
-         * short recordCount
-         * ResourceIndex[recordCount]
-         * Database[recordCount]
+         *  short recordCount
+         *  dBaseTableName
+         *  DbfFileOffset (database table data)
+         *         .
+         *         .
+         *  DbfFile[s]
+         *         .
+         *         .
          */
 
-        //private string _tempDirectory, _dbfDirectory, _setFilePath;
-        private const int _rowNameSize = 9;
-        private const int _resIndexSize = 13;
+        private const int _rowNameSize = 9; //8 chars + null
+        //private const int _dbfFileOffsetSize = 4; //uint32
+        private const int _resIndexSize = 13; //add the above two 
 
-        //public List<DatabaseContainer> DatabaseContainers;
-        //public MemoryStream RawDataStream;
-        //public DataSet GameDataSet;
-
-        ///// <summary>
-        ///// Initializes a new <see cref="GameSetFile"/> object.
-        ///// </summary>
-        ///// <param name="setFilePath">The complete path to the SET file that this object represents.</param>
-        ///// <param name="tempDirectoryPath">The complete path to a temporary directory the class can use freely.</param>
-        //public ResourceDatabase(string setFilePath, string tempDirectoryPath)
-        //{
-        //    this._setFilePath = setFilePath;
-        //    this._tempDirectory = tempDirectoryPath;
-        //    this._dbfDirectory = this._tempDirectory + "dbf\\";
-        //    //this.DatabaseContainers = new List<DatabaseContainer>(this._recordCount);
-        //}
-
-        public static DataSet OpenReadSetFile(string filePath, string tempDirectory)
+        /// <summary>
+        /// Reads a the header of a stream containing char[9], uint32 data: a datatable's name and its offset in a file
+        /// </summary>
+        /// <param name="str">The stream from which to read. The first two bytes must be a uint16 containing the number of definitions</param>
+        /// <returns></returns>
+        public static Dictionary<string, uint> ReadDefinitions(Stream str)//, int nameSize)//, int offSetSize)
         {
-            var RawDataStream = new MemoryStream();
-
-            using (FileStream fs = new FileStream(filePath, FileMode.Open))
-            {
-                fs.Position = 0;
-                fs.CopyTo(RawDataStream);
-                RawDataStream.Position = 0;
-            }
-
-            Dictionary<string, uint> dic = ReadDatabaseDefinitions(RawDataStream);//, 9);
-
-            var DatabaseContainers = new List<DatabaseContainer>(dic.Count);
-
-            foreach (KeyValuePair<string, uint> kv in dic)
-                DatabaseContainers.Add(new DatabaseContainer() { Name = kv.Key, Offset = (int)kv.Value });
-
-            return BuildDataSetFromDbfFiles(Path.GetFileName(filePath), DatabaseContainers, RawDataStream, tempDirectory);
-        }
-
-        public static Dictionary<string, uint> ReadDatabaseDefinitions(Stream RawDataStream)//, int nameSize)//, int offSetSize)
-        {
-            //int definitionSize = nameSize + 4; //4-byte int plus null
-
             byte[] recCount = new byte[2];
-            RawDataStream.Read(recCount, 0, 2);
-            int recordCount = BitConverter.ToInt16(recCount, 0);
+            str.Read(recCount, 0, 2);
+            ushort recordCount = BitConverter.ToUInt16(recCount, 0);
+            Dictionary<string, uint> nameOffsetPairs = new Dictionary<string, uint>(recordCount);
 
-            Dictionary<string, uint> dbContainers = new Dictionary<string, uint>(recordCount);
-
-            //need (recordCount + 1) because there's always an extra (empty) row/record at the end of the header
-            while (RawDataStream.Position < (recordCount) * _resIndexSize)
+            while (str.Position < (recordCount) * _resIndexSize)
             {
-                DatabaseContainer db = new DatabaseContainer();
-                byte[] name = new byte[_rowNameSize];
-                byte[] offset = new byte[4];
+                byte[] b_name = new byte[_rowNameSize];
+                byte[] b_offset = new byte[4];
+                string name = string.Empty;
+                uint offset;
 
-                RawDataStream.Read(name, 0, _rowNameSize); //offset is 0 from ms.Position
-                RawDataStream.Read(offset, 0, 4);
+                str.Read(b_name, 0, _rowNameSize); //offset is 0 from ms.Position
+                str.Read(b_offset, 0, 4);
 
-                db.Name = Encoding.GetEncoding(1252).GetString(name).Trim('\0');
-                db.Offset = BitConverter.ToInt32(offset, 0);
+                name = Encoding.GetEncoding(1252).GetString(b_name).Trim('\0');
+                offset = BitConverter.ToUInt32(b_offset, 0);
 
-                if (db.Name == "") //always the final "record" with nulls for name and the file's size for the offset
-                {
-                    //int fileSize = db.Offset;
-                    break;
-                }
-                else
-                    dbContainers.Add(db.Name, (uint)db.Offset);
+                nameOffsetPairs.Add(name, offset);
             }
 
-            return dbContainers;
+            return nameOffsetPairs;
         }
 
-        private static DataSet BuildDataSetFromDbfFiles(string dataSetName, List<DatabaseContainer> DatabaseContainers, Stream RawDataStream, string tempDirectory)
-        {
-            DataSet ds = new DataSet(dataSetName);
-
-            foreach (DatabaseContainer db in DatabaseContainers)
-            {
-                int index = DatabaseContainers.FindIndex(d => d.Name == db.Name);
-
-                int dataSize;
-                if (index + 1 >= DatabaseContainers.Count) //last row, just use the DBF's length (as if it were a separate file) 
-                    dataSize = (int) RawDataStream.Length - db.Offset;
-                else
-                    dataSize = DatabaseContainers[index + 1].Offset - db.Offset;
-
-                RawDataStream.Position = db.Offset;
-                byte[] sframeData = new byte[dataSize];
-                RawDataStream.Read(sframeData, 0, dataSize);
-
-                string dbfFileName = db.Name + ".dbf";
-
-                //we have to write all the DBFs
-                Directory.CreateDirectory(tempDirectory);
-                using (FileStream wfs = new FileStream(tempDirectory + dbfFileName, FileMode.Create))
-                    wfs.Write(sframeData, 0, dataSize);
-
-                DataTable dt;
-
-                dt = new DataTable(Path.GetFileNameWithoutExtension(dbfFileName));
-
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    using (FileStream fsSframe = new FileStream(tempDirectory + dbfFileName, FileMode.Open))
-                        fsSframe.CopyTo(ms);
-
-                    db.DbfFileObject = new DbfFile(ms, dt.TableName, (int) ms.Length);
-                    dt = db.DbfFileObject.FillAndGetTable();
-                }
-
-                db.Table = dt;
-                ds.Tables.Add(db.Table);
-            }
-
-            return ds;
-        }
 
 //        public static MemoryStream DataSetToStream(string filePath, DataSet ds)//, GameSet set)
 //        {
@@ -186,11 +112,45 @@ namespace SkaaGameDataLib
 //            return ms;
 //        }
 
-        public static MemoryStream BuildSetFile(MemoryStream str)
-        {
-            MemoryStream ms = new MemoryStream();
+//        public static MemoryStream BuildSetFile(MemoryStream str, DataSet ds)
+//        {
+//            MemoryStream ms = new MemoryStream();
+//            int _recordCount = 0;
 
-            return ms;
-        }
+//            foreach (DataTable dt in ds.Tables)
+//                _recordCount += dt.Rows.Count;
+
+//            //write SET file header
+//            ms.Write(BitConverter.GetBytes(_recordCount), 0, 2);
+//            foreach (DataTable dt in ds.Tables)
+//            {
+//                ms.Write(Encoding.GetEncoding(1252).GetBytes(dt.TableName.PadRight(_rowNameSize, (char) 0x0)), 0, _rowNameSize);
+//                ms.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);//BitConverter.GetBytes(Convert.ToInt32(db.Offset)), 0, 4);
+//            }
+
+//            //write SET file header-trailer (9 nulls followed by int filesize). write size after writing DBFs.
+//            for (int i = 0; i < 13; i++)
+//                ms.WriteByte(0x0);
+
+//            long fileSizeBookmark = fs.Position - 4;
+
+//            //write out DBFs
+//            foreach (dBaseContainer db in this._databaseContainers)
+//            {
+//#if DEBUG
+//                //writes out individual DBFs... easier to inspect SFRAME, etc
+//                string path = this._dbfDirectory + "test";
+//                Directory.CreateDirectory(path);
+//                db.DbfFileObject.WriteAndClose(path);
+//#endif
+//                db.DbfFileObject.WriteToStream(fs);
+//            }
+//            fs.Position = fileSizeBookmark;
+//            int fileSize = (int) fs.Length;
+//            fs.Write(BitConverter.GetBytes(fileSize), 0, 4);
+            
+
+//            return ms;
+//        }
     }
 }

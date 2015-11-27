@@ -43,15 +43,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ButtonResource.cs" />
+    <Compile Include="Frame.cs" />
     <Compile Include="ResourceDatabase.cs" />
     <Compile Include="IndexedBitmap.cs" />
     <Compile Include="PaletteResource.cs" />
-    <Compile Include="DatabaseContainer.cs" />
     <Compile Include="DbaseIIIDataColumn.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DbfFile.cs" />
-    <Compile Include="GameSet.cs" />
     <Compile Include="GameSetFile.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,8 +60,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Sprite.cs" />
-    <Compile Include="SpriteFrameResource.cs" />
-    <Compile Include="SpriteResource.cs" />
+    <Compile Include="SpriteFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -38,8 +38,7 @@ namespace SkaaEditorUI
     {
         #region Private Members
         private Properties.Settings props = Properties.Settings.Default;
-        private SpriteFrameResource _activeFrame;
-        private SkaaGameSet _activeGameSet;
+        private Frame _activeFrame;
         private PaletteResource _skaaEditorPalette;
         private Sprite _activeSprite;
         private string _projectName;
@@ -141,7 +140,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public SpriteFrameResource ActiveFrame
+        public Frame ActiveFrame
         {
             get
             {
@@ -171,20 +170,21 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public SkaaGameSet ActiveGameSet
-        {
-            get
-            {
-                return this._activeGameSet;
-            }
-            set
-            {
-                if (this._activeGameSet != value)
-                {
-                    this._activeGameSet = value;
-                }
-            }
-        }
+        public DataSet ActiveGameSet;
+        //public SkaaGameSet ActiveGameSet
+        //{
+        //    get
+        //    {
+        //        return this._activeGameSet;
+        //    }
+        //    set
+        //    {
+        //        if (this._activeGameSet != value)
+        //        {
+        //            this._activeGameSet = value;
+        //        }
+        //    }
+        //}
         //todo: this should be a generic list
         public List<Sprite> UnsavedSprites
         {
@@ -247,8 +247,10 @@ namespace SkaaEditorUI
             if (!File.Exists(filepath))
                 filepath = props.DataDirectory + props.SetStd;
 
-            this.ActiveGameSet = new SkaaGameSet(filepath, props.TempDirectory);
-            GetSetSpriteDataView();
+            using (FileStream fs = GameSetFile.Open(filepath))
+                this.ActiveGameSet = GameSetFile.ReadAll(fs);
+
+            SetActiveSpriteDataView();
         }
 
         //public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);
@@ -288,7 +290,7 @@ namespace SkaaEditorUI
             this.ActivePalette = pal;
         }
         /// <summary>
-        /// Opens an SPR file and creates a <see cref="SpriteResource"/> object for it
+        /// Opens an SPR file and creates a <see cref="Sprite"/> object for it
         /// </summary>
         /// <param name="filepath">The absolute path to the SPR file to open</param>
         /// <returns>The newly-created <see cref="Sprite"/></returns>
@@ -313,60 +315,63 @@ namespace SkaaEditorUI
             {
                 while (spritestream.Position < spritestream.Length)
                 {
-                    SpriteFrameResource sf = new SpriteFrameResource(spr, this.ActivePalette);
+                    IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
+                    SpriteFrame sf = new SpriteFrame(spr);
+                    sf.IndexedBitmap = iBmp;
                     spritestream.Position += 4; //skip the int32 size value at the start
-                    sf.Bitmap = sf.StreamToIndexedBitmap(spritestream);
-                    //sf.UpdateRawToBmp();
+                    iBmp.GetBitmapFromRleStream(spritestream);
                     spr.Frames.Add(sf);
+                    spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
                 }
             }
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
 
             this.ActiveSprite = spr;
-            GetSetSpriteDataView();
+            SetActiveSpriteDataView();
             return spr;
         }
         public Sprite LoadInterfaceResource(string filepath)
         {
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
-                this.ActiveGameSet = new SkaaGameSet();
-                Sprite res = new Sprite();
+                Sprite spr = new Sprite();
+                Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs);
 
-                Dictionary<string, uint> dic = ResourceDatabase.ReadDatabaseDefinitions(fs);
-
-                //todo: figure out the wonky offsets for dic[33] and on
-                foreach (string key in dic.Keys)//KeyValuePair<string, uint> kv in dic)
+                foreach (string key in dic.Keys)
                 {
                     fs.Position = dic[key];
-                    SpriteFrameResource sf = new SpriteFrameResource(res, this.ActivePalette);
+                    SpriteFrame sf = new SpriteFrame(spr);
 
-                    //fs.Position -= 4; //backup due to the int32 size StreamToIndexedBitmap() expects for sprites
-                    sf.Bitmap = sf.StreamToIndexedBitmap(fs);
-
-                    //sf.UpdateRawToBmp();
-                    res.Frames.Add(sf);
-                    res.SpriteId = key;
+                    IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
+                    sf.IndexedBitmap = iBmp;
+                    iBmp.GetBitmapFromRleStream(fs);
+                    spr.Frames.Add(sf);
+                    spr.SpriteId = key;
                 }
 
-                return res;
+                return spr;
             }
         }
-        private void GetSetSpriteDataView()
+        private void SetActiveSpriteDataView()
         {
             if (this.ActiveSprite != null)
             {
-                DataView dv = this.ActiveGameSet?.GetSpriteDataView(this.ActiveSprite.SpriteId);
-                this.ActiveSprite.SetSpriteDataView(dv);
+                DataView dv = new DataView(this.ActiveGameSet?.Tables["SFRAME"]);
+                if (dv != null)
+                {
+                    dv.RowFilter = string.Format("SPRITE = '{0}'", this.ActiveSprite.SpriteId);
+                    this.ActiveSprite.SetSpriteDataView(dv);
+                }
             }
         }
+
         /// <summary>
         /// Serves as a wrapper to <see cref="Project.LoadSprite(string)"/> and adds the loaded sprite to 
         /// <see cref="Project.UnsavedSprites"/> to assist in tracking project changes.
         /// </summary>
         /// <remarks>
-        /// This was necessary because, in the UI, <see cref="SpriteFrameResource.PendingChanges"/> is the only way
+        /// This was necessary because, in the UI, <see cref="SpriteFrame.PendingChanges"/> is the only way
         /// to identify <see cref="Sprite"/> objects that need to be saved/updated. This allows for identifying
         /// a <see cref="Project"/> that needs saving.
         /// </remarks>
@@ -376,9 +381,9 @@ namespace SkaaEditorUI
             this.UnsavedSprites.Add(spr);
         }
 
-        public void ProcessUpdates(SpriteFrameResource sf, Bitmap bmp)
+        public void ProcessUpdates(Frame sf, Bitmap bmp)
         {
-            this.ActiveSprite.Resource.ProcessUpdates(sf, bmp);
+            //this.ActiveSprite.Resource.ProcessUpdates(sf, bmp);
         }
     }
 }

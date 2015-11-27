@@ -58,7 +58,7 @@ namespace SkaaEditorControls
             EventHandler handler = _activeFrameChanged;
 
             this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-            this.picBoxFrame.Image = this._activeFrame?.Bitmap;
+            this.picBoxFrame.Image = this._activeFrame?.IndexedBitmap?.Bitmap;
             this.frameSlider.Value = this._activeFrameIndex == -1 ? 0 : this._activeFrameIndex;
 
             if (handler != null)
@@ -93,7 +93,7 @@ namespace SkaaEditorControls
         }
 
         private Sprite _activeSprite;
-        private SpriteFrameResource _activeFrame;
+        private Frame _activeFrame;
         private int _activeFrameIndex;
         private int _preAnimateActiveFrameIndex;
 
@@ -125,7 +125,7 @@ namespace SkaaEditorControls
             }
         }
 
-        public SpriteFrameResource ActiveFrame
+        public Frame ActiveFrame
         {
             get
             {
@@ -162,7 +162,7 @@ namespace SkaaEditorControls
         protected virtual void OnActiveFrameChanged(EventArgs e)
         {
             this._activeFrameIndex = this.ActiveSprite == null ? 0 : this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-            this.picBoxFrame.Image = this._activeFrame?.Bitmap;
+            this.picBoxFrame.Image = this._activeFrame?.IndexedBitmap.Bitmap;
             this.frameSlider.Value = this._activeFrameIndex >= 0 ? this._activeFrameIndex : 0;
 
             if (!this.animationTimer.Enabled)

@@ -68,13 +68,13 @@ namespace SkaaGameDataLib
         #endregion
 
         #region Private Members
-        private List<SpriteFrameResource> _frames;
+        private List<SpriteFrame> _frames;
+        private DataView _spriteDataView;
         private string _spriteId;
-        private SpriteResource _resource;
         #endregion
-        
+
         #region Public Properties
-        public List<SpriteFrameResource> Frames
+        public List<SpriteFrame> Frames
         {
             get
             {
@@ -102,17 +102,17 @@ namespace SkaaGameDataLib
                 }
             }
         }
-        public SpriteResource Resource
+        public DataView DataView
         {
             get
             {
-                return this._resource;
+                return this._spriteDataView;
             }
-            set
+            internal set
             {
-                if (this._resource != value)
+                if (this._spriteDataView != value)
                 {
-                    this._resource = value;
+                    this._spriteDataView = value;
                 }
             }
         }
@@ -121,8 +121,7 @@ namespace SkaaGameDataLib
         #region Constructors
         public Sprite()//ColorPalette pal)
         {
-            this.Frames = new List<SpriteFrameResource>();
-            this.Resource = new SpriteResource();
+            this.Frames = new List<SpriteFrame>();
         }
         #endregion
 
@@ -130,8 +129,8 @@ namespace SkaaGameDataLib
         {
             if (dv != null)
             {
-                this.Resource.SpriteDataView = dv;
-                return this.Resource.MatchFrameOffsets(this);
+                this.DataView = dv;
+                return this.MatchFrameOffsets();
             }
             else
             {
@@ -140,12 +139,38 @@ namespace SkaaGameDataLib
             }
         }
         /// <summary>
+        /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
+        /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRows"/>
+        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.BitmapOffset"/>.
+        /// </summary>
+        /// <returns>False if any frame did not have a match in the DataView. True otherwise.</returns>
+        internal bool MatchFrameOffsets()
+        {
+            foreach (DataRowView drv in this.DataView)
+            {
+                int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
+                SpriteFrame sf = this.Frames.Find(f => f.BitmapOffset == offset);
+
+                if (sf == null)
+                {
+                    //this should only happen when creating new sprites. 
+                    Trace.WriteLine(($"Unable to find matching offset in Sprite.Frames for {this.SpriteId} and offset: {offset.ToString()}. nDid you forget to load the proper SET file for this sprite?"));
+                    return false;
+                }
+
+                if (sf != null)
+                    sf.GameSetDataRows.Add(drv.Row);
+            }
+
+            return true;
+        }
+        /// <summary>
         /// Builds a <see cref="Bitmap"/> sprite sheet containing all the frames of the specified <see cref="Sprite"/>
         /// with no padding between frames. The number of rows/columns of frames is the square root of the number of frames
         /// with an additional row added when the number of frames is not a perfect square.
         /// </summary>
         /// <returns>The newly-generated <see cref="Bitmap"/></returns>
-        public Bitmap ToBitmap()//Sprite spr)
+        public Bitmap ToBitmap()
         {
             int totalFrames = this.Frames.Count;
             int spriteWidth = 0, spriteHeight = 0, columns = 0, rows = 0;
@@ -165,12 +190,12 @@ namespace SkaaGameDataLib
             }
 
             //need the largest tile (by height and width) to set the row/column heights
-            foreach (SpriteFrameResource sf in this.Frames)
+            foreach (SpriteFrame sf in this.Frames)
             {
-                if (sf.Width > spriteWidth)
-                    spriteWidth = sf.Width;
-                if (sf.Height > spriteHeight)
-                    spriteHeight = sf.Height;
+                if (sf.IndexedBitmap.Bitmap.Width > spriteWidth)
+                    spriteWidth = sf.IndexedBitmap.Bitmap.Width;
+                if (sf.IndexedBitmap.Bitmap.Height > spriteHeight)
+                    spriteHeight = sf.IndexedBitmap.Bitmap.Height;
             }
 
             //the total height/width of the image to be created
@@ -188,7 +213,7 @@ namespace SkaaGameDataLib
                     //once we hit the max frames, just break
                     for (int x = 0; x < exportWidth && frameIndex < this.Frames.Count; x += spriteWidth)
                     {
-                        g.DrawImage(this.Frames[frameIndex].Bitmap, new Point(x, y));
+                        g.DrawImage(this.Frames[frameIndex].IndexedBitmap.Bitmap, new Point(x, y));
                         frameIndex++;
                     }
                 }
