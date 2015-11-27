@@ -234,16 +234,16 @@ namespace SkaaGameDataLib
             byte[] frame_size_bytes = new byte[4];
             stream.Read(frame_size_bytes, 0, 4);
             //int idxImgSize = BitConverter.ToInt32(frame_size_bytes, 0);
-            int width = BitConverter.ToInt16(frame_size_bytes, 0);
+            int width = BitConverter.ToUInt16(frame_size_bytes, 0);
             int height = BitConverter.ToUInt16(frame_size_bytes, 2);
             int size = height * width;
 
             byte[] resBmpData = new byte[size];
-            byte[] resRawData = new byte[size];
+            //byte[] resRawData = new byte[size];
 
             //initialize it to an unused transparent-pixel-marker
             resBmpData = Enumerable.Repeat<byte>(0xff, size).ToArray();
-            resRawData = Enumerable.Repeat<byte>(0xff, size).ToArray();
+            //resRawData = Enumerable.Repeat<byte>(0xff, size).ToArray();
             //todo: Verify 0xff is/isn't used in any of the other sprites
 
             //todo: make sure this gets calculated and written out instead of saved statically here
@@ -273,16 +273,16 @@ namespace SkaaGameDataLib
 
                     try
                     {
-                        pixel = Convert.ToByte(stream.ReadByte());
-                        resRawData[bytesRead] = (byte)pixel;
+                        pixel = (byte)stream.ReadByte();
+                        //resRawData[bytesRead] = (byte)pixel;
                         bytesRead++;
                     }
                     catch
                     {
                         //got -1 for EOF
-                        byte[] resize = resRawData;
-                        Array.Resize<byte>(ref resize, bytesRead);
-                        resRawData = resize;
+                        //byte[] resize = resRawData;
+                        //Array.Resize<byte>(ref resize, bytesRead);
+                        //resRawData = resize;
                         eof = true;
                         break;
                     }
@@ -297,7 +297,7 @@ namespace SkaaGameDataLib
                     {
                         pixel = Convert.ToByte(stream.ReadByte());
                         pixelsToSkip = (byte)pixel - 1;
-                        resRawData[bytesRead] = (byte)pixel;
+                        //resRawData[bytesRead] = (byte)pixel;
                         bytesRead++;
                     }
                     else //f9,fa,fb,fc,fd,fe,ff
@@ -307,9 +307,9 @@ namespace SkaaGameDataLib
                 }//end inner for
             }//end outer for
 
-            byte[] resizeMe = resRawData;
-            Array.Resize<byte>(ref resizeMe, bytesRead);
-            resRawData = resizeMe;
+            //byte[] resizeMe = resRawData;
+            //Array.Resize<byte>(ref resizeMe, bytesRead);
+            //resRawData = resizeMe;
 
             this.Bitmap = GetBitmapFromRleBytes(resBmpData, this.Bitmap.Palette, height, width);
             //return resBmpData;//IndexedBitmap.ByteArrayToBitmap(resBmpData, this.Palette, this.Height, this.Width);

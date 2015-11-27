@@ -109,6 +109,8 @@ namespace SkaaEditorControls
                     this.picBoxFrame = value;
             }
         }
+
+        //todo: remove Sprite and Frame references. Replace with List<Bitmap>
         public Sprite ActiveSprite
         {
             get
@@ -124,7 +126,6 @@ namespace SkaaEditorControls
                 }
             }
         }
-
         public Frame ActiveFrame
         {
             get

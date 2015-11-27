@@ -488,7 +488,6 @@ namespace SkaaEditorUI
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.InitialDirectory = props.ApplicationDirectory;
-                //dlg.DefaultExt = props.SprFileExtension;
                 dlg.Filter = $"7KAA Resource Files (.res)|*{props.ResFileExtension}";//$"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|7KAA Game Set Files (.set)|*{props.SetFileExtension}|7KAA Resource Files (.res)|*{props.ResFileExtension}";
 
                 if (dlg.ShowDialog() == DialogResult.OK)
@@ -520,9 +519,7 @@ namespace SkaaEditorUI
 
                     if (dlg.ShowDialog() == DialogResult.OK)
                     {
-                        this.toolStripStatLbl.Text = "Building Sprite...";
-                        ProcessSpriteUpdates();
-
+                        this.toolStripStatLbl.Text = "Saving Sprite...";
                         this.ActiveProject.ActiveSprite.ToBitmap().Save(dlg.FileName);
                         this.toolStripStatLbl.Text = string.Empty;
                     }
@@ -534,36 +531,31 @@ namespace SkaaEditorUI
             if (this.ActiveProject == null)
                 Misc.LogMessage("ActiveProject cannot be null!");
 
-            //bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
-            //if (changes)
-            //{
-                using (SaveFileDialog dlg = new SaveFileDialog())
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+                dlg.DefaultExt = props.SetFileExtension;
+                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
+
+                if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
                 {
-                    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                    dlg.DefaultExt = props.SetFileExtension;
-                    dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
-
-                    if (this.ActiveProject.ActiveSprite != null && this.ActiveProject.ActiveFrame != null)
-                    {
-                        this.toolStripStatLbl.Text = "Building Sprite...";
-                        ProcessSpriteUpdates();
-                        this.toolStripStatLbl.Text = string.Empty;
-                    }
-                    else
-                        return;
-
-                    dlg.FileName = "std.set";
-
-                    if (dlg.ShowDialog() == DialogResult.OK)
-                    {
-                        this.toolStripStatLbl.Text = "Saving Game Set...";
-                        //this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
-                        this.toolStripStatLbl.Text = string.Empty;
-
-                        AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
-                    }
+                    this.toolStripStatLbl.Text = "Building Sprite...";
+                    this.toolStripStatLbl.Text = string.Empty;
                 }
-            //}
+                else
+                    return;
+
+                dlg.FileName = "std.set";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    this.toolStripStatLbl.Text = "Saving Game Set...";
+                    //this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName);
+                    this.toolStripStatLbl.Text = string.Empty;
+
+                    AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
+                }
+            }
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -609,7 +601,7 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    ProcessSpriteUpdates();
+                    //ProcessSpriteUpdates();
 
                     using (Bitmap bmp = this.ActiveProject.ActiveSprite.ToBitmap())
                     {
@@ -635,7 +627,7 @@ namespace SkaaEditorUI
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    ProcessSpriteUpdates();
+                    //ProcessSpriteUpdates();
                     
                     this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap = (this.imageEditorBox.Image as Bitmap);
 
@@ -695,8 +687,7 @@ namespace SkaaEditorUI
             else
             {
                 this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap;
-                //todo: implement an UpdateImage() method in Timelinecontrol
-                //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
+                //Update the Timeline control with the changed image
                 this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
         }
@@ -779,7 +770,7 @@ namespace SkaaEditorUI
                 {
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.Create))
                     {
-                        ProcessSpriteUpdates();
+                        //ProcessSpriteUpdates();
                         byte[] spr_data = IndexedBitmap.GetRleBytesFromBitmap(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
                         fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                     }
@@ -932,7 +923,7 @@ namespace SkaaEditorUI
         {
             bool spriteHasChanges = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
 
-            if (!spriteHasChanges && this.ActiveProject?.UnsavedSprites?.Count == 0)
+            if (!spriteHasChanges)// && this.ActiveProject?.UnsavedSprites?.Count == 0)
                 return DialogResult.No;
             else
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
@@ -952,11 +943,11 @@ namespace SkaaEditorUI
         #endregion
         
         #region Helper Methods
-        private void ProcessSpriteUpdates()
-        {
-            this.ActiveProject.ProcessUpdates(this.ActiveProject.ActiveFrame, this.imageEditorBox.Image as Bitmap);
-            this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
-        }
+        //private void ProcessSpriteUpdates()
+        //{
+        //    //this.ActiveProject.ProcessUpdates(this.ActiveProject.ActiveFrame, this.imageEditorBox.Image as Bitmap);
+        //    //this.ActiveProject.UnsavedSprites.Remove(this.ActiveProject.ActiveSprite);
+        //}
 
         private void SetDefaultActiveColors()
         {
@@ -986,7 +977,6 @@ namespace SkaaEditorUI
             this.imageEditorBox.ActivePrimaryColor = primary;
             this.imageEditorBox.ActiveSecondaryColor = secondary;
         }
-
         #endregion
     }
 }

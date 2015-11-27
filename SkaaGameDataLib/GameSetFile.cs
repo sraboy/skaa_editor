@@ -47,6 +47,10 @@ namespace SkaaGameDataLib
             return ds;
         }
 
+        public static void WriteSet(DataSet ds)
+        {
+
+        }
 //        public static Stream SaveGameSetToFile(DataSet ds)// string filePath)//, GameSet set)
 //        {
 //            using (FileStream fs = new FileStream(filePath, FileMode.Create))

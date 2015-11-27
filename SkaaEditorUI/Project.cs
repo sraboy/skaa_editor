@@ -42,7 +42,7 @@ namespace SkaaEditorUI
         private PaletteResource _skaaEditorPalette;
         private Sprite _activeSprite;
         private string _projectName;
-        private List<Sprite> _unsavedSprites;
+        //private List<Sprite> _unsavedSprites;
         private ProjectTypes _projectType;
         #endregion
 
@@ -186,18 +186,18 @@ namespace SkaaEditorUI
         //    }
         //}
         //todo: this should be a generic list
-        public List<Sprite> UnsavedSprites
-        {
-            get
-            {
-                return this._unsavedSprites;
-            }
-            private set
-            {
-                if (this._unsavedSprites != value)
-                    this._unsavedSprites = value;
-            }
-        }
+        //public List<Sprite> UnsavedSprites
+        //{
+        //    get
+        //    {
+        //        return this._unsavedSprites;
+        //    }
+        //    private set
+        //    {
+        //        if (this._unsavedSprites != value)
+        //            this._unsavedSprites = value;
+        //    }
+        //}
         public string ProjectName
         {
             get
@@ -230,7 +230,7 @@ namespace SkaaEditorUI
         #region Constructors & Initialization
         public Project() { this.Initialize(); }
         public Project(ProjectTypes type) { this.ProjectType = type; this.Initialize(); }
-        private void Initialize() { this.UnsavedSprites = new List<Sprite>(); }
+        private void Initialize() { /*this.UnsavedSprites = new List<Sprite>();*/ }
         #endregion
 
         
@@ -333,10 +333,16 @@ namespace SkaaEditorUI
         }
         public Sprite LoadInterfaceResource(string filepath)
         {
+            Sprite spr = new Sprite();
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = "FrameName" });
+            dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = "FrameOffset" });
+
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
-                Sprite spr = new Sprite();
                 Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs);
+                spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
+                dt.TableName = spr.SpriteId;
 
                 foreach (string key in dic.Keys)
                 {
@@ -347,15 +353,25 @@ namespace SkaaEditorUI
                     sf.IndexedBitmap = iBmp;
                     iBmp.GetBitmapFromRleStream(fs);
                     spr.Frames.Add(sf);
-                    spr.SpriteId = key;
-                }
 
-                return spr;
+                    DataRow row = dt.NewRow();
+                    dt.Rows.Add(row);
+                    row.BeginEdit();
+                    row["FrameName"] = key;
+                    row["FrameOffset"] = dic[key];
+                    row.AcceptChanges();
+                }
             }
+
+            this.ProjectType = ProjectTypes.Interface;
+            this.ActiveGameSet = new DataSet();
+            this.ActiveGameSet.Tables.Add(dt);
+
+            return spr;
         }
         private void SetActiveSpriteDataView()
         {
-            if (this.ActiveSprite != null)
+            if (this.ActiveSprite != null && this.ProjectType == ProjectTypes.Sprite)
             {
                 DataView dv = new DataView(this.ActiveGameSet?.Tables["SFRAME"]);
                 if (dv != null)
@@ -364,26 +380,6 @@ namespace SkaaEditorUI
                     this.ActiveSprite.SetSpriteDataView(dv);
                 }
             }
-        }
-
-        /// <summary>
-        /// Serves as a wrapper to <see cref="Project.LoadSprite(string)"/> and adds the loaded sprite to 
-        /// <see cref="Project.UnsavedSprites"/> to assist in tracking project changes.
-        /// </summary>
-        /// <remarks>
-        /// This was necessary because, in the UI, <see cref="SpriteFrame.PendingChanges"/> is the only way
-        /// to identify <see cref="Sprite"/> objects that need to be saved/updated. This allows for identifying
-        /// a <see cref="Project"/> that needs saving.
-        /// </remarks>
-        public void LoadNewSprite(string filepath)
-        {
-            Sprite spr = this.LoadSprite(filepath);
-            this.UnsavedSprites.Add(spr);
-        }
-
-        public void ProcessUpdates(Frame sf, Bitmap bmp)
-        {
-            //this.ActiveSprite.Resource.ProcessUpdates(sf, bmp);
         }
     }
 }
