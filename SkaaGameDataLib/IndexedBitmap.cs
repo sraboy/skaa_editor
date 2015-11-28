@@ -182,6 +182,14 @@ namespace SkaaGameDataLib
             //this.ResRawData = indexedData;
             return indexedData;
         }
+        /// <summary>
+        /// Builds a <see cref="System.Drawing.Bitmap"/> from an byte array of indexed color values based on the provided palette
+        /// </summary>
+        /// <param name="bitmapBytes">Byte array containing the pixel data and no header</param>
+        /// <param name="pal">The palette to assign to the new Bitmap</param>
+        /// <param name="height">The height of the Bitmap, in pixels</param>
+        /// <param name="width">The width of the Bitmap, in pixels</param>
+        /// <returns>A new <see cref="System.Drawing.Bitmap"/> with a <see cref="PixelFormat"/> of <see cref="PixelFormat.Format8bppIndexed"/></returns>
         public static Bitmap GetBitmapFromRleBytes(byte[] bitmapBytes, ColorPalette pal, int height, int width)
         {
             int idx;
@@ -215,14 +223,7 @@ namespace SkaaGameDataLib
             DecodeRleStream(str);
             return this.Bitmap;
         }
-        /// <summary>
-        /// Builds a <see cref="System.Drawing.Bitmap"/> from an byte array of indexed color values based on the provided palette
-        /// </summary>
-        /// <param name="bitmapBytes">Byte array containing the pixel data and no header</param>
-        /// <param name="pal">The palette to assign to the new Bitmap</param>
-        /// <param name="height">The height of the Bitmap, in pixels</param>
-        /// <param name="width">The width of the Bitmap, in pixels</param>
-        /// <returns>A new <see cref="System.Drawing.Bitmap"/> with a <see cref="PixelFormat"/> of <see cref="PixelFormat.Format8bppIndexed"/></returns>
+
 
         /// <summary>
         /// Reads a Run Length Encoded stream, where only transparent bytes are RLE, and builds a <see cref="System.Drawing.Bitmap"/>

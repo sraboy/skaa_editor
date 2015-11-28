@@ -44,74 +44,56 @@ namespace SkaaGameDataLib
 
         public static void Save(this DataSet ds, string filepath)
         {
-            int rowcount = 0;
+            //int rowcount = 0;
 
-            foreach (DataTable dt in ds.Tables)
-                rowcount += dt.Rows.Count;
+            //foreach (DataTable dt in ds.Tables)
+            //    rowcount += dt.Rows.Count;
 
-            //rowcount + 1 for the additional empty record
+            //rowcount + 1 for the fake record at the end (nine null bytes and uint SET file size
             //sizeof(short) for the first two bytes, representing the number of records
-            int setHeaderSize = ((rowcount + 1) * ResourceDatabase.DefinitionSize) + sizeof(short);
+            //int setHeaderSize = ((rowcount + 1) * ResourceDatabase.DefinitionSize) + sizeof(short);
 
             Dictionary<string, int> dic = new Dictionary<string, int>();
 
             using (FileStream setStream = new FileStream(filepath, FileMode.Create))
             {
-                //setStream.Seek(setHeaderSize, SeekOrigin.Begin); //leave room for the header
-
-                using (MemoryStream dbfStream = new MemoryStream())//new FileStream(filepath, FileMode.Create))
+                using (MemoryStream headerStream = new MemoryStream())
                 {
-                    dbfStream.Write(BitConverter.GetBytes(rowcount), 0, 2);
+                    //setStream.Seek(setHeaderSize, SeekOrigin.Begin); //leave room for the header
 
-                    foreach (DataTable dt in ds.Tables)
+                    using (MemoryStream dbfStream = new MemoryStream())//new FileStream(filepath, FileMode.Create))
                     {
-                        dt.WriteDefinition(setStream, (uint)dbfStream.Position); //writes dt's definition to the SET header
-                        dt.Save(dbfStream);
+                        //write SET header's record_count
+                        short record_count = (short) ds.Tables.Count;
+                        headerStream.Write(BitConverter.GetBytes(record_count), 0, sizeof(short));
+                        uint header_size = (uint) ((record_count + 1) * ResourceDatabase.DefinitionSize) + sizeof(short);
+
+                        foreach (DataTable dt in ds.Tables)
+                        {
+                            //write SET header's record definitions
+                            //---------------------
+                            //char[9] record_names
+                            //uint32 record_offsets
+                            //---------------------
+                            dt.WriteDefinition(headerStream, (uint) dbfStream.Position + header_size);
+
+                            //writes out the DBF file
+                            dt.Save(dbfStream);
+                        }
+
+                        //write SET file header-trailer (9 nulls followed by int filesize).
+                        for (int i = 0; i < 9; i++)
+                            headerStream.WriteByte(0x0);
+                        //calculate filesize
+                        uint file_size = (uint) (dbfStream.Position + (headerStream.Position + sizeof(uint)));
+                        byte[] fileSize = BitConverter.GetBytes(file_size);
+                        headerStream.Write(fileSize, 0, fileSize.Length);
+                        headerStream.Position = dbfStream.Position = 0;
+                        headerStream.CopyTo(setStream);
+                        dbfStream.CopyTo(setStream);
                     }
-
-                    //write SET file header-trailer (9 nulls followed by int filesize).
-                    for (int i = 0; i < 13; i++)
-                        setStream.WriteByte(0x0);
-
-                    dbfStream.CopyTo(dbfStream);
                 }
             }
         }
-
-//        public static Stream SaveGameSetToFile(DataSet ds)// string filePath)//, GameSet set)
-//        {
-//            using (FileStream fs = new FileStream(filePath, FileMode.Create))
-//            {
-//                //write SET file header
-//                fs.Write(BitConverter.GetBytes(this._recordCount), 0, 2);
-//                foreach (dBaseContainer db in this._databaseContainers)
-//                {
-//                    fs.Write(Encoding.GetEncoding(1252).GetBytes(db.Name.PadRight(_rowNameSize, (char) 0x0)), 0, _rowNameSize);
-//                    fs.Write(BitConverter.GetBytes(Convert.ToInt32(db.Offset)), 0, 4);
-//                }
-//                //write SET file header-trailer (9 nulls followed by int filesize). write size after writing DBFs.
-//                for (int i = 0; i < 13; i++)
-//                    fs.WriteByte(0x0);
-//                long fileSizeBookmark = fs.Position - 4;
-//                //write out DBFs
-//                foreach (dBaseContainer db in this._databaseContainers)
-//                {
-//#if DEBUG
-//                    //writes out individual DBFs... easier to inspect SFRAME, etc
-//                    string path = this._dbfDirectory + "test";
-//                    Directory.CreateDirectory(path);
-//                    db.DbfFileObject.WriteAndClose(path);
-//#endif
-//                    db.DbfFileObject.WriteToStream(fs);
-//                }
-//                fs.Position = fileSizeBookmark;
-//                int fileSize = (int) fs.Length;
-//                fs.Write(BitConverter.GetBytes(fileSize), 0, 4);
-//            }
-//        }
-//        private static Stream BuildDbf(DataTable dt)
-//        {
-//            DbfFile file = new DbfFile(dt);
-//        }
     }
 }

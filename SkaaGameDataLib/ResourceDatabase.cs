@@ -47,8 +47,14 @@ namespace SkaaGameDataLib
         }
         public static void WriteDefinition(this DataTable dt, Stream str, uint offset)
         {
-            str.Write(Encoding.GetEncoding(1252).GetBytes(dt.TableName.PadRight(DefinitionNameSize, (char) 0x0)), 0, DefinitionNameSize);
-            str.Write(BitConverter.GetBytes(Convert.ToUInt32(offset)), 0, DefinitionOffsetSize);
+            string recordName = dt.TableName.PadRight(DefinitionNameSize, (char) 0x0);
+            byte[] record_name = new byte[DefinitionNameSize];
+            record_name = Encoding.GetEncoding(1252).GetBytes(recordName);
+            str.Write(record_name, 0, DefinitionNameSize);
+            
+            byte[] record_size = new byte[DefinitionOffsetSize];
+            record_size = BitConverter.GetBytes(Convert.ToUInt32(offset));
+            str.Write(record_size, 0, DefinitionOffsetSize);
         }
     }
 }

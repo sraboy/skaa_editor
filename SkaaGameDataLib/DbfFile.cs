@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -58,8 +59,8 @@ namespace SkaaGameDataLib
                 header.Version = 0x3;
                 header.LastEdited = new byte[3] { 0x62, 0x03, 0x12 };
                 header.NumberOfRecords = 0x0;
-                header.LengthOfHeader = BitConverter.ToInt16(new byte[] { 0x61, 0x01 }, 0);
-                header.LengthOfRecord = 0x29;
+                //header.LengthOfHeader = BitConverter.ToInt16(new byte[] { 0x61, 0x01 }, 0);
+                header.LengthOfRecord = ResourceDatabase.DefinitionSize;
                 header.ReservedOne = new byte[2] { 0x0, 0x0 };
                 header.IncompleteTransaction = 0x0;
                 header.EncryptionFlag = 0x0;
@@ -74,7 +75,7 @@ namespace SkaaGameDataLib
         }
         internal class FieldDescriptor
         {
-            public const byte Terminator = 0xD; //follows a list of FieldDescriptor in a DBF file
+            public const int Size = 11 + 1 + 4 + 1 + 1 + 2 + 1 + 2 + 1 + 7 + 1;
 
             public string FieldName; //char[11]
             public char FieldType;
@@ -89,13 +90,16 @@ namespace SkaaGameDataLib
             public byte IndexFieldFlag;
         }
 
-        private byte _eofMarker = 0x1a;
-        private byte _recordIsValidMarker = 0x20; //vs 0x2a for "is deleted"
         private DataTable _dataTable;
         private DbfFileHeader _header;
         private List<FieldDescriptor> _fieldDescriptors;
         private string _tableName;
         private int _dataSize;
+
+        internal const byte RecordValidMarker = 0x20;
+        internal const byte RecordDeletedMarker = 0x2a;
+        internal const byte EofMarker = 0x1a;
+        internal const byte Terminator = 0xD; //follows the header, after the list of FieldDescriptors
 
         internal DataTable DataTable
         {
@@ -106,30 +110,6 @@ namespace SkaaGameDataLib
             private set
             {
                 this._dataTable = value;
-            }
-        }
-        internal byte EofMarker
-        {
-            get
-            {
-                return _eofMarker;
-            }
-
-            set
-            {
-                this._eofMarker = value;
-            }
-        }
-        internal byte RecordIsValidMarker
-        {
-            get
-            {
-                return _recordIsValidMarker;
-            }
-
-            set
-            {
-                this._recordIsValidMarker = value;
             }
         }
         internal DbfFileHeader Header
@@ -188,8 +168,28 @@ namespace SkaaGameDataLib
             int millenium = 2000; //Free Y3K bug 
 
             this.Header = DbfFileHeader.GetDefaultHeader();
-            this.Header.NumberOfRecords = dt.Rows.Count + 1;
+            this.Header.NumberOfRecords = dt.Rows.Count;// + 1;
             this.Header.LastEdited = new byte[] { (byte) (DateTime.Today.Year - millenium), (byte) DateTime.Today.Month, (byte) DateTime.Today.Day };
+
+            this.Header.LengthOfHeader = (short)
+                                      (sizeof(byte) //version
+                                       + this.Header.LastEdited.Length
+                                       + sizeof(int) //NumberOfRecords
+                                       + sizeof(short) //LengthOfHeader
+                                       + sizeof(short) //LengthOfRecord
+                                       + this.Header.ReservedOne.Length
+                                       + sizeof(byte) //IncompleteTransaction
+                                       + sizeof(byte) //EncryptionFlag
+                                       + this.Header.FreeRecordThread.Length
+                                       + this.Header.ReservedMultiUser.Length
+                                       + sizeof(byte) //MdxFlag
+                                       + sizeof(byte) //Language
+                                       + this.Header.ReservedTwo.Length
+                                       //+ (this.Header.NumberOfRecords * this.Header.LengthOfRecord)
+                                       //+ (this.Header.NumberOfRecords * FieldDescriptor.Size)
+                                       + sizeof(byte) //Terminator
+                                       );
+
             this._dataTable = dt;
         }
         #endregion
@@ -260,65 +260,72 @@ namespace SkaaGameDataLib
                 DataRow row = this.DataTable.NewRow();
                 this.DataTable.Rows.Add(row);
 
+                if (str.Position > str.Length)
+                    throw new Exception("Attempted to read past end of file!");
+
                 byte check = (byte) str.ReadByte();
-                if (check != this.RecordIsValidMarker)
+
+                if (check == EofMarker)
                 {
-                    //check EOF first
-                    if (check == this.EofMarker || str.Position < str.Length)
-                        break;
-                    else
-                        throw new Exception(string.Format("Record is not marked as valid (preceded by 0x20)! Byte is {0}.", check.ToString()));
+                    row.Delete();
+                    break;
                 }
-
-                for (int i = 0; i < this.FieldDescriptors.Count; i++)
+                else if (check == RecordValidMarker)
                 {
-                    FieldDescriptor fd = this.FieldDescriptors[i];
-                    byte[] bytes = new byte[fd.FieldLength];
-                    str.Read(bytes, 0, bytes.Length);
-                    row.BeginEdit();
-
-                    switch (fd.FieldType)
+                    for (int i = 0; i < this.FieldDescriptors.Count; i++)
                     {
-                        case 'C':
-                            if (fd.FieldName.EndsWith("PTR"))
-                            {
-                                int val = BitConverter.ToInt32(bytes, 0);
-                                row[i] = bytes == null ? "0" : val.ToString();
-                            }
-                            else
-                                row[i] = Encoding.GetEncoding(1252).GetString(bytes);
-                            break;
-                        case 'N':
-                            string strg = bytes == null ? "0" : Encoding.GetEncoding(1252).GetString(bytes).Trim();
-                            int conv = strg == string.Empty ? 0 : Convert.ToInt32(strg);
-                            row[i] = conv;
-                            break;
-                        case 'L': //nullable bool, byte
-                            throw new NotImplementedException("Encountered /'L/' for nullable bool!");
-                            break;
-                        case 'D': //YYYYMMDD
-                            throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
-                            break;
-                        case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
-                            throw new NotImplementedException("Encountered /'@/' for time!");
-                            break;
-                        case 'O': //double (8 bytes)
-                            throw new NotImplementedException("Encountered /'O/' for double!");
-                            break;
-                        case '+': //auto-increment (long)
-                            throw new NotImplementedException("Encountered /'+/' for auto-increment!");
-                            break;
-                    }
+                        FieldDescriptor fd = this.FieldDescriptors[i];
+                        byte[] bytes = new byte[fd.FieldLength];
+                        str.Read(bytes, 0, bytes.Length);
+                        row.BeginEdit();
 
-                    row.AcceptChanges();
+                        switch (fd.FieldType)
+                        {
+                            case 'C':
+                                if (fd.FieldName.EndsWith("PTR"))
+                                {
+                                    int val = BitConverter.ToInt32(bytes, 0);
+                                    row[i] = bytes == null ? "0" : val.ToString();
+                                }
+                                else
+                                    row[i] = Encoding.GetEncoding(1252).GetString(bytes).Trim('\0');
+                                break;
+                            case 'N':
+                                string strg = bytes == null ? "0" : Encoding.GetEncoding(1252).GetString(bytes).Trim();
+                                int conv = strg == string.Empty ? 0 : Convert.ToInt32(strg);
+                                row[i] = conv;
+                                break;
+                            case 'L': //nullable bool, byte
+                                throw new NotImplementedException("Encountered /'L/' for nullable bool!");
+                                break;
+                            case 'D': //YYYYMMDD
+                                throw new NotImplementedException("Encountered /'D/' for YYYYMMDD!");
+                                break;
+                            case '@': //long1 = days since 1 Jan 4713, long2 = hrs * 3600000 + min * 60000 + sec * 1000
+                                throw new NotImplementedException("Encountered /'@/' for time!");
+                                break;
+                            case 'O': //double (8 bytes)
+                                throw new NotImplementedException("Encountered /'O/' for double!");
+                                break;
+                            case '+': //auto-increment (long)
+                                throw new NotImplementedException("Encountered /'+/' for auto-increment!");
+                                break;
+                        }
 
-                    if (i != 0 && i % FieldDescriptors.Count == 0) //only after getting all columns, so at the end of each row
-                    {
-                        check = (byte) str.ReadByte();
-                        if (check != this.RecordIsValidMarker)
-                            throw new Exception(string.Format("Record is not marked as valid (preceded by 0x20)! Byte is {0}.", check.ToString()));
+                        row.AcceptChanges();
+
+                        //if (i != 0 && i % FieldDescriptors.Count == 0) //only after getting all columns, so at the end of each row
+                        //{
+                        //    check = (byte) str.ReadByte();
+                        //    if (check != this.RecordIsValidMarker)
+                        //        throw new Exception(string.Format("Record is not marked as valid (preceded by 0x20)! Byte is {0}.", check.ToString()));
+                        //}
                     }
                 }
+                else if (check == RecordDeletedMarker)
+                    row.Delete();
+                else
+                    throw new Exception($"Unknown row state: {check}.");
             }
 
             this._dataTable.AcceptChanges();
@@ -341,7 +348,7 @@ namespace SkaaGameDataLib
                         //Below ensures we can fit an int's string representation since the original 
                         //length is specified in bytes for the char[]. Go larger if specified (like DES in HEADER.DBF).
                         col.MaxLength = fd.FieldLength < 11 ? 11 : fd.FieldLength;
-                        col.ByteLength = fd.FieldLength;// + 1; //+ 1 for null terminator
+                        col.ByteLength = fd.FieldLength;//no null terminator
                         break;
                     case 'N': //int64 (up to 18 chars according to dBase spec)
                         col.DataType = typeof(long);
@@ -373,7 +380,7 @@ namespace SkaaGameDataLib
 
             byte checkForTerminator = 0x0;
 
-            while (checkForTerminator != FieldDescriptor.Terminator)
+            while (checkForTerminator != Terminator)
             {
                 if(checkForTerminator != 0x0)
                     str.Position--; //backup since we read an extra byte to get the check value
@@ -386,26 +393,30 @@ namespace SkaaGameDataLib
 
                 fd.FieldType = (char) str.ReadByte();
 
-                //fd.FieldDataAddress = new byte[4];
                 str.Read(fd.FieldDataAddress, 0, 4);
 
                 fd.FieldLength = (byte) str.ReadByte();
                 fd.DecimalCount = (byte) str.ReadByte();
+                Debug.Assert(fd.DecimalCount == 0, $"Encounted non-zero DecimalCount: {fd.DecimalCount}."); //if found, must be < 15 per spec
 
-                //fd.ReservedMultiUserOne = new byte[2];
                 str.Read(fd.ReservedMultiUserOne, 0, 2);
+                Debug.Assert(fd.ReservedMultiUserOne[0] == 0 && fd.ReservedMultiUserOne[1] == 0, "Encounted non-zero ReservedMultiUserOne.");
 
                 fd.WorkAreaId = (byte) str.ReadByte();
+                Debug.Assert(fd.WorkAreaId == 0, $"Encounted non-zero WorkAreaId: {fd.WorkAreaId}.");
 
-                //fd.ReservedMultiUserTwo = new byte[2];
                 str.Read(fd.ReservedMultiUserTwo, 0, 2);
+                Debug.Assert(fd.ReservedMultiUserTwo[0] == 0 && fd.ReservedMultiUserTwo[1] == 0, "Encounted non-zero ReservedMultiUserTwo.");
 
                 fd.FlagSetFields = (byte) str.ReadByte();
+                Debug.Assert(fd.WorkAreaId == 0, $"Encounted non-zero WorkAreaId: {fd.WorkAreaId}.");
 
-                //fd.Reserved = new byte[7];
                 str.Read(fd.Reserved, 0, 7);
+                foreach(byte b in fd.Reserved)
+                    Debug.Assert(b == 0, $"Encounted non-zero Reserved: {b}.");
 
                 fd.IndexFieldFlag = (byte) str.ReadByte();
+                Debug.Assert(fd.IndexFieldFlag == 0, $"Encounted non-zero IndexFieldFlag: {fd.IndexFieldFlag}.");
 
                 fdlist.Add(fd);
 

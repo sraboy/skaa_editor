@@ -56,6 +56,7 @@ namespace SkaaGameDataLib
             using (FileStream fs = File.Open(path, FileMode.Open))
             {
                 string ext = Path.GetExtension(path);
+                string filename = Path.GetFileName(path);
 
                 switch (file_ext)
                 {
@@ -101,7 +102,10 @@ namespace SkaaGameDataLib
                 if (e is FormatException)
                 {
                     if (header[0] == 0x3 &&
-                            header[1] <= (DateTime.Today.Year - 2000) && //a sensible year
+                            (
+                            header[1] >= 90 ||                           //greater than 1990
+                            header[1] <= (DateTime.Today.Year - 2000)    //this century for any new files
+                            ) && 
                             (header[2] < 13 && header[2] > 0) &&         //a real month
                             (header[3] < 32 && header[3] > 0))           //a real day
                     {

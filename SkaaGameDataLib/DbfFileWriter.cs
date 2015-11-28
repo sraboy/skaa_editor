@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ namespace SkaaGameDataLib
             DbfFile file = new DbfFile(dt);
             WriteHeader(file, str);
             GetFieldDescriptorListFromSchema(file);
+            file.Header.LengthOfHeader += (short)(file.FieldDescriptors.Count * DbfFile.FieldDescriptor.Size);
             WriteFieldDescriptors(file, str);
             WriteDataTableToStream(file, str);
         }
@@ -57,39 +59,23 @@ namespace SkaaGameDataLib
         }
         private static void GetFieldDescriptorListFromSchema(DbfFile file)
         {
+            //http://www.clicketyclick.dk/databases/xbase/format/data_types.html
+
             file.FieldDescriptors = new List<DbfFile.FieldDescriptor>();
+
+            int fieldAddr = 1;
 
             foreach (DbaseIIIDataColumn col in file.DataTable.Columns)
             {
-                DbfFile.FieldDescriptor fd = new DbfFile.FieldDescriptor();
-                fd.FieldName = col.ColumnName;
-                fd.FieldLength = col.ByteLength;
-
-                if (col.DataType == typeof(string))
-                {
-                    fd.FieldType = 'C';
-                }
-                else if (col.DataType == typeof(long))
-                {
-                    fd.FieldType = 'N'; //int64 (up to 18 chars according to dBase spec)
-                }
-                else if (col.DataType == typeof(bool)) //nullable bool, byte
-                    fd.FieldType = 'L';
-                else if (col.DataType == typeof(double)) //double (8 bytes)
-                    fd.FieldType = 'O';
-                //else if (col.DataType == typeof(dBaseShortDate)) //YYYYMMDD
-                //    fd.FieldType = 'D';
-                //else if (col.DataType == typeof(dBaseTimestamp)) //long1 = days since 1-Jan-4713 BC, long2 = hrs * 3600000 + min * 60000 + sec * 1000
-                //    fd.FieldType = '@';
-                //else if (col.DataType == typeof(dbaseAutoIncrement)) //auto-increment (long)
-                //    fd.FieldType = '+';
-                else
-                    throw new FormatException($"Unknown column type: \'{col.ColumnName}\' is {col.DataType.ToString()}");
+                DbfFile.FieldDescriptor fd = col.GetFieldDescriptor();
+                fieldAddr += fd.FieldLength; //SUM(previous_columns_bytelength)
+                fd.FieldDataAddress = BitConverter.GetBytes(fieldAddr);
+                //FieldDataAddress is the index/offset of this field's data in a record, if the records were byte arrays
+                file.FieldDescriptors.Add(fd);
             }
         }
         private static void WriteFieldDescriptors(DbfFile file, Stream str)
         {
-
             foreach (DbfFile.FieldDescriptor fd in file.FieldDescriptors)
             {
                 StringBuilder sb = new StringBuilder(fd.FieldName);
@@ -115,7 +101,8 @@ namespace SkaaGameDataLib
         {
             foreach (DataRow dr in file.DataTable.Rows)
             {
-                str.WriteByte(file.RecordIsValidMarker); //row divider
+                str.WriteByte(DbfFile.RecordValidMarker);
+
                 foreach (DbaseIIIDataColumn col in file.DataTable.Columns)
                 {
                     string value;
@@ -123,24 +110,24 @@ namespace SkaaGameDataLib
                     if (col.DataType == typeof(string))
                     {
                         byte[] bytes = new byte[col.ByteLength];
-                        value = (string) dr[col];
-
-                        if (col.ColumnName.EndsWith("PTR"))
+                        value = dr[col] == DBNull.Value ? " " : (string) dr[col];
+                        
+                        if (col.ColumnName.EndsWith("PTR")) //actually a number (C pointer), not a string
                         {
-                            int val = value == "0" ? 0 : Convert.ToInt32(value);
+                            int val = value == "0" ? Convert.ToInt32(0) : Convert.ToInt32(value);
                             bytes = BitConverter.GetBytes(val);
                         }
                         else
                         {
-                            value = (string) dr[col];
-                            value.PadRight(col.ByteLength, ' ');
+                            value = dr[col] == DBNull.Value ? string.Empty : (string) dr[col];
+                            value = value.PadRight(col.ByteLength, ' ');
                             bytes = Encoding.GetEncoding(1252).GetBytes(value);
                         }
                         str.Write(bytes, 0, col.ByteLength);
                     }
                     else if (col.DataType == typeof(long))
                     {
-                        long val = (long) dr[col];
+                        long val = dr[col] == DBNull.Value ? 0 : (long) dr[col];
                         value = val.ToString();
                         value = value.PadLeft(col.ByteLength, ' ');
                         byte[] bytes = new byte[col.ByteLength];
@@ -170,7 +157,7 @@ namespace SkaaGameDataLib
                 }
             }
 
-            str.WriteByte(file.EofMarker);
+            str.WriteByte(DbfFile.EofMarker);
         }
     }
 }
