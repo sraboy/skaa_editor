@@ -19,9 +19,13 @@ namespace SkaaGameDataLib
         public static void Save(this DataTable dt, Stream str)
         {
             DbfFile file = new DbfFile(dt);
+            GetFieldDescriptorListFromSchema(file); //need to know how many we have to calculate below, before writing the header
+            file.Header.LengthOfHeader += (short) (file.FieldDescriptors.Count * DbfFile.FieldDescriptor.Size);
+            file.Header.LengthOfRecord = 1; //1 byte for RowState (0x20 or 0x2a)
+            foreach (DbaseIIIDataColumn col in dt.Columns)
+                file.Header.LengthOfRecord += col.ByteLength;
+
             WriteHeader(file, str);
-            GetFieldDescriptorListFromSchema(file);
-            file.Header.LengthOfHeader += (short)(file.FieldDescriptors.Count * DbfFile.FieldDescriptor.Size);
             WriteFieldDescriptors(file, str);
             WriteDataTableToStream(file, str);
         }
@@ -63,15 +67,15 @@ namespace SkaaGameDataLib
 
             file.FieldDescriptors = new List<DbfFile.FieldDescriptor>();
 
-            int fieldAddr = 1;
+            int fieldAddr = 1; //first is always 1
 
             foreach (DbaseIIIDataColumn col in file.DataTable.Columns)
             {
                 DbfFile.FieldDescriptor fd = col.GetFieldDescriptor();
-                fieldAddr += fd.FieldLength; //SUM(previous_columns_bytelength)
                 fd.FieldDataAddress = BitConverter.GetBytes(fieldAddr);
                 //FieldDataAddress is the index/offset of this field's data in a record, if the records were byte arrays
                 file.FieldDescriptors.Add(fd);
+                fieldAddr += fd.FieldLength; //sum each previous column's ByteLength, which equals the FieldLength
             }
         }
         private static void WriteFieldDescriptors(DbfFile file, Stream str)

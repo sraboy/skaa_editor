@@ -58,9 +58,9 @@ namespace SkaaGameDataLib
 
                 header.Version = 0x3;
                 header.LastEdited = new byte[3] { 0x62, 0x03, 0x12 };
-                header.NumberOfRecords = 0x0;
+                //header.NumberOfRecords = 0x0;
                 //header.LengthOfHeader = BitConverter.ToInt16(new byte[] { 0x61, 0x01 }, 0);
-                header.LengthOfRecord = ResourceDatabase.DefinitionSize;
+                //header.LengthOfRecord = ResourceDatabase.DefinitionSize;
                 header.ReservedOne = new byte[2] { 0x0, 0x0 };
                 header.IncompleteTransaction = 0x0;
                 header.EncryptionFlag = 0x0;
