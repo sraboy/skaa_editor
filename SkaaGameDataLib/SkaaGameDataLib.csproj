@@ -44,10 +44,11 @@
   <ItemGroup>
     <Compile Include="ButtonResource.cs" />
     <Compile Include="DbfFileWriter.cs" />
+    <Compile Include="FileFormats.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="ResourceDatabase.cs" />
     <Compile Include="IndexedBitmap.cs" />
-    <Compile Include="PaletteResource.cs" />
+    <Compile Include="PaletteLoader.cs" />
     <Compile Include="DbaseIIIDataColumn.cs">
       <SubType>Component</SubType>
     </Compile>

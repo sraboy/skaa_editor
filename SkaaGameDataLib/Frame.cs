@@ -10,5 +10,10 @@ namespace SkaaGameDataLib
     {
         public IndexedBitmap IndexedBitmap;
         public long BitmapOffset;
+
+        public byte[] ToSprFile()
+        {
+            return IndexedBitmap.GetRleBytesFromBitmap(this.IndexedBitmap.Bitmap);
+        }
     }
 }

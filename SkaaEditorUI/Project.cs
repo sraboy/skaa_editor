@@ -30,16 +30,21 @@ using SkaaGameDataLib;
 using System.Data;
 using System.Drawing.Imaging;
 using System.Drawing;
+using System.Diagnostics;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace SkaaEditorUI
 {
     [Serializable]
     public class Project
     {
+        public static readonly TraceSource Logger = new TraceSource("Project", SourceLevels.All);
+        
         #region Private Members
         private Properties.Settings props = Properties.Settings.Default;
         private Frame _activeFrame;
-        private PaletteResource _skaaEditorPalette;
+        private ColorPalette _activePalette;
         private Sprite _activeSprite;
         private string _projectName;
         //private List<Sprite> _unsavedSprites;
@@ -159,13 +164,13 @@ namespace SkaaEditorUI
         {
             get
             {
-                return this._skaaEditorPalette?.ColorPaletteObject;
+                return this._activePalette;
             }
             set
             {
-                if (this._skaaEditorPalette.ColorPaletteObject != value)
+                if (this._activePalette != value)
                 {
-                    this._skaaEditorPalette.ColorPaletteObject = value;
+                    this._activePalette = value;
                     OnPaletteChanged(EventArgs.Empty);
                 }
             }
@@ -253,7 +258,7 @@ namespace SkaaEditorUI
                 if(this.ActiveGameSet == null)
                     this.ActiveGameSet = new DataSet();
 
-                this.ActiveGameSet.ReadSetFile(fs);
+                this.ActiveGameSet.Open(fs);
             }
 
             SetActiveSpriteDataView();
@@ -273,32 +278,10 @@ namespace SkaaEditorUI
         /// <returns>A ColorPalette built from the palette file</returns>
         public void LoadPalette(string filepath)
         {
-            this._skaaEditorPalette = new PaletteResource();
+            this.ActivePalette = PaletteLoader.FromResFile(filepath);
 
-            //have to keep the event from firing before the palette is loaded, so don't mess with ActivePalette yet
-            ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
-
-            using (FileStream fs = File.OpenRead(filepath))
-            {
-                fs.Seek(8, SeekOrigin.Begin);
-
-                for (int i = 0; i < 256; i++)
-                {
-                    int r = fs.ReadByte();
-                    int g = fs.ReadByte();
-                    int b = fs.ReadByte();
-
-                    if (i < 0xf9) //0xf9 is the lowest transparent color byte
-                        pal.Entries[i] = Color.FromArgb(255, r, g, b);
-                    else          //0xf9 - 0xff
-                        pal.Entries[i] = Color.FromArgb(0, r, g, b);
-                }
-                this._skaaEditorPalette.ResMemoryStream = new MemoryStream();
-                fs.Position = 0;
-                fs.CopyTo(this._skaaEditorPalette.ResMemoryStream);
-            }
-
-            this.ActivePalette = pal;
+            if (this.ActivePalette == null)
+                Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load palette: {filepath}");
         }
         /// <summary>
         /// Opens an SPR file and creates a <see cref="Sprite"/> object for it
@@ -311,38 +294,26 @@ namespace SkaaEditorUI
         /// no need to follow the call into <code>File::file_open()</code> in OFILE.cpp. Though the files are 
         /// well-structured, they are considered FLAT by 7KAA.
         /// </remarks>
-        public Sprite LoadSprite(string filepath)
+        public Sprite OpenSprite(string filepath)
         {
             if (this.ActivePalette == null)
             { 
-                Misc.LogMessage("Cannot load a Sprite if the ActivePalette is null.");
+                Logger.TraceEvent(TraceEventType.Error, 0, "Cannot load a Sprite if the ActivePalette is null.");
                 return null;
             }
 
-            //have to keep the event from firing before the sprite is loaded, so don't mess with ActiveSprite yet
-            Sprite spr = new Sprite();
-            
+            Sprite spr;
+
             using (FileStream spritestream = File.OpenRead(filepath))
-            {
-                while (spritestream.Position < spritestream.Length)
-                {
-                    IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
-                    SpriteFrame sf = new SpriteFrame(spr);
-                    sf.IndexedBitmap = iBmp;
-                    spritestream.Position += 4; //skip the int32 size value at the start
-                    iBmp.GetBitmapFromRleStream(spritestream);
-                    spr.Frames.Add(sf);
-                    spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-                }
-            }
+                spr = Sprite.FromSprStream(spritestream, this.ActivePalette);
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
 
-            this.ActiveSprite = spr;
             SetActiveSpriteDataView();
             return spr;
         }
-        public Sprite LoadInterfaceResource(string filepath)
+
+        public Sprite LoadResXMultiBmp(string filepath)
         {
             Sprite spr = new Sprite();
             DataTable dt = new DataTable();
@@ -362,7 +333,7 @@ namespace SkaaEditorUI
 
                     IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
                     sf.IndexedBitmap = iBmp;
-                    iBmp.GetBitmapFromRleStream(fs);
+                    iBmp.SetBitmapFromRleStream(fs);
                     spr.Frames.Add(sf);
 
                     DataRow row = dt.NewRow();
@@ -380,6 +351,33 @@ namespace SkaaEditorUI
 
             return spr;
         }
+
+        public static void Save(string filename, Sprite spr)
+        {
+            using (FileStream fs = new FileStream(filename, FileMode.Create))
+            {
+                byte[] spr_data = spr.ToSprFile();
+                fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+            }
+        }
+        public static void Save(string filename, Frame f)
+        {
+            using (FileStream fs = new FileStream(filename, FileMode.Create))
+            {
+                byte[] spr_data = f.ToSprFile();
+                fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+            }
+        }
+
+        public static void Export(string filename, Sprite spr)
+        {
+            spr.ToBitmap().Save(filename);
+        }
+        public static void Export(string filename, Frame f)
+        {
+            f.IndexedBitmap.Bitmap.Save(filename);
+        }
+
         private void SetActiveSpriteDataView()
         {
             if (this.ActiveSprite != null && this.ProjectType == ProjectTypes.Sprite)

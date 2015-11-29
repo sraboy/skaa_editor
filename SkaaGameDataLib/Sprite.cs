@@ -39,6 +39,8 @@ namespace SkaaGameDataLib
     [Serializable]
     public class Sprite
     {
+        public static readonly TraceSource Logger = new TraceSource("Sprite", SourceLevels.All);
+
         #region Event Handlers
         [NonSerialized]
         private EventHandler _spriteUpdated;
@@ -119,7 +121,7 @@ namespace SkaaGameDataLib
         #endregion
 
         #region Constructors
-        public Sprite()//ColorPalette pal)
+        public Sprite()
         {
             this.Frames = new List<SpriteFrame>();
         }
@@ -204,22 +206,75 @@ namespace SkaaGameDataLib
 
             Bitmap bitmap = new Bitmap(exportWidth, exportHeight);
 
-            using (Graphics g = Graphics.FromImage(bitmap))
+            try
             {
-                int frameIndex = 0;
-
-                for (int y = 0; y < exportHeight; y += spriteHeight)
+                using (Graphics g = Graphics.FromImage(bitmap))
                 {
-                    //once we hit the max frames, just break
-                    for (int x = 0; x < exportWidth && frameIndex < this.Frames.Count; x += spriteWidth)
+                    int frameIndex = 0;
+
+                    for (int y = 0; y < exportHeight; y += spriteHeight)
                     {
-                        g.DrawImage(this.Frames[frameIndex].IndexedBitmap.Bitmap, new Point(x, y));
-                        frameIndex++;
+                        //once we hit the max frames, just break
+                        for (int x = 0; x < exportWidth && frameIndex < this.Frames.Count; x += spriteWidth)
+                        {
+                            g.DrawImage(this.Frames[frameIndex].IndexedBitmap.Bitmap, new Point(x, y));
+                            frameIndex++;
+                        }
                     }
                 }
             }
+            catch
+            {
+                bitmap = null;
+            }
 
+            if (bitmap == null)
+                Logger.TraceInformation($"Failed to create sprite sheet bitmap for {this.SpriteId}");
+            
             return bitmap;
+        }
+        public byte[] ToSprFile()
+        {
+            byte[] save;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                foreach (Frame f in this.Frames)
+                {
+                    byte[] frameData = f.ToSprFile();
+                    ms.Write(BitConverter.GetBytes(frameData.Length), 0, sizeof(int));
+                    ms.Write(frameData, 0, frameData.Length);
+                }
+
+                ms.Position = 0;
+                save = ms.ToArray();
+            }
+
+            return save;
+        }
+        public static Sprite FromSprStream(Stream str, ColorPalette pal)
+        {
+            Sprite spr = new Sprite();
+            if (str is FileStream)
+                spr.SpriteId = Path.GetFileNameWithoutExtension(((FileStream) str).Name);
+            try
+            {
+                while (str.Position < str.Length)
+                {
+                    IndexedBitmap iBmp = new IndexedBitmap(pal);
+                    SpriteFrame sf = new SpriteFrame(spr);
+                    sf.IndexedBitmap = iBmp;
+                    str.Position += 4; //skip the int32 size value at the start
+                    iBmp.SetBitmapFromRleStream(str);
+                    spr.Frames.Add(sf);
+                }
+            }
+            catch
+            {
+                Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load sprite{" " + spr.SpriteId} from stream.");
+                Debugger.Break();
+            }
+            return spr;
         }
     }
 }

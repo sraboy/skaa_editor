@@ -28,7 +28,7 @@ namespace SkaaGameDataLib
             return fs;
         }
 
-        public static void ReadSetFile(this DataSet ds, Stream str)
+        public static void Open(this DataSet ds, Stream str)
         {
             var defs = ResourceDatabase.ReadDefinitions(str);
 

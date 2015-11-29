@@ -15,6 +15,8 @@ namespace SkaaGameDataLib
     [Serializable]
     public class IndexedBitmap
     {
+        public static readonly TraceSource Logger = new TraceSource("IndexedBitmap", SourceLevels.All);
+
         #region Event Handlers
         [NonSerialized]
         private EventHandler _paletteChanged;
@@ -141,7 +143,7 @@ namespace SkaaGameDataLib
                             }
                             else
                             {
-                                //less than 8 and 7kaa cuts down on file size by just writing one byte      
+                                //less than 7 and 7kaa cuts down on file size by just writing one byte      
                                 //transparentByteCount = 2: 0xfe
                                 //transparentByteCount = 3: 0xfd
                                 //transparentByteCount = 4: 0xfc
@@ -218,18 +220,17 @@ namespace SkaaGameDataLib
             return bmp;
         }
 
-        public Bitmap GetBitmapFromRleStream(Stream str)
+        public Bitmap SetBitmapFromRleStream(Stream str)
         {
-            DecodeRleStream(str);
+            this.Bitmap = DecodeRleStream(str);
             return this.Bitmap;
         }
-
 
         /// <summary>
         /// Reads a Run Length Encoded stream, where only transparent bytes are RLE, and builds a <see cref="System.Drawing.Bitmap"/>
         /// </summary>
         /// <param name="stream">A stream with its <see cref="Stream.Position"/> set to the first byte of the header, which is two int16 values for width and height.</param>
-        private void DecodeRleStream(Stream stream)
+        private Bitmap DecodeRleStream(Stream stream)
         {
             //Read Header
             byte[] frame_size_bytes = new byte[4];
@@ -238,7 +239,7 @@ namespace SkaaGameDataLib
             int width = BitConverter.ToUInt16(frame_size_bytes, 0);
             int height = BitConverter.ToUInt16(frame_size_bytes, 2);
             int size = height * width;
-            if (size > 6000000 || width > 2000 || height > 2000)
+            if (size > 6000000 || size < 1 || width > 2000 || height > 2000) //arbitrary numbers that seemed like reasonable cutoffs for 7KAA's purposes
                 throw new FormatException($"File is too large: {size} bytes, width: {width}, height: {height}");
             byte[] resBmpData = new byte[size];
             //byte[] resRawData = new byte[size];
@@ -246,9 +247,8 @@ namespace SkaaGameDataLib
             //initialize it to an unused transparent-pixel-marker
             resBmpData = Enumerable.Repeat<byte>(0xff, size).ToArray();
             //resRawData = Enumerable.Repeat<byte>(0xff, size).ToArray();
-            //todo: Verify 0xff is/isn't used in any of the other sprites
 
-            //todo: make sure this gets calculated and written out instead of saved statically here
+            ////todo: make sure this gets calculated and written out instead of saved statically here
             //Buffer.BlockCopy(frame_size_bytes, 0, this.ResRawData, 0, 8);
 
             int pixelsToSkip = 0;
@@ -273,25 +273,11 @@ namespace SkaaGameDataLib
                         pixelsToSkip = 0;
                     }
 
-                    //try
-                    //{
-                        pixel = (byte)stream.ReadByte();
-                        //resRawData[bytesRead] = (byte)pixel;
-                        bytesRead++;
+                    pixel = (byte)stream.ReadByte();
+                    //resRawData[bytesRead] = (byte)pixel;
+                    bytesRead++;
                     if (bytesRead > stream.Length)
                         throw new FormatException("File is not in the proper format!");
-                    //}
-                    //catch
-                    //{
-                    //    //got -1 for EOF
-                    //    //byte[] resize = resRawData;
-                    //    //Array.Resize<byte>(ref resize, bytesRead);
-                    //    //resRawData = resize;
-                    //    eof = true;
-                    //    break;
-                    //}
-
-                    Debug.Assert(pixel != null, "pixel was unassigned!");
 
                     if (pixel < 0xf8) //MIN_TRANSPARENT_CODE (normal pixel)
                     {
@@ -306,7 +292,7 @@ namespace SkaaGameDataLib
                     }
                     else //f9,fa,fb,fc,fd,fe,ff
                     {
-                        pixelsToSkip = 256 - (byte)pixel - 1;	// skip (neg al) pixels
+                        pixelsToSkip = 255 - (byte)pixel;	// skip this many pixels since they're pre-initialized to transparent
                     }
                 }//end inner for
             }//end outer for
@@ -315,8 +301,7 @@ namespace SkaaGameDataLib
             //Array.Resize<byte>(ref resizeMe, bytesRead);
             //resRawData = resizeMe;
 
-            this.Bitmap = GetBitmapFromRleBytes(resBmpData, this.Bitmap.Palette, height, width);
-            //return resBmpData;//IndexedBitmap.ByteArrayToBitmap(resBmpData, this.Palette, this.Height, this.Width);
+            return GetBitmapFromRleBytes(resBmpData, this.Bitmap.Palette, height, width);
         }
     }
 }

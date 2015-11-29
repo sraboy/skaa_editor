@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,8 @@ namespace SkaaGameDataLib
 {
     public static class ResourceDatabase
     {
+        public static readonly TraceSource Logger = new TraceSource("ResourceDatabase", SourceLevels.All);
+
         public const int DefinitionNameSize = 9;   //8 chars + null
         public const int DefinitionOffsetSize = 4; //uint32
         public const int DefinitionSize = 13;      //add the above two 
@@ -25,6 +28,13 @@ namespace SkaaGameDataLib
             byte[] recCount = new byte[2];
             str.Read(recCount, 0, 2);
             ushort recordCount = BitConverter.ToUInt16(recCount, 0);
+
+            if (recordCount == 0 || recordCount > 500)
+            {
+                return null;
+                //throw new FormatException($"File has {recordCount} records.");
+            }
+
             Dictionary<string, uint> nameOffsetPairs = new Dictionary<string, uint>(recordCount);
 
             while (str.Position < (recordCount) * DefinitionSize)
@@ -40,7 +50,14 @@ namespace SkaaGameDataLib
                 name = Encoding.GetEncoding(1252).GetString(b_name).Trim('\0');
                 offset = BitConverter.ToUInt32(b_offset, 0);
 
-                nameOffsetPairs.Add(name, offset);
+                try
+                {
+                    nameOffsetPairs.Add(name, offset);
+                }
+                catch (ArgumentException ae)
+                {
+                    return null;
+                }
             }
 
             return nameOffsetPairs;

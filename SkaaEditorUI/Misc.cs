@@ -39,37 +39,21 @@ using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
-    public static class Serialization
-    {
-        internal static Stream Serialize(object o)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                IFormatter fm = new BinaryFormatter();
-                fm.Serialize(ms, o);
-                return ms;
-            }
-        }
-        internal static object Deserialize(Stream str)
-        {
-            return new BinaryFormatter().Deserialize(str);
-        }
-    }
-    public static class Misc
-    {
-        public static TraceSource Logger = new TraceSource("skaaeditor", SourceLevels.All);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static string GetCurrentMethod()
-        {
-            StackTrace st = new StackTrace();
-            StackFrame sf = st.GetFrame(1);
-            return sf.GetMethod().Name;
-        }
-        public static void LogMessage(string message)
-        {
-            //Trace.WriteLine(message);
-            Logger.TraceInformation(message);
-        }
-    }
+    //public static class Serialization
+    //{
+    //    internal static Stream Serialize(object o)
+    //    {
+    //        using (MemoryStream ms = new MemoryStream())
+    //        {
+    //            IFormatter fm = new BinaryFormatter();
+    //            fm.Serialize(ms, o);
+    //            return ms;
+    //        }
+    //    }
+    //    internal static object Deserialize(Stream str)
+    //    {
+    //        return new BinaryFormatter().Deserialize(str);
+    //    }
+    //}
+    
 }
