@@ -61,7 +61,7 @@ namespace SkaaGameDataLib
                     return FileFormat.SpriteSpr;
                     break;
                 case ".set":
-                    return FileFormat.ResXDbf;
+                    return FileFormat.GameSet;
                     break;
                 default:
                     return FileFormat.Unknown;
@@ -73,43 +73,73 @@ namespace SkaaGameDataLib
         {
             string filename = Path.GetFileNameWithoutExtension(path);
             string prefix = filename.Substring(0, 4);
-            FileFormat format;
+            FileFormat format = FileFormat.Unknown;
 
             switch(prefix)
             {
                 case "pal_":
-                    return FileFormat.Palette;
+                    format = FileFormat.Palette;
+                    break;
                 case "fnt_":
-                    return FileFormat.Font;
+                    format = FileFormat.Font;
+                    break;
                 default:
                     if (prefix.Substring(0, 2) == "a_")
-                        return FileFormat.ResXAudio;
+                        format = FileFormat.ResIdxAudio;
                     break;
             }
-            
-            using (FileStream fs = new FileStream(path, FileMode.Open))
+
+            if (format == FileFormat.Unknown)
             {
-                //check RESX
-                var dic = ResourceDatabase.ReadDefinitions(fs);
-                if (dic != null)
+                using (FileStream fs = new FileStream(path, FileMode.Open))
                 {
-                    format = FileFormat.ResXUnknown; //todo: check ResXMultiBmp, ResXText
-                }
-                else
-                {
-                    //check SPR 
-                    fs.Position = 0;
-                    format = CheckSprFormat(fs); //identifes SpriteSpr/SpriteFrameSpr or returns FileFormat.Unknown
+                    format = CheckResIdxFormats(fs); //check ResIdx (code_len = 9)
+
+                    if (format == FileFormat.Unknown)
+                        format = CheckResFormats(fs); //check Res (code_len = 8)
+
+                    if (format == FileFormat.Unknown)
+                        format = CheckSprFormats(fs); //check SpriteSpr/SpriteFrameSpr
+
+                    if (format == FileFormat.Unknown)
+                        format = CheckDbfFormat(fs);
                 }
             }
 
             return format;
         }
-        private static FileFormat CheckSprFormat(Stream str)
+        private static FileFormat CheckResIdxFormats(Stream str)
         {
+            FileFormat format;
             long oldPos = str.Position;
 
+            var dic = ResourceDatabase.ReadDefinitions(str, true);
+            if (dic == null)
+                format = FileFormat.Unknown;
+            else
+                format = FileFormat.ResIdxUnknown;
+
+            str.Position = oldPos;
+            return format;
+        }
+        private static FileFormat CheckResFormats(Stream str)
+        {
             FileFormat format;
+            long oldPos = str.Position;
+
+            var dic = ResourceDatabase.ReadDefinitions(str, false);
+            if (dic == null)
+                 format = FileFormat.Unknown;
+            else
+                format = FileFormat.ResUnknown;
+
+            str.Position = oldPos;
+            return format;
+        }
+        private static FileFormat CheckSprFormats(Stream str)
+        {
+            FileFormat format;
+            long oldPos = str.Position;
 
             ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
             IndexedBitmap ibmp = new IndexedBitmap(pal);
@@ -119,79 +149,43 @@ namespace SkaaGameDataLib
                 format = FileFormat.SpriteSpr;
             else if (ibmp.SetBitmapFromRleStream(str, FileFormat.SpriteFrameSpr) != null)
                 format = FileFormat.SpriteFrameSpr;
-            else format = FileFormat.Unknown;
+            else
+                format = FileFormat.Unknown;
 
-            format = FileFormat.Unknown;
+            //format = FileFormat.Unknown;
             str.Position = oldPos;
             return format;
         }
+        private static FileFormat CheckDbfFormat(Stream str)
+        {
+            FileFormat format;
+            long oldPos = str.Position;
 
-        //public static object[] GetFileFormatListing(string path)
-        //{
-        //    string file_ext = Path.GetExtension(path);
-        //    string filename = Path.GetFileNameWithoutExtension(path);
+            byte[] header = new byte[32];
+            str.Read(header, 0, header.Length);
+            uint size = BitConverter.ToUInt32(header, 0);
+            ushort width = BitConverter.ToUInt16(header, 4);
+            ushort height = BitConverter.ToUInt16(header, 6);
+            if (header[0] == 0x3 &&
+                    (header[1] >= 90 ||                          //greater than 1990
+                     header[1] <= (DateTime.Today.Year - 2000))  //this century for any new files
+                     &&
+                    (header[2] < 13 && header[2] > 0) &&         //a real month
+                    (header[3] < 32 && header[3] > 0))           //a real day
+            {
+                //todo: make DbfFile.ReadHeader() check itself and returns null if bad
+                //DbfFile.DbfFileHeader dbfHeader = new DbfFile.DbfFileHeader();
+                //str.Position = oldPos;
+                //dbfHeader = DbfFile.ReadHeader(str); //todo: test broken DBF files and catch the exception
+                format = FileFormat.DbaseIII;
+            }
+            else
+                format = FileFormat.Unknown;
 
-        //    switch (file_ext)
-        //    {
-        //        case ".res":
-        //            return GetResTypeAndHeader(path);
-        //            break;
-        //        case ".spr":
-        //            return new object[] { Encoding.GetEncoding(1252).GetBytes("header not read"), FileFormat.SpriteSpr };
-        //            break;
-        //        case ".set":
-        //            return new object[] { Encoding.GetEncoding(1252).GetBytes("header not read"), FileFormat.GameSet };
-        //            break;
-        //        default:
-        //            return GetResTypeAndHeader(path);
-        //            //return FileFormat.Unknown;
-        //            break;
-        //    }
-
-        //}
-        //private static object[] GetResTypeAndHeader(string path)
-        //{
-        //    using (FileStream fs = File.Open(path, FileMode.Open))
-        //    {
-        //        FileFormat? format = null;
-        //        long oldPos = fs.Position;
-        //        fs.Position = 0;
-
-        //        byte[] header = new byte[32];
-        //        fs.Read(header, 0, header.Length);
-        //        uint size = BitConverter.ToUInt32(header, 0);
-        //        ushort width = BitConverter.ToUInt16(header, 4);
-        //        ushort height = BitConverter.ToUInt16(header, 6);
-
-        //        ColorPalette pal = new Bitmap(50, 50, PixelFormat.Format8bppIndexed).Palette;
-        //        IndexedBitmap ibmp = new IndexedBitmap(pal);
-        //        try
-        //        {
-        //            ibmp.SetBitmapFromRleStream(fs);
-        //            if (ibmp.Bitmap.Width == width && ibmp.Bitmap.Height == height)
-        //                format = FileFormat.SpriteSpr;
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (e is FormatException)
-        //            {
-        //                fs.Position = oldPos;
-
-        //                if (header[0] == 0x3 &&
-        //                        (
-        //                        header[1] >= 90 ||                           //greater than 1990
-        //                        header[1] <= (DateTime.Today.Year - 2000)    //this century for any new files
-        //                        ) &&
-        //                        (header[2] < 13 && header[2] > 0) &&         //a real month
-        //                        (header[3] < 32 && header[3] > 0))           //a real day
-        //                {
-        //                    DbfFile.DbfFileHeader dbfHeader = new DbfFile.DbfFileHeader();
-        //                    fs.Position = 0;
-        //                    dbfHeader = DbfFile.ReadHeader(fs); //todo: test broken DBF files and catch the exception
-        //                    format = FileFormat.DbaseIII;
-        //                }
-        //                else
-        //                {
+            str.Position = oldPos;
+            return format;
+        }
+   
         //                    try
         //                    {
         //                        ushort recCount = BitConverter.ToUInt16(header, 0);
@@ -206,27 +200,6 @@ namespace SkaaGameDataLib
         //                        ushort recHeight = BitConverter.ToUInt16(recHeightWidth, (int) recOffset + 2);
         //                        format = FileFormat.ResXMultiBmp;
         //                    }
-        //                    catch (Exception ex)
-        //                    {
-        //                        if (ex is ArgumentOutOfRangeException)
-        //                            format = FileFormat.Unknown;
-        //                        else
-        //                            Debugger.Break();
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                format = FileFormat.Unknown;
-        //                //Debugger.Break();
-        //            }
-        //        }
-
-        //        fs.Position = oldPos;
-        //        object[] data = new object[] { header, format };
-        //        return data;
-        //        //return format;
-        //    }
-        //}
+   
     }
 }

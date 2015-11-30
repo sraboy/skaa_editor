@@ -528,7 +528,7 @@ namespace SkaaEditorUI
             {
                 switch (format)
                 {
-                    case FileFormat.ResXDbf:
+                    case FileFormat.GameSet: //set file
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
@@ -572,7 +572,7 @@ namespace SkaaEditorUI
                     //    dlg.FileName = filepath;
                     //    ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap.Save(dlg.FileName));
                     //    break;
-                    case FileFormat.ResXMultiBmp:
+                    case FileFormat.ResIdxMultiBmp:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Resource Files (.res)|*{props.ResFileExtension}";
                         dlg.DefaultExt = props.ResFileExtension;
@@ -599,21 +599,22 @@ namespace SkaaEditorUI
                 TryOpenFile(dlg.FileName, requestedFormat, openMethod);//, true);
             }
         }
-        private void TryOpenFile(string filePath, FileFormat requestedFormat, Action openMethod)//, bool checkFileType = true)
+
+
+        private FileFormat TryOpenFile(string filePath, FileFormat requestedFormat, Action openMethod)//, bool checkFileType = true)
         {
             if (filePath == string.Empty)
-                return;
+                throw new ArgumentException("Received null file path in TryOpenFile()!");
 
             Debug.Assert(requestedFormat != FileFormat.Unknown, "Cannot request to open a file of FileFormat.Unknown! Use FileFormat.Any when opening arbitrary files.");
 
             this.toolStripStatLbl.Text = "Checking file type...";
             var actualFormat = Misc.CheckFileType(filePath);
 
-            
             if (requestedFormat == FileFormat.Any && actualFormat != FileFormat.Unknown) //user did not specify file type via UI menus (drag/drop or generic Open File)
                 BeginOpenFile(actualFormat, filePath);                                   //now make the request again with the real file type
-            else if(actualFormat == FileFormat.Unknown)                                  //we can't figure out what this. user must specify a file type
-                MessageBox.Show($"Could not determine the data format of:\r\n \'{Path.GetFileName(filePath)}\'", "Unknown file type!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            else if (actualFormat == FileFormat.Unknown)                                  //we can't figure out what this. user must specify a file type
+                return actualFormat;//MessageBox.Show($"Could not determine the data format of:\r\n \'{Path.GetFileName(filePath)}\'", "Unknown file type!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
             if (actualFormat == requestedFormat && openMethod != null)                   //user specified file type or we figured it out after user specified FileFormat.Any
             {
@@ -622,6 +623,7 @@ namespace SkaaEditorUI
             }
             
             this.toolStripStatLbl.Text = string.Empty;
+            return actualFormat;
         }
         //////////////////////////////// Saving Things ////////////////////////////////
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -640,7 +642,7 @@ namespace SkaaEditorUI
         {
             if (this.ActiveProject == null)
                 Logger.TraceInformation("Failed to save GameSet. There is no ActiveProject.");
-            this.SaveFile(FileFormat.ResXDbf);
+            this.SaveFile(FileFormat.GameSet);
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -735,7 +737,7 @@ namespace SkaaEditorUI
             {
                 switch (format)
                 { //todo: should have a SaveType enum separate from FileFormat
-                    case FileFormat.ResXDbf:
+                    case FileFormat.GameSet:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
@@ -779,7 +781,7 @@ namespace SkaaEditorUI
                     //    dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + "_frame";
                     //    ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap.Save(dlg.FileName));
                     //    break;
-                    case FileFormat.ResXMultiBmp:
+                    case FileFormat.ResIdxMultiBmp:
                         break;
                     case FileFormat.Unknown:
                         break;
@@ -1140,14 +1142,16 @@ namespace SkaaEditorUI
 
         private void SkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
         {
+            Dictionary<string, string> filesAndFormats = new Dictionary<string, string>();
+
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            //List<FileFormat> formats = new List<FileFormat>();
             Dictionary<string, FileFormat> dic = new Dictionary<string, FileFormat>();
 
             foreach (string filename in files)
-                TryOpenFile(filename, FileFormat.Any, null);
-                //dic.Add(file, Misc.CheckFileType(file));
-                //formats.Add(Misc.CheckFileType(file));
+            {
+                //TryOpenFile(filename, FileFormat.Any, null);
+                filesAndFormats.Add(Path.GetFileName(filename), TryOpenFile(filename, FileFormat.Any, null).ToString());
+            }
         }
 
         private void SkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)

@@ -30,7 +30,7 @@ namespace SkaaGameDataLib
 
         public static bool Open(this DataSet ds, Stream str)
         {
-            var defs = ResourceDatabase.ReadDefinitions(str);
+            var defs = ResourceDatabase.ReadDefinitions(str, true);
 
             foreach (KeyValuePair<string, uint> kv in defs)
             {
@@ -67,7 +67,7 @@ namespace SkaaGameDataLib
                         //write SET header's record_count
                         short record_count = (short) ds.Tables.Count;
                         headerStream.Write(BitConverter.GetBytes(record_count), 0, sizeof(short));
-                        uint header_size = (uint) ((record_count + 1) * ResourceDatabase.DefinitionSize) + sizeof(short);
+                        uint header_size = (uint) ((record_count + 1) * ResourceDatabase.ResIdxDefinitionSize) + sizeof(short);
 
                         foreach (DataTable dt in ds.Tables)
                         {
@@ -76,7 +76,7 @@ namespace SkaaGameDataLib
                             //char[9] record_names
                             //uint32 record_offsets
                             //---------------------
-                            dt.WriteDefinition(headerStream, (uint) dbfStream.Position + header_size);
+                            dt.WriteDefinition(headerStream, (uint) dbfStream.Position + header_size, true);
 
                             //writes out the DBF file
                             dt.Save(dbfStream);

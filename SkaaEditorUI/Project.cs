@@ -297,40 +297,42 @@ namespace SkaaEditorUI
 
         public Sprite LoadResXMultiBmp(string filepath)
         {
+            Debugger.Break(); //fix this function
+
             Sprite spr = new Sprite();
             DataTable dt = new DataTable();
             dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = "FrameName" });
             dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = "FrameOffset" });
 
-            using (FileStream fs = new FileStream(filepath, FileMode.Open))
-            {
-                Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs);
-                spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-                dt.TableName = spr.SpriteId;
+            //using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            //{
+            //    Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs);
+            //    spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
+            //    dt.TableName = spr.SpriteId;
 
-                foreach (string key in dic.Keys)
-                {
-                    fs.Position = dic[key];
-                    SpriteFrame sf = new SpriteFrame(spr);
+            //    foreach (string key in dic.Keys)
+            //    {
+            //        fs.Position = dic[key];
+            //        SpriteFrame sf = new SpriteFrame(spr);
 
-                    IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
-                    sf.IndexedBitmap = iBmp;
-                    //iBmp.SetBitmapFromRleStream(fs);
-                    Debugger.Break(); //need to fix this function
-                    spr.Frames.Add(sf);
+            //        IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
+            //        sf.IndexedBitmap = iBmp;
+            //        //iBmp.SetBitmapFromRleStream(fs);
+            //        Debugger.Break(); //need to fix this function
+            //        spr.Frames.Add(sf);
 
-                    DataRow row = dt.NewRow();
-                    dt.Rows.Add(row);
-                    row.BeginEdit();
-                    row["FrameName"] = key;
-                    row["FrameOffset"] = dic[key];
-                    row.AcceptChanges();
-                }
-            }
+            //        DataRow row = dt.NewRow();
+            //        dt.Rows.Add(row);
+            //        row.BeginEdit();
+            //        row["FrameName"] = key;
+            //        row["FrameOffset"] = dic[key];
+            //        row.AcceptChanges();
+            //    }
+            //}
 
-            //this.ProjectType = ProjectTypes.Interface;
-            this.ActiveGameSet = new DataSet();
-            this.ActiveGameSet.Tables.Add(dt);
+            ////this.ProjectType = ProjectTypes.Interface;
+            //this.ActiveGameSet = new DataSet();
+            //this.ActiveGameSet.Tables.Add(dt);
 
             return spr;
         }
