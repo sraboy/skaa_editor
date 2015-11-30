@@ -10,13 +10,31 @@ using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
-    public static class ResourceDatabase
+    public class ResourceDatabase
     {
         public static readonly TraceSource Logger = new TraceSource("ResourceDatabase", SourceLevels.All);
 
-        public const int DefinitionNameSize = 9;   //8 chars + null
-        public const int DefinitionOffsetSize = 4; //uint32
-        public const int DefinitionSize = 13;      //add the above two 
+        /// <summary>
+        /// The number of characters, including null, that is be used to name a RESX 
+        /// field. Shorter names are padded with spaces (0x20).
+        /// </summary>
+        public static readonly int DefinitionNameSize = 9;   //8 chars + null
+        /// <summary>
+        /// The number of bytes used to represent the offset of a RESX 
+        /// record. Smaller values are padded with nulls (0x0).
+        /// </summary>
+        public static readonly int DefinitionOffsetSize = 4; //uint32
+        /// <summary>
+        /// The total size of a RESX definition.
+        /// </summary>
+        public static readonly int DefinitionSize = 13;      //add the above two 
+        /// <summary>
+        /// Arbitrary number that shouldn't be necessary for 7KAA. Since the record count
+        /// is read from the file, it could be any 16-bit value. Since ResX files have no
+        /// header by which to identify the file, we assume a file claiming more than 500
+        /// records is not a valid RESX file. 
+        /// </summary>
+        public static readonly ushort MaxRecordCount = 500;
 
         /// <summary>
         /// Reads a the header of a stream containing char[9], uint32 data: a datatable's name and its offset in a file
@@ -29,23 +47,24 @@ namespace SkaaGameDataLib
             str.Read(recCount, 0, 2);
             ushort recordCount = BitConverter.ToUInt16(recCount, 0);
 
-            if (recordCount == 0 || recordCount > 500)
+            if (recordCount == 0 || recordCount > MaxRecordCount)
             {
+                Debugger.Break();
                 return null;
                 //throw new FormatException($"File has {recordCount} records.");
             }
 
             Dictionary<string, uint> nameOffsetPairs = new Dictionary<string, uint>(recordCount);
 
-            while (str.Position < (recordCount) * DefinitionSize)
+            while (str.Position < (recordCount) * ResourceDatabase.DefinitionSize)
             {
-                byte[] b_name = new byte[DefinitionNameSize];
+                byte[] b_name = new byte[ResourceDatabase.DefinitionNameSize];
                 byte[] b_offset = new byte[4];
                 string name = string.Empty;
                 uint offset;
 
-                str.Read(b_name, 0, DefinitionNameSize); //offset is 0 from ms.Position
-                str.Read(b_offset, 0, 4);
+                str.Read(b_name, 0, ResourceDatabase.DefinitionNameSize); //offset is 0 from ms.Position
+                str.Read(b_offset, 0, ResourceDatabase.DefinitionOffsetSize);
 
                 name = Encoding.GetEncoding(1252).GetString(b_name).Trim('\0');
                 offset = BitConverter.ToUInt32(b_offset, 0);
@@ -54,24 +73,37 @@ namespace SkaaGameDataLib
                 {
                     nameOffsetPairs.Add(name, offset);
                 }
-                catch (ArgumentException ae)
+                catch (ArgumentException ae) //either key already exists or (ArgumentNullException) key is null
                 {
+                    string fileNameMsg = string.Empty;
+                    if (str is FileStream)
+                        fileNameMsg = $" Filename: {((FileStream) str).Name}";
+
+                    Logger.TraceEvent(TraceEventType.Verbose, 0, $"Failed to read RESX definitions for {name} at offset {offset}. {fileNameMsg}");
                     return null;
                 }
+                
             }
 
             return nameOffsetPairs;
         }
+        
+    }
+
+    public static class ResourceDatabaseWriter
+    {
+        public static readonly TraceSource Logger = new TraceSource("ResourceDatabaseWriter", SourceLevels.All);
+
         public static void WriteDefinition(this DataTable dt, Stream str, uint offset)
         {
-            string recordName = dt.TableName.PadRight(DefinitionNameSize, (char) 0x0);
-            byte[] record_name = new byte[DefinitionNameSize];
+            string recordName = dt.TableName.PadRight(ResourceDatabase.DefinitionNameSize, (char) 0x0);
+            byte[] record_name = new byte[ResourceDatabase.DefinitionNameSize];
             record_name = Encoding.GetEncoding(1252).GetBytes(recordName);
-            str.Write(record_name, 0, DefinitionNameSize);
-            
-            byte[] record_size = new byte[DefinitionOffsetSize];
+            str.Write(record_name, 0, ResourceDatabase.DefinitionNameSize);
+
+            byte[] record_size = new byte[ResourceDatabase.DefinitionOffsetSize];
             record_size = BitConverter.GetBytes(Convert.ToUInt32(offset));
-            str.Write(record_size, 0, DefinitionOffsetSize);
+            str.Write(record_size, 0, ResourceDatabase.DefinitionOffsetSize);
         }
     }
 }

@@ -141,7 +141,7 @@ namespace SkaaEditorUI
                 if (this._activeSprite != value)
                 {
                     this._activeSprite = value;
-                    OnActiveSpriteChanged(null);
+                    OnActiveSpriteChanged(EventArgs.Empty);
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace SkaaEditorUI
                 if (this._activeFrame != value)
                 {
                     this._activeFrame = value;
-                    OnActiveFrameChanged(null);
+                    OnActiveFrameChanged(EventArgs.Empty);
                 }
             }
         }
@@ -176,20 +176,6 @@ namespace SkaaEditorUI
             }
         }
         public DataSet ActiveGameSet;
-        //public SkaaGameSet ActiveGameSet
-        //{
-        //    get
-        //    {
-        //        return this._activeGameSet;
-        //    }
-        //    set
-        //    {
-        //        if (this._activeGameSet != value)
-        //        {
-        //            this._activeGameSet = value;
-        //        }
-        //    }
-        //}
         //todo: this should be a generic list
         //public List<Sprite> UnsavedSprites
         //{
@@ -258,15 +244,12 @@ namespace SkaaEditorUI
                 if(this.ActiveGameSet == null)
                     this.ActiveGameSet = new DataSet();
 
-                this.ActiveGameSet.Open(fs);
+                if(this.ActiveGameSet.Open(fs) == false) return false;
             }
 
             SetActiveSpriteDataView();
 
-            if (this.ActiveGameSet != null)
-                return true;
-            else
-                return false;
+            return false;
         }
 
         //public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);
@@ -290,9 +273,8 @@ namespace SkaaEditorUI
         /// <returns>The newly-created <see cref="Sprite"/></returns>
         /// <remarks>
         /// The original game code for reading SPR files can be found <code>ResourceDb::init_imported()</code> 
-        /// in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". (There's 
-        /// no need to follow the call into <code>File::file_open()</code> in OFILE.cpp. Though the files are 
-        /// well-structured, they are considered FLAT by 7KAA.
+        /// in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". SPR files are 
+        /// are considered <code>FLAT</code> by 7KAA. 
         /// </remarks>
         public Sprite OpenSprite(string filepath)
         {
@@ -333,7 +315,8 @@ namespace SkaaEditorUI
 
                     IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
                     sf.IndexedBitmap = iBmp;
-                    iBmp.SetBitmapFromRleStream(fs);
+                    //iBmp.SetBitmapFromRleStream(fs);
+                    Debugger.Break(); //need to fix this function
                     spr.Frames.Add(sf);
 
                     DataRow row = dt.NewRow();
@@ -345,7 +328,7 @@ namespace SkaaEditorUI
                 }
             }
 
-            this.ProjectType = ProjectTypes.Interface;
+            //this.ProjectType = ProjectTypes.Interface;
             this.ActiveGameSet = new DataSet();
             this.ActiveGameSet.Tables.Add(dt);
 

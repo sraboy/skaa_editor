@@ -264,8 +264,8 @@ namespace SkaaGameDataLib
                     IndexedBitmap iBmp = new IndexedBitmap(pal);
                     SpriteFrame sf = new SpriteFrame(spr);
                     sf.IndexedBitmap = iBmp;
-                    str.Position += 4; //skip the int32 size value at the start
-                    iBmp.SetBitmapFromRleStream(str);
+                    //str.Position += 4; //skip the int32 size value at the start
+                    iBmp.SetBitmapFromRleStream(str, FileFormat.SpriteSpr);
                     spr.Frames.Add(sf);
                 }
             }

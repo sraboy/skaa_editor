@@ -192,6 +192,7 @@ namespace SkaaEditorUI
         [Conditional("DEBUG")]
         private void GetFileListing()
         {
+            return;
             IEnumerable<string> dirs = Directory.EnumerateDirectories(props.SkaaDataDirectory);
 
             using (StreamWriter sw = new StreamWriter("file_types.csv"))
@@ -204,17 +205,17 @@ namespace SkaaEditorUI
 
                     foreach (string file in files)
                     {
-                        object[] data = SkaaGameDataLib.Misc.GetFileFormatListing(file);
+                        //object[] data = SkaaGameDataLib.Misc.GetFileFormatListing(file);
                         string header;
 
-                        if (data[1] == null)
-                            data[1] = FileFormat.Unknown;
-                        header = BitConverter.ToString((byte[]) data[0]);
+                        //if (data[1] == null)
+                        //    data[1] = FileFormat.Unknown;
+                        //header = BitConverter.ToString((byte[]) data[0]);
 
                         if (header == "68-65-61-64-65-72-20-6E-6F-74-20-72-65-61-64")
                             header = "header not read";
 
-                        sw.WriteLine($"{Path.GetFileName(dir)},{Path.GetFileName(file)},{Path.GetExtension(file)},{((FileFormat) data[1]).ToString()},{header}");
+                        //sw.WriteLine($"{Path.GetFileName(dir)},{Path.GetFileName(file)},{Path.GetExtension(file)},{((FileFormat) data[1]).ToString()},{header}");
                     }
 
                 }
@@ -527,7 +528,7 @@ namespace SkaaEditorUI
             {
                 switch (format)
                 {
-                    case FileFormat.GameSet:
+                    case FileFormat.ResXDbf:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
@@ -595,12 +596,13 @@ namespace SkaaEditorUI
         {
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                TryOpenFile(dlg.FileName, requestedFormat, openMethod);
+                TryOpenFile(dlg.FileName, requestedFormat, openMethod);//, true);
             }
         }
-        private void TryOpenFile(string filePath, FileFormat requestedFormat, Action openMethod)
+        private void TryOpenFile(string filePath, FileFormat requestedFormat, Action openMethod)//, bool checkFileType = true)
         {
-            //if (filePath == string.Empty)
+            if (filePath == string.Empty)
+                return;
 
             Debug.Assert(requestedFormat != FileFormat.Unknown, "Cannot request to open a file of FileFormat.Unknown! Use FileFormat.Any when opening arbitrary files.");
 
@@ -638,7 +640,7 @@ namespace SkaaEditorUI
         {
             if (this.ActiveProject == null)
                 Logger.TraceInformation("Failed to save GameSet. There is no ActiveProject.");
-            this.SaveFile(FileFormat.GameSet);
+            this.SaveFile(FileFormat.ResXDbf);
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -733,7 +735,7 @@ namespace SkaaEditorUI
             {
                 switch (format)
                 { //todo: should have a SaveType enum separate from FileFormat
-                    case FileFormat.GameSet:
+                    case FileFormat.ResXDbf:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
@@ -902,21 +904,22 @@ namespace SkaaEditorUI
         #region Old Menu Items
         private void openInterfaceResFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dlg = new OpenFileDialog())
-            {
-                dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.Filter = $"7KAA Resource Files (.res)|*{props.ResFileExtension}";//$"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|7KAA Game Set Files (.set)|*{props.SetFileExtension}|7KAA Resource Files (.res)|*{props.ResFileExtension}";
+            return;
+            //using (OpenFileDialog dlg = new OpenFileDialog())
+            //{
+            //    dlg.InitialDirectory = props.ApplicationDirectory;
+            //    dlg.Filter = $"7KAA Resource Files (.res)|*{props.ResFileExtension}";//$"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|7KAA Game Set Files (.set)|*{props.SetFileExtension}|7KAA Resource Files (.res)|*{props.ResFileExtension}";
 
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    this.ActiveProject.ActiveSprite = this.ActiveProject.LoadResXMultiBmp(dlg.FileName);
+            //    if (dlg.ShowDialog() == DialogResult.OK)
+            //    {
+            //        this.ActiveProject.ActiveSprite = this.ActiveProject.LoadResXMultiBmp(dlg.FileName);
 
-                    this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                    this.exportPngToolStripMenuItem.Enabled = true;
-                    this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                    this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-                }
-            }
+            //        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+            //        this.exportPngToolStripMenuItem.Enabled = true;
+            //        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+            //        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+            //    }
+            //}
         }
         #endregion
 
@@ -1005,9 +1008,9 @@ namespace SkaaEditorUI
                 case ProjectTypes.Sprite:
                     paletteFile = props.ProjectDirectory + props.PalStd;
                     break;
-                case ProjectTypes.Interface:
-                    paletteFile = props.ProjectDirectory + props.PalMenu;
-                    break;
+                //case ProjectTypes.Interface:
+                //    paletteFile = props.ProjectDirectory + props.PalMenu;
+                //    break;
             }
 
             if (setFiles.Count > 0)
@@ -1141,8 +1144,8 @@ namespace SkaaEditorUI
             //List<FileFormat> formats = new List<FileFormat>();
             Dictionary<string, FileFormat> dic = new Dictionary<string, FileFormat>();
 
-            foreach (string file in files)
-                TryOpenFile(file, FileFormat.Any, null);
+            foreach (string filename in files)
+                TryOpenFile(filename, FileFormat.Any, null);
                 //dic.Add(file, Misc.CheckFileType(file));
                 //formats.Add(Misc.CheckFileType(file));
         }

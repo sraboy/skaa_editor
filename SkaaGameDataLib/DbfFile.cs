@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SkaaGameDataLib
 {
     /// <summary>
-    /// Represents a dBase III (not to be confused with dBase III+ or FoxPro) file and makes it manipulable via a DataTable.
+    /// Represents a dBaseIII table (not to be confused with dBaseIII+ or FoxPro) in a DBF file and makes it manipulable via a DataTable. 
     /// </summary>
     /// <remarks>
     /// Constructed with help from: 
@@ -210,19 +210,26 @@ namespace SkaaGameDataLib
 
         #region Reading DBF Files
         //todo: make these static extensions to DataTable
-        public void ReadStream(Stream str)
+        public bool ReadStream(Stream str)
         {
             this.Header = ReadHeader(str);
+            if (this.Header == null)
+            {
+                return false;
+            }
             this.DataSize = this.Header.LengthOfHeader + (this.Header.LengthOfRecord * this.Header.NumberOfRecords);
             this.FieldDescriptors = ReadFieldDescriptors(str);
             this.FillSchemaFromFieldDescriptorList(this.DataTable);
             this._dataTable = ReadTableData(str);
+            return true;
         }
         internal static DbfFileHeader ReadHeader(Stream str)
         {
             DbfFileHeader header = new DbfFileHeader();
 
             header.Version = (byte) str.ReadByte();
+            if (header.Version != 3)
+                return null;
             str.Read(header.LastEdited, 0, 3);
 
             byte[] numRecs = new byte[4];

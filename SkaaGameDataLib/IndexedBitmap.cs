@@ -16,6 +16,9 @@ namespace SkaaGameDataLib
     public class IndexedBitmap
     {
         public static readonly TraceSource Logger = new TraceSource("IndexedBitmap", SourceLevels.All);
+        public static readonly int MaxByteSize = 6000000;
+        public static readonly int MaxPixelHeight = 2000;
+        public static readonly int MaxPixelWidth = 2000;
 
         #region Event Handlers
         [NonSerialized]
@@ -220,9 +223,9 @@ namespace SkaaGameDataLib
             return bmp;
         }
 
-        public Bitmap SetBitmapFromRleStream(Stream str)
+        public Bitmap SetBitmapFromRleStream(Stream str, FileFormat form)
         {
-            this.Bitmap = DecodeRleStream(str);
+            this.Bitmap = DecodeRleStream(str, form);
             return this.Bitmap;
         }
 
@@ -230,22 +233,54 @@ namespace SkaaGameDataLib
         /// Reads a Run Length Encoded stream, where only transparent bytes are RLE, and builds a <see cref="System.Drawing.Bitmap"/>
         /// </summary>
         /// <param name="stream">A stream with its <see cref="Stream.Position"/> set to the first byte of the header, which is two int16 values for width and height.</param>
-        private Bitmap DecodeRleStream(Stream stream)
+        private Bitmap DecodeRleStream(Stream stream, FileFormat form)
         {
             //Read Header
-            byte[] frame_size_bytes = new byte[4];
-            stream.Read(frame_size_bytes, 0, 4);
-            //int idxImgSize = BitConverter.ToInt32(frame_size_bytes, 0);
-            int width = BitConverter.ToUInt16(frame_size_bytes, 0);
-            int height = BitConverter.ToUInt16(frame_size_bytes, 2);
-            int size = height * width;
-            if (size > 6000000 || size < 1 || width > 2000 || height > 2000) //arbitrary numbers that seemed like reasonable cutoffs for 7KAA's purposes
-                throw new FormatException($"File is too large: {size} bytes, width: {width}, height: {height}");
-            byte[] resBmpData = new byte[size];
+            //byte[] frame_size_bytes = new byte[4];
+            byte[] frame_size_bytes;
+            //int? byteSize; //raw byte size of the frame, as read from the stream
+            int width,     //width in pixels, as read from the stream
+                height,    //height in pixels, as read from the stream
+                calcSize;  //number of pixels: height * width
+
+            if (form == FileFormat.SpriteSpr)
+            {
+                frame_size_bytes = new byte[8];
+                stream.Read(frame_size_bytes, 0, 8);
+                //byteSize = BitConverter.ToInt32(frame_size_bytes, 0);
+                width = BitConverter.ToUInt16(frame_size_bytes, 4);
+                height = BitConverter.ToUInt16(frame_size_bytes, 6);
+                calcSize = height * width;
+
+                //if (calcSize != byteSize) 
+                //    return null;
+            }
+            else if (form == FileFormat.SpriteFrameSpr)
+            {
+                frame_size_bytes = new byte[4];
+                stream.Read(frame_size_bytes, 0, 4);
+                //byteSize = null;
+                width = BitConverter.ToUInt16(frame_size_bytes, 0);
+                height = BitConverter.ToUInt16(frame_size_bytes, 2);
+                calcSize = height * width;
+            }
+            else return null;
+
+            //The max values here are arbitrary numbers that seem like reasonable cutoffs for 7KAA's purposes. 
+            //The purpose is to ensure this function is the only one that bothers to attempt to read the
+            //stream's header. The game runs at 640x480 so there are no high-res images with a height
+            //and width so large. The size is larger to allow for the few huge sprites with tons of frames.
+            //Any file failing these tests are assumed to not be FileFormat.SpriteSpr.
+            if (calcSize < 1           ||
+                calcSize > MaxByteSize || 
+                width > MaxPixelWidth  || 
+                height > MaxPixelHeight) return null; //throw new FormatException($"File is too large: {size} bytes, width: {width}, height: {height}");
+
+            byte[] resBmpData = new byte[calcSize];
             //byte[] resRawData = new byte[size];
 
             //initialize it to an unused transparent-pixel-marker
-            resBmpData = Enumerable.Repeat<byte>(0xff, size).ToArray();
+            resBmpData = Enumerable.Repeat<byte>(0xff, calcSize).ToArray();
             //resRawData = Enumerable.Repeat<byte>(0xff, size).ToArray();
 
             ////todo: make sure this gets calculated and written out instead of saved statically here
@@ -255,13 +290,15 @@ namespace SkaaGameDataLib
             int bytesRead = 8; //start after the header info
             byte? pixel = null; //init to null or compiler complains about lack of assignment since assignment is in a try block
 
+            //we shouldn't hit eof unless we screwed up somewhere.
+            //better to thrown an exception than return a mangled bitmap.
             //bool eof = false;
 
             for (int y = 0; y < height/* && eof == false*/; ++y)
             {
                 for (int x = 0; x < width/* && eof == false*/; ++x)
                 {
-                    if (pixelsToSkip != 0)  //only if we've previously identified transparent bits
+                    if (pixelsToSkip != 0)  //only if we found transparent bits on the last iteration and haven't parsed them all yet
                     {
                         if (pixelsToSkip >= width - x) //greater than one line
                         {
@@ -277,7 +314,7 @@ namespace SkaaGameDataLib
                     //resRawData[bytesRead] = (byte)pixel;
                     bytesRead++;
                     if (bytesRead > stream.Length)
-                        throw new FormatException("File is not in the proper format!");
+                        return null; //throw new FormatException("File is not in the proper format!");
 
                     if (pixel < 0xf8) //MIN_TRANSPARENT_CODE (normal pixel)
                     {

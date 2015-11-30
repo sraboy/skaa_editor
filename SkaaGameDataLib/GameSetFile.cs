@@ -28,7 +28,7 @@ namespace SkaaGameDataLib
             return fs;
         }
 
-        public static void Open(this DataSet ds, Stream str)
+        public static bool Open(this DataSet ds, Stream str)
         {
             var defs = ResourceDatabase.ReadDefinitions(str);
 
@@ -36,10 +36,11 @@ namespace SkaaGameDataLib
             {
                 str.Position = kv.Value; //the DBF's offset value in the set file
                 DbfFile file = new DbfFile();
-                file.ReadStream(str);
+                if (file.ReadStream(str) != true) return false;
                 file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);// + ".dbf");
                 ds.Tables.Add(file.DataTable);
             }
+            return true;
         }
 
         public static void Save(this DataSet ds, string filepath)
