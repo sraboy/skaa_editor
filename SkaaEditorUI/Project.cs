@@ -259,7 +259,7 @@ namespace SkaaEditorUI
         /// </summary>
         /// <param name="filepath">The specific palette file to load.</param>
         /// <returns>A ColorPalette built from the palette file</returns>
-        public void LoadPalette(string filepath)
+        public void OpenPalette(string filepath)
         {
             this.ActivePalette = PaletteLoader.FromResFile(filepath);
 

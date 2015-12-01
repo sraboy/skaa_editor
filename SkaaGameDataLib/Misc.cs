@@ -60,6 +60,8 @@ namespace SkaaGameDataLib
                 case ".spr":
                     return FileFormat.SpriteSpr;
                     break;
+                case ".col":
+                    return FileFormat.Palette;
                 case ".set":
                     return FileFormat.GameSet;
                     break;

@@ -522,16 +522,39 @@ namespace SkaaEditorUI
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             BeginOpenFile(FileFormat.Any);
-            //using (OpenFileDialog dlg = new OpenFileDialog())
-            //{
-            //    dlg.InitialDirectory = props.SkaaDataDirectory;
+        }
+        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BeginOpenFile(FileFormat.Palette);
+        }
 
-            //    if (dlg.ShowDialog() == DialogResult.OK)
-            //    {
-            //        FileFormat format = SkaaGameDataLib.Misc.CheckFileType(dlg.FileName);
-            //        //MessageBox.Show($"{Path.GetFileName(dlg.FileName)} is a {format.ToString()}.");
-            //    }
-            //}
+        private void SkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            List<KeyValuePair<string, string>> filesAndFormats = new List<KeyValuePair<string, string>>();
+            List<string> files = new List<string>();
+
+            foreach (string filename in (string[]) e.Data.GetData(DataFormats.FileDrop))
+            {
+                if (Directory.Exists(filename))
+                    files.AddRange(Directory.EnumerateFiles(filename, "*.*", SearchOption.AllDirectories));
+                else if (File.Exists(filename))
+                    files.Add(filename);
+            }
+            foreach (string filename in files)
+            {
+                //TryOpenFile(filename, FileFormat.Any, null);
+                this.ActiveProject.ActiveGameSet = new System.Data.DataSet();
+                filesAndFormats.Add(new KeyValuePair<string, string>(filename, TryOpenFile(filename, FileFormat.Any, null).ToString()));
+            }
+            //WriteCsv(filesAndFormats);
+        }
+        private void SkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (this.ActiveProject != null)
+            {
+                bool isFile = e.Data.GetDataPresent(DataFormats.FileDrop);
+                if (isFile) e.Effect = DragDropEffects.Copy;
+            }
         }
 
         private void BeginOpenFile(FileFormat format, string filepath = "")
@@ -545,7 +568,7 @@ namespace SkaaEditorUI
                 {
                     case FileFormat.GameSet: //set file
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                        dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}|All Files (*.*)|*.*";
+                        dlg.Filter = $"7KAA Game Set Files (*.set)|*{props.SetFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => this.ActiveProject.LoadGameSet(dlg.FileName));
@@ -553,27 +576,27 @@ namespace SkaaEditorUI
                     //case FileFormat.SpritePNG:
                     //    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                     //    dlg.DefaultExt = ".png";
-                    //    dlg.Filter = $"Portable Network Graphics (.png)|*.png|All Files (*.*)|*.*";
+                    //    dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                     //    dlg.FileName = filepath;
                     //    //ShowOpenFileDialog(dlg, format, () => this.ActiveProject.LoadSprite(dlg.FileName));
                     //    break;
                     //case FileFormat.FramePNG:
                     //    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                     //    dlg.DefaultExt = ".png";
-                    //    dlg.Filter = $"Portable Network Graphics (.png)|*.png|All Files (*.*)|*.*";
+                    //    dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                     //    dlg.FileName = filepath;
                     //    //ShowOpenFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveFrame));
                     //    break;
                     case FileFormat.SpriteSpr:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                        dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
+                        dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(dlg.FileName); });
                         break;
                     case FileFormat.SpriteFrameSpr:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                        dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
+                        dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => {
@@ -586,9 +609,16 @@ namespace SkaaEditorUI
                         break;
                     case FileFormat.DbaseIII: //todo: add DBF saving for RES files
                         break;
+                    case FileFormat.Palette:
+                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+                        dlg.Filter = $"7KAA Palette Files (*.res) (*.col)|*{props.ResFileExtension};*.col|All Files (*.*)|*.*";
+                        dlg.DefaultExt = props.ResFileExtension;
+                        dlg.FileName = filepath;
+                        OpenFile(dlg, format, () => this.ActiveProject.OpenPalette(dlg.FileName));
+                        break;
                     case FileFormat.ResIdxMultiBmp:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                        dlg.Filter = $"7KAA Resource Files (.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
+                        dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
                         break;
@@ -614,7 +644,7 @@ namespace SkaaEditorUI
             }
         }
         private FileFormat TryOpenFile(string filePath, FileFormat requestedFormat, Action openMethod)//, bool checkFileType = true)
-        {
+        { //todo: eliminate double call to CheckFileType with Drag/Drop and "Open File...". Prompt user with recognized filetype and ask for confirmation
             if (filePath == string.Empty)
                 throw new ArgumentException("Received null file path in TryOpenFile()!");
 
@@ -986,7 +1016,7 @@ namespace SkaaEditorUI
             }
             
             this.ActiveProject = newProject;
-            this.ActiveProject.LoadPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
+            this.ActiveProject.OpenPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
         }
         private void OpenProject(string projectPath)
         {
@@ -1031,7 +1061,7 @@ namespace SkaaEditorUI
                 open.LoadGameSet(setFiles.ElementAt(0));
 
             this.ActiveProject = open;
-            open.LoadPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
+            open.OpenPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
 
             if (sprFiles.Count > 0)
                 open.ActiveSprite = open.OpenSprite(sprFiles.ElementAt(0));
@@ -1136,39 +1166,9 @@ namespace SkaaEditorUI
             this.imageEditorBox.ActiveSecondaryColor = secondary;
         }
         #endregion
-        
 
 
-        private void SkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
-        {
-            List<KeyValuePair<string, string>> filesAndFormats = new List<KeyValuePair<string, string>>();
-            List<string> files = new List<string>();
 
-            foreach (string filename in (string[]) e.Data.GetData(DataFormats.FileDrop))
-            {
-                if (Directory.Exists(filename))
-                    files.AddRange(Directory.EnumerateFiles(filename, "*.*", SearchOption.AllDirectories));
-                else if (File.Exists(filename))
-                    files.Add(filename);
-            }
-            //string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
-            foreach (string filename in files)
-            {
-                //TryOpenFile(filename, FileFormat.Any, null);
-                this.ActiveProject.ActiveGameSet = new System.Data.DataSet();
-                filesAndFormats.Add(new KeyValuePair<string, string>(filename, TryOpenFile(filename, FileFormat.Any, null).ToString()));
-            }            
-            //WriteCsv(filesAndFormats);
-        }
-
-        private void SkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)
-        {
-            if (this.ActiveProject != null)
-            {
-                bool isFile = e.Data.GetDataPresent(DataFormats.FileDrop);
-                if (isFile) e.Effect = DragDropEffects.Copy;
-            }
-        }
 
         [Conditional("DEBUG")]
         private static void WriteCsv(List<KeyValuePair<string, string>> files)

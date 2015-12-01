@@ -53,14 +53,14 @@ namespace SkaaEditorUnitTester
             var check = 
                 this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
             Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
         }
 
         [TestMethod]
         public void MakeProjectPaletteSpriteGameSet()
         {
             this.proj = new Project();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
             this.proj.OpenSprite(this.DataDirectory + "ballista.spr");
             this.proj.LoadGameSet(this.DataDirectory + "std.set");
         }
@@ -69,7 +69,7 @@ namespace SkaaEditorUnitTester
         public void MakeProjectPaletteGameSetSprite()
         {
             this.proj = new Project();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
             this.proj.LoadGameSet(this.DataDirectory + "std.set");
             this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
         }
@@ -81,7 +81,7 @@ namespace SkaaEditorUnitTester
             var check = 
                 this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
             Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
             this.proj.LoadGameSet(this.DataDirectory + "std.set");
         }
 
@@ -93,7 +93,7 @@ namespace SkaaEditorUnitTester
                 this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
             Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
             this.proj.LoadGameSet(this.DataDirectory + "std.set");
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
         }
 
         [TestMethod]
@@ -122,22 +122,22 @@ namespace SkaaEditorUnitTester
         public void ProjectChangePalette()
         {
             MakeProjectGameSetPaletteSprite();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
             MakeProjectGameSetSpritePalette();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
             MakeProjectPaletteSpriteGameSet();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
             MakeProjectPaletteGameSetSprite();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
             MakeProjectSpritePaletteGameSet();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
             MakeProjectSpriteGameSetPalette();
-            this.proj.LoadPalette(this.DataDirectory + "pal_std.res");
+            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
         }
     }
 }
