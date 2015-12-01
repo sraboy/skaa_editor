@@ -294,7 +294,18 @@ namespace SkaaEditorUI
             SetActiveSpriteDataView();
             return spr;
         }
+        public Frame LoadFrame(string filepath)
+        {          
+            SpriteFrame frame = new SpriteFrame(null);
+            frame.IndexedBitmap = new IndexedBitmap(this.ActivePalette);
 
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            {
+                frame.IndexedBitmap.SetBitmapFromRleStream(fs, FileFormat.SpriteFrameSpr);
+            }
+
+            return frame;
+        }
         public Sprite LoadResXMultiBmp(string filepath)
         {
             Debugger.Break(); //fix this function

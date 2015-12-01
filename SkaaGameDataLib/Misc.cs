@@ -63,8 +63,12 @@ namespace SkaaGameDataLib
                 case ".set":
                     return FileFormat.GameSet;
                     break;
-                default:
+                case ".bin":
                     return FileFormat.Unknown;
+                case ".bmp":
+                    return FileFormat.Unknown;
+                default:
+                    return CheckResFileType(path);//FileFormat.Unknown;
                     break;
             }
         }
@@ -101,7 +105,7 @@ namespace SkaaGameDataLib
                     if (format == FileFormat.Unknown)
                         format = CheckSprFormats(fs); //check SpriteSpr/SpriteFrameSpr
 
-                    if (format == FileFormat.Unknown)
+                    if (format == FileFormat.Unknown) //check dBaseIII DBF
                         format = CheckDbfFormat(fs);
                 }
             }
@@ -116,11 +120,33 @@ namespace SkaaGameDataLib
             var dic = ResourceDatabase.ReadDefinitions(str, true);
             if (dic == null)
                 format = FileFormat.Unknown;
-            else
-                format = FileFormat.ResIdxUnknown;
+            else //check ResIdx subformats
+            {
+                format = CheckResIdxMultiBmp(str, dic);//FileFormat.ResIdxUnknown;
+            }
 
             str.Position = oldPos;
             return format;
+        }
+        private static FileFormat CheckResIdxMultiBmp(Stream str, Dictionary<string,uint> dic)
+        {
+            FileFormat format;
+            long oldPos = str.Position;
+
+            if(dic != null)
+            {
+                foreach (KeyValuePair<string, uint> kv in dic)
+                {
+                    uint recOffset = kv.Value;
+                    str.Seek(recOffset, SeekOrigin.Begin);
+                    format = CheckSprFormats(str);
+                    if (format == FileFormat.Unknown) //default return value from CheckSprFormats()
+                        return FileFormat.ResIdxUnknown;
+                }
+            }
+
+            str.Position = oldPos;
+            return FileFormat.ResIdxMultiBmp;
         }
         private static FileFormat CheckResFormats(Stream str)
         {
@@ -129,7 +155,7 @@ namespace SkaaGameDataLib
 
             var dic = ResourceDatabase.ReadDefinitions(str, false);
             if (dic == null)
-                 format = FileFormat.Unknown;
+                format = FileFormat.Unknown;
             else
                 format = FileFormat.ResUnknown;
 
@@ -147,12 +173,16 @@ namespace SkaaGameDataLib
 
             if (ibmp.SetBitmapFromRleStream(str, FileFormat.SpriteSpr) != null)
                 format = FileFormat.SpriteSpr;
-            else if (ibmp.SetBitmapFromRleStream(str, FileFormat.SpriteFrameSpr) != null)
-                format = FileFormat.SpriteFrameSpr;
             else
-                format = FileFormat.Unknown;
+            {
+                str.Position = oldPos;
+                ibmp = new IndexedBitmap(pal);
+                if (ibmp.SetBitmapFromRleStream(str, FileFormat.SpriteFrameSpr) != null)
+                    format = FileFormat.SpriteFrameSpr;
+                else
+                    format = FileFormat.Unknown;
+            }
 
-            //format = FileFormat.Unknown;
             str.Position = oldPos;
             return format;
         }

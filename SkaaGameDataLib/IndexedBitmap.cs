@@ -310,11 +310,14 @@ namespace SkaaGameDataLib
                         pixelsToSkip = 0;
                     }
 
+                    if (stream.Position + 1 > stream.Length)
+                        return null; //throw new FormatException("File is not in the proper format!");
+
                     pixel = (byte)stream.ReadByte();
                     //resRawData[bytesRead] = (byte)pixel;
                     bytesRead++;
-                    if (bytesRead > stream.Length)
-                        return null; //throw new FormatException("File is not in the proper format!");
+                    
+                   
 
                     if (pixel < 0xf8) //MIN_TRANSPARENT_CODE (normal pixel)
                     {
@@ -322,6 +325,8 @@ namespace SkaaGameDataLib
                     }
                     else if (pixel == 0xf8) //MANY_TRANSPARENT_CODE
                     {
+                        if (stream.Position + 1 > stream.Length)
+                            return null; //throw new FormatException("File is not in the proper format!");
                         pixel = Convert.ToByte(stream.ReadByte());
                         pixelsToSkip = (byte)pixel - 1;
                         //resRawData[bytesRead] = (byte)pixel;
