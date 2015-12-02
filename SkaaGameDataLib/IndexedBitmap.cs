@@ -223,7 +223,7 @@ namespace SkaaGameDataLib
             return bmp;
         }
 
-        public Bitmap SetBitmapFromRleStream(Stream str, FileFormat form)
+        public Bitmap SetBitmapFromRleStream(Stream str, FileFormats form)
         {
             this.Bitmap = DecodeRleStream(str, form);
             return this.Bitmap;
@@ -233,7 +233,7 @@ namespace SkaaGameDataLib
         /// Reads a Run Length Encoded stream, where only transparent bytes are RLE, and builds a <see cref="System.Drawing.Bitmap"/>
         /// </summary>
         /// <param name="stream">A stream with its <see cref="Stream.Position"/> set to the first byte of the header, which is two int16 values for width and height.</param>
-        private Bitmap DecodeRleStream(Stream stream, FileFormat form)
+        private Bitmap DecodeRleStream(Stream stream, FileFormats form)
         {
             //Read Header
             //byte[] frame_size_bytes = new byte[4];
@@ -243,7 +243,7 @@ namespace SkaaGameDataLib
                 height,    //height in pixels, as read from the stream
                 calcSize;  //number of pixels: height * width
 
-            if (form == FileFormat.SpriteSpr)
+            if (form == FileFormats.SpriteSpr)
             {
                 frame_size_bytes = new byte[8];
                 stream.Read(frame_size_bytes, 0, 8);
@@ -255,7 +255,7 @@ namespace SkaaGameDataLib
                 //if (calcSize != byteSize) 
                 //    return null;
             }
-            else if (form == FileFormat.SpriteFrameSpr)
+            else if (form == FileFormats.SpriteFrameSpr)
             {
                 frame_size_bytes = new byte[4];
                 stream.Read(frame_size_bytes, 0, 4);

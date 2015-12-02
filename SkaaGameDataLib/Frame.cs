@@ -9,6 +9,7 @@ namespace SkaaGameDataLib
     public class Frame
     {
         public IndexedBitmap IndexedBitmap;
+        public string Name;
         public long BitmapOffset;
 
         public byte[] ToSprFile()

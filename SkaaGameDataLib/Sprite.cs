@@ -252,6 +252,13 @@ namespace SkaaGameDataLib
 
             return save;
         }
+        public List<byte[]> GetSpriteFrameByteArrays()
+        {
+            List<byte[]> frames = new List<byte[]>();
+            foreach (Frame f in this.Frames)
+                frames.Add(f.ToSprFile());
+            return frames;
+        }
         public static Sprite FromSprStream(Stream str, ColorPalette pal)
         {
             Sprite spr = new Sprite();
@@ -265,7 +272,7 @@ namespace SkaaGameDataLib
                     SpriteFrame sf = new SpriteFrame(spr);
                     sf.IndexedBitmap = iBmp;
                     //str.Position += 4; //skip the int32 size value at the start
-                    iBmp.SetBitmapFromRleStream(str, FileFormat.SpriteSpr);
+                    iBmp.SetBitmapFromRleStream(str, FileFormats.SpriteSpr);
                     spr.Frames.Add(sf);
                 }
             }

@@ -45,23 +45,12 @@ namespace SkaaGameDataLib
 
         public static void Save(this DataSet ds, string filepath)
         {
-            //int rowcount = 0;
-
-            //foreach (DataTable dt in ds.Tables)
-            //    rowcount += dt.Rows.Count;
-
-            //rowcount + 1 for the fake record at the end (nine null bytes and uint SET file size
-            //sizeof(short) for the first two bytes, representing the number of records
-            //int setHeaderSize = ((rowcount + 1) * ResourceDatabase.DefinitionSize) + sizeof(short);
-
             Dictionary<string, int> dic = new Dictionary<string, int>();
 
             using (FileStream setStream = new FileStream(filepath, FileMode.Create))
             {
                 using (MemoryStream headerStream = new MemoryStream())
                 {
-                    //setStream.Seek(setHeaderSize, SeekOrigin.Begin); //leave room for the header
-
                     using (MemoryStream dbfStream = new MemoryStream())//new FileStream(filepath, FileMode.Create))
                     {
                         //write SET header's record_count
@@ -85,10 +74,13 @@ namespace SkaaGameDataLib
                         //write SET file header-trailer (9 nulls followed by int filesize).
                         for (int i = 0; i < 9; i++)
                             headerStream.WriteByte(0x0);
-                        //calculate filesize
+
+                        //calculate and write out filesize
                         uint file_size = (uint) (dbfStream.Position + (headerStream.Position + sizeof(uint)));
                         byte[] fileSize = BitConverter.GetBytes(file_size);
                         headerStream.Write(fileSize, 0, fileSize.Length);
+
+                        //reset positions and copy streams to write out
                         headerStream.Position = dbfStream.Position = 0;
                         headerStream.CopyTo(setStream);
                         dbfStream.CopyTo(setStream);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SkaaEditorUI
 {
+    //todo: eliminate Interface type. base on file types or eliminate entirely
     public enum ProjectTypes
     {
         Sprite,

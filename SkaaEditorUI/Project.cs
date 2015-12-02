@@ -223,8 +223,7 @@ namespace SkaaEditorUI
         public Project(ProjectTypes type) { this.ProjectType = type; this.Initialize(); }
         private void Initialize() { /*this.UnsavedSprites = new List<Sprite>();*/ }
         #endregion
-
-        
+    
         public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.SetStd);
         /// <summary>
         /// This function will open the specified 7KAA SET file.
@@ -247,10 +246,12 @@ namespace SkaaEditorUI
                 if(this.ActiveGameSet.Open(fs) == false) return false;
             }
 
-            SetActiveSpriteDataView();
+            SetActiveSpriteSframeDbfDataView();
 
             return false;
         }
+
+        //todo: make Load generic and check types to choose loading function
 
         //public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);
         //public void LoadDefaultMenuPalette() => LoadPalette(props.DataDirectory + props.PalMenu);
@@ -291,7 +292,7 @@ namespace SkaaEditorUI
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
 
-            SetActiveSpriteDataView();
+            SetActiveSpriteSframeDbfDataView();
             return spr;
         }
         public Frame LoadFrame(string filepath)
@@ -301,80 +302,112 @@ namespace SkaaEditorUI
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
-                frame.IndexedBitmap.SetBitmapFromRleStream(fs, FileFormat.SpriteFrameSpr);
+                frame.IndexedBitmap.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
             }
 
             return frame;
         }
-        public Sprite LoadResXMultiBmp(string filepath)
+        public Sprite LoadResIdxMultiBmp(string filepath)
         {
-            Debugger.Break(); //fix this function
-
             Sprite spr = new Sprite();
             DataTable dt = new DataTable();
             dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = "FrameName" });
             dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = "FrameOffset" });
 
-            //using (FileStream fs = new FileStream(filepath, FileMode.Open))
-            //{
-            //    Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs);
-            //    spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-            //    dt.TableName = spr.SpriteId;
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            {
+                Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs, true);
+                spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
+                dt.TableName = spr.SpriteId;
 
-            //    foreach (string key in dic.Keys)
-            //    {
-            //        fs.Position = dic[key];
-            //        SpriteFrame sf = new SpriteFrame(spr);
+                foreach (string key in dic.Keys)
+                {
+                    fs.Position = dic[key];
+                    Frame f = new Frame();
+                    f.Name = key;
+                    IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
+                    f.IndexedBitmap = iBmp;
+                    iBmp.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
+                    
+                    spr.Frames.Add((SpriteFrame)f);
 
-            //        IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
-            //        sf.IndexedBitmap = iBmp;
-            //        //iBmp.SetBitmapFromRleStream(fs);
-            //        Debugger.Break(); //need to fix this function
-            //        spr.Frames.Add(sf);
+                    DataRow row = dt.NewRow();
+                    dt.Rows.Add(row);
+                    row.BeginEdit();
+                    row["FrameName"] = key;
+                    row["FrameOffset"] = dic[key];
+                    row.AcceptChanges();
+                }
+            }
 
-            //        DataRow row = dt.NewRow();
-            //        dt.Rows.Add(row);
-            //        row.BeginEdit();
-            //        row["FrameName"] = key;
-            //        row["FrameOffset"] = dic[key];
-            //        row.AcceptChanges();
-            //    }
-            //}
-
-            ////this.ProjectType = ProjectTypes.Interface;
-            //this.ActiveGameSet = new DataSet();
-            //this.ActiveGameSet.Tables.Add(dt);
+            this.ActiveGameSet = new DataSet();
+            this.ActiveGameSet.Tables.Add(dt);
 
             return spr;
         }
 
-        public static void Save(string filename, Sprite spr)
+        public void SaveResIdxMultiBmp(string filepath)
         {
-            using (FileStream fs = new FileStream(filename, FileMode.Create))
+            using (FileStream residxstream = new FileStream(filepath, FileMode.Create))
+            {
+                using (MemoryStream headerstream = new MemoryStream())
+                {
+                    List<int> framesizes = new List<int>();
+                    DataTable dt = this.ActiveGameSet.Tables[this.ActiveSprite.SpriteId];
+                    int headersize = (dt.Rows.Count + 1) * ResourceDatabase.ResIdxDefinitionSize;
+                    
+                    using (MemoryStream bmpstream = new MemoryStream())
+                    {
+                        foreach(Frame f in this.ActiveSprite.Frames)
+                        {
+                            byte[] framedata = f.ToSprFile();
+                            bmpstream.Write(framedata, 0, framedata.Length);
+                            f.BitmapOffset = headersize + bmpstream.Position;
+                            dt.Select($"FrameName = {f.Name}")["FrameOffset"] = f.BitmapOffset;
+                        }
+
+                        //List<byte[]> frames = this.ActiveSprite.GetSpriteFrameByteArrays();
+                        //foreach(byte[] f in frames)
+                        //{
+                        //    framesizes.Add(f.Length);
+                        //    bmpstream.Write(f, 0, f.Length);
+                        //}
+                    }
+
+                    foreach(DataRow dr in dt.Rows)
+                    {
+                        dr["FrameOffset"]
+                    }
+                }
+            }
+        }
+        public static void Save(string filepath, Sprite spr)
+        {
+            using (FileStream fs = new FileStream(filepath, FileMode.Create))
             {
                 byte[] spr_data = spr.ToSprFile();
                 fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
             }
         }
-        public static void Save(string filename, Frame f)
+        public static void Save(string filepath, Frame f)
         {
-            using (FileStream fs = new FileStream(filename, FileMode.Create))
+            using (FileStream fs = new FileStream(filepath, FileMode.Create))
             {
                 byte[] spr_data = f.ToSprFile();
                 fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
             }
         }
 
-        public static void Export(string filename, Sprite spr)
+        public static void Export(string filepath, Sprite spr)
         {
-            spr.ToBitmap().Save(filename);
+            spr.ToBitmap().Save(filepath);
         }
-        public static void Export(string filename, Frame f)
+        public static void Export(string filepath, Frame f)
         {
-            f.IndexedBitmap.Bitmap.Save(filename);
+            f.IndexedBitmap.Bitmap.Save(filepath);
         }
-
-        private void SetActiveSpriteDataView()
+        
+        private void SetActiveSpriteSframeDbfDataView()
         {
             if (this.ActiveSprite != null && this.ProjectType == ProjectTypes.Sprite)
             {

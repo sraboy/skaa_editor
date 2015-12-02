@@ -521,11 +521,11 @@ namespace SkaaEditorUI
         }
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BeginOpenFile(FileFormat.Any);
+            BeginOpenFile(FileFormats.Any);
         }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BeginOpenFile(FileFormat.Palette);
+            BeginOpenFile(FileFormats.Palette);
         }
 
         private void SkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
@@ -544,7 +544,7 @@ namespace SkaaEditorUI
             {
                 //TryOpenFile(filename, FileFormat.Any, null);
                 this.ActiveProject.ActiveGameSet = new System.Data.DataSet();
-                filesAndFormats.Add(new KeyValuePair<string, string>(filename, TryOpenFile(filename, FileFormat.Any, null).ToString()));
+                filesAndFormats.Add(new KeyValuePair<string, string>(filename, TryOpenFile(filename, FileFormats.Any, null).ToString()));
             }
             //WriteCsv(filesAndFormats);
         }
@@ -557,7 +557,7 @@ namespace SkaaEditorUI
             }
         }
 
-        private void BeginOpenFile(FileFormat format, string filepath = "")
+        private void BeginOpenFile(FileFormats format, string filepath = "")
         {
             if (this.ActiveProject == null)
                 return;
@@ -566,7 +566,7 @@ namespace SkaaEditorUI
             {
                 switch (format)
                 {
-                    case FileFormat.GameSet: //set file
+                    case FileFormats.GameSet: //set file
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files (*.set)|*{props.SetFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SetFileExtension;
@@ -587,14 +587,14 @@ namespace SkaaEditorUI
                     //    dlg.FileName = filepath;
                     //    //ShowOpenFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveFrame));
                     //    break;
-                    case FileFormat.SpriteSpr:
+                    case FileFormats.SpriteSpr:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(dlg.FileName); });
                         break;
-                    case FileFormat.SpriteFrameSpr:
+                    case FileFormats.SpriteFrameSpr:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
@@ -607,55 +607,55 @@ namespace SkaaEditorUI
                             this.ActiveProject.ActiveSprite = spr;
                         });
                         break;
-                    case FileFormat.DbaseIII: //todo: add DBF saving for RES files
+                    case FileFormats.DbaseIII: //todo: add DBF saving for RES files
                         break;
-                    case FileFormat.Palette:
+                    case FileFormats.Palette:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Palette Files (*.res) (*.col)|*{props.ResFileExtension};*.col|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => this.ActiveProject.OpenPalette(dlg.FileName));
                         break;
-                    case FileFormat.ResIdxMultiBmp:
+                    case FileFormats.ResIdxMultiBmp:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
                         break;
-                    case FileFormat.Any: //user did not specify file type via UI menus (drag/drop or generic Open File)
+                    case FileFormats.Any: //user did not specify file type via UI menus (drag/drop or generic Open File)
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         OpenFile(dlg, format, null);
                         break;
                 }
             }
         }
-        private void OpenFile(OpenFileDialog dlg, FileFormat requestedFormat, Action openMethod)
+        private void OpenFile(OpenFileDialog dlg, FileFormats requestedFormat, Action openMethod)
         {
             if (dlg.FileName != string.Empty)
                 TryOpenFile(dlg.FileName, requestedFormat, openMethod);
             else
                 ShowOpenFileDialog(dlg, requestedFormat, openMethod);
         }
-        private void ShowOpenFileDialog(OpenFileDialog dlg, FileFormat requestedFormat, Action openMethod)
+        private void ShowOpenFileDialog(OpenFileDialog dlg, FileFormats requestedFormat, Action openMethod)
         {
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 TryOpenFile(dlg.FileName, requestedFormat, openMethod);//, true);
             }
         }
-        private FileFormat TryOpenFile(string filePath, FileFormat requestedFormat, Action openMethod)//, bool checkFileType = true)
+        private FileFormats TryOpenFile(string filePath, FileFormats requestedFormat, Action openMethod)//, bool checkFileType = true)
         { //todo: eliminate double call to CheckFileType with Drag/Drop and "Open File...". Prompt user with recognized filetype and ask for confirmation
             if (filePath == string.Empty)
                 throw new ArgumentException("Received null file path in TryOpenFile()!");
 
-            Debug.Assert(requestedFormat != FileFormat.Unknown, "Cannot request to open a file of FileFormat.Unknown! Use FileFormat.Any when opening arbitrary files.");
+            Debug.Assert(requestedFormat != FileFormats.Unknown, "Cannot request to open a file of FileFormat.Unknown! Use FileFormat.Any when opening arbitrary files.");
 
             this.toolStripStatLbl.Text = "Checking file type...";
-            var actualFormat = Misc.CheckFileType(filePath);
+            var actualFormat = FileTypeChecks.CheckFileType(filePath);
 
-            if (requestedFormat == FileFormat.Any && actualFormat != FileFormat.Unknown) //user did not specify file type via UI menus (drag/drop or generic Open File)
+            if (requestedFormat == FileFormats.Any && actualFormat != FileFormats.Unknown) //user did not specify file type via UI menus (drag/drop or generic Open File)
                 BeginOpenFile(actualFormat, filePath);                                   //now make the request again with the real file type
-            else if (actualFormat == FileFormat.Unknown)                                  //we can't figure out what this. user must specify a file type
+            else if (actualFormat == FileFormats.Unknown)                                  //we can't figure out what this. user must specify a file type
                 return actualFormat;//MessageBox.Show($"Could not determine the data format of:\r\n \'{Path.GetFileName(filePath)}\'", "Unknown file type!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
             if (actualFormat == requestedFormat && openMethod != null)                   //user specified file type or we figured it out after user specified FileFormat.Any
@@ -677,14 +677,14 @@ namespace SkaaEditorUI
             bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
             if (changes)
             {
-                SaveFile(FileFormat.SpriteSpr);
+                SaveFile(FileFormats.SpriteSpr);
             }
         }
         private void saveGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.ActiveProject == null)
                 Logger.TraceInformation("Failed to save GameSet. There is no ActiveProject.");
-            this.SaveFile(FileFormat.GameSet);
+            this.SaveFile(FileFormats.GameSet);
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -771,61 +771,59 @@ namespace SkaaEditorUI
             if (this.imageEditorBox.Image == null)
                 Logger.TraceInformation("ImageEditorBox.Image object cannot be null!");
 
-            this.SaveFile(FileFormat.SpriteFrameSpr);
+            this.SaveFile(FileFormats.SpriteFrameSpr);
         }
-        private void SaveFile(FileFormat format)
+        private void SaveFile(FileFormats format)
         {
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 switch (format)
-                { //todo: should have a SaveType enum separate from FileFormat
-                    case FileFormat.GameSet:
+                {
+                    case FileFormats.GameSet:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
-                        dlg.FileName = "std.set";
+                        dlg.FileName = "std.set|All Files (*.*)|*.*";
                         ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveGameSet.Save(dlg.FileName));
                         break;
-                    case FileFormat.SpritePNG:
+                    case FileFormats.SpritePNG:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = ".png";
-                        dlg.Filter = $"Portable Network Graphics (.png)|*.png";
+                        dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveSprite));
                         break;
-                    case FileFormat.FramePNG:
+                    case FileFormats.FramePNG:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = ".png";
-                        dlg.Filter = $"Portable Network Graphics (.png)|*.png";
+                        dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + "_frame";
                         ShowSaveFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveFrame));
                         break;
-                    case FileFormat.SpriteSpr:
+                    case FileFormats.SpriteSpr:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = props.SprFileExtension;
-                        dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
+                        dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => Project.Save(dlg.FileName, this.ActiveProject.ActiveSprite));
                         break;
-                    case FileFormat.SpriteFrameSpr:
+                    case FileFormats.SpriteFrameSpr:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = props.SprFileExtension;
-                        dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
+                        dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => Project.Save(dlg.FileName, this.ActiveProject.ActiveFrame));
                         break;
-                    case FileFormat.DbaseIII: //todo: add DBF saving for RES files
+                    case FileFormats.DbaseIII: //todo: add DBF saving for RES files
                         break;
-                    //case FileFormat.ResBmp: //for some resources as well as saving a single frame of a Sprite
-                    //    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                    //    dlg.DefaultExt = props.SprFileExtension;
-                    //    dlg.Filter = $"7KAA Sprite Files (.res)|*{props.ResFileExtension}";
-                    //    dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + "_frame";
-                    //    ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap.Save(dlg.FileName));
-                    //    break;
-                    case FileFormat.ResIdxMultiBmp:
+                    case FileFormats.ResIdxMultiBmp:
+                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+                        dlg.DefaultExt = props.SprFileExtension;
+                        dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
+                        dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
+                        ShowSaveFileDialog(dlg, () => this.ActiveProject.SaveResIdxMultiBmp(dlg.FileName));
                         break;
-                    case FileFormat.Unknown:
+                    case FileFormats.Unknown:
                         break;
                 }
             }
