@@ -37,7 +37,7 @@ using System.Threading.Tasks;
 namespace SkaaEditorUI
 {
     [Serializable]
-    public class Project
+    public partial class Project
     {
         public static readonly TraceSource Logger = new TraceSource("Project", SourceLevels.All);
         
@@ -352,31 +352,44 @@ namespace SkaaEditorUI
             {
                 using (MemoryStream headerstream = new MemoryStream())
                 {
-                    List<int> framesizes = new List<int>();
                     DataTable dt = this.ActiveGameSet.Tables[this.ActiveSprite.SpriteId];
                     int headersize = (dt.Rows.Count + 1) * ResourceDatabase.ResIdxDefinitionSize;
-                    
+                    byte[] recordcount = BitConverter.GetBytes((short) dt.Rows.Count + 1); //+1 for the empty record
+                    headerstream.Write(recordcount, 0, recordcount.Length);
+
+                    int datalen;
+
                     using (MemoryStream bmpstream = new MemoryStream())
                     {
                         foreach(Frame f in this.ActiveSprite.Frames)
                         {
                             byte[] framedata = f.ToSprFile();
                             bmpstream.Write(framedata, 0, framedata.Length);
+                            //update the frame's [future] offset in the file-to-be-written (needed for ResIdx header)
                             f.BitmapOffset = headersize + bmpstream.Position;
-                            dt.Select($"FrameName = {f.Name}")["FrameOffset"] = f.BitmapOffset;
+                            //also update that offset in the ActiveGameSet, in case the user keeps working
+                            DataRow dr = dt.Select($"FrameName = {f.Name}")[0];
+                            dr.BeginEdit();
+                            dr["FrameOffset"] = f.BitmapOffset;
+                            dr.EndEdit();
+                            
+                            //write a header entry for each frame
+                            ResourceDatabaseWriter.WriteDefinition(dr, headerstream, (uint)f.BitmapOffset, true);
                         }
 
-                        //List<byte[]> frames = this.ActiveSprite.GetSpriteFrameByteArrays();
-                        //foreach(byte[] f in frames)
-                        //{
-                        //    framesizes.Add(f.Length);
-                        //    bmpstream.Write(f, 0, f.Length);
-                        //}
-                    }
+                        //used to calculate file size below
+                        datalen = (int)bmpstream.Length;
 
-                    foreach(DataRow dr in dt.Rows)
-                    {
-                        dr["FrameOffset"]
+                        //write out empty record with file size
+                        for (int i = 0; i < ResourceDatabase.ResIdxDefinitionSize; i++)
+                            headerstream.WriteByte(0x0); //null name entry
+                        byte[] filesize = BitConverter.GetBytes((uint) (headersize + datalen));
+                        headerstream.Write(filesize, 0, filesize.Length); //file's size
+
+                        //reset positions and copy streams to write out
+                        bmpstream.Position = headerstream.Position = 0;
+                        headerstream.CopyTo(residxstream);
+                        bmpstream.CopyTo(residxstream);
                     }
                 }
             }

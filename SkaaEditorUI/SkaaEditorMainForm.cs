@@ -40,6 +40,7 @@ namespace SkaaEditorUI
 {
     public partial class SkaaEditorMainForm : Form
     {
+        //todo: load settings from file on form load
         public static readonly TraceSource Logger = new TraceSource("SkaaEditorMainForm", SourceLevels.All);
         //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
         //todo: add Debug logging throughout
@@ -97,7 +98,7 @@ namespace SkaaEditorUI
             this.lbDebugActions.Items.Add("OpenDefaultBallistaSprite");
             this.lbDebugActions.Items.Add("GetFileListing");
             //this.lbDebugActions.Items.Add("SaveProjectToDateTimeDirectory");
-            this.lbDebugActions.Items.Add("OpenDefaultButtonResource"); 
+            //this.lbDebugActions.Items.Add("OpenDefaultButtonResource"); 
         }
         ///// <summary>
         ///// Saves the current project files and copies them to the relevant 7KAA
@@ -157,24 +158,24 @@ namespace SkaaEditorUI
             if (this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set"))
                 this.saveGameSetToolStripMenuItem.Enabled = true;
         }
-        [Conditional("DEBUG")]
-        private void OpenDefaultButtonResource()
-        {
-            ConfigSettings();
-            NewProject(ProjectTypes.Interface);
+        //[Conditional("DEBUG")]
+        //private void OpenDefaultButtonResource()
+        //{
+        //    ConfigSettings();
+        //    NewProject(ProjectTypes.Interface);
 
-            this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(props.DataDirectory + "i_button.res");
+        //    this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(props.DataDirectory + "i_button.res");
 
-            if (this.ActiveProject.ActiveSprite != null)
-            {
-                this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                this.exportPngToolStripMenuItem.Enabled = true;
-                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-            }
+        //    if (this.ActiveProject.ActiveSprite != null)
+        //    {
+        //        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+        //        this.exportPngToolStripMenuItem.Enabled = true;
+        //        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+        //        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+        //    }
 
-            this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set");
-        }
+        //    this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set");
+        //}
         //[Conditional("DEBUG")]
         //private void SaveProjectToDateTimeDirectory()
         //{
@@ -218,6 +219,19 @@ namespace SkaaEditorUI
                         //sw.WriteLine($"{Path.GetFileName(dir)},{Path.GetFileName(file)},{Path.GetExtension(file)},{((FileFormat) data[1]).ToString()},{header}");
                     }
 
+                }
+            }
+        }
+        [Conditional("DEBUG")]
+        private static void WriteCsv(List<KeyValuePair<string, string>> files)
+        {
+            using (StreamWriter sw = new StreamWriter("file_types.csv", false))
+            {
+                sw.WriteLine("filename,filepath,extension,format");
+                foreach (KeyValuePair<string, string> kv in files)
+                {
+                    if (Path.GetExtension(kv.Key) != ".bak") //skip my local backup files
+                        sw.WriteLine($"{Path.GetFileName(kv.Key)},{kv.Key},{Path.GetExtension(kv.Key)},{kv.Value}");
                 }
             }
         }
@@ -424,29 +438,13 @@ namespace SkaaEditorUI
         }
         #endregion
 
-        #region Menu/Toolstrip Button Clicks
+        #region UI Click Events and Open/Save
         ////////////////////////////////// New Things //////////////////////////////////
-        private void newSpriteProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //todo: this is ugly and hackish. Move null check into TrySaveCloseProject or elsewhere
-            if (this.ActiveProject != null)
-            {
-                if (TrySaveCloseProject(null, null))
-                    NewProject(ProjectTypes.Sprite);
-            }
-            else
+            if (TrySaveCloseProject(null, null))
                 NewProject(ProjectTypes.Sprite);
-        }
-        private void newInterfaceProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //todo: this is ugly and hackish. Move null check into TrySaveCloseProject or elsewhere
-            if (this.ActiveProject != null)
-            {
-                if (TrySaveCloseProject(null, null))
-                    NewProject(ProjectTypes.Interface);
-            }
-            else
-                NewProject(ProjectTypes.Interface);
+
         }
         //////////////////////////////// Opening Things ////////////////////////////////
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -467,31 +465,33 @@ namespace SkaaEditorUI
             }
         }
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
-        { //todo: mimic SaveFile() structure for OpenFile()
-            using (OpenFileDialog dlg = new OpenFileDialog())
-            {
-                dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = props.SprFileExtension;
-                dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
+        {
+            BeginOpenFile(FileFormats.SpriteSpr);
 
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(dlg.FileName);
+            //using (OpenFileDialog dlg = new OpenFileDialog())
+            //{
+            //    dlg.InitialDirectory = props.ApplicationDirectory;
+            //    dlg.DefaultExt = props.SprFileExtension;
+            //    dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
 
-                    if (this.ActiveProject.ActiveSprite != null)
-                    {
-                        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                        this.exportPngToolStripMenuItem.Enabled = true;
-                        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-                    }
-                }
-            }
+            //    if (dlg.ShowDialog() == DialogResult.OK)
+            //    {
+            //        this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(dlg.FileName);
+
+            //        if (this.ActiveProject.ActiveSprite != null)
+            //        {
+            //            this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
+            //            this.exportPngToolStripMenuItem.Enabled = true;
+            //            this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
+            //            this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+            //        }
+            //    }
+            //}
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //force closing the sprite for now
-            //todo: ask user to associate set to sprite
+            //todo: ask user to associate a set to sprite
             if (this.ActiveProject?.ActiveSprite != null && this.ActiveProject?.ActiveGameSet != null)
             {
                 string msg = "This will close the currently open file. Continue?";
@@ -507,17 +507,19 @@ namespace SkaaEditorUI
                 }
             }
 
-            using (OpenFileDialog dlg = new OpenFileDialog())
-            {
-                dlg.InitialDirectory = props.ApplicationDirectory;
-                dlg.DefaultExt = props.SetFileExtension;
-                dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
+            BeginOpenFile(FileFormats.GameSet);
 
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    this.ActiveProject.LoadGameSet(dlg.FileName);
-                }
-            }
+            //using (OpenFileDialog dlg = new OpenFileDialog())
+            //{
+            //    dlg.InitialDirectory = props.ApplicationDirectory;
+            //    dlg.DefaultExt = props.SetFileExtension;
+            //    dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
+
+            //    if (dlg.ShowDialog() == DialogResult.OK)
+            //    {
+            //        this.ActiveProject.LoadGameSet(dlg.FileName);
+            //    }
+            //}
         }
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -533,6 +535,7 @@ namespace SkaaEditorUI
             List<KeyValuePair<string, string>> filesAndFormats = new List<KeyValuePair<string, string>>();
             List<string> files = new List<string>();
 
+            //enumerate all files in multiple directories
             foreach (string filename in (string[]) e.Data.GetData(DataFormats.FileDrop))
             {
                 if (Directory.Exists(filename))
@@ -540,12 +543,18 @@ namespace SkaaEditorUI
                 else if (File.Exists(filename))
                     files.Add(filename);
             }
+
+            //open all of the files found above
+            //todo: MDI for multiple sprites
             foreach (string filename in files)
             {
-                //TryOpenFile(filename, FileFormat.Any, null);
-                this.ActiveProject.ActiveGameSet = new System.Data.DataSet();
-                filesAndFormats.Add(new KeyValuePair<string, string>(filename, TryOpenFile(filename, FileFormats.Any, null).ToString()));
+                TryOpenFile(filename, FileFormats.Any, null);
+                
+                //For debugging: Gets all files and their formats. Resets active gameset in case we open two set files
+                //this.ActiveProject.ActiveGameSet = new System.Data.DataSet();
+                //filesAndFormats.Add(new KeyValuePair<string, string>(filename, TryOpenFile(filename, FileFormats.Any, null).ToString()));
             }
+            //For debugging. Used to generate table on 7kfans.com/wiki
             //WriteCsv(filesAndFormats);
         }
         private void SkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)
@@ -628,6 +637,9 @@ namespace SkaaEditorUI
                         break;
                 }
             }
+
+            if (format != FileFormats.GameSet && format != FileFormats.Palette)
+                this.tsStatusLblFileType.Text = format.ToString();
         }
         private void OpenFile(OpenFileDialog dlg, FileFormats requestedFormat, Action openMethod)
         {
@@ -650,9 +662,9 @@ namespace SkaaEditorUI
 
             Debug.Assert(requestedFormat != FileFormats.Unknown, "Cannot request to open a file of FileFormat.Unknown! Use FileFormat.Any when opening arbitrary files.");
 
-            this.toolStripStatLbl.Text = "Checking file type...";
+            this.tsStatusLblFileType.Text = "Checking file type...";
             var actualFormat = FileTypeChecks.CheckFileType(filePath);
-
+            
             if (requestedFormat == FileFormats.Any && actualFormat != FileFormats.Unknown) //user did not specify file type via UI menus (drag/drop or generic Open File)
                 BeginOpenFile(actualFormat, filePath);                                   //now make the request again with the real file type
             else if (actualFormat == FileFormats.Unknown)                                  //we can't figure out what this. user must specify a file type
@@ -660,11 +672,9 @@ namespace SkaaEditorUI
 
             if (actualFormat == requestedFormat && openMethod != null)                   //user specified file type or we figured it out after user specified FileFormat.Any
             {
-                this.toolStripStatLbl.Text = "Opening...";
                 openMethod();
             }
             
-            this.toolStripStatLbl.Text = string.Empty;
             return actualFormat;
         }
         //////////////////////////////// Saving Things ////////////////////////////////
@@ -833,9 +843,9 @@ namespace SkaaEditorUI
         {
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                this.toolStripStatLbl.Text = "Saving...";
+                //this.toolStripStatLbl.Text = "Saving...";
                 save();
-                this.toolStripStatLbl.Text = string.Empty;
+                //this.toolStripStatLbl.Text = string.Empty;
                 //AddDebugArg(Misc.GetCurrentMethod(), Path.GetFullPath(dlg.FileName));
             }
         }
@@ -862,7 +872,7 @@ namespace SkaaEditorUI
         }
         #endregion
 
-        #region Change Events
+        #region Other Event Handlers
         //////////////////////////////// Frame/Sprite Updates ////////////////////////////////
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
@@ -940,28 +950,16 @@ namespace SkaaEditorUI
                 }
             }
             Logger.TraceEvent(TraceEventType.Start, 0, $"Log ended: {string.Concat(DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString())}\r\n\r\n");
-        }
-        #endregion
 
-        #region Old Menu Items
-        private void openInterfaceResFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            return;
-            //using (OpenFileDialog dlg = new OpenFileDialog())
-            //{
-            //    dlg.InitialDirectory = props.ApplicationDirectory;
-            //    dlg.Filter = $"7KAA Resource Files (.res)|*{props.ResFileExtension}";//$"7KAA Sprite Files (.spr)|*{props.SprFileExtension}|7KAA Game Set Files (.set)|*{props.SetFileExtension}|7KAA Resource Files (.res)|*{props.ResFileExtension}";
-
-            //    if (dlg.ShowDialog() == DialogResult.OK)
-            //    {
-            //        this.ActiveProject.ActiveSprite = this.ActiveProject.LoadResXMultiBmp(dlg.FileName);
-
-            //        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-            //        this.exportPngToolStripMenuItem.Enabled = true;
-            //        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-            //        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-            //    }
-            //}
+            try
+            {
+                props.Save();
+            }
+            catch (ArgumentException)
+            {
+                //the user deleted the settings file while running
+                //todo: handle this more elegantly
+            }
         }
         #endregion
 
@@ -1004,13 +1002,15 @@ namespace SkaaEditorUI
             string paletteFile = string.Empty;
             switch (newProject.ProjectType)
             {
-                case ProjectTypes.Interface:
+                case ProjectTypes.ResIdx:
+                case ProjectTypes.Res:
+                case ProjectTypes.SpriteAndStdSet:
                 case ProjectTypes.Sprite:
                     paletteFile = props.DataDirectory + props.PalStd;
                     break;
-                //case ProjectTypes.Menu:
-                //    paletteFile = props.DataDirectory + props.PalMenu;
-                //    break;
+                case ProjectTypes.Encyclopedia:
+                    //todo: will need to request a palette file to open encyclopedia files
+                    break;
             }
             
             this.ActiveProject = newProject;
@@ -1089,6 +1089,8 @@ namespace SkaaEditorUI
         /// <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
         private bool TrySaveCloseProject(object sender, EventArgs e)
         {
+            if (this.ActiveProject == null) return true;
+
             DialogResult saveChanges = UserShouldSaveChanges();
 
             if (saveChanges == DialogResult.Yes)
@@ -1165,21 +1167,5 @@ namespace SkaaEditorUI
         }
         #endregion
 
-
-
-
-        [Conditional("DEBUG")]
-        private static void WriteCsv(List<KeyValuePair<string, string>> files)
-        {
-            using (StreamWriter sw = new StreamWriter("file_types.csv", false))
-            {
-                sw.WriteLine("filename,filepath,extension,format");
-                foreach(KeyValuePair<string, string> kv in files)
-                {
-                    if(Path.GetExtension(kv.Key) != ".bak") //skip my local backup files
-                        sw.WriteLine($"{Path.GetFileName(kv.Key)},{kv.Key},{Path.GetExtension(kv.Key)},{kv.Value}");
-                }
-            }
-        }
     }
 }

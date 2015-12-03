@@ -51,7 +51,7 @@ namespace SkaaGameDataLib
             {
                 using (MemoryStream headerStream = new MemoryStream())
                 {
-                    using (MemoryStream dbfStream = new MemoryStream())//new FileStream(filepath, FileMode.Create))
+                    using (MemoryStream dbfStream = new MemoryStream())
                     {
                         //write SET header's record_count
                         short record_count = (short) ds.Tables.Count;
@@ -76,7 +76,7 @@ namespace SkaaGameDataLib
                             headerStream.WriteByte(0x0);
 
                         //calculate and write out filesize
-                        uint file_size = (uint) (dbfStream.Position + (headerStream.Position + sizeof(uint)));
+                        uint file_size = (uint) (dbfStream.Length + header_size);//(headerStream.Position + sizeof(uint)));
                         byte[] fileSize = BitConverter.GetBytes(file_size);
                         headerStream.Write(fileSize, 0, fileSize.Length);
 
