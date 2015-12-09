@@ -25,13 +25,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using SkaaGameDataLib;
 
 namespace SkaaEditorControls
 {
@@ -57,9 +53,9 @@ namespace SkaaEditorControls
         {
             EventHandler handler = _activeFrameChanged;
 
-            this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-            this.picBoxFrame.Image = this._activeFrame.ImageBmp;
-            this.frameSlider.Value = this._activeFrameIndex;
+            this.CurrentFrame = this.Frames.FindIndex(0, (f => f == this.Frames[this.CurrentFrame]));
+            this.picBoxFrame.Image = this.Frames[CurrentFrame];
+            this.frameSlider.Value = this.CurrentFrame;
 
             if (handler != null)
             {
@@ -82,68 +78,17 @@ namespace SkaaEditorControls
                 _activeSpriteChanged -= value;
             }
         }
-        protected virtual void RaiseActiveSpriteChangedEvent(EventArgs e)
-        {
-            EventHandler handler = _activeSpriteChanged;
 
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        private Sprite _activeSprite;
-        private SpriteFrame _activeFrame;
-        private int _activeFrameIndex;
-        private int _preAnimateActiveFrameIndex;
-
-        public PictureBox PictureBoxImageFrame
-        {
+        private List<Image> Frames;
+        public int CurrentFrame;
+        public int AnimationStartPoint;
+        public bool Initialized {
             get
             {
-                return this.picBoxFrame;
-            }
-            set
-            {
-                if (this.picBoxFrame != value)
-                    this.picBoxFrame = value;
-            }
-        }
-        public Sprite ActiveSprite
-        {
-            get
-            {
-                return this._activeSprite;
-            }
-            set
-            {
-                if(this._activeSprite != value)
-                {
-                    this._activeSprite = value;
-                    OnActiveSpriteChanged(EventArgs.Empty);
-                }
+                return this.Frames != null;
             }
         }
 
-        public SpriteFrame ActiveFrame
-        {
-            get
-            {
-                if (!this.animationTimer.Enabled)
-                    return this._activeFrame;
-                else
-                    return this._activeSprite.Frames[_preAnimateActiveFrameIndex];
-            }
-            set
-            {
-                if (this._activeFrame != value)
-                {
-                    this._activeFrame = value;
-                    OnActiveFrameChanged(EventArgs.Empty);
-                }
-            }
-        }
-        
         public TimelineControl()
         {
             InitializeComponent();
@@ -154,82 +99,118 @@ namespace SkaaEditorControls
             this.animationTimer.Interval = 150;
         }
 
-        private void OnActiveSpriteChanged(EventArgs empty)
+        public void SetFrames(List<Image> frames)
         {
-            this.frameSlider.Maximum = this.ActiveSprite == null || this.ActiveSprite.Frames.Count == 0 ? 0 : this.ActiveSprite.Frames.Count - 1;
-        }
-
-        protected virtual void OnActiveFrameChanged(EventArgs e)
-        {
-            this._activeFrameIndex = this.ActiveSprite == null ? 0 : this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-            this.picBoxFrame.Image = this._activeFrame?.ImageBmp;
-            this.frameSlider.Value = this._activeFrameIndex >= 0 ? this._activeFrameIndex : 0;
-
-            if (!this.animationTimer.Enabled)
-                RaiseActiveFrameChangedEvent(e);
+            this.Frames = frames;
+            if (Initialized)
+            {
+                this.frameSlider.Maximum = this.Frames.Count - 1;
+                this.frameSlider.Minimum = 0;
+                this.SetFrame();
+            }
         }
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
         {
-            if (ActiveFrame == null)
-                return;
+            if (!Initialized) return;
 
-            if (!this.animationTimer.Enabled && e.Button == MouseButtons.Left)
+            if (!this.animationTimer.Enabled)
             {
-                _activeFrameIndex++;
-                _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
-                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-                //picBoxFrame.Image = ActiveSprite.Frames[_activeFrameIndex].ImageBmp;
+                switch(e.Button)
+                {
+                    case MouseButtons.Left:
+                        this.NextFrame();
+                        break;
+                    case MouseButtons.Right:
+                        this.PrevFrame();
+                        break;
+                    case MouseButtons.Middle:
+                        PictureBoxSizeMode SM = this.picBoxFrame.SizeMode;
+                        if (SM == PictureBoxSizeMode.CenterImage)
+                        {
+                            SM = PictureBoxSizeMode.Zoom;
+                        } else
+                        {
+                            SM = PictureBoxSizeMode.CenterImage;
+                        }
+                        this.picBoxFrame.SizeMode = SM;
+                        break;
+                }
             }
-            else if (!this.animationTimer.Enabled && e.Button == MouseButtons.Right)
-            {
-                _activeFrameIndex--;
-                _activeFrameIndex = (_activeFrameIndex % (ActiveSprite.Frames.Count - 1) + (ActiveSprite.Frames.Count - 1)) % (ActiveSprite.Frames.Count - 1);
-                // special mod() function above to actually cycle negative numbers around. Turns out % isn't a real mod() function, just remainder.
-                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
-            }
-            else if (e.Button == MouseButtons.Middle)
-            {
-                if (picBoxFrame.SizeMode == PictureBoxSizeMode.CenterImage)
-                    picBoxFrame.SizeMode = PictureBoxSizeMode.Zoom;
-                else
-                    picBoxFrame.SizeMode = PictureBoxSizeMode.CenterImage;
-            }
+
+
         }
         private void frameSlider_ValueChanged(object sender, EventArgs e)
         {
-            _activeFrameIndex = (sender as TrackBar).Value;
-            this.ActiveFrame = (this.ActiveSprite == null) ? null : this.ActiveSprite.Frames[_activeFrameIndex];
+            this.CurrentFrame = frameSlider.Value;
+            this.SetFrame();
         }
-        
+
         private void picBoxFrame_DoubleClick(object sender, EventArgs e)
         {
-            if (ActiveFrame == null)
-                return;
-
-            if (this.animationTimer.Enabled) //currently animating
+            this.animationTimer.Enabled = !this.animationTimer.Enabled;
+            if (this.animationTimer.Enabled)
             {
-                this.animationTimer.Stop();
-                this.frameSlider.Enabled = true;
-
-                //reset to the currently-displayed frame
-                this._activeFrameIndex = this._preAnimateActiveFrameIndex;
-                this._preAnimateActiveFrameIndex = 0;
-                this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+                this.AnimationStartPoint = this.CurrentFrame;
+            } else
+            {
+                this.CurrentFrame = this.AnimationStartPoint - 1;
             }
-            else //start animating
+            this.NextFrame();
+        }
+
+        private void NextFrame() {
+            if (this.Initialized)
             {
-                this.frameSlider.Enabled = false;
-                this._preAnimateActiveFrameIndex = this._activeFrameIndex;
-                this.animationTimer.Start();
+                this.CurrentFrame = (this.CurrentFrame + 1) % (Frames.Count - 1);
+                this.SetFrame();
+            }
+        }
+
+        private void PrevFrame()
+        {
+            if (this.Initialized)
+            {
+                this.CurrentFrame--;
+                if (this.CurrentFrame < 0)
+                {
+                    this.CurrentFrame = Frames.Count;
+                }
+                this.CurrentFrame %= Frames.Count - 1;
+                this.SetFrame();
             }
         }
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
         {
-            _activeFrameIndex++;
-            _activeFrameIndex %= (ActiveSprite.Frames.Count - 1);
-            this.ActiveFrame = this.ActiveSprite.Frames[_activeFrameIndex];
+            this.NextFrame();
+        }
+
+        private void SetFrame(Image frame)
+        {
+            this.picBoxFrame.Image = frame;
+        }
+
+        private void SetFrame(int frameIndex)
+        {
+            this.picBoxFrame.Image = this.Frames[frameIndex];
+        }
+
+        private void SetFrame()
+        {
+            this.picBoxFrame.Image = this.Frames[this.CurrentFrame];
+            RaiseActiveFrameChangedEvent(EventArgs.Empty);
+        }
+
+        public Image ActiveFrame()
+        {
+            return this.Frames[this.CurrentFrame];
+        }
+
+        public void UpdateCurrentFrame(Image frame)
+        {
+            this.Frames[this.CurrentFrame] = frame;
+            this.SetFrame();
         }
     }
 }
