@@ -92,6 +92,7 @@ namespace SkaaEditorControls
         public void SetFrameList(List<Image> frames)
         {
             this.Frames = frames;
+            this.animationTimer.Enabled = false;
             if (Initialized)
             {
                 this.frameSlider.Maximum = this.Frames.Count - 1;
