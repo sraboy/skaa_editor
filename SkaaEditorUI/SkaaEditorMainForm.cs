@@ -145,7 +145,7 @@ namespace SkaaEditorUI
             {
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
                 this.exportBmpToolStripMenuItem.Enabled = true;
-                        this.timelineControl.SetFrames(this.ActiveProject.ActiveSprite.GetFrameImages());
+                        this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
             }
             
         }
@@ -409,7 +409,7 @@ namespace SkaaEditorUI
                     {
                         this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
                         this.exportBmpToolStripMenuItem.Enabled = true;
-                        this.timelineControl.SetFrames(this.ActiveProject.ActiveSprite.GetFrameImages());
+                        this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
                     }
                 }
             }
@@ -836,7 +836,8 @@ namespace SkaaEditorUI
 
             if (sprFiles.Count > 0)
                 open.LoadSprite(sprFiles.ElementAt(0));
-            this.timelineControl.SetFrames(this.ActiveProject.ActiveSprite.GetFrameImages());
+
+            this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
         }
         private void CloseProject()
         {
@@ -851,7 +852,7 @@ namespace SkaaEditorUI
             this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
 
-            this.timelineControl.SetFrames(null);
+            this.timelineControl.SetFrameList(null);
             this.imageEditorBox.Image = null;
 
             this.ActiveProject = null; //do this last so the event fires after nulling imageEditorBox

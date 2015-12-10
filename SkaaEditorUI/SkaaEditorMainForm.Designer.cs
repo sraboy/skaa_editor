@@ -367,7 +367,7 @@ namespace SkaaEditorUI
             // 
             // timelineControl
             // 
-            this.timelineControl.SetFrames(null);
+            this.timelineControl.SetFrameList(null);
             this.timelineControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.timelineControl.Location = new System.Drawing.Point(888, 27);
             this.timelineControl.Name = "timelineControl";

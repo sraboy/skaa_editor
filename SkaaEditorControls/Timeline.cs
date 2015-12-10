@@ -33,6 +33,9 @@ namespace SkaaEditorControls
 {
     public partial class TimelineControl : UserControl
     {
+        /*
+            Event Handling
+        */
         [field: NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
@@ -53,7 +56,6 @@ namespace SkaaEditorControls
         {
             EventHandler handler = _activeFrameChanged;
 
-            this.CurrentFrame = this.Frames.FindIndex(0, (f => f == this.Frames[this.CurrentFrame]));
             this.picBoxFrame.Image = this.Frames[CurrentFrame];
             this.frameSlider.Value = this.CurrentFrame;
 
@@ -62,24 +64,10 @@ namespace SkaaEditorControls
                 handler(this, e);
             }
         }
-        [field: NonSerialized]
-        private EventHandler _activeSpriteChanged;
-        public event EventHandler ActiveSpriteChanged
-        {
-            add
-            {
-                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
-                {
-                    _activeSpriteChanged += value;
-                }
-            }
-            remove
-            {
-                _activeSpriteChanged -= value;
-            }
-        }
 
+        // Variables
         private List<Image> Frames;
+
         public int CurrentFrame;
         public int AnimationStartPoint;
         public bool Initialized {
@@ -89,6 +77,8 @@ namespace SkaaEditorControls
             }
         }
 
+
+        // Constructor
         public TimelineControl()
         {
             InitializeComponent();
@@ -99,14 +89,14 @@ namespace SkaaEditorControls
             this.animationTimer.Interval = 150;
         }
 
-        public void SetFrames(List<Image> frames)
+        public void SetFrameList(List<Image> frames)
         {
             this.Frames = frames;
             if (Initialized)
             {
                 this.frameSlider.Maximum = this.Frames.Count - 1;
                 this.frameSlider.Minimum = 0;
-                this.SetFrame();
+                this.SetCurrentFrame();
             }
         }
 
@@ -143,7 +133,7 @@ namespace SkaaEditorControls
         private void frameSlider_ValueChanged(object sender, EventArgs e)
         {
             this.CurrentFrame = frameSlider.Value;
-            this.SetFrame();
+            this.SetCurrentFrame();
         }
 
         private void picBoxFrame_DoubleClick(object sender, EventArgs e)
@@ -163,7 +153,7 @@ namespace SkaaEditorControls
             if (this.Initialized)
             {
                 this.CurrentFrame = (this.CurrentFrame + 1) % (Frames.Count - 1);
-                this.SetFrame();
+                this.SetCurrentFrame();
             }
         }
 
@@ -177,7 +167,7 @@ namespace SkaaEditorControls
                     this.CurrentFrame = Frames.Count;
                 }
                 this.CurrentFrame %= Frames.Count - 1;
-                this.SetFrame();
+                this.SetCurrentFrame();
             }
         }
 
@@ -186,17 +176,19 @@ namespace SkaaEditorControls
             this.NextFrame();
         }
 
-        private void SetFrame(Image frame)
+        private void SetCurrentFrame(Image frame)
         {
-            this.picBoxFrame.Image = frame;
+            this.CurrentFrame = this.Frames.IndexOf(frame);
+            this.SetCurrentFrame();
         }
 
-        private void SetFrame(int frameIndex)
+        private void SetCurrentFrame(int frameIndex)
         {
-            this.picBoxFrame.Image = this.Frames[frameIndex];
+            this.CurrentFrame = frameIndex;
+            this.SetCurrentFrame();
         }
 
-        private void SetFrame()
+        private void SetCurrentFrame()
         {
             this.picBoxFrame.Image = this.Frames[this.CurrentFrame];
             RaiseActiveFrameChangedEvent(EventArgs.Empty);
@@ -210,7 +202,7 @@ namespace SkaaEditorControls
         public void UpdateCurrentFrame(Image frame)
         {
             this.Frames[this.CurrentFrame] = frame;
-            this.SetFrame();
+            this.SetCurrentFrame();
         }
     }
 }
