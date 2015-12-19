@@ -102,7 +102,7 @@ namespace SkaaGameDataLib
 
             Dictionary<string, uint> nameOffsetPairs = new Dictionary<string, uint>(recordCount);
 
-            while (str.Position < (recordCount) * nameSize)
+            while (str.Position < (recordCount) * definitionSize)
             {
                 byte[] b_name = new byte[nameSize];
                 byte[] b_offset = new byte[OffsetSize];
