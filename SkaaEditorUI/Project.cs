@@ -415,20 +415,27 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public static void Save(string filepath, Sprite spr)
+        public static void Save<T>(string filepath, T obj)//Sprite spr)
         {
             using (FileStream fs = new FileStream(filepath, FileMode.Create))
             {
-                byte[] spr_data = spr.ToSprFile();
-                fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
-            }
-        }
-        public static void Save(string filepath, Frame f)
-        {
-            using (FileStream fs = new FileStream(filepath, FileMode.Create))
-            {
-                byte[] spr_data = f.ToSprFile();
-                fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+                Type t = obj.GetType();
+
+                if (t == typeof(Sprite))
+                {
+                    byte[] spr_data = (obj as Sprite).ToSprFile();
+                    fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+                }
+                else if (t == typeof(Frame))
+                {
+                    byte[] spr_data = (obj as Frame).ToSprFile();
+                    fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+                }
+                else if (t == typeof(DataTable))
+                {
+                    DataTable dt = (obj as DataTable);
+                    dt.Save(fs);
+                }
             }
         }
 

@@ -665,49 +665,48 @@ namespace SkaaEditorUI
         {
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
+                dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+
                 switch (format)
                 {
                     case FileFormats.GameSet:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = "std.set";
                         ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName));
                         break;
                     case FileFormats.SpritePNG:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = ".png";
                         dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveSprite));
                         break;
                     case FileFormats.FramePNG:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = ".png";
                         dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + "_frame";
                         ShowSaveFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveFrame));
                         break;
                     case FileFormats.SpriteSpr:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => Project.Save(dlg.FileName, this.ActiveProject.ActiveSprite));
                         break;
                     case FileFormats.SpriteFrameSpr:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => Project.Save(dlg.FileName, this.ActiveProject.ActiveFrame));
                         break;
-                    case FileFormats.DbaseIII: //todo: add DBF saving for RES files
+                    case FileFormats.DbaseIII:
+                        dlg.DefaultExt = props.ResFileExtension;
+                        dlg.Filter = $"7KAA Resource Files|*{props.ResFileExtension}|All Files (*.*)|*.*";
+                        //todo: allow user to specify DataTable
                         break;
                     case FileFormats.ResIdxMultiBmp:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                        dlg.DefaultExt = props.SprFileExtension;
-                        dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
+                        dlg.DefaultExt = props.ResFileExtension;
+                        dlg.Filter = $"7KAA Resource Files|*{props.ResFileExtension}|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => this.ActiveProject.SaveResIdxMultiBmp(dlg.FileName));
                         break;
