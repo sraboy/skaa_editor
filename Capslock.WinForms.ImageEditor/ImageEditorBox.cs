@@ -377,8 +377,7 @@ namespace Capslock.WinForms.ImageEditor
             }
         }
         protected virtual void PaintBucketFill(MouseEventArgs e)
-        {        //todo: Debug.Assert(this.IsSelecting==false) and this.IsPanning...
-
+        {
             this.IsDrawing = true;
             this.IsSelecting = false;
             this.IsPanning = false;

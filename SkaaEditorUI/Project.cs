@@ -176,19 +176,7 @@ namespace SkaaEditorUI
             }
         }
         public DataSet ActiveGameSet;
-        //todo: this should be a generic list
-        //public List<Sprite> UnsavedSprites
-        //{
-        //    get
-        //    {
-        //        return this._unsavedSprites;
-        //    }
-        //    private set
-        //    {
-        //        if (this._unsavedSprites != value)
-        //            this._unsavedSprites = value;
-        //    }
-        //}
+
         public string ProjectName
         {
             get
@@ -251,10 +239,6 @@ namespace SkaaEditorUI
             return false;
         }
 
-        //todo: make Load generic and check types to choose loading function
-
-        //public void LoadDefaultSpritePalette() => LoadPalette(props.DataDirectory + props.PalStd);
-        //public void LoadDefaultMenuPalette() => LoadPalette(props.DataDirectory + props.PalMenu);
         /// <summary>
         /// Loads a palette file.
         /// </summary>
