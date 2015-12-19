@@ -365,7 +365,6 @@ namespace SkaaEditorUI
             this.lbDebugActions.TabIndex = 15;
             this.lbDebugActions.Visible = false;
             // 
-//<<<<<<< HEAD
             // drawingToolbox
             // 
             this.drawingToolbox.Location = new System.Drawing.Point(1, 52);
@@ -390,7 +389,6 @@ namespace SkaaEditorUI
             // 
             // timelineControl
             // 
-            this.timelineControl.SetFrameList(null);
             this.timelineControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.timelineControl.Location = new System.Drawing.Point(888, 27);
             this.timelineControl.Name = "timelineControl";
@@ -411,8 +409,6 @@ namespace SkaaEditorUI
             this.imageEditorBox.Size = new System.Drawing.Size(706, 777);
             this.imageEditorBox.TabIndex = 8;
             // 
-//=======
-//>>>>>>> alphav4_working
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {

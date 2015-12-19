@@ -140,13 +140,11 @@ namespace SkaaGameDataLib
                 return false;
             }
         }
-//<<<<<<< HEAD
         public List<Image> GetFrameImages()
         {
            List<Image> frames = this.Frames.Select(x => x.IndexedBitmap.Bitmap).ToList<Image>();
             return frames;
         }
-//=======
         /// <summary>
         /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
         /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRows"/>
@@ -290,6 +288,5 @@ namespace SkaaGameDataLib
             }
             return spr;
         }
-//>>>>>>> alphav4_working
     }
 }

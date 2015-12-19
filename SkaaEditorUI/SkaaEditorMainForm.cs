@@ -41,9 +41,8 @@ namespace SkaaEditorUI
     public partial class SkaaEditorMainForm : Form
     {
         //todo: load settings from file on form load
+        //todo: add/improve Debug logging throughout solution
         public static readonly TraceSource Logger = new TraceSource("SkaaEditorMainForm", SourceLevels.All);
-        //todo: Allow for changing the palette. Will have to rebuild color chooser and all sprites
-        //todo: add Debug logging throughout
 
         #region Debugging
         private List<DebugArgs> _debugArgs;
@@ -52,12 +51,6 @@ namespace SkaaEditorUI
             public string MethodName;
             public object Arg;
         }
-
-        /* Keep methods outside the #if so we don't have to remove calls 
-         * to them throughout the code or use #if checks there. They'll 
-         * always get built but won't be called in release mode. This 
-         * isn't possible with non-void methods or event handlers.
-         */
         /// <summary>
         /// When debugging, creates and adds a new <see cref="DebugArgs"/> object 
         /// to the <see cref="SkaaEditorMainForm._debugArgs"/> List. This is 
@@ -100,46 +93,6 @@ namespace SkaaEditorUI
             //this.lbDebugActions.Items.Add("SaveProjectToDateTimeDirectory");
             //this.lbDebugActions.Items.Add("OpenDefaultButtonResource"); 
         }
-        ///// <summary>
-        ///// Saves the current project files and copies them to the relevant 7KAA
-        ///// data directories so we can just run 7KAA and ensure the files are 
-        ///// in the correct format.
-        ///// </summary>
-        //[Conditional("DEBUG")]
-        //private void SaveAndCopyProject() 
-        //{
-        //    SaveProjectToDateTimeDirectory();
-
-        //    foreach (DebugArgs arg in this._debugArgs)
-        //    {
-        //        switch (arg.MethodName)
-        //        {
-        //            case "saveGameSetToolStripMenuItem_Click":
-        //                string stdSetFile = props.SkaaDataDirectory + "resource\\std.set";
-        //                if (File.Exists(stdSetFile))
-        //                {
-        //                    //make sure we have a backup of std.set
-        //                    if (!File.Exists(stdSetFile + ".bak"))
-        //                        File.Copy(stdSetFile, stdSetFile + ".bak");
-        //                }
-
-        //                File.Copy((string)arg.Arg, stdSetFile, true);
-        //                break;
-
-        //            case "saveSpriteToolStripMenuItem_Click":
-        //                string ballistaFile = props.SkaaDataDirectory + "sprite\\ballista.spr";
-        //                if (File.Exists(ballistaFile))
-        //                {
-        //                    //make sure we have a backup of ballista
-        //                    if (!File.Exists(ballistaFile + ".bak"))
-        //                        File.Copy(ballistaFile, ballistaFile + ".bak");
-        //                }
-
-        //                File.Copy((string) arg.Arg, ballistaFile, true);
-        //                break;
-        //        }
-        //    }
-        //}
         [Conditional("DEBUG")]
         private void OpenDefaultBallistaSprite()
         {
@@ -150,82 +103,12 @@ namespace SkaaEditorUI
             if (this.ActiveProject.ActiveSprite != null)
             {
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-//<<<<<<< HEAD
-                //this.exportBmpToolStripMenuItem.Enabled = true;
                 this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
-//=======
                 this.exportPngToolStripMenuItem.Enabled = true;
-                //this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                //this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-//>>>>>>> alphav4_working
             }
 
             if (this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set"))
                 this.saveGameSetToolStripMenuItem.Enabled = true;
-        }
-        //[Conditional("DEBUG")]
-        //private void OpenDefaultButtonResource()
-        //{
-        //    ConfigSettings();
-        //    NewProject(ProjectTypes.Interface);
-
-        //    this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(props.DataDirectory + "i_button.res");
-
-        //    if (this.ActiveProject.ActiveSprite != null)
-        //    {
-        //        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-        //        this.exportPngToolStripMenuItem.Enabled = true;
-        //        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-        //        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-        //    }
-
-        //    this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set");
-        //}
-        //[Conditional("DEBUG")]
-        //private void SaveProjectToDateTimeDirectory()
-        //{
-        //    //string projectName = "new_project_" + DateTime.Now.ToString("yyyyMMddHHmm");
-        //    //props.ProjectDirectory = props.ProjectsDirectory + projectName;
-
-        //    //if (!Directory.Exists(props.ProjectDirectory))
-        //    //    Directory.CreateDirectory(props.ProjectDirectory);
-
-        //    object sender = Misc.GetCurrentMethod();
-
-        //    this.saveSpriteToolStripMenuItem_Click(sender, EventArgs.Empty);
-        //    this.saveGameSetToolStripMenuItem_Click(sender, EventArgs.Empty);
-        //}
-        [Conditional("DEBUG")]
-        private void GetFileListing()
-        {
-            return;
-            IEnumerable<string> dirs = Directory.EnumerateDirectories(props.SkaaDataDirectory);
-
-            using (StreamWriter sw = new StreamWriter("file_types.csv"))
-            {
-                sw.WriteLine("Directory,File,FileExt,Format,Header");
-
-                foreach (string dir in dirs)
-                {
-                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
-
-                    foreach (string file in files)
-                    {
-                        //object[] data = SkaaGameDataLib.Misc.GetFileFormatListing(file);
-                        string header;
-
-                        //if (data[1] == null)
-                        //    data[1] = FileFormat.Unknown;
-                        //header = BitConverter.ToString((byte[]) data[0]);
-
-                        if (header == "68-65-61-64-65-72-20-6E-6F-74-20-72-65-61-64")
-                            header = "header not read";
-
-                        //sw.WriteLine($"{Path.GetFileName(dir)},{Path.GetFileName(file)},{Path.GetExtension(file)},{((FileFormat) data[1]).ToString()},{header}");
-                    }
-
-                }
-            }
         }
         [Conditional("DEBUG")]
         private static void WriteCsv(List<KeyValuePair<string, string>> files)
@@ -449,9 +332,9 @@ namespace SkaaEditorUI
         {
             if (TrySaveCloseProject(null, null))
                 NewProject(ProjectTypes.Sprite);
-
         }
         //////////////////////////////// Opening Things ////////////////////////////////
+        //todo: change the methods below to a single generic FileOpen_Click() handler and check the sender to decide action
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(this.ActiveProject != null)
@@ -472,44 +355,11 @@ namespace SkaaEditorUI
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             BeginOpenFile(FileFormats.SpriteSpr);
-
-//<<<<<<< HEAD
-//                if (dlg.ShowDialog() == DialogResult.OK)
-//                {
-//                    if (this.ActiveProject.LoadSprite(dlg.FileName) != null)
-//                    {
-//                        this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-//                        this.exportBmpToolStripMenuItem.Enabled = true;
-//                        this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
-//                    }
-//                }
-//            }
-//=======
-            //using (OpenFileDialog dlg = new OpenFileDialog())
-            //{
-            //    dlg.InitialDirectory = props.ApplicationDirectory;
-            //    dlg.DefaultExt = props.SprFileExtension;
-            //    dlg.Filter = $"7KAA Sprite Files (.spr)|*{props.SprFileExtension}";
-
-            //    if (dlg.ShowDialog() == DialogResult.OK)
-            //    {
-            //        this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(dlg.FileName);
-
-            //        if (this.ActiveProject.ActiveSprite != null)
-            //        {
-            //            this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-            //            this.exportPngToolStripMenuItem.Enabled = true;
-            //            this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-            //            this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-            //        }
-            //    }
-            //}
-//>>>>>>> alphav4_working
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //force closing the sprite for now
-            //todo: ask user to associate a set to sprite
+            //todo: ask user to associate a gameset to the sprite, or specify 'none'
             if (this.ActiveProject?.ActiveSprite != null && this.ActiveProject?.ActiveGameSet != null)
             {
                 string msg = "This will close the currently open file. Continue?";
@@ -526,18 +376,6 @@ namespace SkaaEditorUI
             }
 
             BeginOpenFile(FileFormats.GameSet);
-
-            //using (OpenFileDialog dlg = new OpenFileDialog())
-            //{
-            //    dlg.InitialDirectory = props.ApplicationDirectory;
-            //    dlg.DefaultExt = props.SetFileExtension;
-            //    dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
-
-            //    if (dlg.ShowDialog() == DialogResult.OK)
-            //    {
-            //        this.ActiveProject.LoadGameSet(dlg.FileName);
-            //    }
-            //}
         }
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -547,7 +385,6 @@ namespace SkaaEditorUI
         {
             BeginOpenFile(FileFormats.Palette);
         }
-
         private void SkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
         {
             List<KeyValuePair<string, string>> filesAndFormats = new List<KeyValuePair<string, string>>();
@@ -568,6 +405,7 @@ namespace SkaaEditorUI
             {
                 TryOpenFile(filename, FileFormats.Any, null);
                 
+                //todo: move these to their own method or separate form
                 //For debugging: Gets all files and their formats. Resets active gameset in case we open two set files
                 //this.ActiveProject.ActiveGameSet = new System.Data.DataSet();
                 //filesAndFormats.Add(new KeyValuePair<string, string>(filename, TryOpenFile(filename, FileFormats.Any, null).ToString()));
@@ -670,10 +508,10 @@ namespace SkaaEditorUI
         {
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                TryOpenFile(dlg.FileName, requestedFormat, openMethod);//, true);
+                TryOpenFile(dlg.FileName, requestedFormat, openMethod);
             }
         }
-        private FileFormats TryOpenFile(string filePath, FileFormats requestedFormat, Action openMethod)//, bool checkFileType = true)
+        private FileFormats TryOpenFile(string filePath, FileFormats requestedFormat, Action openMethod)
         { //todo: eliminate double call to CheckFileType with Drag/Drop and "Open File...". Prompt user with recognized filetype and ask for confirmation
             if (filePath == string.Empty)
                 throw new ArgumentException("Received null file path in TryOpenFile()!");
@@ -733,9 +571,6 @@ namespace SkaaEditorUI
 
                     if (!Directory.Exists(props.ProjectDirectory))
                         Directory.CreateDirectory(props.ProjectDirectory);
-
-                    //this.saveSpriteToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
-                    //this.saveGameSetToolStripMenuItem_Click(Misc.GetCurrentMethod(), EventArgs.Empty);
                 }
             }
         }
@@ -747,8 +582,10 @@ namespace SkaaEditorUI
         private void exportAllFramesToPngToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
+            {
+                Logger.TraceInformation("The SkaaImageBox.Image object cannot be null!");
                 return;
-                //Logger.TraceInformation("The SkaaImageBox.Image object cannot be null!");
+            }
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -772,7 +609,10 @@ namespace SkaaEditorUI
         private void exportCurFrameToPngToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.imageEditorBox.Image == null)
+            {
                 Logger.TraceInformation("The SkaaImageBox.Image object cannot be null!");
+                return;
+            }
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
@@ -894,9 +734,10 @@ namespace SkaaEditorUI
         //////////////////////////////// Frame/Sprite Updates ////////////////////////////////
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
         {
+            //todo: look into this and refactor as necessary... it's just bad design
             //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
             //but it's needed for the tracking bar to be able to make this update
-            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[this.timelineControl.CurrentFrame];
+            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[this.timelineControl.GetActiveFrameIndex()];
         }
         private void ActiveSprite_SpriteUpdated(object sender, EventArgs e) { }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
@@ -916,14 +757,10 @@ namespace SkaaEditorUI
             }
             else
             {
-//<<<<<<< HEAD
-//                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
-//=======
                 this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap;
-                ////Update the Timeline control with the changed image
-                //this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
-//>>>>>>> alphav4_working
-                this.timelineControl.UpdateCurrentFrame(this.imageEditorBox.Image);
+                
+                if (!this.timelineControl.SetCurrentFrameTo(this.imageEditorBox.Image))
+                    throw new Exception("Failed to update TimelineControl as the specified image does not exist in the List!");
             }
         }
         //////////////////////////////// Editing/Drawing UI ////////////////////////////////
@@ -941,10 +778,6 @@ namespace SkaaEditorUI
                 this.imageEditorBox.SelectedTool != DrawingTools.None)
             {
                 this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
-                /***********************************************************************
-                sraboy-18Dec15: Removed to fix merge hell. 
-                //this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
-                ************************************************************************/
                 this.timelineControl.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
             }
         }
@@ -1017,18 +850,7 @@ namespace SkaaEditorUI
             Directory.CreateDirectory(projectPath);
             this._tempFiles.Add(projectPath);
 
-//<<<<<<< HEAD
-//            //todo: implement an UpdateImage() method in Timelinecontrol
-//            //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
-//            this.timelineControl.UpdateCurrentFrame(imageEditorBox.Image);
-//        }
-//        private void SetDefaultActiveColors()
-//        {
-//            Color primary = Color.Black, secondary = Color.FromArgb(0,0,0,0);
-//            SetActiveColors(primary, secondary);
-//=======
             Project newProject = new Project(projectType);
-//>>>>>>> alphav4_working
 
             //need these events to fire before loading the objects
             newProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
@@ -1101,15 +923,9 @@ namespace SkaaEditorUI
 
             if (sprFiles.Count > 0)
             {
-                //<<<<<<< HEAD
-                //                open.LoadSprite(sprFiles.ElementAt(0));
-
-                //            this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
-                //=======
                 open.ActiveSprite = open.OpenSprite(sprFiles.ElementAt(0));
                 this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
             }
-                //>>>>>>> alphav4_working
         }
         private void CloseProject()
         {
