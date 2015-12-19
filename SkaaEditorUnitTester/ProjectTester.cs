@@ -34,110 +34,110 @@ namespace SkaaEditorUnitTester
             Debug.Assert(Directory.CreateDirectory(this.TempDirectory) != null, $"Failed to create TempDirectory: {this.TempDirectory}");
         }
 
-        [TestMethod]
-        public void MakeProjectGameSetPaletteSprite()
-        {
-            this.proj = new Project();
-            this.proj.LoadGameSet(this.DataDirectory + "std.set");
-            var check =
-                this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
-            Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
-            this.proj.OpenSprite(this.DataDirectory + "ballista.spr");
-        }
+        //[TestMethod]
+        //public void MakeProjectGameSetPaletteSprite()
+        //{
+        //    this.proj = new Project();
+        //    this.proj.OpenGameSet(this.DataDirectory + "std.set");
+        //    var check =
+        //        this.proj.LoadSprite(this.ProjectsDirectory + "edited\\ballista.spr");
+        //    Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
+        //    this.proj.LoadSprite(this.DataDirectory + "ballista.spr");
+        //}
 
-        [TestMethod]
-        public void MakeProjectGameSetSpritePalette()
-        {
-            this.proj = new Project();
-            this.proj.LoadGameSet(this.DataDirectory + "std.set");
-            var check = 
-                this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
-            Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
-        }
+        //[TestMethod]
+        //public void MakeProjectGameSetSpritePalette()
+        //{
+        //    this.proj = new Project();
+        //    this.proj.OpenGameSet(this.DataDirectory + "std.set");
+        //    var check = 
+        //        this.proj.LoadSprite(this.ProjectsDirectory + "edited\\ballista.spr");
+        //    Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //}
 
-        [TestMethod]
-        public void MakeProjectPaletteSpriteGameSet()
-        {
-            this.proj = new Project();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
-            this.proj.OpenSprite(this.DataDirectory + "ballista.spr");
-            this.proj.LoadGameSet(this.DataDirectory + "std.set");
-        }
+        //[TestMethod]
+        //public void MakeProjectPaletteSpriteGameSet()
+        //{
+        //    this.proj = new Project();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //    this.proj.LoadSprite(this.DataDirectory + "ballista.spr");
+        //    this.proj.OpenGameSet(this.DataDirectory + "std.set");
+        //}
 
-        [TestMethod]
-        public void MakeProjectPaletteGameSetSprite()
-        {
-            this.proj = new Project();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
-            this.proj.LoadGameSet(this.DataDirectory + "std.set");
-            this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
-        }
+        //[TestMethod]
+        //public void MakeProjectPaletteGameSetSprite()
+        //{
+        //    this.proj = new Project();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //    this.proj.OpenGameSet(this.DataDirectory + "std.set");
+        //    this.proj.LoadSprite(this.ProjectsDirectory + "edited\\ballista.spr");
+        //}
 
-        [TestMethod]
-        public void MakeProjectSpritePaletteGameSet()
-        {
-            this.proj = new Project();
-            var check = 
-                this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
-            Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
-            this.proj.LoadGameSet(this.DataDirectory + "std.set");
-        }
+        //[TestMethod]
+        //public void MakeProjectSpritePaletteGameSet()
+        //{
+        //    this.proj = new Project();
+        //    var check = 
+        //        this.proj.LoadSprite(this.ProjectsDirectory + "edited\\ballista.spr");
+        //    Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //    this.proj.OpenGameSet(this.DataDirectory + "std.set");
+        //}
 
-        [TestMethod]
-        public void MakeProjectSpriteGameSetPalette()
-        {
-            this.proj = new Project();
-            var check =
-                this.proj.OpenSprite(this.ProjectsDirectory + "edited\\ballista.spr");
-            Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
-            this.proj.LoadGameSet(this.DataDirectory + "std.set");
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
-        }
+        //[TestMethod]
+        //public void MakeProjectSpriteGameSetPalette()
+        //{
+        //    this.proj = new Project();
+        //    var check =
+        //        this.proj.LoadSprite(this.ProjectsDirectory + "edited\\ballista.spr");
+        //    Debug.Assert(check == null, "Sprite should be null when no palette is specified!");
+        //    this.proj.OpenGameSet(this.DataDirectory + "std.set");
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //}
 
-        [TestMethod]
-        public void ProjectChangeGameSet()
-        {
-            MakeProjectGameSetPaletteSprite();
-            this.proj.LoadGameSet(this.ProjectsDirectory + "edited\\std.set");
+        //[TestMethod]
+        //public void ProjectChangeGameSet()
+        //{
+        //    MakeProjectGameSetPaletteSprite();
+        //    this.proj.OpenGameSet(this.ProjectsDirectory + "edited\\std.set");
 
-            MakeProjectGameSetSpritePalette();
-            this.proj.LoadGameSet(this.ProjectsDirectory + "edited\\std.set");
+        //    MakeProjectGameSetSpritePalette();
+        //    this.proj.OpenGameSet(this.ProjectsDirectory + "edited\\std.set");
 
-            MakeProjectPaletteSpriteGameSet();
-            this.proj.LoadGameSet(this.ProjectsDirectory + "edited\\std.set");
+        //    MakeProjectPaletteSpriteGameSet();
+        //    this.proj.OpenGameSet(this.ProjectsDirectory + "edited\\std.set");
 
-            MakeProjectPaletteGameSetSprite();
-            this.proj.LoadGameSet(this.ProjectsDirectory + "edited\\std.set");
+        //    MakeProjectPaletteGameSetSprite();
+        //    this.proj.OpenGameSet(this.ProjectsDirectory + "edited\\std.set");
 
-            MakeProjectSpritePaletteGameSet();
-            this.proj.LoadGameSet(this.ProjectsDirectory + "edited\\std.set");
+        //    MakeProjectSpritePaletteGameSet();
+        //    this.proj.OpenGameSet(this.ProjectsDirectory + "edited\\std.set");
 
-            MakeProjectSpriteGameSetPalette();
-            this.proj.LoadGameSet(this.ProjectsDirectory + "edited\\std.set");
-        }
+        //    MakeProjectSpriteGameSetPalette();
+        //    this.proj.OpenGameSet(this.ProjectsDirectory + "edited\\std.set");
+        //}
 
-        [TestMethod]
-        public void ProjectChangePalette()
-        {
-            MakeProjectGameSetPaletteSprite();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //[TestMethod]
+        //public void ProjectChangePalette()
+        //{
+        //    MakeProjectGameSetPaletteSprite();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
-            MakeProjectGameSetSpritePalette();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //    MakeProjectGameSetSpritePalette();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
-            MakeProjectPaletteSpriteGameSet();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //    MakeProjectPaletteSpriteGameSet();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
-            MakeProjectPaletteGameSetSprite();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //    MakeProjectPaletteGameSetSprite();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
-            MakeProjectSpritePaletteGameSet();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //    MakeProjectSpritePaletteGameSet();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
 
-            MakeProjectSpriteGameSetPalette();
-            this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
-        }
+        //    MakeProjectSpriteGameSetPalette();
+        //    this.proj.OpenPalette(this.DataDirectory + "pal_std.res");
+        //}
     }
 }
