@@ -5,6 +5,8 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkaaEditorUI;
 using SkaaGameDataLib;
+using System.Data;
+using System.Drawing;
 
 namespace SkaaEditorUnitTester
 {
@@ -12,7 +14,6 @@ namespace SkaaEditorUnitTester
     public class ProjectTester
     {
         string ApplicationDirectory, DataDirectory, TempDirectory, ProjectsDirectory;
-        Project proj;
 
         //[STAThread]
         //static void Main()
@@ -35,19 +36,29 @@ namespace SkaaEditorUnitTester
             Debug.Assert(Directory.CreateDirectory(this.TempDirectory) != null, $"Failed to create TempDirectory: {this.TempDirectory}");
         }
 
+        private Project GetNewProject(string palettePath = null)
+        {
+            Project proj = new Project();
+            if (palettePath == null)
+                palettePath = this.DataDirectory + "pal_std.res";
+
+            proj.OpenPalette(palettePath);
+            return proj;
+        }
+
         [TestMethod]
         public void LoadResDbf()
         {
+            var proj = GetNewProject();
+
             string primaryDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rock1.res";
             string animationDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockani1.res";
             string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
             string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
 
-            using (FileStream fs = new FileStream(rockBmpDbf, FileMode.Open))
-            {
-                DbfFile file = new DbfFile();
-                Debug.Assert(file.ReadStream(fs) == true, "Failed to read file!");
-            }
+            Tuple<Sprite, DataSet> tuple = Project.LoadResDbf(rockBmpDbf, proj.ActivePalette);
+            Debug.Assert(tuple.Item1 != null, "Failed to load sprite data.");
+            Debug.Assert(tuple.Item2.Tables.Count > 0, "Failed to load data tables.");
         }
 
         //[TestMethod]
