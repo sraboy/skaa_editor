@@ -477,6 +477,12 @@ namespace SkaaEditorUI
                         dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
+                        OpenFile(dlg, format, () => 
+                        {
+                            Tuple<Sprite, DataSet> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
+                            this.ActiveProject.ActiveSprite = tup.Item1;
+                            this.ActiveProject.ActiveGameSet = tup.Item2;
+                        });
                         break;
                     case FileFormats.Palette:
                         dlg.Filter = $"7KAA Palette Files (*.res) (*.col)|*{props.ResFileExtension};*.col|All Files (*.*)|*.*";

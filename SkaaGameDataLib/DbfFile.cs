@@ -125,7 +125,7 @@ namespace SkaaGameDataLib
         internal const byte EofMarker = 0x1a;
         internal const byte Terminator = 0xD; //follows the header, after the list of FieldDescriptors
 
-        internal DataTable DataTable
+        public DataTable DataTable
         {
             get
             {

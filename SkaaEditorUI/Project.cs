@@ -225,9 +225,9 @@ namespace SkaaEditorUI
         * These are preferred to reduce the complexity of this class and because they may be used
         * be independent of the project. 
         *
-        * The odd one here is LoadResIdxMultiBmp(). It follows the convention but requires the caller
-        * to set up the ActiveGameSet as necessary. This is because, unlike Sprite with the GameSet,
-        * these files contain their own DataTable.
+        * Ann odd method here is LoadResIdxMultiBmp(). It follows the convention but requires the 
+        * caller to set up the ActiveGameSet as necessary. This is because, unlike Sprite with the 
+        * standard GameSet (std.set), these files contain their own DataTable.
         */
 
         public void OpenGameSet() => OpenGameSet(props.DataDirectory + props.SetStd);
@@ -249,7 +249,7 @@ namespace SkaaEditorUI
                 if(this.ActiveGameSet == null)
                     this.ActiveGameSet = new DataSet();
 
-                if(this.ActiveGameSet.Open(fs) == false) return false;
+                if(this.ActiveGameSet.OpenGameSet(fs) == false) return false;
             }
 
             SetActiveSpriteSframeDbfDataView();
@@ -351,7 +351,16 @@ namespace SkaaEditorUI
             Sprite spr = new Sprite();
             DataSet ds = new DataSet();
 
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            {
+                DbfFile file = new DbfFile();
 
+                if(file.ReadStream(fs) != true)
+                    throw new Exception("Failed to read DBF file.");
+
+                file.DataTable.TableName = Path.GetFileNameWithoutExtension(filepath);
+                ds.Tables.Add(file.DataTable);
+            }
 
             return new Tuple<Sprite, DataSet>(spr, ds);
         }
