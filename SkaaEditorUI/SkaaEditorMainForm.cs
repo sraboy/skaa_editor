@@ -145,8 +145,7 @@ namespace SkaaEditorUI
             {
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
                 this.exportBmpToolStripMenuItem.Enabled = true;
-                this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                        this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
             }
             
         }
@@ -410,8 +409,7 @@ namespace SkaaEditorUI
                     {
                         this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
                         this.exportBmpToolStripMenuItem.Enabled = true;
-                        this.timelineControl.ActiveSprite = this.ActiveProject.ActiveSprite;
-                        this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
+                        this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
                     }
                 }
             }
@@ -571,13 +569,13 @@ namespace SkaaEditorUI
         {
             //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
             //but it's needed for the tracking bar to be able to make this update
-            this.ActiveProject.ActiveFrame = timelineControl.ActiveFrame;
+            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[this.timelineControl.CurrentFrame];
         }
         private void ActiveSprite_SpriteUpdated(object sender, EventArgs e) { }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
-            this.timelineControl.ActiveSprite = this.ActiveProject?.ActiveSprite;
+
             this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
 
             //since a sprite has been un/loaded
@@ -588,12 +586,10 @@ namespace SkaaEditorUI
             if (this.ActiveProject?.ActiveFrame == null)
             {
                 this.imageEditorBox.Image = null;
-                this.timelineControl.ActiveFrame = null;
             }
             else
             {
                 this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.ImageBmp;
-                this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
             }
         }
         //////////////////////////////// Editing/Drawing UI ////////////////////////////////
@@ -747,7 +743,7 @@ namespace SkaaEditorUI
 
             //todo: implement an UpdateImage() method in Timelinecontrol
             //Update the TimeLineControl so the user can see the changes in the size it will be viewed in the game
-            this.timelineControl.PictureBoxImageFrame.Image = imageEditorBox.Image;
+            this.timelineControl.UpdateCurrentFrame(imageEditorBox.Image);
         }
         private void SetDefaultActiveColors()
         {
@@ -837,8 +833,11 @@ namespace SkaaEditorUI
             this.ActiveProject = open;
             open.LoadPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
 
+
             if (sprFiles.Count > 0)
                 open.LoadSprite(sprFiles.ElementAt(0));
+
+            this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
         }
         private void CloseProject()
         {
@@ -853,8 +852,7 @@ namespace SkaaEditorUI
             this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
 
-            this.timelineControl.ActiveFrame = null;
-            this.timelineControl.ActiveSprite = null;
+            this.timelineControl.SetFrameList(null);
             this.imageEditorBox.Image = null;
 
             this.ActiveProject = null; //do this last so the event fires after nulling imageEditorBox

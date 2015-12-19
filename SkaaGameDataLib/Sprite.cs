@@ -139,5 +139,10 @@ namespace SkaaGameDataLib
                 return false;
             }
         }
+        public List<Image> GetFrameImages()
+        {
+           List<Image> frames = this.Frames.Select(x => x.ImageBmp).ToList<Image>();
+            return frames;
+        }
     }
 }
