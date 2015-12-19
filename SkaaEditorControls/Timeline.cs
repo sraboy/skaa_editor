@@ -177,6 +177,7 @@ namespace SkaaEditorControls
         public void SetFrameList(List<Image> frames)
         {
             this.Frames = frames;
+
             this.animationTimer.Enabled = false;
             if (Initialized)
             {

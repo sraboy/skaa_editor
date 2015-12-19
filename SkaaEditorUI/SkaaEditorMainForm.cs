@@ -902,9 +902,9 @@ namespace SkaaEditorUI
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
-
+            this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
             this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
-
+            
             //since a sprite has been un/loaded
             SetupUI();
         }
@@ -923,6 +923,7 @@ namespace SkaaEditorUI
                 ////Update the Timeline control with the changed image
                 //this.timelineControl.ActiveFrame = this.ActiveProject.ActiveFrame;
 //>>>>>>> alphav4_working
+                this.timelineControl.UpdateCurrentFrame(this.imageEditorBox.Image);
             }
         }
         //////////////////////////////// Editing/Drawing UI ////////////////////////////////
