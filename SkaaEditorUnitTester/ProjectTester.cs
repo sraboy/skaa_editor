@@ -56,9 +56,9 @@ namespace SkaaEditorUnitTester
             string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
             string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
 
-            Tuple<Sprite, DataSet> tuple = Project.LoadResDbf(rockBmpDbf, proj.ActivePalette);
+            Tuple<Sprite, DataTable> tuple = Project.LoadResDbf(rockBmpDbf, proj.ActivePalette);
             Debug.Assert(tuple.Item1 != null, "Failed to load sprite data.");
-            Debug.Assert(tuple.Item2.Tables.Count > 0, "Failed to load data tables.");
+            Debug.Assert(tuple.Item2.Rows.Count > 0, "Failed to load data rows.");
         }
 
         //[TestMethod]
