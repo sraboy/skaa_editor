@@ -54,7 +54,7 @@ namespace SkaaEditorControls
         {
             EventHandler handler = _activeFrameChanged;
 
-            this.picBoxFrame.Image = this._frameImages[_currentFrameIndex];
+            //this.picBoxFrame.Image = this._frameImages[_currentFrameIndex];
             this.frameSlider.Value = this._currentFrameIndex;
 
             if (handler != null)
@@ -91,12 +91,11 @@ namespace SkaaEditorControls
             this._frameImages = frames;
 
             this.animationTimer.Enabled = false;
-            if (_isInitialized)
-            {
-                this.frameSlider.Maximum = this._frameImages.Count - 1;
-                this.frameSlider.Minimum = 0;
-                this.UpdateCurrentFrame();
-            }
+         
+            this.frameSlider.Maximum = _isInitialized ? this._frameImages.Count - 1 : 0;
+            this.frameSlider.Minimum = 0;
+            this._currentFrameIndex = 0;
+            this.UpdateCurrentFrame();
         }
         public Image GetActiveFrame()
         {
@@ -173,7 +172,7 @@ namespace SkaaEditorControls
         //}
         private void UpdateCurrentFrame()
         {
-            this.picBoxFrame.Image = this._frameImages[this._currentFrameIndex];
+            this.picBoxFrame.Image = this._frameImages?[this._currentFrameIndex] ?? null;// : this._frameImages[this._currentFrameIndex];
             RaiseActiveFrameChangedEvent(EventArgs.Empty);
         }
         #endregion
