@@ -60,7 +60,8 @@ namespace SkaaGameDataLib
             {
                 str.Position = kv.Value; //the DBF's offset value in the set file
                 DbfFile file = new DbfFile();
-                if (file.ReadStream(str) != true) return false;
+                if (file.ReadStream(str) != true)
+                    return false;
                 file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);// + ".dbf");
                 file.DataTable.ExtendedProperties.Add("FileName", (str as FileStream)?.Name);
                 ds.Tables.Add(file.DataTable);
@@ -68,7 +69,7 @@ namespace SkaaGameDataLib
             return true;
         }
 
-        public static void Save(this DataSet ds, string filepath)
+        public static void SaveGameSet(this DataSet ds, string filepath)
         {
             Dictionary<string, int> dic = new Dictionary<string, int>();
 
@@ -85,6 +86,10 @@ namespace SkaaGameDataLib
 
                         foreach (DataTable dt in ds.Tables)
                         {
+                            //ignore DataTables not part of the Standard Game Set
+                            if (Path.GetFileName((string) dt.ExtendedProperties["FileName"]) != "std.set")
+                                continue;
+
                             //write SET header's record definitions
                             //---------------------
                             //char[9] record_names
