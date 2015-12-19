@@ -62,6 +62,7 @@ namespace SkaaGameDataLib
                 DbfFile file = new DbfFile();
                 if (file.ReadStream(str) != true) return false;
                 file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);// + ".dbf");
+                file.DataTable.ExtendedProperties.Add("FileName", (str as FileStream)?.Name);
                 ds.Tables.Add(file.DataTable);
             }
             return true;

@@ -312,6 +312,7 @@ namespace SkaaEditorUI
         {
             Sprite spr = new Sprite();
             DataTable dt = new DataTable();
+            dt.ExtendedProperties.Add("FileName", filepath);
             dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = "FrameName" });
             dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = "FrameOffset" });
 
@@ -359,6 +360,7 @@ namespace SkaaEditorUI
                     throw new Exception("Failed to read DBF file.");
 
                 file.DataTable.TableName = Path.GetFileNameWithoutExtension(filepath);
+                file.DataTable.ExtendedProperties.Add("FileName", filepath);
                 ds.Tables.Add(file.DataTable);
             }
 
