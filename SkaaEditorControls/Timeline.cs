@@ -33,9 +33,7 @@ namespace SkaaEditorControls
 {
     public partial class TimelineControl : UserControl
     {
-        /*
-            Event Handling
-        */
+        #region ActiveFrameChanged Event
         [field: NonSerialized]
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
@@ -56,114 +54,27 @@ namespace SkaaEditorControls
         {
             EventHandler handler = _activeFrameChanged;
 
-//<<<<<<< HEAD
-            this.picBoxFrame.Image = this.Frames[CurrentFrame];
-            this.frameSlider.Value = this.CurrentFrame;
-//=======
-//            this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-//            this.picBoxFrame.Image = this._activeFrame?.IndexedBitmap?.Bitmap;
-//            this.frameSlider.Value = this._activeFrameIndex == -1 ? 0 : this._activeFrameIndex;
-
-//            if (handler != null)
-//            {
-//                handler(this, e);
-//            }
-//        }
-//        [field: NonSerialized]
-//        private EventHandler _activeSpriteChanged;
-//        public event EventHandler ActiveSpriteChanged
-//        {
-//            add
-//            {
-//                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
-//                {
-//                    _activeSpriteChanged += value;
-//                }
-//            }
-//            remove
-//            {
-//                _activeSpriteChanged -= value;
-//            }
-//        }
-//        protected virtual void RaiseActiveSpriteChangedEvent(EventArgs e)
-//        {
-//            EventHandler handler = _activeSpriteChanged;
-//>>>>>>> alphav4_working
+            this.picBoxFrame.Image = this._frameImages[_currentFrameIndex];
+            this.frameSlider.Value = this._currentFrameIndex;
 
             if (handler != null)
             {
                 handler(this, e);
             }
         }
+        #endregion
 
-//<<<<<<< HEAD
-        // Variables
-        private List<Image> Frames;
-//=======
-//        private Sprite _activeSprite;
-//        private Frame _activeFrame;
-//        private int _activeFrameIndex;
-//        private int _preAnimateActiveFrameIndex;
-//>>>>>>> alphav4_working
-
-        public int CurrentFrame;
-        public int AnimationStartPoint;
-        public bool Initialized {
+        private List<Image> _frameImages;
+        private int _currentFrameIndex;
+        private int _animationStartPoint;
+        private bool _isInitialized
+        {
             get
             {
-//<<<<<<< HEAD
-                return this.Frames != null;
+                return this._frameImages != null;
             }
         }
 
-
-        // Constructor
-//=======
-//                return this.picBoxFrame;
-//            }
-//            set
-//            {
-//                if (this.picBoxFrame != value)
-//                    this.picBoxFrame = value;
-//            }
-//        }
-
-//        //todo: remove Sprite and Frame references. Replace with List<Bitmap>
-//        public Sprite ActiveSprite
-//        {
-//            get
-//            {
-//                return this._activeSprite;
-//            }
-//            set
-//            {
-//                if(this._activeSprite != value)
-//                {
-//                    this._activeSprite = value;
-//                    OnActiveSpriteChanged(EventArgs.Empty);
-//                }
-//            }
-//        }
-//        public Frame ActiveFrame
-//        {
-//            get
-//            {
-//                if (!this.animationTimer.Enabled)
-//                    return this._activeFrame;
-//                else
-//                    return this._activeSprite.Frames[_preAnimateActiveFrameIndex];
-//            }
-//            set
-//            {
-//                if (this._activeFrame != value)
-//                {
-//                    this._activeFrame = value;
-//                    OnActiveFrameChanged(EventArgs.Empty);
-//                }
-//            }
-//        }
-        
-//>>>>>>> alphav4_working
         public TimelineControl()
         {
             InitializeComponent();
@@ -174,32 +85,107 @@ namespace SkaaEditorControls
             this.animationTimer.Interval = 150;
         }
 
+        #region Public Methods
         public void SetFrameList(List<Image> frames)
         {
-            this.Frames = frames;
+            this._frameImages = frames;
 
             this.animationTimer.Enabled = false;
-            if (Initialized)
+            if (_isInitialized)
             {
-                this.frameSlider.Maximum = this.Frames.Count - 1;
+                this.frameSlider.Maximum = this._frameImages.Count - 1;
                 this.frameSlider.Minimum = 0;
-                this.SetCurrentFrame();
+                this.UpdateCurrentFrame();
             }
         }
-
-        private void picBoxFrame_Click(object sender, MouseEventArgs e) 
+        public Image GetActiveFrame()
         {
-//<<<<<<< HEAD
-            if (!Initialized) return;
-//=======
-            //this._activeFrameIndex = this.ActiveSprite == null ? 0 : this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
-            //this.picBoxFrame.Image = this._activeFrame?.IndexedBitmap.Bitmap;
-            //this.frameSlider.Value = this._activeFrameIndex >= 0 ? this._activeFrameIndex : 0;
-//>>>>>>> alphav4_working
+            return this._frameImages[this._currentFrameIndex];
+        }
+        public int GetActiveFrameIndex()
+        {
+            return this._currentFrameIndex;
+        }
+        /// <summary>
+        /// Changes the internal representation of the currently-displayed image to the specified image
+        /// </summary>
+        /// <param name="frame">The new image</param>
+        public void UpdateCurrentFrame(Image frame)
+        {
+            this._frameImages[this._currentFrameIndex] = frame;
+            this.UpdateCurrentFrame();
+        }
+        /// <summary>
+        /// Updates the control to display the specified image, if it exists in the <see cref="List"/> 
+        /// passed to <see cref="SetFrameList(List{Image})"/>
+        /// </summary>
+        /// <param name="frame">The image to find and display</param>
+        /// <returns>true if the image was found and the control was updated, false otherwise</returns>
+        public bool SetCurrentFrameTo(Image frame)
+        {
+            this._currentFrameIndex = this._frameImages.FindIndex(img => img == frame);
+
+            if (this._currentFrameIndex != -1)
+            {
+                this.UpdateCurrentFrame();
+                return true;
+            }
+            else
+            {
+                this._currentFrameIndex = 0;
+                this.UpdateCurrentFrame();
+                return false;
+            }
+        }
+        #endregion
+
+        #region Private Methods
+        private void NextFrame()
+        {
+            if (this._isInitialized)
+            {
+                this._currentFrameIndex = (this._currentFrameIndex + 1) % (_frameImages.Count - 1);
+                this.UpdateCurrentFrame();
+            }
+        }
+        private void PrevFrame()
+        {
+            if (this._isInitialized)
+            {
+                this._currentFrameIndex--;
+                if (this._currentFrameIndex < 0)
+                {
+                    this._currentFrameIndex = _frameImages.Count;
+                }
+                this._currentFrameIndex %= _frameImages.Count - 1;
+                this.UpdateCurrentFrame();
+            }
+        }
+        //private void UpdateCurrentFrame(Image frame)
+        //{
+        //    this.CurrentFrame = this.Frames.IndexOf(frame);
+        //    this.UpdateCurrentFrame();
+        //}
+        //private void UpdateCurrentFrame(int frameIndex)
+        //{
+        //    this.CurrentFrame = frameIndex;
+        //    this.UpdateCurrentFrame();
+        //}
+        private void UpdateCurrentFrame()
+        {
+            this.picBoxFrame.Image = this._frameImages[this._currentFrameIndex];
+            RaiseActiveFrameChangedEvent(EventArgs.Empty);
+        }
+        #endregion
+
+        #region Event Handlers
+        private void picBoxFrame_Click(object sender, MouseEventArgs e)
+        {
+            if (!_isInitialized) return;
 
             if (!this.animationTimer.Enabled)
             {
-                switch(e.Button)
+                switch (e.Button)
                 {
                     case MouseButtons.Left:
                         this.NextFrame();
@@ -212,7 +198,8 @@ namespace SkaaEditorControls
                         if (SM == PictureBoxSizeMode.CenterImage)
                         {
                             SM = PictureBoxSizeMode.Zoom;
-                        } else
+                        }
+                        else
                         {
                             SM = PictureBoxSizeMode.CenterImage;
                         }
@@ -220,23 +207,22 @@ namespace SkaaEditorControls
                         break;
                 }
             }
-
-
         }
         private void frameSlider_ValueChanged(object sender, EventArgs e)
         {
-            this.CurrentFrame = frameSlider.Value;
-            this.SetCurrentFrame();
+            this._currentFrameIndex = frameSlider.Value;
+            this.UpdateCurrentFrame();
         }
         private void picBoxFrame_DoubleClick(object sender, EventArgs e)
         {
             this.animationTimer.Enabled = !this.animationTimer.Enabled;
             if (this.animationTimer.Enabled)
             {
-                this.AnimationStartPoint = this.CurrentFrame;
-            } else
+                this._animationStartPoint = this._currentFrameIndex;
+            }
+            else
             {
-                this.CurrentFrame = this.AnimationStartPoint - 1;
+                this._currentFrameIndex = this._animationStartPoint - 1;
             }
             this.NextFrame();
         }
@@ -244,52 +230,6 @@ namespace SkaaEditorControls
         {
             this.NextFrame();
         }
-
-        private void NextFrame() {
-            if (this.Initialized)
-            {
-                this.CurrentFrame = (this.CurrentFrame + 1) % (Frames.Count - 1);
-                this.SetCurrentFrame();
-            }
-        }
-        private void PrevFrame()
-        {
-            if (this.Initialized)
-            {
-                this.CurrentFrame--;
-                if (this.CurrentFrame < 0)
-                {
-                    this.CurrentFrame = Frames.Count;
-                }
-                this.CurrentFrame %= Frames.Count - 1;
-                this.SetCurrentFrame();
-            }
-        }
-        private void SetCurrentFrame(Image frame)
-        {
-            this.CurrentFrame = this.Frames.IndexOf(frame);
-            this.SetCurrentFrame();
-        }
-        private void SetCurrentFrame(int frameIndex)
-        {
-            this.CurrentFrame = frameIndex;
-            this.SetCurrentFrame();
-        }
-        private void SetCurrentFrame()
-        {
-            this.picBoxFrame.Image = this.Frames[this.CurrentFrame];
-            RaiseActiveFrameChangedEvent(EventArgs.Empty);
-        }
-
-        public Image GetActiveFrame()
-        {
-            return this.Frames[this.CurrentFrame];
-        }
-        //todo: rename this to SetCurrentFrame to keep naming consistency
-        public void UpdateCurrentFrame(Image frame)
-        {
-            this.Frames[this.CurrentFrame] = frame;
-            this.SetCurrentFrame();
-        }
+        #endregion
     }
 }
