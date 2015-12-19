@@ -5,25 +5,22 @@
     <Setting Name="DataDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="TempDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="ProjectsDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ApplicationDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="DefaultPaletteFile" Type="System.String" Scope="User">
+    <Setting Name="PalStd" Type="System.String" Scope="User">
       <Value Profile="(Default)">pal_std.res</Value>
     </Setting>
-    <Setting Name="DefaultGameSetFile" Type="System.String" Scope="User">
+    <Setting Name="SetStd" Type="System.String" Scope="User">
       <Value Profile="(Default)">std.set</Value>
     </Setting>
-    <Setting Name="GameSetFileExtension" Type="System.String" Scope="User">
+    <Setting Name="SetFileExtension" Type="System.String" Scope="User">
       <Value Profile="(Default)">.set</Value>
     </Setting>
-    <Setting Name="SpriteFileExtension" Type="System.String" Scope="User">
+    <Setting Name="SprFileExtension" Type="System.String" Scope="User">
       <Value Profile="(Default)">.spr</Value>
     </Setting>
     <Setting Name="SkaaDataDirectory" Type="System.String" Scope="User">
@@ -31,6 +28,24 @@
     </Setting>
     <Setting Name="ProjectDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TempDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PalWin" Type="System.String" Scope="User">
+      <Value Profile="(Default)">pal_win.res</Value>
+    </Setting>
+    <Setting Name="PalEnc" Type="System.String" Scope="User">
+      <Value Profile="(Default)">pal_enc.res</Value>
+    </Setting>
+    <Setting Name="PalMenu" Type="System.String" Scope="User">
+      <Value Profile="(Default)">pal_menu.res</Value>
+    </Setting>
+    <Setting Name="PalFileExtension" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.pal</Value>
+    </Setting>
+    <Setting Name="ResFileExtension" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.res</Value>
     </Setting>
   </Settings>
 </SettingsFile>

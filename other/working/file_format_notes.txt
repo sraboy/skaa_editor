@@ -1,0 +1,55 @@
+/*
+RawRec = (i_raw.res, NAME_LEN = 12)
+RAW_DB = raw.dbf (raw_count = recordCount = 3)
+RawInfo = dbf record, NAME_LEN = 20??
+
+i_raw.res = typeof(Resource : File)
+------------------------
+ResourceIdx uses ResIndex where CODE_LEN = 9
+SECtrl (Sound Effects, OSE.cpp)
+GameSet
+AudioBase 
+ImageRes
+TechRes
+Tutor
+*/
+Audio:
+	A_WAVE2  = wav_res
+	A_WAVE1  = se_ctrl
+ImageRes:
+	I_ICON   = image_icon 			
+	I_IF     = image_interface	
+	I_MENU   = image_menu
+	I_BUTTON = image_button
+	I_SPICT  = image_spict
+	I_ENCYC  = image_encyc
+	I_TPICT# = image_tpict (# = terrain_set)
+	TUT_PICT = image_tutorial
+	I_MENU2  = image_menu_plus
+	I_MENU2  = image_menu2
+/*
+------------------------
+All others use CODE_LEN = 8
+*/
+
+SpriteRes         sprite_res
+SpriteFrameRes    sprite_frame_res
+UnitRes           unit_res
+TerrainRes        terrain_res
+PlantRes          plant_res
+WallRes           wall_res
+RawRes            raw_res
+FirmRes           firm_res
+FirmDieRes		  firm_die_res
+RaceRes           race_res
+TownRes           town_res
+HillRes           hill_res
+TalkRes           talk_res
+TechRes           tech_res
+GodRes            god_res
+MonsterRes        monster_res
+SnowRes           snow_res
+RockRes           rock_res
+//ExploredMask      explored_mask
+Help              help
+Tutor             tutor

@@ -1,6 +1,6 @@
 ﻿namespace Capslock.WinForms.ImageEditor
 {
-    public partial class SkaaImageBox
+    public partial class ImageEditorBox
     {
         /// <summary> 
         /// Required designer variable.

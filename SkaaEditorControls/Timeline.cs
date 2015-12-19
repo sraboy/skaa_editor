@@ -56,8 +56,39 @@ namespace SkaaEditorControls
         {
             EventHandler handler = _activeFrameChanged;
 
+//<<<<<<< HEAD
             this.picBoxFrame.Image = this.Frames[CurrentFrame];
             this.frameSlider.Value = this.CurrentFrame;
+//=======
+//            this._activeFrameIndex = this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
+//            this.picBoxFrame.Image = this._activeFrame?.IndexedBitmap?.Bitmap;
+//            this.frameSlider.Value = this._activeFrameIndex == -1 ? 0 : this._activeFrameIndex;
+
+//            if (handler != null)
+//            {
+//                handler(this, e);
+//            }
+//        }
+//        [field: NonSerialized]
+//        private EventHandler _activeSpriteChanged;
+//        public event EventHandler ActiveSpriteChanged
+//        {
+//            add
+//            {
+//                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
+//                {
+//                    _activeSpriteChanged += value;
+//                }
+//            }
+//            remove
+//            {
+//                _activeSpriteChanged -= value;
+//            }
+//        }
+//        protected virtual void RaiseActiveSpriteChangedEvent(EventArgs e)
+//        {
+//            EventHandler handler = _activeSpriteChanged;
+//>>>>>>> alphav4_working
 
             if (handler != null)
             {
@@ -65,20 +96,74 @@ namespace SkaaEditorControls
             }
         }
 
+//<<<<<<< HEAD
         // Variables
         private List<Image> Frames;
+//=======
+//        private Sprite _activeSprite;
+//        private Frame _activeFrame;
+//        private int _activeFrameIndex;
+//        private int _preAnimateActiveFrameIndex;
+//>>>>>>> alphav4_working
 
         public int CurrentFrame;
         public int AnimationStartPoint;
         public bool Initialized {
             get
             {
+//<<<<<<< HEAD
                 return this.Frames != null;
             }
         }
 
 
         // Constructor
+//=======
+//                return this.picBoxFrame;
+//            }
+//            set
+//            {
+//                if (this.picBoxFrame != value)
+//                    this.picBoxFrame = value;
+//            }
+//        }
+
+//        //todo: remove Sprite and Frame references. Replace with List<Bitmap>
+//        public Sprite ActiveSprite
+//        {
+//            get
+//            {
+//                return this._activeSprite;
+//            }
+//            set
+//            {
+//                if(this._activeSprite != value)
+//                {
+//                    this._activeSprite = value;
+//                    OnActiveSpriteChanged(EventArgs.Empty);
+//                }
+//            }
+//        }
+//        public Frame ActiveFrame
+//        {
+//            get
+//            {
+//                if (!this.animationTimer.Enabled)
+//                    return this._activeFrame;
+//                else
+//                    return this._activeSprite.Frames[_preAnimateActiveFrameIndex];
+//            }
+//            set
+//            {
+//                if (this._activeFrame != value)
+//                {
+//                    this._activeFrame = value;
+//                    OnActiveFrameChanged(EventArgs.Empty);
+//                }
+//            }
+//        }
+        
+//>>>>>>> alphav4_working
         public TimelineControl()
         {
             InitializeComponent();
@@ -103,7 +188,13 @@ namespace SkaaEditorControls
 
         private void picBoxFrame_Click(object sender, MouseEventArgs e) 
         {
+//<<<<<<< HEAD
             if (!Initialized) return;
+//=======
+            //this._activeFrameIndex = this.ActiveSprite == null ? 0 : this.ActiveSprite.Frames.FindIndex(0, (f => f == _activeFrame));
+            //this.picBoxFrame.Image = this._activeFrame?.IndexedBitmap.Bitmap;
+            //this.frameSlider.Value = this._activeFrameIndex >= 0 ? this._activeFrameIndex : 0;
+//>>>>>>> alphav4_working
 
             if (!this.animationTimer.Enabled)
             {
@@ -136,7 +227,6 @@ namespace SkaaEditorControls
             this.CurrentFrame = frameSlider.Value;
             this.SetCurrentFrame();
         }
-
         private void picBoxFrame_DoubleClick(object sender, EventArgs e)
         {
             this.animationTimer.Enabled = !this.animationTimer.Enabled;
@@ -149,6 +239,10 @@ namespace SkaaEditorControls
             }
             this.NextFrame();
         }
+        private void AnimationTimer_Tick(object sender, EventArgs e)
+        {
+            this.NextFrame();
+        }
 
         private void NextFrame() {
             if (this.Initialized)
@@ -157,7 +251,6 @@ namespace SkaaEditorControls
                 this.SetCurrentFrame();
             }
         }
-
         private void PrevFrame()
         {
             if (this.Initialized)
@@ -171,35 +264,27 @@ namespace SkaaEditorControls
                 this.SetCurrentFrame();
             }
         }
-
-        private void AnimationTimer_Tick(object sender, EventArgs e)
-        {
-            this.NextFrame();
-        }
-
         private void SetCurrentFrame(Image frame)
         {
             this.CurrentFrame = this.Frames.IndexOf(frame);
             this.SetCurrentFrame();
         }
-
         private void SetCurrentFrame(int frameIndex)
         {
             this.CurrentFrame = frameIndex;
             this.SetCurrentFrame();
         }
-
         private void SetCurrentFrame()
         {
             this.picBoxFrame.Image = this.Frames[this.CurrentFrame];
             RaiseActiveFrameChangedEvent(EventArgs.Empty);
         }
 
-        public Image ActiveFrame()
+        public Image GetActiveFrame()
         {
             return this.Frames[this.CurrentFrame];
         }
-
+        //todo: rename this to SetCurrentFrame to keep naming consistency
         public void UpdateCurrentFrame(Image frame)
         {
             this.Frames[this.CurrentFrame] = frame;

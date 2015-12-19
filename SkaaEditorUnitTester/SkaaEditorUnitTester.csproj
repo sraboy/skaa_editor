@@ -37,6 +37,15 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
@@ -107,15 +116,8 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(ProjectDir)$(OutDir)data"
-copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"
-mkdir "$(ProjectDir)$(OutDir)projects"
-mkdir "$(ProjectDir)$(OutDir)projects\edited"
-copy "$(ProjectDir)..\other\test_projects\edited\*" "$(ProjectDir)$(OutDir)projects\edited"
-mkdir "$(ProjectDir)$(OutDir)projects\example"
-copy "$(ProjectDir)..\other\test_projects\example\*" "$(ProjectDir)$(OutDir)projects\example"
-mkdir "$(ProjectDir)$(OutDir)projects\junk"
-copy "$(ProjectDir)..\other\test_projects\junk\*" "$(ProjectDir)$(OutDir)projects\junk"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /y "$(ProjectDir)..\other\test_projects\*.*" "$(ProjectDir)$(OutDir)data\projects\"
+copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

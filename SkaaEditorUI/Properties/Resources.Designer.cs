@@ -61,12 +61,12 @@ namespace SkaaEditorUI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Icon logo_modern {
+        internal static System.Drawing.Bitmap Kazuya_Hartless {
             get {
-                object obj = ResourceManager.GetObject("logo_modern", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                object obj = ResourceManager.GetObject("Kazuya-Hartless", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

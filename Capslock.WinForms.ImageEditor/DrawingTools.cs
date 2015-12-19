@@ -30,11 +30,12 @@ using System.Threading.Tasks;
 
 namespace Capslock.WinForms.ImageEditor
 {
-    public enum ToolModes
+    public enum DrawingTools
     {
         None,
         Pan,
         Pencil,
+        Line,
         PaintBucket
     };
 }

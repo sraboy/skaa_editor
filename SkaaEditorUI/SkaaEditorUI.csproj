@@ -91,6 +91,15 @@
   <PropertyGroup>
     <SignManifests>false</SignManifests>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -113,6 +122,7 @@
     </Compile>
     <Compile Include="Misc.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="ProjectTyping.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -161,6 +171,10 @@
     <None Include="SkaaEditorUI.licenseheader" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj">
+      <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
+      <Name>Capslock.WinForms.ImageEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
       <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>
       <Name>Cyotek.Windows.Forms.ColorPicker</Name>
@@ -168,10 +182,6 @@
     <ProjectReference Include="..\Cyotek.Windows.Forms.ImageBox\Cyotek.Windows.Forms.ImageBox.csproj">
       <Project>{4159c8d3-c18d-4bed-8be6-9bad1b0ca4f6}</Project>
       <Name>Cyotek.Windows.Forms.ImageBox</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj">
-      <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
-      <Name>Capslock.WinForms.ImageEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\SkaaEditorControls\SkaaEditorControls.csproj">
       <Project>{a6836ea4-c3ca-4179-bc90-c6768fcead6f}</Project>
@@ -181,9 +191,6 @@
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
       <Name>SkaaGameDataLib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\logo_modern.ico" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\MenuFileNewIcon.png" />
@@ -205,6 +212,10 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Kazuya-Hartless.ico" />
+    <Content Include="Resources\Kazuya-Hartless.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -220,14 +231,7 @@
     <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(ProjectDir)$(OutDir)data"
-copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"
-mkdir "$(ProjectDir)$(OutDir)projects"
-mkdir "$(ProjectDir)$(OutDir)projects\edited"
-copy "$(ProjectDir)..\other\test_projects\edited\*" "$(ProjectDir)$(OutDir)projects\edited"
-mkdir "$(ProjectDir)$(OutDir)projects\example"
-copy "$(ProjectDir)..\other\test_projects\example\*" "$(ProjectDir)$(OutDir)projects\example"
-mkdir "$(ProjectDir)$(OutDir)projects\junk"
-copy "$(ProjectDir)..\other\test_projects\junk\*" "$(ProjectDir)$(OutDir)projects\junk"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /y "$(ProjectDir)..\other\test_projects\*.*" "$(ProjectDir)$(OutDir)data\projects\"
+copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
