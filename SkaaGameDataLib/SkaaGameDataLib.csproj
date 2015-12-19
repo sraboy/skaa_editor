@@ -79,6 +79,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="SkaaGameDataLib.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BitmapProcessing\BitmapProcessing.csproj">
