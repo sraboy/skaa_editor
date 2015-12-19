@@ -479,9 +479,10 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<Sprite, DataSet> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
-                            this.ActiveProject.ActiveSprite = tup.Item1;
-                            this.ActiveProject.ActiveGameSet = tup.Item2;
+                            Tuple<Sprite, DataTable> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
+                            //this.ActiveProject.ActiveSprite = tup.Item1;
+                            this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
+                            this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
                         });
                         break;
                     case FileFormats.Palette:
@@ -496,9 +497,10 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<Sprite, DataSet> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
+                            Tuple<Sprite, DataTable> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
+                            this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
+                            this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
                             this.ActiveProject.ActiveSprite = tup.Item1;
-                            this.ActiveProject.ActiveGameSet = tup.Item2;
                         });
                         break;
                     case FileFormats.Any: //user did not specify file type via UI menus (drag/drop or generic Open File)
@@ -667,10 +669,10 @@ namespace SkaaEditorUI
                 {
                     case FileFormats.GameSet:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
-                        dlg.Filter = $"7KAA Game Set Files (.set)|*{props.SetFileExtension}";
+                        dlg.Filter = $"7KAA Game Set Files|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
-                        dlg.FileName = "std.set|All Files (*.*)|*.*";
-                        ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveGameSet.Save(dlg.FileName));
+                        dlg.FileName = "std.set";
+                        ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName));
                         break;
                     case FileFormats.SpritePNG:
                         dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
@@ -755,13 +757,13 @@ namespace SkaaEditorUI
             //todo: look into this and refactor as necessary... it's just bad design
             //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
             //but it's needed for the tracking bar to be able to make this update
-            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite.Frames[this.timelineControl.GetActiveFrameIndex()];
+            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite?.Frames[this.timelineControl.GetActiveFrameIndex()];
         }
         private void ActiveSprite_SpriteUpdated(object sender, EventArgs e) { }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
-            this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
+            this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
             this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
             
             //since a sprite has been un/loaded

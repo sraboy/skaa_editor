@@ -254,7 +254,7 @@ namespace SkaaEditorUI
 
             SetActiveSpriteSframeDbfDataView();
 
-            return false;
+            return true;
         }
         /// <summary>
         /// Loads a palette file.
@@ -308,7 +308,7 @@ namespace SkaaEditorUI
 
             return frame;
         }
-        public static Tuple<Sprite, DataSet> LoadResIdxMultiBmp(string filepath, ColorPalette pal)
+        public static Tuple<Sprite, DataTable> LoadResIdxMultiBmp(string filepath, ColorPalette pal)
         {
             Sprite spr = new Sprite();
             DataTable dt = new DataTable();
@@ -342,15 +342,12 @@ namespace SkaaEditorUI
                 }
             }
 
-            DataSet ds = new DataSet();
-            ds.Tables.Add(dt);
-
-            return new Tuple<Sprite, DataSet>( spr, ds );
+            return new Tuple<Sprite, DataTable>( spr, dt );
         }
-        public static Tuple<Sprite, DataSet> LoadResDbf(string filepath, ColorPalette pal)
+        public static Tuple<Sprite, DataTable> LoadResDbf(string filepath, ColorPalette pal)
         {
             Sprite spr = new Sprite();
-            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
@@ -361,10 +358,10 @@ namespace SkaaEditorUI
 
                 file.DataTable.TableName = Path.GetFileNameWithoutExtension(filepath);
                 file.DataTable.ExtendedProperties.Add("FileName", filepath);
-                ds.Tables.Add(file.DataTable);
+                dt = file.DataTable;
             }
 
-            return new Tuple<Sprite, DataSet>(spr, ds);
+            return new Tuple<Sprite, DataTable>(spr, dt);
         }
 
         public void SaveResIdxMultiBmp(string filepath)
@@ -374,6 +371,9 @@ namespace SkaaEditorUI
                 using (MemoryStream headerstream = new MemoryStream())
                 {
                     DataTable dt = this.ActiveGameSet.Tables[this.ActiveSprite.SpriteId];
+                    if (dt.TableName != Path.GetFileNameWithoutExtension((string) dt.ExtendedProperties["FileName"]))
+                        throw new Exception("TableName does not match file's original file name!");
+
                     int headersize = (dt.Rows.Count + 1) * ResourceDatabase.ResIdxDefinitionSize;
                     byte[] recordcount = BitConverter.GetBytes((short) dt.Rows.Count + 1); //+1 for the empty record
                     headerstream.Write(recordcount, 0, recordcount.Length);
