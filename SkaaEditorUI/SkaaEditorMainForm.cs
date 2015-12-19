@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Cyotek.Windows.Forms;
 using Capslock.WinForms.ImageEditor;
+using System.Data;
 
 namespace SkaaEditorUI
 {
@@ -98,7 +99,8 @@ namespace SkaaEditorUI
         {
             ConfigSettings();
             NewProject(ProjectTypes.Sprite);
-            this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(props.DataDirectory + "ballista.spr");
+            this.ActiveProject.ActiveSprite = Project.LoadSprite(props.DataDirectory + "ballista.spr", this.ActiveProject.ActivePalette);
+            this.ActiveProject.SetActiveSpriteSframeDbfDataView();
 
             if (this.ActiveProject.ActiveSprite != null)
             {
@@ -107,7 +109,7 @@ namespace SkaaEditorUI
                 this.exportPngToolStripMenuItem.Enabled = true;
             }
 
-            if (this.ActiveProject.LoadGameSet(props.DataDirectory + "std.set"))
+            if (this.ActiveProject.OpenGameSet(props.DataDirectory + "std.set"))
                 this.saveGameSetToolStripMenuItem.Enabled = true;
         }
         [Conditional("DEBUG")]
@@ -334,7 +336,6 @@ namespace SkaaEditorUI
                 NewProject(ProjectTypes.Sprite);
         }
         //////////////////////////////// Opening Things ////////////////////////////////
-        //todo: change the methods below to a single generic FileOpen_Click() handler and check the sender to decide action
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(this.ActiveProject != null)
@@ -385,6 +386,7 @@ namespace SkaaEditorUI
         {
             BeginOpenFile(FileFormats.Palette);
         }
+        //todo: change the methods above to a single generic FileOpen_Click() handler and check the sender to decide action
         private void SkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
         {
             List<KeyValuePair<string, string>> filesAndFormats = new List<KeyValuePair<string, string>>();
@@ -429,66 +431,71 @@ namespace SkaaEditorUI
 
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
+                dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
+
                 switch (format)
                 {
                     case FileFormats.GameSet: //set file
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Game Set Files (*.set)|*{props.SetFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => this.ActiveProject.LoadGameSet(dlg.FileName));
+                        OpenFile(dlg, format, () => this.ActiveProject.OpenGameSet(dlg.FileName));
                         break;
                     //case FileFormat.SpritePNG:
-                    //    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                     //    dlg.DefaultExt = ".png";
                     //    dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                     //    dlg.FileName = filepath;
                     //    //ShowOpenFileDialog(dlg, format, () => this.ActiveProject.LoadSprite(dlg.FileName));
                     //    break;
                     //case FileFormat.FramePNG:
-                    //    dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                     //    dlg.DefaultExt = ".png";
                     //    dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                     //    dlg.FileName = filepath;
                     //    //ShowOpenFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveFrame));
                     //    break;
                     case FileFormats.SpriteSpr:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = this.ActiveProject.OpenSprite(dlg.FileName); });
+                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = Project.LoadSprite(dlg.FileName, this.ActiveProject.ActivePalette); });
+                        this.ActiveProject.SetActiveSpriteSframeDbfDataView();
                         break;
                     case FileFormats.SpriteFrameSpr:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => {
+                        OpenFile(dlg, format, () => 
+                        {
                             Sprite spr;
                             if (this.ActiveProject.ActiveSprite == null) spr = new Sprite();
                             else spr = this.ActiveProject.ActiveSprite;
-                            spr.Frames.Add((SpriteFrame)this.ActiveProject.LoadFrame(dlg.FileName));
+                            spr.Frames.Add((SpriteFrame)Project.LoadFrame(dlg.FileName, this.ActiveProject.ActivePalette));
                             this.ActiveProject.ActiveSprite = spr;
                         });
                         break;
-                    case FileFormats.DbaseIII: //todo: add DBF saving for RES files
+                    case FileFormats.DbaseIII:
+                        dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
+                        dlg.DefaultExt = props.ResFileExtension;
+                        dlg.FileName = filepath;
                         break;
                     case FileFormats.Palette:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Palette Files (*.res) (*.col)|*{props.ResFileExtension};*.col|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => this.ActiveProject.OpenPalette(dlg.FileName));
                         break;
                     case FileFormats.ResIdxMultiBmp:
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
+                        OpenFile(dlg, format, () => 
+                        {
+                            Tuple<Sprite, DataSet> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
+                            this.ActiveProject.ActiveSprite = tup.Item1;
+                            this.ActiveProject.ActiveGameSet = tup.Item2;
+                        });
                         break;
                     case FileFormats.Any: //user did not specify file type via UI menus (drag/drop or generic Open File)
-                        dlg.InitialDirectory = props.ProjectDirectory == null || this._tempProjectFolder ? props.ProjectsDirectory : props.ProjectDirectory;
                         OpenFile(dlg, format, null);
                         break;
                 }
@@ -520,11 +527,16 @@ namespace SkaaEditorUI
 
             this.tsStatusLblFileType.Text = "Checking file type...";
             var actualFormat = FileTypeChecks.CheckFileType(filePath);
-            
+
             if (requestedFormat == FileFormats.Any && actualFormat != FileFormats.Unknown) //user did not specify file type via UI menus (drag/drop or generic Open File)
-                BeginOpenFile(actualFormat, filePath);                                   //now make the request again with the real file type
+            {
+                BeginOpenFile(actualFormat, filePath);                                     //now make the request again with the real file type
+            }
             else if (actualFormat == FileFormats.Unknown)                                  //we can't figure out what this. user must specify a file type
-                return actualFormat;//MessageBox.Show($"Could not determine the data format of:\r\n \'{Path.GetFileName(filePath)}\'", "Unknown file type!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            {
+                //MessageBox.Show($"Could not determine the data format of:\r\n \'{Path.GetFileName(filePath)}\'", "Unknown file type!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return actualFormat;
+            }
 
             if (actualFormat == requestedFormat && openMethod != null)                   //user specified file type or we figured it out after user specified FileFormat.Any
             {
@@ -915,7 +927,7 @@ namespace SkaaEditorUI
             }
 
             if (setFiles.Count > 0)
-                open.LoadGameSet(setFiles.ElementAt(0));
+                open.OpenGameSet(setFiles.ElementAt(0));
 
             this.ActiveProject = open;
             open.OpenPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
@@ -923,7 +935,8 @@ namespace SkaaEditorUI
 
             if (sprFiles.Count > 0)
             {
-                open.ActiveSprite = open.OpenSprite(sprFiles.ElementAt(0));
+                open.ActiveSprite = Project.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
+                open.SetActiveSpriteSframeDbfDataView();
                 this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
             }
         }

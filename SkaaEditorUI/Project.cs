@@ -36,6 +36,9 @@ using System.Threading.Tasks;
 
 namespace SkaaEditorUI
 {
+    /// <summary>
+    /// Represents a set of open files and settings.
+    /// </summary>
     [Serializable]
     public partial class Project
     {
@@ -211,8 +214,23 @@ namespace SkaaEditorUI
         public Project(ProjectTypes type) { this.ProjectType = type; this.Initialize(); }
         private void Initialize() { /*this.UnsavedSprites = new List<Sprite>();*/ }
         #endregion
-    
-        public void LoadGameSet() => LoadGameSet(props.DataDirectory + props.SetStd);
+
+        /*
+        * Note OpenXYZ vs LoadXYZ. 
+        * OpenXYZ methods are setting up the project by changing the palette, etc. They will 
+        * change its state are are necessary for future operations with the Project. These 
+        * should be used sparingly.
+        * 
+        * LoadXYZ methods are static and return the loaded objects for the caller to handle.
+        * These are preferred to reduce the complexity of this class and because they may be used
+        * be independent of the project. 
+        *
+        * The odd one here is LoadResIdxMultiBmp(). It follows the convention but requires the caller
+        * to set up the ActiveGameSet as necessary. This is because, unlike Sprite with the GameSet,
+        * these files contain their own DataTable.
+        */
+
+        public void OpenGameSet() => OpenGameSet(props.DataDirectory + props.SetStd);
         /// <summary>
         /// This function will open the specified 7KAA SET file.
         /// </summary>
@@ -220,7 +238,7 @@ namespace SkaaEditorUI
         /// <remarks>
         ///  A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
         /// </remarks>
-        public bool LoadGameSet(string filepath)
+        public bool OpenGameSet(string filepath)
         {
             if (!File.Exists(filepath))
                 filepath = props.DataDirectory + props.SetStd;
@@ -238,7 +256,6 @@ namespace SkaaEditorUI
 
             return false;
         }
-
         /// <summary>
         /// Loads a palette file.
         /// </summary>
@@ -251,6 +268,7 @@ namespace SkaaEditorUI
             if (this.ActivePalette == null)
                 Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load palette: {filepath}");
         }
+
         /// <summary>
         /// Opens an SPR file and creates a <see cref="Sprite"/> object for it
         /// </summary>
@@ -261,28 +279,27 @@ namespace SkaaEditorUI
         /// in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". SPR files are 
         /// are considered <code>FLAT</code> by 7KAA. 
         /// </remarks>
-        public Sprite OpenSprite(string filepath)
+        public static Sprite LoadSprite(string filepath, ColorPalette pal)
         {
-            if (this.ActivePalette == null)
+            if (pal == null)
             { 
-                Logger.TraceEvent(TraceEventType.Error, 0, "Cannot load a Sprite if the ActivePalette is null.");
+                Logger.TraceEvent(TraceEventType.Error, 0, "Cannot load a Sprite without a specified palette.");
                 return null;
             }
 
             Sprite spr;
 
             using (FileStream spritestream = File.OpenRead(filepath))
-                spr = Sprite.FromSprStream(spritestream, this.ActivePalette);
+                spr = Sprite.FromSprStream(spritestream, pal);
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
 
-            SetActiveSpriteSframeDbfDataView();
             return spr;
         }
-        public Frame LoadFrame(string filepath)
+        public static Frame LoadFrame(string filepath, ColorPalette pal)
         {          
             SpriteFrame frame = new SpriteFrame(null);
-            frame.IndexedBitmap = new IndexedBitmap(this.ActivePalette);
+            frame.IndexedBitmap = new IndexedBitmap(pal);
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
@@ -291,7 +308,7 @@ namespace SkaaEditorUI
 
             return frame;
         }
-        public Sprite LoadResIdxMultiBmp(string filepath)
+        public static Tuple<Sprite, DataSet> LoadResIdxMultiBmp(string filepath, ColorPalette pal)
         {
             Sprite spr = new Sprite();
             DataTable dt = new DataTable();
@@ -307,13 +324,13 @@ namespace SkaaEditorUI
                 foreach (string key in dic.Keys)
                 {
                     fs.Position = dic[key];
-                    Frame f = new Frame();
-                    f.Name = key;
-                    IndexedBitmap iBmp = new IndexedBitmap(this.ActivePalette);
-                    f.IndexedBitmap = iBmp;
+                    SpriteFrame sf = new SpriteFrame(null);
+                    sf.Name = key;
+                    IndexedBitmap iBmp = new IndexedBitmap(pal);
+                    sf.IndexedBitmap = iBmp;
                     iBmp.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
                     
-                    spr.Frames.Add((SpriteFrame)f);
+                    spr.Frames.Add(sf);
 
                     DataRow row = dt.NewRow();
                     dt.Rows.Add(row);
@@ -324,10 +341,19 @@ namespace SkaaEditorUI
                 }
             }
 
-            this.ActiveGameSet = new DataSet();
-            this.ActiveGameSet.Tables.Add(dt);
+            DataSet ds = new DataSet();
+            ds.Tables.Add(dt);
 
-            return spr;
+            return new Tuple<Sprite, DataSet>( spr, ds );
+        }
+        public static Tuple<Sprite, DataSet> LoadResDbf(string filepath, ColorPalette pal)
+        {
+            Sprite spr = new Sprite();
+            DataSet ds = new DataSet();
+
+
+
+            return new Tuple<Sprite, DataSet>(spr, ds);
         }
 
         public void SaveResIdxMultiBmp(string filepath)
@@ -404,7 +430,7 @@ namespace SkaaEditorUI
             f.IndexedBitmap.Bitmap.Save(filepath);
         }
         
-        private void SetActiveSpriteSframeDbfDataView()
+        public void SetActiveSpriteSframeDbfDataView()
         {
             if (this.ActiveSprite != null && this.ProjectType == ProjectTypes.Sprite)
             {

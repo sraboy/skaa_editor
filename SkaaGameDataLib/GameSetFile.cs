@@ -52,7 +52,7 @@ namespace SkaaGameDataLib
             return fs;
         }
 
-        public static bool Open(this DataSet ds, Stream str)
+        public static bool OpenGameSet(this DataSet ds, Stream str)
         {
             var defs = ResourceDatabase.ReadDefinitions(str, true);
 

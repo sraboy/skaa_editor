@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkaaEditorUI;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUnitTester
 {
@@ -32,6 +33,21 @@ namespace SkaaEditorUnitTester
 
             Debug.Assert(Directory.CreateDirectory(this.ProjectsDirectory) != null, $"Failed to create ProjectsDirectory: {this.ProjectsDirectory}");
             Debug.Assert(Directory.CreateDirectory(this.TempDirectory) != null, $"Failed to create TempDirectory: {this.TempDirectory}");
+        }
+
+        [TestMethod]
+        public void LoadResDbf()
+        {
+            string primaryDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rock1.res";
+            string animationDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockani1.res";
+            string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
+            string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
+
+            using (FileStream fs = new FileStream(rockBmpDbf, FileMode.Open))
+            {
+                DbfFile file = new DbfFile();
+                Debug.Assert(file.ReadStream(fs) == true, "Failed to read file!");
+            }
         }
 
         //[TestMethod]
