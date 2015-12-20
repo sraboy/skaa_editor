@@ -96,7 +96,7 @@ namespace SkaaEditorUI
             if (this.ActiveProject.ActiveSprite != null)
             {
                 this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
+                this.timelineControl1.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
                 this.exportPngToolStripMenuItem.Enabled = true;
             }
 

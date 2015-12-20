@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using BrightIdeasSoftware;
 
 namespace SkaaEditorControls
 {
@@ -75,6 +76,18 @@ namespace SkaaEditorControls
             }
         }
 
+        public ObjectListView ObjectListViewControl
+        {
+            get
+            {
+                return this.objectListView1;
+            }
+            set
+            {
+                this.objectListView1 = value;
+            }
+        }
+
         public TimelineControl()
         {
             InitializeComponent();
@@ -86,6 +99,10 @@ namespace SkaaEditorControls
         }
 
         #region Public Methods
+        public void SetImageGetter(ImageGetterDelegate imageGetter)
+        {
+            this.colImage.ImageGetter = imageGetter;
+        }
         public void SetFrameList(List<Image> frames)
         {
             this._frameImages = frames;

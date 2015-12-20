@@ -138,7 +138,7 @@ namespace SkaaEditorUI
             this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
 
             //this is needed so we can respond when the user uses the tracking bar to change frames
-            this.timelineControl.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
+            this.timelineControl1.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
 
             //this event is only called when the entire image changes: during frame changes or loading/closing a sprite
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
@@ -219,7 +219,7 @@ namespace SkaaEditorUI
             this.saveGameSetToolStripMenuItem.Enabled = (this.ActiveProject?.ActiveGameSet == null) ? false : true;
 
             //need a sprite to navigate a sprite's frames
-            this.timelineControl.Enabled = (this.ActiveProject?.ActiveSprite == null) ? false : true;
+            this.timelineControl1.Enabled = (this.ActiveProject?.ActiveSprite == null) ? false : true;
 
             //can't close a project that's not open
             this.closeProjectToolStripMenuItem.Enabled = this.ActiveProject == null ? false : true;
@@ -662,15 +662,15 @@ namespace SkaaEditorUI
         private object SpriteFrameImageGetter(object rowObject)
         {
             Frame f = (Frame) rowObject;
-            if (this.objectListView1.RowHeight < f.IndexedBitmap.Bitmap.Height)
-                this.objectListView1.RowHeight = f.IndexedBitmap.Bitmap.Height;
+            if (this.timelineControl1.ObjectListViewControl.RowHeight < f.IndexedBitmap.Bitmap.Height)
+                this.timelineControl1.ObjectListViewControl.RowHeight = f.IndexedBitmap.Bitmap.Height;
             return f.IndexedBitmap.Bitmap;
         }
         private void SetUpObjectListView()
         {
-            this.objectListView1.ShowImagesOnSubItems = true;
-            this.colImage.ImageGetter = SpriteFrameImageGetter;
-            this.objectListView1.SetObjects(this.ActiveProject.ActiveSprite.Frames);
+            this.timelineControl1.ObjectListViewControl.ShowImagesOnSubItems = true;
+            this.timelineControl1.SetImageGetter(SpriteFrameImageGetter);
+            this.timelineControl1.ObjectListViewControl.SetObjects(this.ActiveProject.ActiveSprite.Frames);
         }
         #region Other Event Handlers
         //////////////////////////////// Frame/Sprite Updates ////////////////////////////////
@@ -679,13 +679,13 @@ namespace SkaaEditorUI
             //todo: look into this and refactor as necessary... it's just bad design
             //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
             //but it's needed for the tracking bar to be able to make this update
-            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite?.Frames[this.timelineControl.GetActiveFrameIndex()];
+            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite?.Frames[this.timelineControl1.GetActiveFrameIndex()];
         }
         private void ActiveSprite_SpriteUpdated(object sender, EventArgs e) { }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
-            this.timelineControl.SetFrameList(this.ActiveProject?.ActiveSprite?.GetFrameImages());
+            this.timelineControl1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetFrameImages());
             this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
             SetUpObjectListView();
                         
@@ -702,7 +702,7 @@ namespace SkaaEditorUI
             {
                 this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap;
                 
-                if (!this.timelineControl.SetCurrentFrameTo(this.imageEditorBox.Image))
+                if (!this.timelineControl1.SetCurrentFrameTo(this.imageEditorBox.Image))
                     throw new Exception("Failed to update TimelineControl as the specified image does not exist in the List!");
             }
         }
@@ -721,7 +721,7 @@ namespace SkaaEditorUI
                 this.imageEditorBox.SelectedTool != DrawingTools.None)
             {
                 this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
-                this.timelineControl.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
+                this.timelineControl1.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
             }
         }
         private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
@@ -845,7 +845,7 @@ namespace SkaaEditorUI
             {
                 open.ActiveSprite = Project.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
                 open.SetActiveSpriteSframeDbfDataView();
-                this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
+                this.timelineControl1.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
             }
         }
         private void CloseProject()
@@ -861,7 +861,7 @@ namespace SkaaEditorUI
             this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
 
-            this.timelineControl.SetFrameList(null);
+            this.timelineControl1.SetFrameList(null);
             this.imageEditorBox.Image = null;
 
             this.ActiveProject = null; //do this last so the event fires after nulling imageEditorBox
