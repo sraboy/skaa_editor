@@ -101,6 +101,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ObjectListView, Version=2.9.0.25611, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
+      <HintPath>..\packages\ObjectListView.Official.2.9.0\lib\net20\ObjectListView.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -121,6 +125,12 @@
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Misc.cs" />
+    <Compile Include="ObjectListViewContainer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectListViewContainer.Designer.cs">
+      <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Project.cs" />
     <Compile Include="ProjectTyping.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -147,6 +157,9 @@
     </Compile>
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ObjectListViewContainer.resx">
+      <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SkaaEditorMainForm.resx">
       <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
