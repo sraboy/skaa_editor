@@ -130,6 +130,7 @@ namespace SkaaEditorControls
         {
             this._frameImages[this._currentFrameIndex] = frame;
             this.UpdateCurrentFrame();
+            this.objectListView1.Refresh();
         }
         /// <summary>
         /// Updates the control to display the specified image, if it exists in the <see cref="List"/> 
