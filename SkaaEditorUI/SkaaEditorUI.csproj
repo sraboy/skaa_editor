@@ -132,7 +132,6 @@
       <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
     </Compile>
     <Compile Include="Project.cs" />
-    <Compile Include="ProjectTyping.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

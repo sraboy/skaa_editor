@@ -146,9 +146,10 @@ namespace SkaaGameDataLib
             return frames;
         }
         /// <summary>
-        /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="GameSetDataTable"/> and 
+        /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="DataView"/> and 
         /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRows"/>
-        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.BitmapOffset"/>.
+        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.BitmapOffset"/>. It also
+        /// reads the FILENAME property into <see cref="Frame.Name"/>.
         /// </summary>
         /// <returns>False if any frame did not have a match in the DataView. True otherwise.</returns>
         internal bool MatchFrameOffsets()
@@ -156,7 +157,9 @@ namespace SkaaGameDataLib
             foreach (DataRowView drv in this.DataView)
             {
                 int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
+                string name = (string) drv.Row.ItemArray[8];
                 SpriteFrame sf = this.Frames.Find(f => f.BitmapOffset == offset);
+                sf.Name = name;
 
                 if (sf == null)
                 {
@@ -276,7 +279,7 @@ namespace SkaaGameDataLib
                     IndexedBitmap iBmp = new IndexedBitmap(pal);
                     SpriteFrame sf = new SpriteFrame(spr);
                     sf.IndexedBitmap = iBmp;
-                    //str.Position += 4; //skip the int32 size value at the start
+                    sf.BitmapOffset = str.Position;
                     iBmp.SetBitmapFromRleStream(str, FileFormats.SpriteSpr);
                     spr.Frames.Add(sf);
                 }

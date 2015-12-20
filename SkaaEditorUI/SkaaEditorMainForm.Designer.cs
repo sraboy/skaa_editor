@@ -67,9 +67,8 @@ namespace SkaaEditorUI
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSpriteFrameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,6 +85,7 @@ namespace SkaaEditorUI
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnDebugAction = new System.Windows.Forms.Button();
             this.lbDebugActions = new System.Windows.Forms.ListBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -94,13 +94,18 @@ namespace SkaaEditorUI
             this.toolStripBtnSaveProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnCloseProject = new System.Windows.Forms.ToolStripButton();
             this.drawingToolbox = new Capslock.WinForms.ImageEditor.DrawingToolbox();
+            this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
+            this.btnBrowseGameSet = new System.Windows.Forms.Button();
+            this.objectListView1 = new BrightIdeasSoftware.ObjectListView();
+            this.colName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.colOffset = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.colImage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
             this.timelineControl = new SkaaEditorControls.TimelineControl();
-            this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
-            this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.objectListView1)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -121,6 +126,7 @@ namespace SkaaEditorUI
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.saveProjectToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.closeProjectToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -134,7 +140,7 @@ namespace SkaaEditorUI
             this.newProjectToolStripMenuItem,
             this.spriteToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.newToolStripMenuItem.Text = "New";
             // 
             // newProjectToolStripMenuItem
@@ -160,7 +166,7 @@ namespace SkaaEditorUI
             this.openSpriteToolStripMenuItem,
             this.openGameSetToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // openProjectToolStripMenuItem
@@ -197,36 +203,30 @@ namespace SkaaEditorUI
             this.openGameSetToolStripMenuItem.Text = "Game Set";
             this.openGameSetToolStripMenuItem.Click += new System.EventHandler(this.openGameSetToolStripMenuItem_Click);
             // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveProjectToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.saveGameSetToolStripMenuItem,
-            this.saveSpriteToolStripMenuItem,
-            this.saveSpriteFrameToolStripMenuItem});
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            // 
             // saveProjectToolStripMenuItem
             // 
             this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
             this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.saveProjectToolStripMenuItem.Text = "&Project";
-            this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.saveProjectToolStripMenuItem.Text = "Save &Project";
             // 
-            // toolStripSeparator1
+            // saveToolStripMenuItem
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(148, 6);
+            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveGameSetToolStripMenuItem,
+            this.saveSpriteToolStripMenuItem,
+            this.saveSpriteFrameToolStripMenuItem});
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.saveToolStripMenuItem.Text = "Save &File";
             // 
             // saveGameSetToolStripMenuItem
             // 
             this.saveGameSetToolStripMenuItem.Name = "saveGameSetToolStripMenuItem";
             this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.saveGameSetToolStripMenuItem.Text = "Game Set";
+            this.saveGameSetToolStripMenuItem.Text = "Game Set (std)";
+            this.saveGameSetToolStripMenuItem.ToolTipText = "Saves the standard game set with any current edits. This file is \"std.set\" in 7KA" +
+    "A an includes 36 specific data tables for use in the game.";
             this.saveGameSetToolStripMenuItem.Click += new System.EventHandler(this.saveGameSetToolStripMenuItem_Click);
             // 
             // saveSpriteToolStripMenuItem
@@ -246,14 +246,14 @@ namespace SkaaEditorUI
             // closeProjectToolStripMenuItem
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.closeProjectToolStripMenuItem.Text = "Close Project";
             this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -342,6 +342,14 @@ namespace SkaaEditorUI
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "SkaaEditor ALPHA v0.1";
             // 
+            // tsStatusLblFileType
+            // 
+            this.tsStatusLblFileType.Name = "tsStatusLblFileType";
+            this.tsStatusLblFileType.Size = new System.Drawing.Size(1008, 17);
+            this.tsStatusLblFileType.Spring = true;
+            this.tsStatusLblFileType.Text = "No File Loaded";
+            this.tsStatusLblFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // btnDebugAction
             // 
             this.btnDebugAction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -364,50 +372,6 @@ namespace SkaaEditorUI
             this.lbDebugActions.Size = new System.Drawing.Size(124, 134);
             this.lbDebugActions.TabIndex = 15;
             this.lbDebugActions.Visible = false;
-            // 
-            // drawingToolbox
-            // 
-            this.drawingToolbox.Location = new System.Drawing.Point(1, 52);
-            this.drawingToolbox.Margin = new System.Windows.Forms.Padding(2);
-            this.drawingToolbox.Name = "drawingToolbox";
-            this.drawingToolbox.Size = new System.Drawing.Size(175, 69);
-            this.drawingToolbox.TabIndex = 16;
-            // 
-            // colorGridChooser
-            // 
-            this.colorGridChooser.AutoAddColors = false;
-            this.colorGridChooser.CellSize = new System.Drawing.Size(18, 18);
-            this.colorGridChooser.Columns = 8;
-            this.colorGridChooser.EditMode = Cyotek.Windows.Forms.ColorEditingMode.None;
-            this.colorGridChooser.Location = new System.Drawing.Point(0, 127);
-            this.colorGridChooser.Name = "colorGridChooser";
-            this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.Standard256;
-            this.colorGridChooser.ShowCustomColors = false;
-            this.colorGridChooser.Size = new System.Drawing.Size(175, 679);
-            this.colorGridChooser.TabIndex = 14;
-            this.colorGridChooser.ColorChanged += new System.EventHandler(this.ColorGridChooser_ColorChanged);
-            // 
-            // timelineControl
-            // 
-            this.timelineControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.timelineControl.Location = new System.Drawing.Point(888, 27);
-            this.timelineControl.Name = "timelineControl";
-            this.timelineControl.Size = new System.Drawing.Size(129, 172);
-            this.timelineControl.TabIndex = 12;
-            // 
-            // imageEditorBox
-            // 
-            this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
-            this.imageEditorBox.GridCellSize = 12;
-            this.imageEditorBox.Location = new System.Drawing.Point(181, 52);
-            this.imageEditorBox.Name = "imageEditorBox";
-            this.imageEditorBox.Size = new System.Drawing.Size(706, 777);
-            this.imageEditorBox.TabIndex = 8;
             // 
             // toolStrip1
             // 
@@ -474,6 +438,66 @@ namespace SkaaEditorUI
             this.drawingToolbox.Size = new System.Drawing.Size(175, 69);
             this.drawingToolbox.TabIndex = 16;
             // 
+            // imageEditorBox
+            // 
+            this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
+            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.imageEditorBox.AutoPan = false;
+            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
+            this.imageEditorBox.GridCellSize = 12;
+            this.imageEditorBox.Location = new System.Drawing.Point(181, 52);
+            this.imageEditorBox.Name = "imageEditorBox";
+            this.imageEditorBox.Size = new System.Drawing.Size(706, 754);
+            this.imageEditorBox.TabIndex = 8;
+            // 
+            // btnBrowseGameSet
+            // 
+            this.btnBrowseGameSet.Location = new System.Drawing.Point(893, 614);
+            this.btnBrowseGameSet.Name = "btnBrowseGameSet";
+            this.btnBrowseGameSet.Size = new System.Drawing.Size(124, 23);
+            this.btnBrowseGameSet.TabIndex = 18;
+            this.btnBrowseGameSet.Text = "Browse GameSet";
+            this.btnBrowseGameSet.UseVisualStyleBackColor = true;
+            this.btnBrowseGameSet.Click += new System.EventHandler(this.btnBrowseGameSet_Click);
+            // 
+            // objectListView1
+            // 
+            this.objectListView1.AllColumns.Add(this.colName);
+            this.objectListView1.AllColumns.Add(this.colOffset);
+            this.objectListView1.AllColumns.Add(this.colImage);
+            this.objectListView1.CellEditUseWholeCell = false;
+            this.objectListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colName,
+            this.colOffset,
+            this.colImage});
+            this.objectListView1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.objectListView1.HighlightBackgroundColor = System.Drawing.Color.Empty;
+            this.objectListView1.HighlightForegroundColor = System.Drawing.Color.Empty;
+            this.objectListView1.Location = new System.Drawing.Point(777, 235);
+            this.objectListView1.Name = "objectListView1";
+            this.objectListView1.Size = new System.Drawing.Size(234, 203);
+            this.objectListView1.TabIndex = 19;
+            this.objectListView1.UseCompatibleStateImageBehavior = false;
+            this.objectListView1.View = System.Windows.Forms.View.Details;
+            // 
+            // colName
+            // 
+            this.colName.AspectName = "Name";
+            this.colName.Text = "Name";
+            // 
+            // colOffset
+            // 
+            this.colOffset.AspectName = "BitmapOffset";
+            this.colOffset.Text = "Offset";
+            // 
+            // colImage
+            // 
+            this.colImage.AspectName = "";
+            this.colImage.Text = "Frame";
+            // 
             // colorGridChooser
             // 
             this.colorGridChooser.AutoAddColors = false;
@@ -490,36 +514,11 @@ namespace SkaaEditorUI
             // 
             // timelineControl
             // 
-            //this.timelineControl.ActiveFrame = null;
-            //this.timelineControl.ActiveSprite = null;
             this.timelineControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.timelineControl.Location = new System.Drawing.Point(888, 27);
             this.timelineControl.Name = "timelineControl";
             this.timelineControl.Size = new System.Drawing.Size(129, 172);
             this.timelineControl.TabIndex = 12;
-            // 
-            // imageEditorBox
-            // 
-            this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.imageEditorBox.AutoPan = false;
-            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
-            this.imageEditorBox.GridCellSize = 12;
-            this.imageEditorBox.Location = new System.Drawing.Point(181, 52);
-            this.imageEditorBox.Name = "imageEditorBox";
-            this.imageEditorBox.Size = new System.Drawing.Size(706, 754);
-            this.imageEditorBox.TabIndex = 8;
-            // 
-            // tsStatusLblFileType
-            // 
-            this.tsStatusLblFileType.Name = "tsStatusLblFileType";
-            this.tsStatusLblFileType.Size = new System.Drawing.Size(1008, 17);
-            this.tsStatusLblFileType.Spring = true;
-            this.tsStatusLblFileType.Text = "No File Loaded";
-            this.tsStatusLblFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // SkaaEditorMainForm
             // 
@@ -527,6 +526,8 @@ namespace SkaaEditorUI
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1023, 831);
+            this.Controls.Add(this.objectListView1);
+            this.Controls.Add(this.btnBrowseGameSet);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.drawingToolbox);
             this.Controls.Add(this.lbDebugActions);
@@ -550,6 +551,7 @@ namespace SkaaEditorUI
             this.statusStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.objectListView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -584,8 +586,6 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem spriteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private Capslock.WinForms.ImageEditor.DrawingToolbox drawingToolbox;
@@ -598,5 +598,11 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
+        private System.Windows.Forms.Button btnBrowseGameSet;
+        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
+        private BrightIdeasSoftware.ObjectListView objectListView1;
+        private BrightIdeasSoftware.OLVColumn colName;
+        private BrightIdeasSoftware.OLVColumn colOffset;
+        private BrightIdeasSoftware.OLVColumn colImage;
     }
 }

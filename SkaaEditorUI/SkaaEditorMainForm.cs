@@ -347,6 +347,7 @@ namespace SkaaEditorUI
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => this.ActiveProject.OpenGameSet(dlg.FileName));
+                        SetUpObjectListView();
                         break;
                     //case FileFormat.SpritePNG:
                     //    dlg.DefaultExt = ".png";
@@ -658,6 +659,19 @@ namespace SkaaEditorUI
         }
         #endregion
 
+        private object SpriteFrameImageGetter(object rowObject)
+        {
+            Frame f = (Frame) rowObject;
+            if (this.objectListView1.RowHeight < f.IndexedBitmap.Bitmap.Height)
+                this.objectListView1.RowHeight = f.IndexedBitmap.Bitmap.Height;
+            return f.IndexedBitmap.Bitmap;
+        }
+        private void SetUpObjectListView()
+        {
+            this.objectListView1.ShowImagesOnSubItems = true;
+            this.colImage.ImageGetter = SpriteFrameImageGetter;
+            this.objectListView1.SetObjects(this.ActiveProject.ActiveSprite.Frames);
+        }
         #region Other Event Handlers
         //////////////////////////////// Frame/Sprite Updates ////////////////////////////////
         private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
@@ -671,9 +685,10 @@ namespace SkaaEditorUI
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
-            this.timelineControl.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
+            this.timelineControl.SetFrameList(this.ActiveProject?.ActiveSprite?.GetFrameImages());
             this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
-            
+            SetUpObjectListView();
+                        
             //since a sprite has been un/loaded
             SetupUI();
         }
@@ -935,5 +950,44 @@ namespace SkaaEditorUI
         }
         #endregion
 
+        private void btnBrowseGameSet_Click(object sender, EventArgs e)
+        {
+            BrowseGameSet();
+        }
+
+        private string BrowseGameSet()
+        {
+            string tableToSave = string.Empty;
+
+            using (ObjectListViewContainer olvc = new ObjectListViewContainer())
+            {
+                //olvc.SetDataSource(this.ActiveProject?.ActiveGameSet?.Tables["SFRAME"]);
+                DataTable dt = new DataTable();
+                dt.Columns.Add(new DataColumn("Set", typeof(string)));
+                dt.Columns.Add(new DataColumn("TableName", typeof(string)));
+                dt.Columns.Add(new DataColumn("Save", typeof(bool)));
+
+                foreach (DataTable dsdt in this.ActiveProject?.ActiveGameSet.Tables)
+                {
+                    //bool isStandardSet = Path.GetFileName((string) dsdt.ExtendedProperties["FileName"]) == "std.set" ? true : false;
+                    var dr = dt.NewRow();
+                    dt.Rows.Add(dr);
+                    dr.BeginEdit();
+                    dr[0] = Path.GetFileName((string) dsdt.ExtendedProperties["FileName"]);
+                    dr[1] = dsdt.TableName;
+                    dr[2] = false;
+                    dr.AcceptChanges();
+                }
+                dt.AcceptChanges();
+                olvc.SetDataSource(dt);
+
+                if (olvc.ShowDialog() == DialogResult.OK)
+                {
+                    tableToSave = olvc.TableToSave;
+                }
+            }
+
+            return tableToSave;
+        }
     }
 }

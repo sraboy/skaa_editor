@@ -36,14 +36,50 @@ namespace SkaaEditorUI
 {
     public partial class ObjectListViewContainer : Form
     {
+        private string _tableToSave;
+
+        public string TableToSave
+        {
+            get
+            {
+                return this._tableToSave;
+            }
+            private set
+            {
+                this._tableToSave = value;
+            }
+        }
+
         public ObjectListViewContainer()
         {
             InitializeComponent();
+            this.dataListView1.ItemChecked += DataListView1_ItemChecked;
+            this.btnDone.Enabled = false;
         }
 
-        public void SetDataSource<T>(T dataSource) where T : IListSource
+        private void DataListView1_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            this.dataListView1.DataSource = dataSource;
+            this.btnDone.Enabled = this.dataListView1.CheckedObject == null ? false : true;
         }
+
+        public void SetDataSource(DataTable dt)
+        {
+            this.dataListView1.DataSource = dt;
+            //this.dataListView1.AutoSizeColumns();
+            this.dataListView1.CheckBoxes = true;
+            this.dataListView1.ShowGroups = true;
+            this.dataListView1.CheckedAspectName = "Save";
+            this.dataListView1.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
+        }
+
+        private void btnDone_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            DataRowView checkedRow = this.dataListView1.CheckedObject as DataRowView;
+
+            //string t = checkedRow[1].ToString();
+            this.TableToSave = checkedRow.Row[1].ToString();
+        }
+
     }
 }

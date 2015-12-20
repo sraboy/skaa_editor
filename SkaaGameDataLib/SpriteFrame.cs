@@ -40,7 +40,30 @@ namespace SkaaGameDataLib
     public class SpriteFrame : Frame
     {
         private Sprite _parentSprite;
-
+        public string Test = "test";
+        public string Name
+        {
+            get
+            {
+                return base.Name;
+            }
+            set
+            {
+                base.Name = value;
+            }
+        }
+        public long BitmapOffset
+        { 
+            get
+            {
+                return base.BitmapOffset;
+            }
+            set
+            {
+                base.BitmapOffset = value;
+            }
+        }
+   
         public Sprite ParentSprite;
         public List<DataRow> GameSetDataRows;
 
