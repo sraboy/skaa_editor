@@ -408,8 +408,11 @@ namespace Capslock.WinForms.ImageEditor
 
             while (q.Count > 0)
             {
+                if (q.Count > (bmp.Width - 1) * (bmp.Height - 1))
+                    Debugger.Break();
+
                 Point n = q.Dequeue();
-                if (!ColorMatch(this.fbmp.GetPixel(n.X, n.Y), targetColor))
+                if (ColorMatch(this.fbmp.GetPixel(n.X, n.Y), replacementColor))
                     continue;
                 Point w = n, e = new Point(n.X + 1, n.Y);
                 while ((w.X >= 0) && ColorMatch(this.fbmp.GetPixel(w.X, w.Y), targetColor))
