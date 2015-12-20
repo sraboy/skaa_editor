@@ -240,7 +240,7 @@ namespace SkaaEditorUI
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (TrySaveCloseProject(null, null))
-                NewProject(ProjectTypes.Sprite);
+                NewProject();
         }
         //////////////////////////////// Opening Things ////////////////////////////////
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -769,34 +769,21 @@ namespace SkaaEditorUI
                     throw new Exception($"Failed to create temporary directory: {props.TempDirectory}");
             }
         }
-        private void NewProject(ProjectTypes projectType)
+        private void NewProject()
         {
             //use a temporary folder until the user saves
             string projectPath = props.TempDirectory + "\\project_" + DateTime.Now.ToString("yyyyMMddHHmm");
             Directory.CreateDirectory(projectPath);
             this._tempFiles.Add(projectPath);
 
-            Project newProject = new Project(projectType);
+            Project newProject = new Project();
 
             //need these events to fire before loading the objects
             newProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
             newProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
             newProject.PaletteChanged += ActiveProject_PaletteChanged;
 
-            //figure out which palette to use
-            string paletteFile = string.Empty;
-            switch (newProject.ProjectType)
-            {
-                case ProjectTypes.ResIdx:
-                case ProjectTypes.Res:
-                case ProjectTypes.SpriteAndStdSet:
-                case ProjectTypes.Sprite:
-                    paletteFile = props.DataDirectory + props.PalStd;
-                    break;
-                case ProjectTypes.Encyclopedia:
-                    //todo: will need to request a palette file to open encyclopedia files
-                    break;
-            }
+            string paletteFile = props.DataDirectory + props.PalStd;
             
             this.ActiveProject = newProject;
             this.ActiveProject.OpenPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
@@ -828,17 +815,7 @@ namespace SkaaEditorUI
             if (resFiles.Count > 1) //todo: allow user to select which to load
                 Logger.TraceInformation($"User selected a directory with more than one RES file: {projectPath}");
 
-            //figure out which palette to use
-            string paletteFile = string.Empty;
-            switch (open.ProjectType)
-            {
-                case ProjectTypes.Sprite:
-                    paletteFile = props.ProjectDirectory + props.PalStd;
-                    break;
-                //case ProjectTypes.Interface:
-                //    paletteFile = props.ProjectDirectory + props.PalMenu;
-                //    break;
-            }
+            string paletteFile = props.ProjectDirectory + props.PalStd;
 
             if (setFiles.Count > 0)
                 open.OpenGameSet(setFiles.ElementAt(0));

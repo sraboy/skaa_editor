@@ -50,8 +50,6 @@ namespace SkaaEditorUI
         private ColorPalette _activePalette;
         private Sprite _activeSprite;
         private string _projectName;
-        //private List<Sprite> _unsavedSprites;
-        private ProjectTypes _projectType;
         #endregion
 
         #region Events
@@ -194,24 +192,10 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public ProjectTypes ProjectType
-        {
-            get
-            {
-                return _projectType;
-            }
-
-            set
-            {
-                if(this._projectType != value)
-                    this._projectType = value;
-            }
-        }
         #endregion
 
         #region Constructors & Initialization
         public Project() { this.Initialize(); }
-        public Project(ProjectTypes type) { this.ProjectType = type; this.Initialize(); }
         private void Initialize() { /*this.UnsavedSprites = new List<Sprite>();*/ }
         #endregion
 
@@ -445,12 +429,15 @@ namespace SkaaEditorUI
         }
         public static void Export(string filepath, Frame f)
         {
-            f.IndexedBitmap.Bitmap.Save(filepath);
+            if(obj.GetType() == typeof(Sprite))
+                (obj as Sprite).ToBitmap().Save(filepath);
+            else if (obj.GetType() == typeof(Frame))
+                (obj as Frame).IndexedBitmap.Bitmap.Save(filepath);
         }
         
         public void SetActiveSpriteSframeDbfDataView()
         {
-            if (this.ActiveSprite != null && this.ProjectType == ProjectTypes.Sprite)
+            if (this.ActiveSprite != null)
             {
                 DataView dv = new DataView(this.ActiveGameSet?.Tables["SFRAME"]);
                 if (dv != null)
