@@ -662,8 +662,8 @@ namespace SkaaEditorUI
         private object SpriteFrameImageGetter(object rowObject)
         {
             Frame f = (Frame) rowObject;
-            if (this.timelineControl1.ObjectListViewControl.RowHeight < f.IndexedBitmap.Bitmap.Height)
-                this.timelineControl1.ObjectListViewControl.RowHeight = f.IndexedBitmap.Bitmap.Height;
+            if (this.timelineControl1.ObjectListViewControl.RowHeight < f?.IndexedBitmap?.Bitmap?.Height)
+                this.timelineControl1.ObjectListViewControl.RowHeight = (int)f?.IndexedBitmap?.Bitmap?.Height;
             return f.IndexedBitmap.Bitmap;
         }
         private void SetUpObjectListView()
