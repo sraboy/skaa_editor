@@ -670,7 +670,7 @@ namespace SkaaEditorUI
         {
             this.timelineControl1.ObjectListViewControl.ShowImagesOnSubItems = true;
             this.timelineControl1.SetImageGetter(SpriteFrameImageGetter);
-            this.timelineControl1.ObjectListViewControl.SetObjects(this.ActiveProject.ActiveSprite.Frames);
+            this.timelineControl1.ObjectListViewControl.SetObjects(this.ActiveProject?.ActiveSprite?.Frames);
         }
         #region Other Event Handlers
         //////////////////////////////// Frame/Sprite Updates ////////////////////////////////
