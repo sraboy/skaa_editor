@@ -229,10 +229,7 @@ namespace SkaaEditorUI
 
             using (FileStream fs = GameSetFile.Open(filepath))
             {
-                //todo: test reading additional set files into the same DataSet
-                if(this.ActiveGameSet == null)
-                    this.ActiveGameSet = new DataSet();
-
+                this.ActiveGameSet = this.ActiveGameSet ?? new DataSet();
                 if(this.ActiveGameSet.OpenGameSet(fs) == false) return false;
             }
 
@@ -423,11 +420,7 @@ namespace SkaaEditorUI
             }
         }
 
-        public static void Export(string filepath, Sprite spr)
-        {
-            spr.ToBitmap().Save(filepath);
-        }
-        public static void Export(string filepath, Frame f)
+        public static void Export<T>(string filepath, T obj)
         {
             if(obj.GetType() == typeof(Sprite))
                 (obj as Sprite).ToBitmap().Save(filepath);
@@ -442,10 +435,11 @@ namespace SkaaEditorUI
                 DataView dv = new DataView(this.ActiveGameSet?.Tables["SFRAME"]);
                 if (dv != null)
                 {
-                    dv.RowFilter = string.Format("SPRITE = '{0}'", this.ActiveSprite.SpriteId);
+                    dv.RowFilter = $"SPRITE = '{this.ActiveSprite.SpriteId}'";
                     this.ActiveSprite.SetSpriteDataView(dv);
                 }
             }
         }
+
     }
 }

@@ -935,5 +935,44 @@ namespace SkaaEditorUI
         }
         #endregion
 
+        private void btnBrowseGameSet_Click(object sender, EventArgs e)
+        {
+            BrowseGameSet();
+        }
+
+        private string BrowseGameSet()
+        {
+            string tableToSave = string.Empty;
+
+            using (ObjectListViewContainer olvc = new ObjectListViewContainer())
+            {
+                //olvc.SetDataSource(this.ActiveProject?.ActiveGameSet?.Tables["SFRAME"]);
+                DataTable dt = new DataTable();
+                dt.Columns.Add(new DataColumn("Set", typeof(string)));
+                dt.Columns.Add(new DataColumn("TableName", typeof(string)));
+                dt.Columns.Add(new DataColumn("Save", typeof(bool)));
+
+                foreach (DataTable dsdt in this.ActiveProject?.ActiveGameSet.Tables)
+                {
+                    //bool isStandardSet = Path.GetFileName((string) dsdt.ExtendedProperties["FileName"]) == "std.set" ? true : false;
+                    var dr = dt.NewRow();
+                    dt.Rows.Add(dr);
+                    dr.BeginEdit();
+                    dr[0] = Path.GetFileName((string) dsdt.ExtendedProperties["FileName"]);
+                    dr[1] = dsdt.TableName;
+                    dr[2] = false;
+                    dr.AcceptChanges();
+                }
+                dt.AcceptChanges();
+                olvc.SetDataSource(dt);
+
+                if (olvc.ShowDialog() == DialogResult.OK)
+                {
+                    tableToSave = olvc.TableToSave;
+                }
+            }
+
+            return tableToSave;
+        }
     }
 }
