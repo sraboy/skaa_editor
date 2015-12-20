@@ -136,6 +136,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkaaEditorMainForm_Debug.cs">
+      <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SkaaSAVEditorTest.cs">
       <SubType>Form</SubType>
     </Compile>
