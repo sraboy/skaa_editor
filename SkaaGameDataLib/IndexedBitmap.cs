@@ -222,8 +222,7 @@ namespace SkaaGameDataLib
         public static Bitmap GetBitmapFromRleBytes(byte[] bitmapBytes, ColorPalette pal, int height, int width)
         {
             int idx;
-            Bitmap bmp = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            bmp.Palette = pal;
+            Bitmap bmp = new Bitmap(width, height);//, PixelFormat.Format8bppIndexed);
             bmp.MakeTransparent(Color.Transparent);
 
             //much faster GetPixel/SetPixel usage
@@ -244,12 +243,15 @@ namespace SkaaGameDataLib
             Color transparentByte = Color.FromArgb(0xff);
             bmp.MakeTransparent(transparentByte);
 
+            bmp.Palette = pal;
             return bmp;
         }
 
         public Bitmap SetBitmapFromRleStream(Stream str, FileFormats form)
         {
+            //ColorPalette pal = this.Bitmap.Palette;
             this.Bitmap = DecodeRleStream(str, form);
+            //this.Bitmap.Palette = pal;
             return this.Bitmap;
         }
 
