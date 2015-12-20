@@ -390,6 +390,7 @@ namespace SkaaEditorUI
                             //this.ActiveProject.ActiveSprite = tup.Item1;
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
+                            this.ActiveProject.ActiveGameSet.AddDataSource(Path.GetFileName(dlg.FileName));
                         });
                         break;
                     case FileFormats.Palette:
@@ -407,6 +408,7 @@ namespace SkaaEditorUI
                             Tuple<Sprite, DataTable> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
+                            this.ActiveProject.ActiveGameSet.AddDataSource(Path.GetFileName(dlg.FileName));
                             this.ActiveProject.ActiveSprite = tup.Item1;
                         });
                         break;
