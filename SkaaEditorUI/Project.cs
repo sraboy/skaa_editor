@@ -46,9 +46,9 @@ namespace SkaaEditorUI
         
         #region Private Members
         private Properties.Settings props = Properties.Settings.Default;
-        private Frame _activeFrame;
+        private SkaaEditorFrame _activeFrame;
         private ColorPalette _activePalette;
-        private Sprite _activeSprite;
+        private SkaaEditorSprite _activeSprite;
         private string _projectName;
         #endregion
 
@@ -131,7 +131,7 @@ namespace SkaaEditorUI
         #endregion
 
         #region Public Members
-        public Sprite ActiveSprite
+        public SkaaEditorSprite ActiveSprite
         {
             get
             {
@@ -146,7 +146,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public Frame ActiveFrame
+        public SkaaEditorFrame ActiveFrame
         {
             get
             {
@@ -251,16 +251,16 @@ namespace SkaaEditorUI
         }
 
         /// <summary>
-        /// Opens an SPR file and creates a <see cref="Sprite"/> object for it
+        /// Opens an SPR file and creates a <see cref="SkaaGameSprite"/> object for it
         /// </summary>
         /// <param name="filepath">The absolute path to the SPR file to open</param>
-        /// <returns>The newly-created <see cref="Sprite"/></returns>
+        /// <returns>The newly-created <see cref="SkaaGameSprite"/></returns>
         /// <remarks>
         /// The original game code for reading SPR files can be found <code>ResourceDb::init_imported()</code> 
         /// in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". SPR files are 
         /// are considered <code>FLAT</code> by 7KAA. 
         /// </remarks>
-        public static Sprite LoadSprite(string filepath, ColorPalette pal)
+        public static SkaaEditorSprite LoadSprite(string filepath, ColorPalette pal)
         {
             if (pal == null)
             { 
@@ -268,18 +268,18 @@ namespace SkaaEditorUI
                 return null;
             }
 
-            Sprite spr;
+            SkaaGameSprite spr;
 
             using (FileStream spritestream = File.OpenRead(filepath))
-                spr = Sprite.FromSprStream(spritestream, pal);
+                spr = SkaaGameSprite.FromSprStream(spritestream, pal);
 
             spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
 
-            return spr;
+            return new SkaaEditorSprite(spr);
         }
-        public static Frame LoadFrame(string filepath, ColorPalette pal)
-        {          
-            SpriteFrame frame = new SpriteFrame(null);
+        public static SkaaEditorFrame LoadFrame(string filepath, ColorPalette pal)
+        {
+            SkaaGameFrame frame = new SkaaGameFrame();
             frame.IndexedBitmap = new IndexedBitmap(pal);
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
@@ -287,11 +287,11 @@ namespace SkaaEditorUI
                 frame.IndexedBitmap.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
             }
 
-            return frame;
+            return new SkaaEditorFrame(frame);
         }
-        public static Tuple<Sprite, DataTable> LoadResIdxMultiBmp(string filepath, ColorPalette pal)
+        public static Tuple<SkaaEditorSprite, DataTable> LoadResIdxMultiBmp(string filepath, ColorPalette pal)
         {
-            Sprite spr = new Sprite();
+            SkaaGameSprite spr = new SkaaGameSprite();
             DataTable dt = new DataTable();
             dt.ExtendedProperties.Add("FileName", filepath);
             dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = "FrameName" });
@@ -306,7 +306,7 @@ namespace SkaaEditorUI
                 foreach (string key in dic.Keys)
                 {
                     fs.Position = dic[key];
-                    SpriteFrame sf = new SpriteFrame(null);
+                    SkaaGameSpriteFrame sf = new SkaaGameSpriteFrame(null);
                     sf.Name = key;
                     IndexedBitmap iBmp = new IndexedBitmap(pal);
                     sf.IndexedBitmap = iBmp;
@@ -323,11 +323,11 @@ namespace SkaaEditorUI
                 }
             }
 
-            return new Tuple<Sprite, DataTable>( spr, dt );
+            return new Tuple<SkaaEditorSprite, DataTable>( new SkaaEditorSprite(spr), dt );
         }
-        public static Tuple<Sprite, DataTable> LoadResDbf(string filepath, ColorPalette pal)
+        public static Tuple<SkaaEditorSprite, DataTable> LoadResDbf(string filepath, ColorPalette pal)
         {
-            Sprite spr = new Sprite();
+            SkaaGameSprite spr = new SkaaGameSprite();
             DataTable dt = new DataTable();
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
@@ -342,7 +342,7 @@ namespace SkaaEditorUI
                 dt = file.DataTable;
             }
 
-            return new Tuple<Sprite, DataTable>(spr, dt);
+            return new Tuple<SkaaEditorSprite, DataTable>(new SkaaEditorSprite(spr), dt);
         }
 
         public void SaveResIdxMultiBmp(string filepath)
@@ -363,7 +363,7 @@ namespace SkaaEditorUI
 
                     using (MemoryStream bmpstream = new MemoryStream())
                     {
-                        foreach(Frame f in this.ActiveSprite.Frames)
+                        foreach(SkaaGameFrame f in this.ActiveSprite.Frames)
                         {
                             byte[] framedata = f.ToSprFile();
                             bmpstream.Write(framedata, 0, framedata.Length);
@@ -402,14 +402,14 @@ namespace SkaaEditorUI
             {
                 Type t = obj.GetType();
 
-                if (t == typeof(Sprite))
+                if (t == typeof(SkaaGameSprite))
                 {
-                    byte[] spr_data = (obj as Sprite).ToSprFile();
+                    byte[] spr_data = (obj as SkaaGameSprite).ToSprFile();
                     fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                 }
-                else if (t == typeof(Frame))
+                else if (t == typeof(SkaaGameFrame))
                 {
-                    byte[] spr_data = (obj as Frame).ToSprFile();
+                    byte[] spr_data = (obj as SkaaGameFrame).ToSprFile();
                     fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                 }
                 else if (t == typeof(DataTable))
@@ -422,10 +422,10 @@ namespace SkaaEditorUI
 
         public static void Export<T>(string filepath, T obj)
         {
-            if(obj.GetType() == typeof(Sprite))
-                (obj as Sprite).ToBitmap().Save(filepath);
-            else if (obj.GetType() == typeof(Frame))
-                (obj as Frame).IndexedBitmap.Bitmap.Save(filepath);
+            if(obj.GetType() == typeof(SkaaGameSprite))
+                (obj as SkaaGameSprite).ToBitmap().Save(filepath);
+            else if (obj.GetType() == typeof(SkaaGameFrame))
+                (obj as SkaaGameFrame).IndexedBitmap.Bitmap.Save(filepath);
         }
         
         public void SetActiveSpriteSframeDbfDataView()

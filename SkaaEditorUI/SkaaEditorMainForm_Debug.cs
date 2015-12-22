@@ -90,19 +90,20 @@ namespace SkaaEditorUI
         {
             ConfigSettings();
             NewProject();
-            this.ActiveProject.ActiveSprite = Project.LoadSprite(props.DataDirectory + "ballista.spr", this.ActiveProject.ActivePalette);
+            this.ActiveProject.ActiveSprite = (SkaaEditorSprite)Project.LoadSprite(props.DataDirectory + "ballista.spr", this.ActiveProject.ActivePalette);
             this.ActiveProject.SetActiveSpriteSframeDbfDataView();
 
             if (this.ActiveProject.ActiveSprite != null)
             {
-                this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
-                this.timelineControl1.SetFrameList(this.ActiveProject.ActiveSprite.GetFrameImages());
+                //this.ActiveProject.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated; ;
+                this.spriteViewer1.SetFrameList(this.ActiveProject.ActiveSprite.GetIFrames());
                 this.exportPngToolStripMenuItem.Enabled = true;
             }
 
             if (this.ActiveProject.OpenGameSet(props.DataDirectory + "std.set"))
                 this.saveGameSetToolStripMenuItem.Enabled = true;
         }
+
         [Conditional("DEBUG")]
         private static void WriteCsv(List<KeyValuePair<string, string>> files)
         {

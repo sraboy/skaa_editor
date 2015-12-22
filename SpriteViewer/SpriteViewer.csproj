@@ -1,17 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DA473696-B41A-4C5E-879D-77AE1E12B01D}</ProjectGuid>
+    <ProjectGuid>{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SkaaGameDataLib</RootNamespace>
-    <AssemblyName>SkaaGameDataLib</AssemblyName>
+    <RootNamespace>SpriteViewer</RootNamespace>
+    <AssemblyName>SpriteViewer</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,62 +29,62 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Test\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ObjectListView, Version=2.9.0.25611, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
+      <HintPath>..\packages\ObjectListView.Official.2.9.0\lib\net20\ObjectListView.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ButtonResource.cs" />
-    <Compile Include="DbfFileWriter.cs" />
-    <Compile Include="DataSetExtensions.cs" />
-    <Compile Include="SkaaGameFrame.cs" />
-    <Compile Include="ResourceDatabase.cs" />
-    <Compile Include="IndexedBitmap.cs" />
-    <Compile Include="PaletteLoader.cs" />
-    <Compile Include="DbaseIIIDataColumn.cs">
-      <SubType>Component</SubType>
+    <Compile Include="FrameChangedEventArgs.cs" />
+    <Compile Include="IFrame.cs" />
+    <Compile Include="SpriteView.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DbfFile.cs" />
-    <Compile Include="GameSetFile.cs" />
-    <Compile Include="FileTyping.cs" />
+    <Compile Include="SpriteView.Designer.cs">
+      <DependentUpon>SpriteView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
+    <Compile Include="ListView.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ResourceDatabaseWriter.cs" />
-    <Compile Include="SkaaGameSprite.cs" />
-    <Compile Include="SkaaGameSpriteFrame.cs" />
+    <Compile Include="ListView.Designer.cs">
+      <DependentUpon>ListView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TimelineView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TimelineView.Designer.cs">
+      <DependentUpon>TimelineView.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="SkaaGameDataLib.licenseheader" />
+    <EmbeddedResource Include="SpriteView.resx">
+      <DependentUpon>SpriteView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ListView.resx">
+      <DependentUpon>ListView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TimelineView.resx">
+      <DependentUpon>TimelineView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BitmapProcessing\BitmapProcessing.csproj">
-      <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
-      <Name>BitmapProcessing</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
+    <None Include="SpriteViewer.licenseheader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

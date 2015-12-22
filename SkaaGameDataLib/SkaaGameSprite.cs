@@ -31,13 +31,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
     [Serializable]
-    public class Sprite
+    public class SkaaGameSprite
     {
         public static readonly TraceSource Logger = new TraceSource("Sprite", SourceLevels.All);
 
@@ -70,13 +68,13 @@ namespace SkaaGameDataLib
         #endregion
 
         #region Private Members
-        private List<SpriteFrame> _frames;
+        private List<SkaaGameFrame> _frames;
         private DataView _spriteDataView;
         private string _spriteId;
         #endregion
 
         #region Public Properties
-        public List<SpriteFrame> Frames
+        public List<SkaaGameFrame> Frames
         {
             get
             {
@@ -121,9 +119,9 @@ namespace SkaaGameDataLib
         #endregion
 
         #region Constructors
-        public Sprite()
+        public SkaaGameSprite()
         {
-            this.Frames = new List<SpriteFrame>();
+            this.Frames = new List<SkaaGameFrame>();
         }
         #endregion
 
@@ -146,10 +144,10 @@ namespace SkaaGameDataLib
             return frames;
         }
         /// <summary>
-        /// Iterates through all the rows in the <see cref="Sprite"/>'s <see cref="DataView"/> and 
-        /// sets each of this sprite's <see cref="SpriteFrame"/>'s <see cref="SpriteFrame.GameSetDataRows"/>
-        /// property to the DataRow with a BITMAPPTR matching <see cref="SpriteFrame.BitmapOffset"/>. It also
-        /// reads the FILENAME property into <see cref="Frame.Name"/>.
+        /// Iterates through all the rows in the <see cref="SkaaGameSprite"/>'s <see cref="DataView"/> and 
+        /// sets each of this sprite's <see cref="SkaaGameSpriteFrame"/>'s <see cref="SkaaGameSpriteFrame.GameSetDataRows"/>
+        /// property to the DataRow with a BITMAPPTR matching <see cref="SkaaGameSpriteFrame.BitmapOffset"/>. It also
+        /// reads the FILENAME property into <see cref="SkaaGameFrame.Name"/>.
         /// </summary>
         /// <returns>False if any frame did not have a match in the DataView. True otherwise.</returns>
         internal bool MatchFrameOffsets()
@@ -158,7 +156,7 @@ namespace SkaaGameDataLib
             {
                 int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
                 string name = (string) drv.Row.ItemArray[8];
-                SpriteFrame sf = this.Frames.Find(f => f.BitmapOffset == offset);
+                SkaaGameFrame sf = this.Frames.Find(f => f.BitmapOffset == offset);
                 sf.Name = name;
 
                 if (sf == null)
@@ -169,13 +167,13 @@ namespace SkaaGameDataLib
                 }
 
                 if (sf != null)
-                    sf.GameSetDataRows.Add(drv.Row);
+                    (sf as SkaaGameSpriteFrame).GameSetDataRows.Add(drv.Row);
             }
 
             return true;
         }
         /// <summary>
-        /// Builds a <see cref="Bitmap"/> sprite sheet containing all the frames of the specified <see cref="Sprite"/>
+        /// Builds a <see cref="Bitmap"/> sprite sheet containing all the frames of the specified <see cref="SkaaGameSprite"/>
         /// with no padding between frames. The number of rows/columns of frames is the square root of the number of frames
         /// with an additional row added when the number of frames is not a perfect square.
         /// </summary>
@@ -200,7 +198,7 @@ namespace SkaaGameDataLib
             }
 
             //need the largest tile (by height and width) to set the row/column heights
-            foreach (SpriteFrame sf in this.Frames)
+            foreach (SkaaGameSpriteFrame sf in this.Frames)
             {
                 if (sf.IndexedBitmap.Bitmap.Width > spriteWidth)
                     spriteWidth = sf.IndexedBitmap.Bitmap.Width;
@@ -247,7 +245,7 @@ namespace SkaaGameDataLib
 
             using (MemoryStream ms = new MemoryStream())
             {
-                foreach (Frame f in this.Frames)
+                foreach (SkaaGameFrame f in this.Frames)
                 {
                     byte[] frameData = f.ToSprFile();
                     ms.Write(BitConverter.GetBytes(frameData.Length), 0, sizeof(int));
@@ -263,13 +261,13 @@ namespace SkaaGameDataLib
         public List<byte[]> GetSpriteFrameByteArrays()
         {
             List<byte[]> frames = new List<byte[]>();
-            foreach (Frame f in this.Frames)
+            foreach (SkaaGameFrame f in this.Frames)
                 frames.Add(f.ToSprFile());
             return frames;
         }
-        public static Sprite FromSprStream(Stream str, ColorPalette pal)
+        public static SkaaGameSprite FromSprStream(Stream str, ColorPalette pal)
         {
-            Sprite spr = new Sprite();
+            SkaaGameSprite spr = new SkaaGameSprite();
             if (str is FileStream)
                 spr.SpriteId = Path.GetFileNameWithoutExtension(((FileStream) str).Name);
             try
@@ -277,7 +275,7 @@ namespace SkaaGameDataLib
                 while (str.Position < str.Length)
                 {
                     IndexedBitmap iBmp = new IndexedBitmap(pal);
-                    SpriteFrame sf = new SpriteFrame(spr);
+                    SkaaGameSpriteFrame sf = new SkaaGameSpriteFrame(spr);
                     sf.IndexedBitmap = iBmp;
                     sf.BitmapOffset = str.Position;
                     iBmp.SetBitmapFromRleStream(str, FileFormats.SpriteSpr);

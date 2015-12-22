@@ -72,9 +72,10 @@ namespace SkaaGameDataLib
         }
         #endregion
 
+        private byte[] _rleBytes;
+
         #region Public Members
         public Bitmap Bitmap;
-        public bool PendingChanges;
         #endregion
 
         #region Constructors
@@ -85,6 +86,12 @@ namespace SkaaGameDataLib
         }
         #endregion
         
+        //public async void UpdateBitmap(Bitmap bmp)
+        //{
+        //    this.Bitmap = bmp;
+        //    //this._rleBytes = await GetRleBytesFromBitmap(bmp);
+        //}
+
         public static byte[] GetRleBytesFromBitmap(Bitmap bmp)
         {
             //need it nullable for the try/catch block below since that's the only other assignment

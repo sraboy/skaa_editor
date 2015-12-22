@@ -36,6 +36,7 @@ using System.Diagnostics;
 using Cyotek.Windows.Forms;
 using Capslock.WinForms.ImageEditor;
 using System.Data;
+using SpriteViewer;
 
 namespace SkaaEditorUI
 {
@@ -45,31 +46,7 @@ namespace SkaaEditorUI
         //todo: add/improve Debug logging throughout solution
         public static readonly TraceSource Logger = new TraceSource("SkaaEditorMainForm", SourceLevels.All);
 
-        #region Event Handlers
-        private EventHandler _animateChanged;
-        public event EventHandler AnimateChanged
-        {
-            add
-            {
-                if (_animateChanged == null || !_animateChanged.GetInvocationList().Contains(value))
-                {
-                    _animateChanged += value;
-                }
-            }
-            remove
-            {
-                _animateChanged -= value;
-            }
-        }
-        protected virtual void OnAnimateChanged(EventArgs e)
-        {
-            EventHandler handler = _animateChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
+        #region Project Event
         private EventHandler _activeProjectChanged;
         public event EventHandler ActiveProjectChanged
         {
@@ -137,9 +114,9 @@ namespace SkaaEditorUI
             //this has to happen early so NewProject() triggers the event.
             this.ActiveProjectChanged += SkaaEditorMainForm_ActiveProjectChanged;
 
-            //this is needed so we can respond when the user uses the tracking bar to change frames
-            this.timelineControl1.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
-
+            ////this is needed so we can respond when the user uses the tracking bar to change frames
+            //this.timelineControl1.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
+            this.spriteViewer1.ActiveFrameChanged += SpriteViewer1_ActiveFrameChanged;
             //this event is only called when the entire image changes: during frame changes or loading/closing a sprite
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
 
@@ -157,7 +134,12 @@ namespace SkaaEditorUI
             ConfigSettings();
             SetupUI();
         }
-    
+
+        private void SpriteViewer1_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            SetupUI();
+        }
+
         /// <summary>
         /// Provides for initial application settings like default directories, debug logging, etc.
         /// </summary>
@@ -219,7 +201,7 @@ namespace SkaaEditorUI
             this.saveGameSetToolStripMenuItem.Enabled = (this.ActiveProject?.ActiveGameSet == null) ? false : true;
 
             //need a sprite to navigate a sprite's frames
-            this.timelineControl1.Enabled = (this.ActiveProject?.ActiveSprite == null) ? false : true;
+            this.spriteViewer1.Enabled = (this.ActiveProject?.ActiveSprite == null) ? false : true;
 
             //can't close a project that's not open
             this.closeProjectToolStripMenuItem.Enabled = this.ActiveProject == null ? false : true;
@@ -347,7 +329,6 @@ namespace SkaaEditorUI
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => this.ActiveProject.OpenGameSet(dlg.FileName));
-                        SetUpObjectListView();
                         break;
                     //case FileFormat.SpritePNG:
                     //    dlg.DefaultExt = ".png";
@@ -365,7 +346,7 @@ namespace SkaaEditorUI
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = Project.LoadSprite(dlg.FileName, this.ActiveProject.ActivePalette); });
+                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = (SkaaEditorSprite)Project.LoadSprite(dlg.FileName, this.ActiveProject.ActivePalette); });
                         this.ActiveProject.SetActiveSpriteSframeDbfDataView();
                         break;
                     case FileFormats.SpriteFrameSpr:
@@ -374,10 +355,10 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Sprite spr;
-                            if (this.ActiveProject.ActiveSprite == null) spr = new Sprite();
+                            SkaaEditorSprite spr;
+                            if (this.ActiveProject.ActiveSprite == null) spr = new SkaaEditorSprite();
                             else spr = this.ActiveProject.ActiveSprite;
-                            spr.Frames.Add((SpriteFrame)Project.LoadFrame(dlg.FileName, this.ActiveProject.ActivePalette));
+                            spr.Frames.Add(Project.LoadFrame(dlg.FileName, this.ActiveProject.ActivePalette));
                             this.ActiveProject.ActiveSprite = spr;
                         });
                         break;
@@ -387,7 +368,7 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<Sprite, DataTable> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
+                            Tuple<SkaaEditorSprite, DataTable> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
                             //this.ActiveProject.ActiveSprite = tup.Item1;
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
@@ -406,7 +387,7 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<Sprite, DataTable> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
+                            Tuple<SkaaEditorSprite, DataTable> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
                             this.ActiveProject.ActiveGameSet.AddDataSource(Path.GetFileName(dlg.FileName));
@@ -659,36 +640,22 @@ namespace SkaaEditorUI
         }
         #endregion
 
-        private object SpriteFrameImageGetter(object rowObject)
-        {
-            Frame f = (Frame) rowObject;
-            if (this.timelineControl1.ObjectListViewControl.RowHeight < f?.IndexedBitmap?.Bitmap?.Height)
-                this.timelineControl1.ObjectListViewControl.RowHeight = (int)f?.IndexedBitmap?.Bitmap?.Height;
-            return f.IndexedBitmap.Bitmap;
-        }
-        private void SetUpObjectListView()
-        {
-            this.timelineControl1.ObjectListViewControl.ShowImagesOnSubItems = true;
-            this.timelineControl1.SetImageGetter(SpriteFrameImageGetter);
-            this.timelineControl1.ObjectListViewControl.SetObjects(this.ActiveProject?.ActiveSprite?.Frames);
-        }
         #region Other Event Handlers
         //////////////////////////////// Frame/Sprite Updates ////////////////////////////////
-        private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            //todo: look into this and refactor as necessary... it's just bad design
-            //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
-            //but it's needed for the tracking bar to be able to make this update
-            this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite?.Frames[this.timelineControl1.GetActiveFrameIndex()];
-        }
-        private void ActiveSprite_SpriteUpdated(object sender, EventArgs e) { }
+        //private void timelineControl_ActiveFrameChanged(object sender, EventArgs e)
+        //{
+        //    //todo: look into this and refactor as necessary... it's just bad design
+        //    //will end up setting ActiveFrame twice since this will be called because of ActiveProject_ActiveFrameChanged
+        //    //but it's needed for the tracking bar to be able to make this update
+        //    this.ActiveProject.ActiveFrame = this.ActiveProject.ActiveSprite?.Frames[this.timelineControl1.GetActiveFrameIndex()];
+        //}
+        //private void ActiveSprite_SpriteUpdated(object sender, EventArgs e) { }
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
-            this.timelineControl1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetFrameImages());
-            this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
-            SetUpObjectListView();
-                        
+            this.spriteViewer1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetIFrames());
+            this.ActiveProject.ActiveFrame = new SkaaEditorFrame(this.ActiveProject?.ActiveSprite?.Frames[0]);
+
             //since a sprite has been un/loaded
             SetupUI();
         }
@@ -701,9 +668,9 @@ namespace SkaaEditorUI
             else
             {
                 this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap;
-                
-                if (!this.timelineControl1.SetCurrentFrameTo(this.imageEditorBox.Image))
-                    throw new Exception("Failed to update TimelineControl as the specified image does not exist in the List!");
+
+                //if (!this.spriteViewer1.SetCurrentFrameTo(this.imageEditorBox.Image))
+                //    throw new Exception("Failed to update TimelineControl as the specified image does not exist in the List!");
             }
         }
         //////////////////////////////// Editing/Drawing UI ////////////////////////////////
@@ -720,8 +687,9 @@ namespace SkaaEditorUI
             if (this.imageEditorBox.SelectedTool != DrawingTools.Pan && 
                 this.imageEditorBox.SelectedTool != DrawingTools.None)
             {
-                this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
-                this.timelineControl1.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
+                this.spriteViewer1.UpdateFrame(this.ActiveProject.ActiveFrame);
+                //this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
+                //this.timelineControl1.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
             }
         }
         private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
@@ -795,7 +763,7 @@ namespace SkaaEditorUI
 
             Project newProject = new Project();
 
-            //need these events to fire before loading the objects
+            ////need these events to fire before loading the objects
             newProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
             newProject.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
             newProject.PaletteChanged += ActiveProject_PaletteChanged;
@@ -816,8 +784,8 @@ namespace SkaaEditorUI
             open.ProjectName = Path.GetFileName(projectPath); //GetFileName just assumes the last thing is a "file" and will give us the directory name
             
             //need these events to fire before loading the objects
-            open.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
-            open.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
+            //open.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
+            //open.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
             open.PaletteChanged += ActiveProject_PaletteChanged;
 
             List<string> setFiles = Directory.EnumerateFiles(projectPath, "*.set").ToList();
@@ -843,9 +811,9 @@ namespace SkaaEditorUI
 
             if (sprFiles.Count > 0)
             {
-                open.ActiveSprite = Project.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
+                open.ActiveSprite = (SkaaEditorSprite)Project.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
                 open.SetActiveSpriteSframeDbfDataView();
-                this.timelineControl1.SetFrameList(this.ActiveProject.ActiveSprite?.GetFrameImages());
+                this.spriteViewer1.SetFrameList(this.ActiveProject.ActiveSprite.GetIFrames());
             }
         }
         private void CloseProject()
@@ -856,12 +824,12 @@ namespace SkaaEditorUI
             this.ActiveProject.ActiveSprite = null;
             this.ActiveProject.ActivePalette = null;
 
-            //Note to self: Unsubscribe even if you null the object https://msdn.microsoft.com/en-us/library/ms366768(v=vs.140).aspx.
-            this.ActiveProject.ActiveSpriteChanged -= ActiveProject_ActiveSpriteChanged;
-            this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
+            ////Note to self: Unsubscribe even if you null the object https://msdn.microsoft.com/en-us/library/ms366768(v=vs.140).aspx.
+            //this.ActiveProject.ActiveSpriteChanged -= ActiveProject_ActiveSpriteChanged;
+            //this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
 
-            this.timelineControl1.SetFrameList(null);
+            this.spriteViewer1.SetFrameList(null);
             this.imageEditorBox.Image = null;
 
             this.ActiveProject = null; //do this last so the event fires after nulling imageEditorBox
@@ -899,14 +867,14 @@ namespace SkaaEditorUI
             else
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
-        private bool CheckSpriteForPendingChanges(Sprite spr)
+        private bool CheckSpriteForPendingChanges(SkaaGameSprite spr)
         {
             if (spr == null) return false;
 
             bool frameHasChanges = false;
-            foreach (Frame sf in spr.Frames)
+            foreach (SkaaEditorFrame sf in spr.Frames)
             {
-                frameHasChanges = sf.IndexedBitmap.PendingChanges | frameHasChanges;
+                frameHasChanges = sf.PendingChanges | frameHasChanges;
             }
 
             return frameHasChanges;

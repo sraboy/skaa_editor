@@ -131,6 +131,7 @@
     <Compile Include="ObjectListViewContainer.Designer.cs">
       <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Presenter.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -149,12 +150,14 @@
       <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SkaaEditorFrame.cs" />
     <Compile Include="SkaaSAVEditorTest.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SkaaSAVEditorTest.Designer.cs">
       <DependentUpon>SkaaSAVEditorTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="SkaaEditorSprite.cs" />
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -206,6 +209,10 @@
     <ProjectReference Include="..\SkaaGameDataLib\SkaaGameDataLib.csproj">
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
       <Name>SkaaGameDataLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SpriteViewer\SpriteViewer.csproj">
+      <Project>{97298eea-3f5c-4639-89ec-47c4fc8e13da}</Project>
+      <Name>SpriteViewer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

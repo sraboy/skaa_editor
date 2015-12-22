@@ -23,23 +23,14 @@
 ***************************************************************************/
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.IO;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.Data;
-using BitmapProcessing;
 
 namespace SkaaGameDataLib
 {
-    public class SpriteFrame : Frame
+    public class SkaaGameSpriteFrame : SkaaGameFrame
     {
-        private Sprite _parentSprite;
+        private SkaaGameSprite _parentSprite;
         public string Test = "test";
         public string Name
         {
@@ -64,15 +55,15 @@ namespace SkaaGameDataLib
             }
         }
    
-        public Sprite ParentSprite;
+        public SkaaGameSprite ParentSprite;
         public List<DataRow> GameSetDataRows;
 
         /// <summary>
-        /// Initializes a new <see cref="SpriteFrame"/>.
+        /// Initializes a new <see cref="SkaaGameSpriteFrame"/>.
         /// </summary>
-        /// <param name="parentSprite">The <see cref="Sprite"/> containing this <see cref="SpriteFrame"/></param>
+        /// <param name="parentSprite">The <see cref="SkaaGameSprite"/> containing this <see cref="SkaaGameSpriteFrame"/></param>
         /// <param name="stream"></param>
-        public SpriteFrame(Sprite parentSprite)
+        public SkaaGameSpriteFrame(SkaaGameSprite parentSprite)
         {
             this.ParentSprite = parentSprite;
             this.GameSetDataRows = new List<DataRow>();

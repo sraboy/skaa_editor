@@ -96,8 +96,8 @@ namespace SkaaEditorUI
             this.drawingToolbox = new Capslock.WinForms.ImageEditor.DrawingToolbox();
             this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
             this.btnBrowseGameSet = new System.Windows.Forms.Button();
-            this.timelineControl1 = new SkaaEditorControls.TimelineControl();
             this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
+            this.spriteViewer1 = new SpriteViewer.SpriteView();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -459,15 +459,6 @@ namespace SkaaEditorUI
             this.btnBrowseGameSet.UseVisualStyleBackColor = true;
             this.btnBrowseGameSet.Click += new System.EventHandler(this.btnBrowseGameSet_Click);
             // 
-            // timelineControl1
-            // 
-            this.timelineControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.timelineControl1.Location = new System.Drawing.Point(951, 52);
-            this.timelineControl1.Name = "timelineControl1";
-            this.timelineControl1.Size = new System.Drawing.Size(244, 770);
-            this.timelineControl1.TabIndex = 20;
-            // 
             // colorGridChooser
             // 
             this.colorGridChooser.AutoAddColors = false;
@@ -482,13 +473,23 @@ namespace SkaaEditorUI
             this.colorGridChooser.TabIndex = 14;
             this.colorGridChooser.ColorChanged += new System.EventHandler(this.ColorGridChooser_ColorChanged);
             // 
+            // spriteViewer1
+            // 
+            this.spriteViewer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.spriteViewer1.Location = new System.Drawing.Point(952, 52);
+            this.spriteViewer1.Name = "spriteViewer1";
+            this.spriteViewer1.Size = new System.Drawing.Size(247, 770);
+            this.spriteViewer1.TabIndex = 19;
+            // 
             // SkaaEditorMainForm
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1201, 847);
-            this.Controls.Add(this.timelineControl1);
+            this.Controls.Add(this.spriteViewer1);
             this.Controls.Add(this.btnBrowseGameSet);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.drawingToolbox);
@@ -559,6 +560,6 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
         private System.Windows.Forms.Button btnBrowseGameSet;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private TimelineControl timelineControl1;
+        private SpriteViewer.SpriteView spriteViewer1;
     }
 }

@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
-    public class Frame
+    public class SkaaGameFrame
     {
         public IndexedBitmap IndexedBitmap;
         public string Name;
