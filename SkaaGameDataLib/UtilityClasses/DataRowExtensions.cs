@@ -33,7 +33,7 @@ namespace SkaaGameDataLib
     {
         public static readonly string FrameNameColumn = "FrameName";
 
-        public static void WriteDefinition(this DataRow dr, Stream str, uint offset, bool isIdx)
+        public static void WriteResDefinition(this DataRow dr, Stream str, uint offset, bool isIdx)
         {
             int nameSize, definitionSize;
 

@@ -375,7 +375,7 @@ namespace SkaaEditorUI
                             dr.EndEdit();
 
                             //write a header entry for each frame
-                            SkaaGameDataLib.DataTableExtensions.WriteResDefinition(dr, headerstream, (uint)f.BitmapOffset, true);
+                            dr.WriteResDefinition(headerstream, (uint)f.BitmapOffset, true);
                         }
 
                         //used to calculate file size below
