@@ -93,12 +93,10 @@ namespace SkaaEditorUI.Forms
 
             this.dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
 
-
             iec.Show(dockPanel, DockState.Document);
             this._toolBoxContainer.Show(dockPanel, DockState.DockLeft);
             this._spriteViewerContainer.Show(dockPanel, DockState.DockRight);
         }
-
 
         public void SetPalette(ColorPalette pal)
         {

@@ -91,6 +91,7 @@ namespace SkaaEditorUI
         }
         #endregion
 
+        #region Private Methods
         /// <summary>
         /// Creates a new <see cref="TempDirectory"/> in <see cref="Path.GetTempPath()"/>\<see cref="Path.GetRandomFileName()"/>
         /// </summary>
@@ -106,89 +107,16 @@ namespace SkaaEditorUI
 
             return path;
         }
-
-
-        public void SetMainForm(MDISkaaEditorMainForm form)
-        {
-            this._mainForm = form;
-        }
-
-
         /// <summary>
-        /// Creates a new <see cref="Project"/> in <see cref="TempDirectory"/> 
+        /// Checks whether the specified format is any kind of unknown format
         /// </summary>
-        /// <returns>A new <see cref="Project"/></returns>
-        public Project CreateNewProject()
+        private static bool IsFileFormatUnknown(FileFormats format)
         {
-            this.IsInTempDirectory = true;
-            return CreateNewProject(this.TempDirectory);
-        }
-        /// <summary>
-        /// Creates a new <see cref="Project"/> in a the specified directory
-        /// </summary>
-        /// <returns>A new <see cref="Project"/></returns>
-        public Project CreateNewProject(string filePath)
-        {
-            var p = new Project();
-            Logger.TraceInformation($"Created new {typeof(Project)} in {filePath}.");
-            return p;
-        }
-
-
-        public bool SaveProject(Project project, string filePath)
-        {
-            Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
-            return true;
-        }
-        /// <summary>
-        /// Closes the <see cref="ActiveProject"/> and unsubscribes from all events
-        /// </summary>
-        public void CloseProject()
-        {
-            this.ActiveProject = null;
-            //Unsubscribe();
-        }
-
-        /// <summary>
-        /// This function will open the specified 7KAA <see cref="GameSetFile"/>
-        /// </summary>
-        /// <param name="filePath">The complete path to the SET file.</param>
-        /// <remarks>
-        ///  A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
-        /// </remarks>
-        public bool OpenStandardSet(string filePath)
-        {
-            DataSet ds = new DataSet();
-
-            if (ds.OpenStandardGameSet(filePath) == false)
-                return false;
-            else
-            {
-                this.ActiveProject.GameSet = ds;
+            if (format == FileFormats.Unknown || format == FileFormats.ResUnknown || format == FileFormats.ResIdxUnknown)
                 return true;
-            }
+            else
+                return false;
         }
-
-        /// <summary>
-        /// Loads a 7KAA-formatted palette file.
-        /// </summary>
-        /// <param name="filePath">The specific palette file to load.</param>
-        /// <returns>A ColorPalette built from the palette file</returns>
-        public void OpenPalette(OpenFileDialog dlg)
-        {
-            ColorPalettePresenter pal = null;
-            pal = dlg.Open(this.SaveDirectory, () => LoadPalette(dlg.FileName));
-            this.ActiveProject.ActivePalette = pal.ColorPalette;
-            //this._mainForm.SetPalette(this.ActiveProject.ActivePalette);
-        }
-
-        public void OpenSprite(OpenFileDialog dlg)
-        {
-            SpritePresenter spr = null;
-            spr = dlg.Open(this.SaveDirectory, () => LoadSprite(dlg.FileName, this._mainForm.ActivePalette));
-            this.ActiveProject.AddSprite(spr);
-        }
-
         /// <summary>
         /// Creates a <see cref="SpritePresenter"/> object from an SPR-formatted file
         /// </summary>
@@ -209,6 +137,11 @@ namespace SkaaEditorUI
 
             return new SpritePresenter(spr);
         }
+        /// <summary>
+        /// Loads a <see cref="ColorPalette"/> from the specified file
+        /// </summary>
+        /// <param name="filePath">The 7KAA-formatted file</param>
+        /// <returns>A new <see cref="ColorPalettePresenter"/></returns>
         private static ColorPalettePresenter LoadPalette(string filePath)
         {
             var pal = PaletteLoader.FromResFile(filePath);
@@ -218,16 +151,89 @@ namespace SkaaEditorUI
 
             return new ColorPalettePresenter(pal);
         }
+        #endregion
+
+        #region Public Methods
+        // Set up //
+        public void SetMainForm(MDISkaaEditorMainForm form)
+        {
+            this._mainForm = form;
+        }
+        /// <summary>
+        /// Creates a new <see cref="Project"/> in <see cref="TempDirectory"/> 
+        /// </summary>
+        /// <returns>A new <see cref="Project"/></returns>
+        // Managing the Project //
+        public Project CreateNewProject()
+        {
+            this.IsInTempDirectory = true;
+            return CreateNewProject(this.TempDirectory);
+        }
+        /// <summary>
+        /// Creates a new <see cref="Project"/> in a the specified directory
+        /// </summary>
+        /// <returns>A new <see cref="Project"/></returns>
+        public Project CreateNewProject(string filePath)
+        {
+            var p = new Project();
+            Logger.TraceInformation($"Created new {typeof(Project)} in {filePath}.");
+            return p;
+        }
+        public bool SaveProject(Project project, string filePath)
+        {
+            Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
+            return true;
+        }
+        /// <summary>
+        /// Closes the <see cref="ActiveProject"/> and unsubscribes from all events
+        /// </summary>
+        public void CloseProject()
+        {
+            this.ActiveProject = null;
+            //Unsubscribe();
+        }
+        // Opening Files //
+        /// <summary>
+        /// This function will open the specified 7KAA <see cref="GameSetFile"/>
+        /// </summary>
+        /// <param name="filePath">The complete path to the SET file.</param>
+        /// <remarks>
+        ///  A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
+        /// </remarks>
+        public bool OpenStandardSet(string filePath)
+        {
+            DataSet ds = new DataSet();
+
+            if (ds.OpenStandardGameSet(filePath) == false)
+                return false;
+            else
+            {
+                this.ActiveProject.GameSet = ds;
+                return true;
+            }
+        }
+        /// <summary>
+        /// Loads a 7KAA-formatted palette file.
+        /// </summary>
+        /// <param name="filePath">The specific palette file to load.</param>
+        /// <returns>A ColorPalette built from the palette file</returns>
+        public void OpenPalette(OpenFileDialog dlg)
+        {
+            ColorPalettePresenter pal = null;
+            pal = dlg.Open(this.SaveDirectory, () => LoadPalette(dlg.FileName));
+            this.ActiveProject.ActivePalette = pal.ColorPalette;
+            //this._mainForm.SetPalette(this.ActiveProject.ActivePalette);
+        }
+        public void OpenSprite(OpenFileDialog dlg)
+        {
+            SpritePresenter spr = null;
+            spr = dlg.Open(this.SaveDirectory, () => LoadSprite(dlg.FileName, this._mainForm.ActivePalette));
+            this.ActiveProject.AddSprite(spr);
+        }
         public static FileFormats CheckFileType(string filePath)
         {
             return FileTypeChecks.CheckFileType(filePath);
         }
-        private static bool IsFileFormatUnknown(FileFormats format)
-        {
-            if (format == FileFormats.Unknown || format == FileFormats.ResUnknown || format == FileFormats.ResIdxUnknown)
-                return true;
-            else
-                return false;
-        }
+        #endregion
     }
 }

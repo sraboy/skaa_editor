@@ -39,6 +39,7 @@ namespace SkaaEditorUI.Presenters
 
         private IFrame _activeFrame;
 
+        #region PropertyChangedEvent
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -46,8 +47,9 @@ namespace SkaaEditorUI.Presenters
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
 
-
+        #region Public Members
         public ColorPalette ActivePalette
         {
             get
@@ -68,7 +70,6 @@ namespace SkaaEditorUI.Presenters
                 this._activeFrame = value;
             }
         }
-
         public string FileExtension
         {
             get
@@ -76,16 +77,17 @@ namespace SkaaEditorUI.Presenters
                 return _fileExtension;
             }
         }
+        #endregion
 
-
-
+        #region Constructors
         public SpritePresenter() { }
         public SpritePresenter(SkaaSprite sgs)
         {
             this.Frames = sgs.Frames;
             this.SpriteId = sgs.SpriteId;
-            this.ActiveFrame = this.GetIFrames()[0];
+            this.ActiveFrame = (IFrame)this.Frames[0];
         }
+        #endregion
 
         public TrulyObservableCollection<IFrame> GetIFrames()
         {
