@@ -70,7 +70,7 @@ namespace SkaaEditorUI
         }
         #endregion
 
-        private ObservableCollection<SpritePresenter> _openSprites;
+        private TrulyObservableCollection<SpritePresenter> _openSprites;
         private SpritePresenter _activeSprite;
         private ColorPalette _activePalette;
         private DataSet _gameSet;
@@ -107,7 +107,7 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public ObservableCollection<SpritePresenter> OpenSprites
+        public TrulyObservableCollection<SpritePresenter> OpenSprites
         {
             get
             {
@@ -140,7 +140,7 @@ namespace SkaaEditorUI
 
         public void AddSprite(SpritePresenter spr)
         {
-            this.OpenSprites = this.OpenSprites ?? new ObservableCollection<SpritePresenter>();
+            this.OpenSprites = this.OpenSprites ?? new TrulyObservableCollection<SpritePresenter>();
             this.OpenSprites.Add(spr);
             this.ActiveSprite = spr;
         }

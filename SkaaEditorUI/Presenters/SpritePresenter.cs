@@ -87,9 +87,9 @@ namespace SkaaEditorUI.Presenters
             this.ActiveFrame = this.GetIFrames()[0];
         }
 
-        public List<IFrame> GetIFrames()
+        public TrulyObservableCollection<IFrame> GetIFrames()
         {
-            List<IFrame> frames = new List<IFrame>();// = (SkaaEditorFrame)this.Frames[0];
+            TrulyObservableCollection<IFrame> frames = new TrulyObservableCollection<IFrame>();// = (SkaaEditorFrame)this.Frames[0];
             foreach (SkaaFrame sf in this.Frames)
             {
                 frames.Add(new FramePresenter(sf));

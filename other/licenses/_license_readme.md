@@ -12,6 +12,7 @@ This project mixes and matches many licenses. Obviously, everything is "open sou
 | FloodFill			|	[GNU FDL](http://www.gnu.org/licenses/fdl-1.3.en.html)					|
 | SkaaEditor Icon*	|	GPL-compatible															|
 | DockPanelSuite	|	[MIT](https://opensource.org/licenses/MIT)								|
+| StackOverflow		|	[CC-by-SA 2.5](http://creativecommons.org/licenses/by-sa/2.5/)			|
 | SkaaEditor		|	[MIT](https://opensource.org/licenses/MIT)								|
 
 ## Details
@@ -71,4 +72,8 @@ My email is provided in multiple locations below; it is obscured to keep from ge
 ---
 
 - **SkaaEditor** refers to the project overall. All code should be marked appropriately; if not, please email me or post an issue to the GitHub page. I would also greatly appreciate a quick note if you're using any of this code; it's just nice to know that it's useful to someone other than me. I can be reached at (<a href='&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#116;&#101;&#118;&#101;&#110;&#46;&#108;&#97;&#118;&#111;&#105;&#101;&#106;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;'>&lt;&#111;&#98;&#115;&#99;&#117;&#114;&#101;&#100;&#32;&#039;&#109;&#97;&#105;&#108;&#116;&#111;&#039;&#32;&#108;&#105;&#110;&#107;&gt;</a>). It is my intent that non-GPL'd code be reusable under the more-permissive MIT license. Note, however, that when SkaaEditor is used with content from the 7KAA open source project, SkaaEditor must be released and used in a manner consistent with that project's license, the GPLv3 (i.e., you can't release it commercially and must release the source). This means that you can only use components from SkaaEditor in a non-GPLv3-friendly project if you *completely remove* anything from 7KAA; I've done my best to keep the various components of the project well-separated but it is *your responsibility* to ensure you are complying with the law applicable to you and your project. "Skaa" is not part of the 7KAA project nor was any code directly re-used. Whether or not, what is essentially, the re-implementation of 7KAA's C-code in C# mandates the use of the GPLv3 is an open question; if you've got the answer, let me know. Otherwise, just be aware that the SkaaGameDataLib is the project in question here and it is currently under the MIT license.
+---
+
+- **StackOverflow** refers to code adapted from posts on StackOverflow.com. These are marked throughout the code.
+
 ---
