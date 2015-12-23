@@ -25,51 +25,118 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
     public static class DataSetExtensions
     {
+        public static readonly TraceSource Logger = new TraceSource($"{typeof(DataSetExtensions)}", SourceLevels.All);
+        private static readonly string StandardGameSetDefaultName = "std.set";
         public static readonly string DataSourcesPropertyName = "DataSources";
-        public static string GetDataSourcePropertyName() { return DataSourcesPropertyName; }
-        public static readonly string DataTableSourcePropertyName = "DataSource";
-        public static string GetDataTableSourcePropertyName() { return DataTableSourcePropertyName; }
-
-
 
         /// <summary>
-        /// Adds a new "data source" string to a <see cref="DataSet.ExtendedProperties"/> item named <see cref="DataSourcesPropertyName"/>
+        /// Returns a <see cref="List{T}"/> of all data sources in the <see cref="DataSet.ExtendedProperties"/> element with the name of <see cref="DataSourcesPropertyName"/>
         /// </summary>
-        /// <param name="datasource">The new "data source" to add</param>
+        public static List<string> GetDataSources(this DataSet ds) { return ds.ExtendedProperties[DataSourcesPropertyName] as List<string>; }
+        /// <summary>
+        /// Adds a new "data source" string to the <see cref="DataSet.ExtendedProperties"/> <see cref="List{T}"/> named <see cref="DataSourcesPropertyName"/>
+        /// </summary>
+        /// <param name="datasource">The name of the data source to add</param>
+        /// <remarks>If <see cref="DataSet.ExtendedProperties"/> does not contain <see cref="DataSourcesPropertyName"/>, it will be created.</remarks>
         public static void AddDataSource(this DataSet ds, string datasource)
         {
             List<string> dataSources = ds.ExtendedProperties[DataSourcesPropertyName] as List<string> ?? new List<string>();
             dataSources.Add(datasource);
             ds.ExtendedProperties[DataSourcesPropertyName] = dataSources;
+            Logger.TraceInformation($"Added data source: {datasource}");
+        }
+        /// <summary>
+        /// Removes the specified data source from the <see cref="DataSet.ExtendedProperties"/> <see cref="List{T}"/> named <see cref="DataSourcesPropertyName"/>
+        /// </summary>
+        /// <param name="datasource">The name of the data source to remove</param>
+        /// <returns>false if the specified data source does not exist, true otherwise</returns>
+        public static bool RemoveDataSource(this DataSet ds, string datasource)
+        {
+            List<string> dataSources = ds.ExtendedProperties[DataSourcesPropertyName] as List<string>;
+            if (dataSources == null || !dataSources.Contains(datasource))
+                return false;
+            else
+                dataSources.Remove(datasource);
+
+            ds.ExtendedProperties[DataSourcesPropertyName] = dataSources;
+            Logger.TraceInformation($"Removed data source: {datasource}");
+            return true;
         }
 
-        public static bool OpenStandardGameSet(this DataSet ds, Stream str)
+        /// <summary>
+        /// Opens the specified <see cref="GameSetFile"/>, adds all of its tables and records to the <see cref="DataSet"/> and adds the file's name, 
+        /// from <see cref="Path.GetFileName()"/>, as a new data source
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <returns>false if <see cref="DbfFile.ReadStream(Stream)"/> returned false, true otherwise</returns>
+        public static bool OpenStandardGameSet(this DataSet ds, string filepath)
         {
-            var defs = ResourceDatabase.ReadDefinitions(str, true);
-
-            foreach (KeyValuePair<string, uint> kv in defs)
+            using (FileStream fs = GameSetFile.Open(filepath))
             {
-                str.Position = kv.Value; //the DBF's offset value in the set file
-                DbfFile file = new DbfFile();
-                if (file.ReadStream(str) != true)
-                    return false;
-                file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);
-                file.DataTable.ExtendedProperties.Add(DataTableSourcePropertyName, (str as FileStream)?.Name);
-                ds.Tables.Add(file.DataTable);
+                var defs = ResourceDatabase.ReadDefinitions(fs, true);
+
+                // Create a backup copy in the event Tables.Add() succeeds for one or more tables before 
+                // failing. This will allow us to just return false without mucking up the DataSet with 
+                // only some of the loaded tables.
+                using (DataSet temp = new DataSet())
+                {
+                    temp.Merge(ds);
+
+                    foreach (KeyValuePair<string, uint> kv in defs)
+                    {
+                        fs.Position = kv.Value; //the DBF's offset value in the set file
+                        DbfFile file = new DbfFile();
+                        if (file.ReadStream(fs) != true)
+                            return false;
+                        file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);
+                        file.DataTable.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, (fs as FileStream)?.Name);
+
+                        if (ds.Tables.Contains(file.DataTable.TableName))
+                        {
+                            Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to open standard game set due to a duplicate table: {file.DataTable.TableName} in {filepath}");
+                            return false;
+                        }
+                        else
+                            temp.Tables.Add(file.DataTable);
+                    }
+
+                    // only add the tables once we're sure there are no duplicates
+                    ds.Merge(temp);
+                    ds.AddDataSource(Path.GetFileName(filepath));
+                    Logger.TraceInformation($"Opened standard game set from: {filepath}");
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Saves this <see cref="DataSet"/> to the specified file in the format of <see cref="GameSetFile"/>, only including a 
+        /// <see cref="DataTable"/> if its <see cref="SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName"/> is <see cref="StandardGameSetDefaultName"/>
+        /// </summary>
+        /// <param name="filepath">The path and file to save this <see cref="DataSet"/> to</param>
+        public static void SaveStandardGameSet(this DataSet ds, string filepath) => SaveGameSet(ds, filepath, StandardGameSetDefaultName);
+        /// <summary>
+        /// Saves a portion of this <see cref="DataSet"/> to the specified file in the format of <see cref="GameSetFile"/>
+        /// </summary>
+        /// <param name="setName">Specifies the <see cref="DataTableSourcePropertyName"/> to consider part of the standard game set</param>
+        /// <param name="filepath">The path and file to save this <see cref="DataSet"/> to</param>
+        public static void SaveGameSet(this DataSet ds, string filepath, string setName)
+        {
+            using (FileStream fs = new FileStream(filepath, FileMode.Create))
+            {
+                var stream = ds.GetGameSetStream(setName);
+                stream.CopyTo(fs);
             }
 
-            ds.AddDataSource("std.set");
-            return true;
+            Logger.TraceInformation($"Saved game set: {setName} to {filepath}");
         }
 
         /// <summary>
@@ -77,6 +144,12 @@ namespace SkaaEditorUI
         /// </summary>
         /// <returns>A <see cref="MemoryStream"/></returns>
         public static Stream GetGameSetStream(this DataSet ds) => GetGameSetStream(ds, null);
+        /// <summary>
+        /// Get a <see cref="MemoryStream"/> of the <see cref="DataSet"/> consisting of the standard game set, <see cref="StandardGameSetDefaultName"/>
+        /// </summary>
+        /// <param name="set">A value that matches <see cref="DataSet.ExtendedProperties[\"FileName\"]"/>. If null, </param>
+        /// <returns>A <see cref="MemoryStream"/></returns>
+        public static Stream GetStandardGameSetStream(this DataSet ds) => GetGameSetStream(ds, StandardGameSetDefaultName);
         /// <summary>
         /// Get a <see cref="MemoryStream"/> of the <see cref="DataSet"/> consisting of the specified set
         /// </summary>
@@ -99,8 +172,8 @@ namespace SkaaEditorUI
 
                     foreach (DataTable dt in ds.Tables)
                     {
-                        if(set != null) //ignore DataTables not part of the Standard Game Set
-                            if (Path.GetFileName((string)dt.ExtendedProperties[DataTableSourcePropertyName]) != set)
+                        if (set != null) //ignore DataTables not part of the Standard Game Set
+                            if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName]) != set)
                                 continue;
 
                         //write SET header's record definitions
@@ -108,7 +181,7 @@ namespace SkaaEditorUI
                         //char[9] record_names
                         //uint32 record_offsets
                         //---------------------
-                        dt.WriteDefinition(headerStream, (uint)dbfStream.Position + header_size, true);
+                        dt.WriteResDefinition(headerStream, (uint)dbfStream.Position + header_size, true);
 
                         //writes out the DBF file
                         dt.Save(dbfStream);

@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UtilityClasses\DataRowExtensions.cs" />
     <Compile Include="UtilityClasses\DbfFileWriter.cs" />
     <Compile Include="UtilityClasses\DataSetExtensions.cs" />
     <Compile Include="GameObjects\SkaaFrame.cs" />
@@ -69,7 +70,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="UtilityClasses\ResourceDatabaseWriter.cs" />
+    <Compile Include="UtilityClasses\DataTableExtensions.cs" />
     <Compile Include="GameObjects\SkaaSprite.cs" />
     <Compile Include="GameObjects\SkaaSpriteFrame.cs" />
   </ItemGroup>
