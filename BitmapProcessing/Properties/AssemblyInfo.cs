@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BitmapProcessing")]
+[assembly: AssemblyTitle("FastBitmap")]
 [assembly: AssemblyDescription("Simple library to speed up bitmap processing in .NET.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Visual C# Kicks")]
-[assembly: AssemblyProduct("BitmapProcessing")]
+[assembly: AssemblyProduct("FastBitmap")]
 [assembly: AssemblyCopyright("Copyright © VCSKicks 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

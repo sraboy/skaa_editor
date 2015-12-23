@@ -24,7 +24,7 @@
 ***************************************************************************/
 
 using System.Windows.Forms;
-namespace SpriteViewer
+namespace Capslock.WinForms.SpriteViewer
 {
     partial class ListView
     {

@@ -24,21 +24,29 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using SkaaEditorUI.Forms.DockPanels;
+using WeifenLuo.WinFormsUI.Docking;
 
-namespace SkaaEditorControls
+namespace SkaaEditorUI.Forms
 {
-    public class ActiveColorChangedEventArgs : EventArgs
+    public partial class MDISkaaEditorMainForm : Form
     {
-        public Color PreviousColor, NewColor;
-
-        public ActiveColorChangedEventArgs(Color prevColor, Color newColor)
+        public MDISkaaEditorMainForm()
         {
-            PreviousColor = prevColor;
-            NewColor = newColor;
+            InitializeComponent();
+            ImageEditorContainer iec = new ImageEditorContainer();
+            ToolboxContainer tc = new ToolboxContainer();
+            SpriteViewerContainer svc = new SpriteViewerContainer();
+            iec.Show(dockPanel, DockState.Document);
+            tc.Show(dockPanel, DockState.DockLeft);
+            svc.Show(dockPanel, DockState.DockRight);
         }
     }
 }

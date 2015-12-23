@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capslock.WinForms.ImageEdit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUnitTester", "SkaaEditorUnitTester\SkaaEditorUnitTester.csproj", "{A00CB25F-5DF6-4430-B2A3-4C871DD5DF4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpriteViewer", "SpriteViewer\SpriteViewer.csproj", "{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capslock.WinForms.SpriteViewer", "SpriteViewer\Capslock.WinForms.SpriteViewer.csproj", "{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

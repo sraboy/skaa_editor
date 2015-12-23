@@ -51,27 +51,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbfFileWriter.cs" />
-    <Compile Include="DataSetExtensions.cs" />
-    <Compile Include="SkaaFrame.cs" />
-    <Compile Include="ResourceDatabase.cs" />
-    <Compile Include="IndexedBitmap.cs" />
-    <Compile Include="PaletteLoader.cs" />
-    <Compile Include="DbaseIIIDataColumn.cs">
+    <Compile Include="UtilityClasses\DbfFileWriter.cs" />
+    <Compile Include="UtilityClasses\DataSetExtensions.cs" />
+    <Compile Include="GameObjects\SkaaFrame.cs" />
+    <Compile Include="UtilityClasses\ResourceDatabase.cs" />
+    <Compile Include="UtilityClasses\IndexedBitmap.cs" />
+    <Compile Include="UtilityClasses\PaletteLoader.cs" />
+    <Compile Include="UtilityClasses\DbaseIIIDataColumn.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DbfFile.cs" />
-    <Compile Include="GameSetFile.cs" />
-    <Compile Include="FileTyping.cs" />
+    <Compile Include="UtilityClasses\DbfFile.cs" />
+    <Compile Include="GameObjects\GameSetFile.cs" />
+    <Compile Include="UtilityClasses\FileTyping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="ResourceDatabaseWriter.cs" />
-    <Compile Include="SkaaSprite.cs" />
-    <Compile Include="SkaaSpriteFrame.cs" />
+    <Compile Include="UtilityClasses\ResourceDatabaseWriter.cs" />
+    <Compile Include="GameObjects\SkaaSprite.cs" />
+    <Compile Include="GameObjects\SkaaSpriteFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
