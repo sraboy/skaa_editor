@@ -1,24 +1,4 @@
-This license applies to icons used from the Paint.NET open source project, as found here: https://code.google.com/p/openpdn/. The current Paint.NET project (no longer open source) can be found here: http://www.getpaint.net/index.html.
-
 The CC-by-NC-ND 2.5 "deed" can be found here: http://creativecommons.org/licenses/by-nc-nd/2.5/
-
-//////////////////////////////////////////////////////////////
-The files below are known to fall under this license. If you identify files known to fall under a different license or copyright, please notify the author: Steven Lavoie (steven.lavoiejr@gmail.com) or post an issue on the Github page: https://www.github.com/sraboy/skaa_editor.
-
-Additionally, care was taken to add all files to this list but it's possible some have been missed in a caffeine-induced development frenzy. Please notify the project of any omissions.
-
-Icons:
-MenuFileCloseIcon.png
-MenuFileNewIcon.png
-MenuFileOpenIcon.png
-MenuFileSaveIcon.png
-
-Cursors:
-PanToolCursor.cur
-PencilToolCursor.cur
-PencilToolCursor.cur
-//////////////////////////////////////////////////////////////
-
 
 Attribution-NonCommercial-NoDerivs 2.5
 
