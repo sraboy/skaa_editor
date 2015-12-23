@@ -27,11 +27,10 @@ using System.Drawing;
 using Capslock.WinForms.SpriteViewer;
 using SkaaGameDataLib;
 
-namespace SkaaEditorUI
+namespace SkaaEditorUI.Presenters
 {
     public class FramePresenter : SkaaFrame, IFrame
     {
-        private IndexedBitmap _indexedBitmap;
         private Guid _guid;
 
         public bool PendingChanges;

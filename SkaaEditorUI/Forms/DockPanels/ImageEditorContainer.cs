@@ -23,12 +23,28 @@
 ***************************************************************************/
 #endregion
 using WeifenLuo.WinFormsUI.Docking;
+using Capslock.WinForms.ImageEditor;
+using SkaaEditorUI.Presenters;
 
 namespace SkaaEditorUI.Forms.DockPanels
 {
     public partial class ImageEditorContainer : DockContent
     {
-        private Capslock.WinForms.ImageEditor.ImageEditorBox imageEditorBox;
+        private ImageEditorBox _imageEditorBox;
+        private SpritePresenter _activeSprite;
+
+        public SpritePresenter ActiveSprite
+        {
+            get
+            {
+                return _activeSprite;
+            }
+
+            set
+            {
+                this._activeSprite = value;
+            }
+        }
 
         public ImageEditorContainer()
         {
@@ -37,30 +53,30 @@ namespace SkaaEditorUI.Forms.DockPanels
 
         private void InitializeComponent()
         {
-            this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
+            this._imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
             this.SuspendLayout();
             // 
             // imageEditorBox
             // 
-            this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this._imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
+            this._imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
+            this._imageEditorBox.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right);
-            this.imageEditorBox.AutoPan = false;
-            this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
-            this.imageEditorBox.GridCellSize = 12;
-            this.imageEditorBox.Location = new System.Drawing.Point(1, 1);
-            this.imageEditorBox.Name = "imageEditorBox";
-            this.imageEditorBox.Size = new System.Drawing.Size(778, 777);
-            this.imageEditorBox.TabIndex = 9;
+            this._imageEditorBox.AutoPan = false;
+            this._imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
+            this._imageEditorBox.GridCellSize = 12;
+            this._imageEditorBox.Location = new System.Drawing.Point(1, 1);
+            this._imageEditorBox.Name = "imageEditorBox";
+            this._imageEditorBox.Size = new System.Drawing.Size(778, 777);
+            this._imageEditorBox.TabIndex = 9;
             // 
             // ImageEditorContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(779, 778);
-            this.Controls.Add(this.imageEditorBox);
+            this.Controls.Add(this._imageEditorBox);
             this.Name = "ImageEditorContainer";
             this.Text = "ImageEditorContainer";
             this.ResumeLayout(false);

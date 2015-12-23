@@ -34,8 +34,8 @@ namespace SkaaEditorUI.Forms.DockPanels
 {
     public partial class ToolboxContainer : DockContent
     {
-        private DrawingToolbox drawingToolbox;
-        private SkaaColorChooser colorGridChooser;
+        private DrawingToolbox _drawingToolbox;
+        private SkaaColorChooser _colorGridChooser;
 
         public ToolboxContainer(System.Drawing.Imaging.ColorPalette pal)
         {
@@ -49,38 +49,38 @@ namespace SkaaEditorUI.Forms.DockPanels
 
         private void Initialize(System.Drawing.Imaging.ColorPalette pal = null)
         {
-            this.drawingToolbox = new DrawingToolbox();
-            this.colorGridChooser = new SkaaColorChooser();
+            this._drawingToolbox = new DrawingToolbox();
+            this._colorGridChooser = new SkaaColorChooser();
             this.SuspendLayout();
             // 
             // drawingToolbox
             // 
-            this.drawingToolbox.Location = new System.Drawing.Point(1, 1);
-            this.drawingToolbox.Margin = new System.Windows.Forms.Padding(2);
-            this.drawingToolbox.Name = "drawingToolbox";
-            this.drawingToolbox.Size = new System.Drawing.Size(175, 69);
-            this.drawingToolbox.TabIndex = 18;
+            this._drawingToolbox.Location = new System.Drawing.Point(1, 1);
+            this._drawingToolbox.Margin = new System.Windows.Forms.Padding(2);
+            this._drawingToolbox.Name = "drawingToolbox";
+            this._drawingToolbox.Size = new System.Drawing.Size(175, 69);
+            this._drawingToolbox.TabIndex = 18;
             // 
             // colorGridChooser
             // 
-            this.colorGridChooser.AutoAddColors = false;
-            this.colorGridChooser.CellSize = new System.Drawing.Size(18, 18);
-            this.colorGridChooser.Columns = 8;
-            this.colorGridChooser.EditMode = Cyotek.Windows.Forms.ColorEditingMode.None;
-            this.colorGridChooser.Location = new System.Drawing.Point(0, 76);
-            this.colorGridChooser.Name = "colorGridChooser";
-            this.colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.Standard256;
-            this.colorGridChooser.ShowCustomColors = false;
-            this.colorGridChooser.Size = new System.Drawing.Size(175, 679);
-            this.colorGridChooser.TabIndex = 17;
+            this._colorGridChooser.AutoAddColors = false;
+            this._colorGridChooser.CellSize = new System.Drawing.Size(18, 18);
+            this._colorGridChooser.Columns = 8;
+            this._colorGridChooser.EditMode = Cyotek.Windows.Forms.ColorEditingMode.None;
+            this._colorGridChooser.Location = new System.Drawing.Point(0, 76);
+            this._colorGridChooser.Name = "colorGridChooser";
+            this._colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.Standard256;
+            this._colorGridChooser.ShowCustomColors = false;
+            this._colorGridChooser.Size = new System.Drawing.Size(175, 679);
+            this._colorGridChooser.TabIndex = 17;
             // 
             // ToolboxContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(177, 756);
-            this.Controls.Add(this.drawingToolbox);
-            this.Controls.Add(this.colorGridChooser);
+            this.Controls.Add(this._drawingToolbox);
+            this.Controls.Add(this._colorGridChooser);
             this.Name = "ToolboxContainer";
             this.Text = "ToolboxContainer";
             this.ResumeLayout(false);
@@ -92,18 +92,18 @@ namespace SkaaEditorUI.Forms.DockPanels
            if(pal != null)
             {
                 IEnumerable<Color> distinct = pal.Entries.Distinct();
-                this.colorGridChooser.Colors = new ColorCollection(distinct);
-                this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
-                this.colorGridChooser.Enabled = true;
+                this._colorGridChooser.Colors = new ColorCollection(distinct);
+                this._colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+                this._colorGridChooser.Enabled = true;
             }
             else
             {
-                this.colorGridChooser.Colors.Clear();
-                this.colorGridChooser.Palette = ColorPalette.None;
-                this.colorGridChooser.Enabled = false;
+                this._colorGridChooser.Colors.Clear();
+                this._colorGridChooser.Palette = ColorPalette.None;
+                this._colorGridChooser.Enabled = false;
             }
 
-            this.colorGridChooser.Refresh();
+            this._colorGridChooser.Refresh();
         }
 
     }

@@ -24,6 +24,7 @@
 #endregion
 using WeifenLuo.WinFormsUI.Docking;
 using Capslock.WinForms.SpriteViewer;
+using SkaaEditorUI.Presenters;
 
 namespace SkaaEditorUI.Forms.DockPanels
 {

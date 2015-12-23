@@ -33,6 +33,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkaaEditorUI.Forms.DockPanels;
+using SkaaEditorUI.Presenters;
 using SkaaGameDataLib;
 using WeifenLuo.WinFormsUI.Docking;
 using static SkaaEditorUI.SProjectManager;
@@ -70,6 +71,18 @@ namespace SkaaEditorUI.Forms
             InitializeComponent();
             SetUpDockPanel();
             ProjectManager.SetMainForm(this);
+            ProjectManager.ActiveProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
+            ProjectManager.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
+        }
+
+        private void ActiveProject_PaletteChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void SetUpDockPanel()
@@ -86,9 +99,15 @@ namespace SkaaEditorUI.Forms
             this._spriteViewerContainer.Show(dockPanel, DockState.DockRight);
         }
 
+
+        public void SetPalette(ColorPalette pal)
+        {
+            this._toolBoxContainer.SetColorPalette(((ImageEditorContainer)this.dockPanel.ActiveDocument)?.ActiveSprite?.ActivePalette);
+        }
+
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
-            this._toolBoxContainer.SetColorPalette(((SpriteViewerContainer)this.dockPanel.ActiveDocument).ActiveSprite.ActivePalette);
+            SetPalette(((ImageEditorContainer)this.dockPanel.ActiveDocument)?.ActiveSprite?.ActivePalette);
         }
 
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)
@@ -139,6 +158,14 @@ namespace SkaaEditorUI.Forms
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 ProjectManager.OpenSprite(dlg);
+            }
+        }
+
+        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                ProjectManager.OpenPalette(dlg);
             }
         }
     }

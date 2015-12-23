@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing.Imaging;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkaaEditorUI.Presenters;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI
@@ -15,7 +17,60 @@ namespace SkaaEditorUI
     {
         private static readonly TraceSource Logger = new TraceSource($"{typeof(Project)}", SourceLevels.All);
 
-        private List<SpritePresenter> _openSprites;
+        #region Events
+        [NonSerialized]
+        private EventHandler _paletteChanged;
+        public event EventHandler PaletteChanged
+        {
+            add
+            {
+                if (_paletteChanged == null || !_paletteChanged.GetInvocationList().Contains(value))
+                {
+                    _paletteChanged += value;
+                }
+            }
+            remove
+            {
+                _paletteChanged -= value;
+            }
+        }
+        protected virtual void OnPaletteChanged(EventArgs e)
+        {
+            EventHandler handler = _paletteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        [NonSerialized]
+        private EventHandler _activeSpriteChanged;
+        public event EventHandler ActiveSpriteChanged
+        {
+            add
+            {
+                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
+                {
+                    _activeSpriteChanged += value;
+                }
+            }
+            remove
+            {
+                _activeSpriteChanged -= value;
+            }
+        }
+        protected virtual void OnActiveSpriteChanged(EventArgs e)
+        {
+            EventHandler handler = _activeSpriteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        #endregion
+
+        private ObservableCollection<SpritePresenter> _openSprites;
         private SpritePresenter _activeSprite;
         private ColorPalette _activePalette;
         private DataSet _gameSet;
@@ -29,7 +84,11 @@ namespace SkaaEditorUI
 
             private set
             {
-                this._activeSprite = value;
+                if (this._activeSprite != value)
+                {
+                    this._activeSprite = value;
+                    OnActiveSpriteChanged(EventArgs.Empty);
+                }
             }
         }
         public ColorPalette ActivePalette
@@ -41,10 +100,14 @@ namespace SkaaEditorUI
 
             set
             {
-                this._activePalette = value;
+                if (this._activePalette != value)
+                {
+                    this._activePalette = value;
+                    OnPaletteChanged(EventArgs.Empty);
+                }
             }
         }
-        public List<SpritePresenter> OpenSprites
+        public ObservableCollection<SpritePresenter> OpenSprites
         {
             get
             {
@@ -77,7 +140,7 @@ namespace SkaaEditorUI
 
         public void AddSprite(SpritePresenter spr)
         {
-            this.OpenSprites = this.OpenSprites ?? new List<SpritePresenter>();
+            this.OpenSprites = this.OpenSprites ?? new ObservableCollection<SpritePresenter>();
             this.OpenSprites.Add(spr);
             this.ActiveSprite = spr;
         }

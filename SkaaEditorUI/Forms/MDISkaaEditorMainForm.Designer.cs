@@ -43,7 +43,6 @@
             WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient3 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MDISkaaEditorMainForm));
             this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripBtnNewProject = new System.Windows.Forms.ToolStripButton();
@@ -73,13 +72,13 @@
             this.currentFrameTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exportAllFramesTo32bppBmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
+            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -234,14 +233,14 @@
             // newProjectToolStripMenuItem
             // 
             this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newProjectToolStripMenuItem.Text = "Project";
             // 
             // spriteToolStripMenuItem
             // 
             this.spriteToolStripMenuItem.Enabled = false;
             this.spriteToolStripMenuItem.Name = "spriteToolStripMenuItem";
-            this.spriteToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.spriteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.spriteToolStripMenuItem.Text = "Sprite";
             // 
             // openToolStripMenuItem
@@ -251,7 +250,8 @@
             this.openFileToolStripMenuItem,
             this.toolStripSeparator3,
             this.openSpriteToolStripMenuItem,
-            this.openGameSetToolStripMenuItem});
+            this.openGameSetToolStripMenuItem,
+            this.loadPaletteToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.openToolStripMenuItem.Text = "Open";
@@ -339,8 +339,7 @@
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportPngToolStripMenuItem,
-            this.loadPaletteToolStripMenuItem});
+            this.exportPngToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -352,7 +351,7 @@
             this.toolStripSeparator2,
             this.exportAllFramesTo32bppBmpToolStripMenuItem});
             this.exportPngToolStripMenuItem.Name = "exportPngToolStripMenuItem";
-            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportPngToolStripMenuItem.Text = "Export PNG";
             // 
             // currentFrameTobmp32bppToolStripMenuItem
@@ -371,12 +370,6 @@
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Name = "exportAllFramesTo32bppBmpToolStripMenuItem";
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Text = "All Frames";
-            // 
-            // loadPaletteToolStripMenuItem
-            // 
-            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
-            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-            this.loadPaletteToolStripMenuItem.Text = "Load Palette";
             // 
             // viewToolStripMenuItem
             // 
@@ -424,6 +417,13 @@
             this.tsStatusLblFileType.Text = "No File Loaded";
             this.tsStatusLblFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // loadPaletteToolStripMenuItem
+            // 
+            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
+            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.loadPaletteToolStripMenuItem.Text = "Palette";
+            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
+            // 
             // MDISkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -433,7 +433,6 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.mainMenuStrip);
             this.Controls.Add(this.dockPanel);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.Name = "MDISkaaEditorMainForm";
             this.Text = "MDISkaaEditorMainForm";
@@ -479,12 +478,12 @@
         private System.Windows.Forms.ToolStripMenuItem currentFrameTobmp32bppToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exportAllFramesTo32bppBmpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
+        private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
     }
 }

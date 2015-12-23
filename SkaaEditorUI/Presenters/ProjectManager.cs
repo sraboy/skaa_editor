@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using SkaaGameDataLib;
 using SkaaEditorUI.Utilities;
 using SkaaEditorUI.Forms;
+using SkaaEditorUI.Presenters;
 
 namespace SkaaEditorUI
 {
@@ -173,26 +174,18 @@ namespace SkaaEditorUI
         /// </summary>
         /// <param name="filePath">The specific palette file to load.</param>
         /// <returns>A ColorPalette built from the palette file</returns>
-        public bool OpenPalette(string filePath)
+        public void OpenPalette(OpenFileDialog dlg)
         {
-            var pal = PaletteLoader.FromResFile(filePath);
-
-            if (pal == null)
-            {
-                Logger.TraceEvent(TraceEventType.Error, 0, $"{typeof(PaletteLoader)} returned null. Failed to load palette: {filePath}");
-                return false;
-            }
-            else
-            {
-                this.ActiveProject.ActivePalette = pal;
-                return true;
-            }
+            ColorPalettePresenter pal = null;
+            pal = dlg.Open(this.SaveDirectory, () => LoadPalette(dlg.FileName));
+            this.ActiveProject.ActivePalette = pal.ColorPalette;
+            //this._mainForm.SetPalette(this.ActiveProject.ActivePalette);
         }
 
         public void OpenSprite(OpenFileDialog dlg)
         {
             SpritePresenter spr = null;
-            dlg.OpenAs<SpritePresenter>(this.SaveDirectory, () => { spr = LoadSprite(dlg.FileName, this._mainForm.ActivePalette); });
+            spr = dlg.Open(this.SaveDirectory, () => LoadSprite(dlg.FileName, this._mainForm.ActivePalette));
             this.ActiveProject.AddSprite(spr);
         }
 
@@ -216,7 +209,15 @@ namespace SkaaEditorUI
 
             return new SpritePresenter(spr);
         }
+        private static ColorPalettePresenter LoadPalette(string filePath)
+        {
+            var pal = PaletteLoader.FromResFile(filePath);
 
+            if (pal == null)
+                Logger.TraceEvent(TraceEventType.Error, 0, $"{typeof(PaletteLoader)} returned null. Failed to load palette: {filePath}");
+
+            return new ColorPalettePresenter(pal);
+        }
         public static FileFormats CheckFileType(string filePath)
         {
             return FileTypeChecks.CheckFileType(filePath);

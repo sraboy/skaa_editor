@@ -26,13 +26,27 @@ using System.Collections.Generic;
 using SkaaGameDataLib;
 using Capslock.WinForms.SpriteViewer;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System;
 
-namespace SkaaEditorUI
+namespace SkaaEditorUI.Presenters
 {
-    public class SpritePresenter : SkaaSprite
+    public class SpritePresenter : SkaaSprite, ICustomOpenFileDialog, INotifyPropertyChanged
     {
-        //private ColorPalette _activePalette;
+        private static readonly string _fileExtension = ".spr";
+
         private IFrame _activeFrame;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+                handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
 
         public ColorPalette ActivePalette
         {
@@ -50,9 +64,20 @@ namespace SkaaEditorUI
 
             set
             {
+                Misc.SetField(ref this._activeFrame, value, () => OnPropertyChanged(Misc.GetDesignModeValue(() => this.ActiveFrame)));
                 this._activeFrame = value;
             }
         }
+
+        public string FileExtension
+        {
+            get
+            {
+                return _fileExtension;
+            }
+        }
+
+
 
         public SpritePresenter() { }
         public SpritePresenter(SkaaSprite sgs)
@@ -71,6 +96,14 @@ namespace SkaaEditorUI
             }
 
             return frames;
+        }
+
+        public OpenFileDialog GetOpenFileDialog()
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = $"7KAA Sprite Files (*{FileExtension})|*{FileExtension}|All Files (*.*)|*.*";
+            dlg.DefaultExt = FileExtension;
+            return dlg;
         }
     }
 }
