@@ -68,9 +68,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BitmapProcessing\BitmapProcessing.csproj">
+    <ProjectReference Include="..\BitmapProcessing\FastBitmap.csproj">
       <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
-      <Name>BitmapProcessing</Name>
+      <Name>FastBitmap</Name>
     </ProjectReference>
     <ProjectReference Include="..\Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj">
       <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
@@ -96,6 +96,9 @@
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
       <Name>SkaaGameDataLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SkaaEditorUnitTester.licenseheader" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

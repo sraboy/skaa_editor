@@ -1,5 +1,5 @@
 # skaa_editor
-SkaaEditor seeks to provide non-technical users (e.g., non-programmers) the ability to re-skin the game to their liking. The project is currently in its infancy and battles three other projects that vie for my time.
+SkaaEditor seeks to provide non-technical users (e.g., non-programmers) the ability to re-skin the game to their liking. The project is currently in its infancy and battles a few other projects that vie for my time. 
 
 ![screenshot](other/screenshot.png)
 
@@ -14,9 +14,10 @@ SPR files are sprites. The SET file, std.set, is a database containing informati
 
 ## status & known issues
 - Note that various shades of yellow are the default colors; 7KAA automatically replaces this yellow with the proper nation color while in-game.
-- Use the built-in "project" functionality for best results. Otherwise, know that the game set's data is loaded based on the current sprite's SpriteId, which is based on the SPR's filename. Therefore, if you have "myballista.spr" open for editing and then load std.set, your saves
 - There is currently no undo/redo nor copy/paste.
 - Editing with the pencil tool is a bit laggy.
+- The Standard Game Set (std.set) has database tables in it, and rows are loaded based on the current sprite's SpriteId, which is based on the SPR's filename. These rows contain the offsets of each frame's data in the SPR file. This is how the game does it and likely won't change. Therefore, if you want to actually save your changes for use in the game (which requires updating std.set), your file name must match the original.
+- You must save both your sprite (*.spr) and std.set at the same time if you ever want to use that sprite in-game. This is because, once you save your edited sprite, its frames' offsets have changed. The offset is the only way to identify a frame in std.set, so opening an edited sprite with the original std.set means there's no way to identify which edited frame matches which offset in the database. This will be resolved in a future release, allowing the user to identify which is which and/or just allowing the user to re-open the original and copy/paste their edits.
 
 ## how to
 
@@ -44,9 +45,4 @@ Obviously, this project wouldn't be possible without [Enlight Software](http://w
 Thanks to everyone at [7kfans.com/](http://www.7kfans.com/), the new home of Seven Kingdoms and its open source project, for keeping 7KAA awesome and now up-to-date. I'd also like to give a shoutout to [Cyotek](http://www.cyotek.com/) for their awesome [ImageBox control](https://github.com/cyotek/Cyotek.Windows.Forms.ImageBox) and [ColorPicker](https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker), both of which have been extended for this project's use.
 
 ## license
-This project code is GPLv3, unless otherwise noted in the code or documentation. Game content from 7KAA remains under that project's license, [http://www.7kfans.com/wiki/index.php/Seven_Kingdoms:Copyrights](mostly all GPL as well). Again, see the source for specifics but other licenses include: 
-
-- CC-by-NC-ND 2.5: Some icons/graphics from Paint.NET 
-- FDL-1.2: The current paint bucket fill implementation
-- MIT: Cyotek's controls
-- VCKicks (proprietary license): BitmapProcessing library
+The project is primarily governed by the [MIT license](http://www.opensource.org/licenses/mit-license.php) Game content from 7KAA remains under that project's license, [http://www.7kfans.com/wiki/index.php/Seven_Kingdoms:Copyrights](mostly GPLv3). See the [License Readme](https://github.com/sraboy/skaa_editor/tree/master/other/licenses/_license_readme.md) for details on the license for each component in the project.

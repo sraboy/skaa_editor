@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorControls", "SkaaE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaGameDataLib", "SkaaGameDataLib\SkaaGameDataLib.csproj", "{DA473696-B41A-4C5E-879D-77AE1E12B01D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitmapProcessing", "BitmapProcessing\BitmapProcessing.csproj", "{3816600B-B417-460D-8457-96039058B03E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastBitmap", "BitmapProcessing\FastBitmap.csproj", "{3816600B-B417-460D-8457-96039058B03E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorPicker", "Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj", "{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}"
 EndProject
@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capslock.WinForms.ImageEdit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUnitTester", "SkaaEditorUnitTester\SkaaEditorUnitTester.csproj", "{A00CB25F-5DF6-4430-B2A3-4C871DD5DF4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpriteViewer", "SpriteViewer\SpriteViewer.csproj", "{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capslock.WinForms.SpriteViewer", "SpriteViewer\Capslock.WinForms.SpriteViewer.csproj", "{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

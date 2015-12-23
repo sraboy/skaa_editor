@@ -23,7 +23,7 @@
 *  	information on 7KAA, visit http://www.7kfans.com.
 ***************************************************************************/
 
-namespace SkaaEditorUI
+namespace SkaaEditorUI.Forms
 {
     partial class AboutForm
     {

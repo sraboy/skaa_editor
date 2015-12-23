@@ -25,7 +25,7 @@
 
 using SkaaEditorControls;
 
-namespace SkaaEditorUI
+namespace SkaaEditorUI.Forms
 {
     partial class SkaaEditorMainForm
     {
@@ -97,7 +97,7 @@ namespace SkaaEditorUI
             this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
             this.btnBrowseGameSet = new System.Windows.Forms.Button();
             this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
-            this.spriteViewer1 = new SpriteViewer.SpriteView();
+            this.spriteViewer1 = new Capslock.WinForms.SpriteViewer.SpriteView();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -560,6 +560,6 @@ namespace SkaaEditorUI
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
         private System.Windows.Forms.Button btnBrowseGameSet;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private SpriteViewer.SpriteView spriteViewer1;
+        private Capslock.WinForms.SpriteViewer.SpriteView spriteViewer1;
     }
 }

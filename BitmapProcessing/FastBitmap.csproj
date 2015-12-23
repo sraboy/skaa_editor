@@ -8,8 +8,8 @@
     <ProjectGuid>{3816600B-B417-460D-8457-96039058B03E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BitmapProcessing</RootNamespace>
-    <AssemblyName>BitmapProcessing</AssemblyName>
+    <RootNamespace>FastBitmap</RootNamespace>
+    <AssemblyName>FastBitmap</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

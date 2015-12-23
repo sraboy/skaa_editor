@@ -75,9 +75,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BitmapProcessing\BitmapProcessing.csproj">
+    <ProjectReference Include="..\BitmapProcessing\FastBitmap.csproj">
       <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
-      <Name>BitmapProcessing</Name>
+      <Name>FastBitmap</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cyotek.Windows.Forms.ImageBox\Cyotek.Windows.Forms.ImageBox.csproj">
       <Project>{4159c8d3-c18d-4bed-8be6-9bad1b0ca4f6}</Project>

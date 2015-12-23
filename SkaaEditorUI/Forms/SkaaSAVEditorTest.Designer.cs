@@ -1,4 +1,4 @@
-﻿namespace SkaaEditorUI
+﻿namespace SkaaEditorUI.Forms
 {
     partial class SkaaSAVEditorTest
     {
