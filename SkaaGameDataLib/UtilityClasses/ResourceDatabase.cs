@@ -24,19 +24,15 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.OleDb;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
     public class ResourceDatabase
     {
-        public static readonly TraceSource Logger = new TraceSource("ResourceDatabase", SourceLevels.All);
+        public static readonly TraceSource Logger = new TraceSource($"{typeof(ResourceDatabase)}", SourceLevels.All);
 
         /// <summary>
         /// The number of characters, including null, that is used to name a ResIdx 
@@ -56,14 +52,14 @@ namespace SkaaGameDataLib
         /// <summary>
         /// The total size of a RESX definition.
         /// </summary>
-        public static readonly int ResIdxDefinitionSize = 13;      //add the above two
+        public static readonly int ResIdxDefinitionSize = 13;   //add the above two
         /// <summary>
         /// The total size of a Res definition.
         /// </summary>
         public static readonly int ResDefinitionSize = 12;      //add the above two
         /// <summary>
-        /// Arbitrary number that shouldn't be necessary for 7KAA. Since the record count
-        /// is read from the file, it could be any 16-bit value. Since ResX files have no
+        /// Arbitrary number that isn't necessary for the game but, since the record count
+        /// is read from the file, it could be any 16-bit value. Since RES files have no
         /// header by which to identify the file, we assume a file claiming more than 150
         /// records is not a valid RESX file. 
         /// </summary>
@@ -78,7 +74,7 @@ namespace SkaaGameDataLib
         {
             int nameSize, definitionSize;
 
-            if(isIdx)
+            if (isIdx)
             {
                 nameSize = ResIdxNameSize;
                 definitionSize = ResIdxDefinitionSize;
@@ -121,7 +117,7 @@ namespace SkaaGameDataLib
                     //ResIdx.NameLen = 9, used by ImageRes, SetRes
                     //others have NameLen = 8
                     //Debugger.Break();
-                    return null; 
+                    return null;
                 }
 
                 try
@@ -132,12 +128,12 @@ namespace SkaaGameDataLib
                 {
                     string fileNameMsg = string.Empty;
                     if (str is FileStream)
-                        fileNameMsg = $" Filename: {((FileStream) str).Name}";
+                        fileNameMsg = $" Filename: {((FileStream)str).Name}";
 
                     Logger.TraceEvent(TraceEventType.Verbose, 0, $"Failed to read RESX definitions for {name} at offset {offset}. {fileNameMsg}");
                     return null;
                 }
-                
+
             }
 
             return nameOffsetPairs;

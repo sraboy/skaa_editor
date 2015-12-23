@@ -22,21 +22,18 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
-    //todo: create custom palette class based on a color list that can be used with ColorPicker
-
     public static class PaletteLoader
     {
+        private static readonly TraceSource Logger = new TraceSource($"{typeof(PaletteLoader)}", SourceLevels.All);
+
         public const int MaxColors = 256;
 
         public static ColorPalette FromResFile(string filepath)
@@ -63,6 +60,7 @@ namespace SkaaGameDataLib
                 }
             }
 
+            Logger.TraceInformation($"Loaded palette: {filepath}");
             return pal;
         }
     }

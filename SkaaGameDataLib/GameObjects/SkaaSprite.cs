@@ -264,6 +264,16 @@ namespace SkaaGameDataLib
                 frames.Add(f.ToSprFile());
             return frames;
         }
+        /// <summary>
+        /// Creates a new <see cref="SkaaSprite"/> from a stream of SPR-formatted data
+        /// </summary>
+        /// <param name="str">The stream to read the SPR data from</param>
+        /// <param name="pal">The <see cref="ColorPalette"/> to apply to the sprite's images</param>
+        /// <returns>A new <see cref="SkaaSprite"/></returns>
+        /// The original game code for reading SPR files can be found <code>ResourceDb::init_imported()</code> 
+        /// in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". SPR files are 
+        /// are considered <code>FLAT</code> by 7KAA. 
+        /// </remarks>
         public static SkaaSprite FromSprStream(Stream str, ColorPalette pal)
         {
             SkaaSprite spr = new SkaaSprite();
@@ -281,9 +291,9 @@ namespace SkaaGameDataLib
                     spr.Frames.Add(sf);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load sprite{" " + spr.SpriteId} from stream.");
+                Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load sprite: {spr.SpriteId} (Exception: {e.Message})");
                 Debugger.Break();
             }
             return spr;
