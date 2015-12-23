@@ -33,20 +33,66 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkaaEditorUI.Forms.DockPanels;
 using WeifenLuo.WinFormsUI.Docking;
+using static SkaaEditorUI.SProjectManager;
 
 namespace SkaaEditorUI.Forms
 {
     public partial class MDISkaaEditorMainForm : Form
     {
+        //private ProjectManager _projectManager;
+
         public MDISkaaEditorMainForm()
         {
             InitializeComponent();
+            AddDockPanels();
+        }
+
+        private void AddDockPanels()
+        {
             ImageEditorContainer iec = new ImageEditorContainer();
             ToolboxContainer tc = new ToolboxContainer();
             SpriteViewerContainer svc = new SpriteViewerContainer();
             iec.Show(dockPanel, DockState.Document);
             tc.Show(dockPanel, DockState.DockLeft);
             svc.Show(dockPanel, DockState.DockRight);
+        }
+
+        private void toolStripBtnNewProject_Click(object sender, EventArgs e)
+        {
+            if (TrySaveCloseProject())
+                ProjectManager.CreateNewProject();
+        }
+
+        /// <summary>
+        /// Closes the current project and saves changes, if needed.
+        /// </summary>
+        /// <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
+        private bool TrySaveCloseProject()
+        {
+            DialogResult saveChanges = UserShouldSaveChanges();
+
+            if (saveChanges == DialogResult.Yes)
+            {
+                ProjectManager.CloseProject();
+                return true;
+            }
+            else if (saveChanges == DialogResult.No)
+            {
+                ProjectManager.CloseProject();
+                return true;
+            }
+            else // (DialogResult.Cancel)
+                return false;
+        }
+
+        private DialogResult UserShouldSaveChanges()
+        {
+            bool spriteHasChanges = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+
+            if (!spriteHasChanges)// && this.ActiveProject?.UnsavedSprites?.Count == 0)
+                return DialogResult.No;
+            else
+                return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
     }
 }
