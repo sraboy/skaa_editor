@@ -90,7 +90,7 @@ namespace SkaaEditorUI.Forms
         {
             ConfigSettings();
             NewProject();
-            this.ActiveProject.ActiveSprite = (SpritePresenter) Project.LoadSprite(props.DataDirectory + "ballista.spr", this.ActiveProject.ActivePalette);
+            this.ActiveProject.ActiveSprite = (SpritePresenter) oldProject.LoadSprite(props.DataDirectory + "ballista.spr", this.ActiveProject.ActivePalette);
             this.ActiveProject.SetActiveSpriteSframeDbfDataView();
 
             if (this.ActiveProject.ActiveSprite != null)

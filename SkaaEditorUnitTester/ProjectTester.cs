@@ -60,9 +60,9 @@ namespace SkaaEditorUnitTester
             Debug.Assert(Directory.CreateDirectory(this.TempDirectory) != null, $"Failed to create TempDirectory: {this.TempDirectory}");
         }
 
-        private Project GetNewProject(string palettePath = null)
+        private oldProject GetNewProject(string palettePath = null)
         {
-            Project proj = new Project();
+            oldProject proj = new oldProject();
             if (palettePath == null)
                 palettePath = this.DataDirectory + "pal_std.res";
 
@@ -80,7 +80,7 @@ namespace SkaaEditorUnitTester
             //string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
             string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
 
-            var tuple = Project.LoadResDbf(rockBmpDbf, proj.ActivePalette);
+            var tuple = oldProject.LoadResDbf(rockBmpDbf, proj.ActivePalette);
             Debug.Assert(tuple.Item1 != null, "Failed to load sprite data.");
             Debug.Assert(tuple.Item2.Rows.Count > 0, "Failed to load data rows.");
         }

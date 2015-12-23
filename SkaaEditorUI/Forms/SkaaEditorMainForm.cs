@@ -73,14 +73,14 @@ namespace SkaaEditorUI.Forms
         #endregion
 
         #region Private Members
-        private Project _activeProject;
+        private oldProject _activeProject;
         private Properties.Settings props = Properties.Settings.Default;
         private bool _tempProjectFolder = false;
         private List<string> _tempFiles;
         #endregion
 
         #region Properties
-        public Project ActiveProject
+        public oldProject ActiveProject
         {
             get
             {
@@ -155,7 +155,7 @@ namespace SkaaEditorUI.Forms
         }
   
         /// <summary>
-        /// Loads <see cref="Project.ActivePalette"/>, if specified, and enables/disables the form's <see cref="SkaaColorChooser"/> object based on whether or not a palette is loaded.
+        /// Loads <see cref="oldProject.ActivePalette"/>, if specified, and enables/disables the form's <see cref="SkaaColorChooser"/> object based on whether or not a palette is loaded.
         /// </summary>
         private void SetUpColorGrid()
         {
@@ -345,7 +345,7 @@ namespace SkaaEditorUI.Forms
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = (SpritePresenter)Project.LoadSprite(dlg.FileName, this.ActiveProject.ActivePalette); });
+                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = (SpritePresenter)oldProject.LoadSprite(dlg.FileName, this.ActiveProject.ActivePalette); });
                         this.ActiveProject.SetActiveSpriteSframeDbfDataView();
                         break;
                     case FileFormats.SpriteFrameSpr:
@@ -357,7 +357,7 @@ namespace SkaaEditorUI.Forms
                             SpritePresenter spr;
                             if (this.ActiveProject.ActiveSprite == null) spr = new SpritePresenter();
                             else spr = this.ActiveProject.ActiveSprite;
-                            spr.Frames.Add(Project.LoadFrame(dlg.FileName, this.ActiveProject.ActivePalette));
+                            spr.Frames.Add(oldProject.LoadFrame(dlg.FileName, this.ActiveProject.ActivePalette));
                             this.ActiveProject.ActiveSprite = spr;
                         });
                         break;
@@ -367,7 +367,7 @@ namespace SkaaEditorUI.Forms
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<SpritePresenter, DataTable> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
+                            Tuple<SpritePresenter, DataTable> tup = oldProject.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
                             //this.ActiveProject.ActiveSprite = tup.Item1;
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
@@ -386,7 +386,7 @@ namespace SkaaEditorUI.Forms
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<SpritePresenter, DataTable> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
+                            Tuple<SpritePresenter, DataTable> tup = oldProject.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
                             this.ActiveProject.ActiveGameSet.AddDataSource(Path.GetFileName(dlg.FileName));
@@ -569,25 +569,25 @@ namespace SkaaEditorUI.Forms
                         dlg.DefaultExt = ".png";
                         dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
-                        ShowSaveFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveSprite));
+                        ShowSaveFileDialog(dlg, () => oldProject.Export(dlg.FileName, this.ActiveProject.ActiveSprite));
                         break;
                     case FileFormats.FramePNG:
                         dlg.DefaultExt = ".png";
                         dlg.Filter = $"Portable Network Graphics (*.png)|*.png|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId + "_frame";
-                        ShowSaveFileDialog(dlg, () => Project.Export(dlg.FileName, this.ActiveProject.ActiveFrame));
+                        ShowSaveFileDialog(dlg, () => oldProject.Export(dlg.FileName, this.ActiveProject.ActiveFrame));
                         break;
                     case FileFormats.SpriteSpr:
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
-                        ShowSaveFileDialog(dlg, () => Project.Save(dlg.FileName, this.ActiveProject.ActiveSprite));
+                        ShowSaveFileDialog(dlg, () => oldProject.Save(dlg.FileName, this.ActiveProject.ActiveSprite));
                         break;
                     case FileFormats.SpriteFrameSpr:
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
-                        ShowSaveFileDialog(dlg, () => Project.Save(dlg.FileName, this.ActiveProject.ActiveFrame));
+                        ShowSaveFileDialog(dlg, () => oldProject.Save(dlg.FileName, this.ActiveProject.ActiveFrame));
                         break;
                     case FileFormats.DbaseIII:
                         dlg.DefaultExt = props.ResFileExtension;
@@ -760,7 +760,7 @@ namespace SkaaEditorUI.Forms
             Directory.CreateDirectory(projectPath);
             this._tempFiles.Add(projectPath);
 
-            Project newProject = new Project();
+            oldProject newProject = new oldProject();
 
             ////need these events to fire before loading the objects
             newProject.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
@@ -777,7 +777,7 @@ namespace SkaaEditorUI.Forms
             Debug.Assert(projectPath != null, "Failed to specify a path to open!");
             
             //todo: enumerate the files to see what ProjectType it is
-            Project open = new Project();
+            oldProject open = new oldProject();
 
             props.ProjectDirectory = projectPath;
             open.ProjectName = Path.GetFileName(projectPath); //GetFileName just assumes the last thing is a "file" and will give us the directory name
@@ -810,7 +810,7 @@ namespace SkaaEditorUI.Forms
 
             if (sprFiles.Count > 0)
             {
-                open.ActiveSprite = (SpritePresenter)Project.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
+                open.ActiveSprite = (SpritePresenter)oldProject.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
                 open.SetActiveSpriteSframeDbfDataView();
                 this.spriteViewer1.SetFrameList(this.ActiveProject.ActiveSprite.GetIFrames());
             }

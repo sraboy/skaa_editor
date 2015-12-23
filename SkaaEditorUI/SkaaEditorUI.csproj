@@ -150,7 +150,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Presenters\Presenter.cs" />
+    <Compile Include="oldProject.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="Presenters\ProjectManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
