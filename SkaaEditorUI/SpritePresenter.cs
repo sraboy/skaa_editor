@@ -9,10 +9,10 @@ using SpriteViewer;
 
 namespace SkaaEditorUI
 {
-    public class SkaaEditorSprite : SkaaGameSprite
+    public class SpritePresenter : SkaaSprite
     {
-        public SkaaEditorSprite() { }
-        public SkaaEditorSprite(SkaaGameSprite sgs)
+        public SpritePresenter() { }
+        public SpritePresenter(SkaaSprite sgs)
         {
             this.Frames = sgs.Frames;
             this.SpriteId = sgs.SpriteId;
@@ -21,9 +21,9 @@ namespace SkaaEditorUI
         public List<IFrame> GetIFrames()
         {
             List<IFrame> frames = new List<IFrame>();// = (SkaaEditorFrame)this.Frames[0];
-            foreach (SkaaGameFrame sf in this.Frames)
+            foreach (SkaaFrame sf in this.Frames)
             {
-                frames.Add(new SkaaEditorFrame(sf));
+                frames.Add(new FramePresenter(sf));
             }
 
             return frames;

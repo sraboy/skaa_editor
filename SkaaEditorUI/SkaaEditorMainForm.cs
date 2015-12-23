@@ -346,7 +346,7 @@ namespace SkaaEditorUI
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = (SkaaEditorSprite)Project.LoadSprite(dlg.FileName, this.ActiveProject.ActivePalette); });
+                        OpenFile(dlg, format, () => { this.ActiveProject.ActiveSprite = (SpritePresenter)Project.LoadSprite(dlg.FileName, this.ActiveProject.ActivePalette); });
                         this.ActiveProject.SetActiveSpriteSframeDbfDataView();
                         break;
                     case FileFormats.SpriteFrameSpr:
@@ -355,8 +355,8 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            SkaaEditorSprite spr;
-                            if (this.ActiveProject.ActiveSprite == null) spr = new SkaaEditorSprite();
+                            SpritePresenter spr;
+                            if (this.ActiveProject.ActiveSprite == null) spr = new SpritePresenter();
                             else spr = this.ActiveProject.ActiveSprite;
                             spr.Frames.Add(Project.LoadFrame(dlg.FileName, this.ActiveProject.ActivePalette));
                             this.ActiveProject.ActiveSprite = spr;
@@ -368,7 +368,7 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<SkaaEditorSprite, DataTable> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
+                            Tuple<SpritePresenter, DataTable> tup = Project.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
                             //this.ActiveProject.ActiveSprite = tup.Item1;
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
@@ -387,7 +387,7 @@ namespace SkaaEditorUI
                         dlg.FileName = filepath;
                         OpenFile(dlg, format, () => 
                         {
-                            Tuple<SkaaEditorSprite, DataTable> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
+                            Tuple<SpritePresenter, DataTable> tup = Project.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
                             this.ActiveProject.ActiveGameSet.Tables.Add(tup.Item2);
                             this.ActiveProject.ActiveGameSet.AddDataSource(Path.GetFileName(dlg.FileName));
@@ -654,7 +654,7 @@ namespace SkaaEditorUI
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
             this.spriteViewer1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetIFrames());
-            this.ActiveProject.ActiveFrame = new SkaaEditorFrame(this.ActiveProject?.ActiveSprite?.Frames[0]);
+            this.ActiveProject.ActiveFrame = new FramePresenter(this.ActiveProject?.ActiveSprite?.Frames[0]);
 
             //since a sprite has been un/loaded
             SetupUI();
@@ -811,7 +811,7 @@ namespace SkaaEditorUI
 
             if (sprFiles.Count > 0)
             {
-                open.ActiveSprite = (SkaaEditorSprite)Project.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
+                open.ActiveSprite = (SpritePresenter)Project.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
                 open.SetActiveSpriteSframeDbfDataView();
                 this.spriteViewer1.SetFrameList(this.ActiveProject.ActiveSprite.GetIFrames());
             }
@@ -867,12 +867,12 @@ namespace SkaaEditorUI
             else
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
-        private bool CheckSpriteForPendingChanges(SkaaGameSprite spr)
+        private bool CheckSpriteForPendingChanges(SkaaSprite spr)
         {
             if (spr == null) return false;
 
             bool frameHasChanges = false;
-            foreach (SkaaEditorFrame sf in spr.Frames)
+            foreach (FramePresenter sf in spr.Frames)
             {
                 frameHasChanges = sf.PendingChanges | frameHasChanges;
             }

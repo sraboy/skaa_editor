@@ -5,7 +5,7 @@ using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
-    public class SkaaEditorFrame : SkaaGameFrame, IFrame
+    public class FramePresenter : SkaaFrame, IFrame
     {
         private IndexedBitmap _indexedBitmap;
         private Guid _guid;
@@ -49,7 +49,7 @@ namespace SkaaEditorUI
             }
         }
 
-        public SkaaEditorFrame(SkaaGameFrame sgf)
+        public FramePresenter(SkaaFrame sgf)
         {
             this.Guid = Guid.NewGuid();
             this.PendingChanges = false;

@@ -28,9 +28,9 @@ using System.Data;
 
 namespace SkaaGameDataLib
 {
-    public class SkaaGameSpriteFrame : SkaaGameFrame
+    public class SkaaSpriteFrame : SkaaFrame
     {
-        private SkaaGameSprite _parentSprite;
+        private SkaaSprite _parentSprite;
         public string Test = "test";
         public string Name
         {
@@ -55,15 +55,15 @@ namespace SkaaGameDataLib
             }
         }
    
-        public SkaaGameSprite ParentSprite;
+        public SkaaSprite ParentSprite;
         public List<DataRow> GameSetDataRows;
 
         /// <summary>
-        /// Initializes a new <see cref="SkaaGameSpriteFrame"/>.
+        /// Initializes a new <see cref="SkaaSpriteFrame"/>.
         /// </summary>
-        /// <param name="parentSprite">The <see cref="SkaaGameSprite"/> containing this <see cref="SkaaGameSpriteFrame"/></param>
+        /// <param name="parentSprite">The <see cref="SkaaSprite"/> containing this <see cref="SkaaSpriteFrame"/></param>
         /// <param name="stream"></param>
-        public SkaaGameSpriteFrame(SkaaGameSprite parentSprite)
+        public SkaaSpriteFrame(SkaaSprite parentSprite)
         {
             this.ParentSprite = parentSprite;
             this.GameSetDataRows = new List<DataRow>();

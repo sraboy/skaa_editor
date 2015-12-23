@@ -150,14 +150,14 @@
       <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SkaaEditorFrame.cs" />
+    <Compile Include="FramePresenter.cs" />
     <Compile Include="SkaaSAVEditorTest.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SkaaSAVEditorTest.Designer.cs">
       <DependentUpon>SkaaSAVEditorTest.cs</DependentUpon>
     </Compile>
-    <Compile Include="SkaaEditorSprite.cs" />
+    <Compile Include="SpritePresenter.cs" />
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>

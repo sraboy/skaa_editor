@@ -51,10 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ButtonResource.cs" />
     <Compile Include="DbfFileWriter.cs" />
     <Compile Include="DataSetExtensions.cs" />
-    <Compile Include="SkaaGameFrame.cs" />
+    <Compile Include="SkaaFrame.cs" />
     <Compile Include="ResourceDatabase.cs" />
     <Compile Include="IndexedBitmap.cs" />
     <Compile Include="PaletteLoader.cs" />
@@ -71,8 +70,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="ResourceDatabaseWriter.cs" />
-    <Compile Include="SkaaGameSprite.cs" />
-    <Compile Include="SkaaGameSpriteFrame.cs" />
+    <Compile Include="SkaaSprite.cs" />
+    <Compile Include="SkaaSpriteFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
