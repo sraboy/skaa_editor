@@ -39,7 +39,7 @@ namespace SkaaEditorUI
                 return _activePalette;
             }
 
-            private set
+            set
             {
                 this._activePalette = value;
             }
@@ -63,7 +63,7 @@ namespace SkaaEditorUI
                 return _gameSet;
             }
 
-            private set
+            set
             {
                 this._gameSet = value;
             }
@@ -73,23 +73,24 @@ namespace SkaaEditorUI
 
         public Project()
         {
-            this.ActiveSprite.SpriteUpdated += ActiveSprite_SpriteUpdated;
         }
 
-        private void ActiveSprite_SpriteUpdated(object sender, EventArgs e)
+        public void AddSprite(SpritePresenter spr)
         {
-            throw new NotImplementedException();
+            this.OpenSprites = this.OpenSprites ?? new List<SpritePresenter>();
+            this.OpenSprites.Add(spr);
+            this.ActiveSprite = spr;
         }
 
-        public List<Stream> GetProjectStreams()
-        {
-            List<Stream> save = new List<Stream>();
+        //public List<Stream> GetProjectStreams()
+        //{
+        //    List<Stream> save = new List<Stream>();
 
-            // ActiveSprite //
-            save.Add(GetActiveSpriteStream());
-            // GameSet //
+        //    // ActiveSprite //
+        //    save.Add(GetActiveSpriteStream());
+        //    // GameSet //
             
-        }
+        //}
 
         public Stream GetActiveSpriteStream()
         {

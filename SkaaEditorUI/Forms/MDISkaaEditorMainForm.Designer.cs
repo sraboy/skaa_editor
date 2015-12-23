@@ -43,6 +43,7 @@
             WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient3 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MDISkaaEditorMainForm));
             this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripBtnNewProject = new System.Windows.Forms.ToolStripButton();
@@ -173,6 +174,7 @@
             this.toolStripBtnOpenProject.Size = new System.Drawing.Size(23, 22);
             this.toolStripBtnOpenProject.Text = "toolStripButton2";
             this.toolStripBtnOpenProject.ToolTipText = "Open Project";
+            this.toolStripBtnOpenProject.Click += new System.EventHandler(this.toolStripBtnOpenProject_Click);
             // 
             // toolStripBtnSaveProject
             // 
@@ -277,6 +279,7 @@
             this.openSpriteToolStripMenuItem.Name = "openSpriteToolStripMenuItem";
             this.openSpriteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.openSpriteToolStripMenuItem.Text = "Sprite";
+            this.openSpriteToolStripMenuItem.Click += new System.EventHandler(this.openSpriteToolStripMenuItem_Click);
             // 
             // openGameSetToolStripMenuItem
             // 
@@ -430,6 +433,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.mainMenuStrip);
             this.Controls.Add(this.dockPanel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.Name = "MDISkaaEditorMainForm";
             this.Text = "MDISkaaEditorMainForm";

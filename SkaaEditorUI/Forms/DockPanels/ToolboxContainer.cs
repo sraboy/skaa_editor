@@ -22,9 +22,13 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Capslock.WinForms.ImageEditor;
 using SkaaEditorControls;
 using WeifenLuo.WinFormsUI.Docking;
+using Cyotek.Windows.Forms;
 
 namespace SkaaEditorUI.Forms.DockPanels
 {
@@ -33,12 +37,17 @@ namespace SkaaEditorUI.Forms.DockPanels
         private DrawingToolbox drawingToolbox;
         private SkaaColorChooser colorGridChooser;
 
+        public ToolboxContainer(System.Drawing.Imaging.ColorPalette pal)
+        {
+            SetColorPalette(pal);
+            Initialize(pal);
+        }
         public ToolboxContainer()
         {
-            InitializeComponent();
+            Initialize();
         }
 
-        private void InitializeComponent()
+        private void Initialize(System.Drawing.Imaging.ColorPalette pal = null)
         {
             this.drawingToolbox = new DrawingToolbox();
             this.colorGridChooser = new SkaaColorChooser();
@@ -77,5 +86,25 @@ namespace SkaaEditorUI.Forms.DockPanels
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        public void SetColorPalette(System.Drawing.Imaging.ColorPalette pal)
+        {
+           if(pal != null)
+            {
+                IEnumerable<Color> distinct = pal.Entries.Distinct();
+                this.colorGridChooser.Colors = new ColorCollection(distinct);
+                this.colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+                this.colorGridChooser.Enabled = true;
+            }
+            else
+            {
+                this.colorGridChooser.Colors.Clear();
+                this.colorGridChooser.Palette = ColorPalette.None;
+                this.colorGridChooser.Enabled = false;
+            }
+
+            this.colorGridChooser.Refresh();
+        }
+
     }
 }

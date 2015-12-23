@@ -227,11 +227,10 @@ namespace SkaaEditorUI
             if (!File.Exists(filepath))
                 filepath = props.DataDirectory + props.SetStd;
 
-            using (FileStream fs = GameSetFile.Open(filepath))
-            {
+            
                 this.ActiveGameSet = this.ActiveGameSet ?? new DataSet();
-                if(this.ActiveGameSet.OpenStandardGameSet(fs) == false) return false;
-            }
+                if(this.ActiveGameSet.OpenStandardGameSet(filepath) == false) return false;
+            
 
             SetActiveSpriteSframeDbfDataView();
 
@@ -374,9 +373,9 @@ namespace SkaaEditorUI
                             dr.BeginEdit();
                             dr["FrameOffset"] = f.BitmapOffset;
                             dr.EndEdit();
-                            
+
                             //write a header entry for each frame
-                            ResourceDatabaseWriter.WriteDefinition(dr, headerstream, (uint)f.BitmapOffset, true);
+                            SkaaGameDataLib.DataTableExtensions.WriteResDefinition(dr, headerstream, (uint)f.BitmapOffset, true);
                         }
 
                         //used to calculate file size below

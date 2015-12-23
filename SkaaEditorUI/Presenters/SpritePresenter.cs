@@ -22,24 +22,44 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SkaaGameDataLib;
 using Capslock.WinForms.SpriteViewer;
+using System.Drawing.Imaging;
 
 namespace SkaaEditorUI
 {
     public class SpritePresenter : SkaaSprite
     {
+        //private ColorPalette _activePalette;
+        private IFrame _activeFrame;
+
+        public ColorPalette ActivePalette
+        {
+            get
+            {
+                return this.ActiveFrame?.Bitmap?.Palette;
+            }
+        }
+        public IFrame ActiveFrame
+        {
+            get
+            {
+                return _activeFrame;
+            }
+
+            set
+            {
+                this._activeFrame = value;
+            }
+        }
+
         public SpritePresenter() { }
         public SpritePresenter(SkaaSprite sgs)
         {
             this.Frames = sgs.Frames;
             this.SpriteId = sgs.SpriteId;
+            this.ActiveFrame = this.GetIFrames()[0];
         }
 
         public List<IFrame> GetIFrames()

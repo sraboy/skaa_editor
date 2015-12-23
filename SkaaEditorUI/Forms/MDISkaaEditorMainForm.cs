@@ -27,11 +27,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkaaEditorUI.Forms.DockPanels;
+using SkaaGameDataLib;
 using WeifenLuo.WinFormsUI.Docking;
 using static SkaaEditorUI.SProjectManager;
 
@@ -39,22 +41,54 @@ namespace SkaaEditorUI.Forms
 {
     public partial class MDISkaaEditorMainForm : Form
     {
-        //private ProjectManager _projectManager;
+        private SpritePresenter _activeSprite;
+        private ToolboxContainer _toolBoxContainer;
+        private SpriteViewerContainer _spriteViewerContainer;
+
+        public ColorPalette ActivePalette
+        {
+            get
+            {
+                return this.ActiveSprite?.ActiveFrame?.Bitmap.Palette;
+            }
+        }
+        public SpritePresenter ActiveSprite
+        {
+            get
+            {
+                return _activeSprite;
+            }
+
+            set
+            {
+                this._activeSprite = value;
+            }
+        }
 
         public MDISkaaEditorMainForm()
         {
             InitializeComponent();
-            AddDockPanels();
+            SetUpDockPanel();
+            ProjectManager.SetMainForm(this);
         }
 
-        private void AddDockPanels()
+        private void SetUpDockPanel()
         {
             ImageEditorContainer iec = new ImageEditorContainer();
-            ToolboxContainer tc = new ToolboxContainer();
-            SpriteViewerContainer svc = new SpriteViewerContainer();
+            this._toolBoxContainer = new ToolboxContainer();
+            this._spriteViewerContainer = new SpriteViewerContainer();
+
+            this.dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
+
+
             iec.Show(dockPanel, DockState.Document);
-            tc.Show(dockPanel, DockState.DockLeft);
-            svc.Show(dockPanel, DockState.DockRight);
+            this._toolBoxContainer.Show(dockPanel, DockState.DockLeft);
+            this._spriteViewerContainer.Show(dockPanel, DockState.DockRight);
+        }
+
+        private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
+        {
+            this._toolBoxContainer.SetColorPalette(((SpriteViewerContainer)this.dockPanel.ActiveDocument).ActiveSprite.ActivePalette);
         }
 
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)
@@ -87,12 +121,27 @@ namespace SkaaEditorUI.Forms
 
         private DialogResult UserShouldSaveChanges()
         {
-            bool spriteHasChanges = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+            bool spriteHasChanges = false;//CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
 
             if (!spriteHasChanges)// && this.ActiveProject?.UnsavedSprites?.Count == 0)
                 return DialogResult.No;
             else
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
+
+        private void toolStripBtnOpenProject_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                ProjectManager.OpenSprite(dlg);
+            }
+        }
     }
+
+ 
 }

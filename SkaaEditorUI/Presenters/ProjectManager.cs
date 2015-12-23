@@ -7,7 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using SkaaGameDataLib;
+using SkaaEditorUI.Utilities;
+using SkaaEditorUI.Forms;
 
 namespace SkaaEditorUI
 {
@@ -26,6 +29,7 @@ namespace SkaaEditorUI
 
         #region Private Members
         private Project _activeProject = new Project();
+        private MDISkaaEditorMainForm _mainForm;
 
         private bool _hasUnsavedChanges = false;
         private bool _isInTempDirectory = false;
@@ -102,6 +106,13 @@ namespace SkaaEditorUI
             return path;
         }
 
+
+        public void SetMainForm(MDISkaaEditorMainForm form)
+        {
+            this._mainForm = form;
+        }
+
+
         /// <summary>
         /// Creates a new <see cref="Project"/> in <see cref="TempDirectory"/> 
         /// </summary>
@@ -115,68 +126,107 @@ namespace SkaaEditorUI
         /// Creates a new <see cref="Project"/> in a the specified directory
         /// </summary>
         /// <returns>A new <see cref="Project"/></returns>
-        public Project CreateNewProject(string filepath)
+        public Project CreateNewProject(string filePath)
         {
             var p = new Project();
-            Logger.TraceInformation($"Created new {typeof(Project)} in {filepath}.");
+            Logger.TraceInformation($"Created new {typeof(Project)} in {filePath}.");
             return p;
         }
 
 
-        public bool SaveProject(Project project, string filepath)
+        public bool SaveProject(Project project, string filePath)
         {
-
-            Logger.TraceInformation($"Saved {typeof(Project)} in {filepath}.");
+            Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
             return true;
         }
-
         /// <summary>
         /// Closes the <see cref="ActiveProject"/> and unsubscribes from all events
         /// </summary>
         public void CloseProject()
         {
             this.ActiveProject = null;
-            Unsubscribe();
+            //Unsubscribe();
         }
 
         /// <summary>
-        /// This function will open the specified 7KAA SET file.
+        /// This function will open the specified 7KAA <see cref="GameSetFile"/>
         /// </summary>
-        /// <param name="filepath">The complete path to the SET file.</param>
+        /// <param name="filePath">The complete path to the SET file.</param>
         /// <remarks>
         ///  A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
         /// </remarks>
-        public bool OpenStandardSet(string filepath)
+        public bool OpenStandardSet(string filePath)
         {
             DataSet ds = new DataSet();
 
-            using (FileStream fs = GameSetFile.Open(filepath))
-                if (ds.OpenStandardGameSet(fs) == false)
-                    return false;
-                else
-                    return true;
+            if (ds.OpenStandardGameSet(filePath) == false)
+                return false;
+            else
+            {
+                this.ActiveProject.GameSet = ds;
+                return true;
+            }
         }
 
         /// <summary>
         /// Loads a 7KAA-formatted palette file.
         /// </summary>
-        /// <param name="filepath">The specific palette file to load.</param>
+        /// <param name="filePath">The specific palette file to load.</param>
         /// <returns>A ColorPalette built from the palette file</returns>
-        public bool OpenPalette(string filepath)
+        public bool OpenPalette(string filePath)
         {
-            var pal = PaletteLoader.FromResFile(filepath);
+            var pal = PaletteLoader.FromResFile(filePath);
 
             if (pal == null)
             {
-                Logger.TraceEvent(TraceEventType.Error, 0, $"{typeof(PaletteLoader)} returned null. Failed to load palette: {filepath}");
+                Logger.TraceEvent(TraceEventType.Error, 0, $"{typeof(PaletteLoader)} returned null. Failed to load palette: {filePath}");
                 return false;
             }
             else
             {
                 this.ActiveProject.ActivePalette = pal;
-                Logger.TraceInformation($"Loaded palette: {filepath}");
                 return true;
             }
+        }
+
+        public void OpenSprite(OpenFileDialog dlg)
+        {
+            SpritePresenter spr = null;
+            dlg.OpenAs<SpritePresenter>(this.SaveDirectory, () => { spr = LoadSprite(dlg.FileName, this._mainForm.ActivePalette); });
+            this.ActiveProject.AddSprite(spr);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="SpritePresenter"/> object from an SPR-formatted file
+        /// </summary>
+        /// <param name="filePath">The absolute path to the SPR file to open</param>
+        /// <returns>The newly-created <see cref="SpritePresenter"/></returns>
+        /// <remarks>
+        private static SpritePresenter LoadSprite(string filePath, ColorPalette pal)
+        {
+            if (pal == null)
+                throw new ArgumentNullException("pal", "You must specify a ColorPalette to load a sprite.");
+
+            SkaaSprite spr;
+
+            using (FileStream spritestream = File.OpenRead(filePath))
+                spr = SkaaSprite.FromSprStream(spritestream, pal);
+
+            spr.SpriteId = Path.GetFileNameWithoutExtension(filePath);
+
+            return new SpritePresenter(spr);
+        }
+
+        public static FileFormats CheckFileType(string filePath)
+        {
+            return FileTypeChecks.CheckFileType(filePath);
+        }
+        private static bool IsFileFormatUnknown(FileFormats format)
+        {
+            if (format == FileFormats.Unknown || format == FileFormats.ResUnknown || format == FileFormats.ResIdxUnknown)
+                return true;
+            else
+                return false;
         }
     }
 }

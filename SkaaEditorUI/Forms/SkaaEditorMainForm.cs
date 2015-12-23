@@ -563,7 +563,7 @@ namespace SkaaEditorUI.Forms
                         dlg.Filter = $"7KAA Game Set Files|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = "std.set";
-                        ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveGameSet.SaveGameSet(dlg.FileName));
+                        ShowSaveFileDialog(dlg, () => this.ActiveProject.ActiveGameSet.SaveStandardGameSet(dlg.FileName));
                         break;
                     case FileFormats.SpritePNG:
                         dlg.DefaultExt = ".png";
