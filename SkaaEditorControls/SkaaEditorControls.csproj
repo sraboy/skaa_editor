@@ -69,12 +69,16 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ObjectListView">
+      <HintPath>..\packages\ObjectListView.Official.2.9.0\lib\net20\ObjectListView.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
@@ -97,12 +101,6 @@
     <Compile Include="SkaaColorChooser.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TimelineControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="TimelineControl.Designer.cs">
-      <DependentUpon>TimelineControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -114,15 +112,11 @@
     <EmbeddedResource Include="SkaaColorChooser.resx">
       <DependentUpon>SkaaColorChooser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TimelineControl.resx">
-      <DependentUpon>TimelineControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BitmapProcessing\BitmapProcessing.csproj">
+    <ProjectReference Include="..\BitmapProcessing\FastBitmap.csproj">
       <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
-      <Name>BitmapProcessing</Name>
+      <Name>FastBitmap</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
       <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>

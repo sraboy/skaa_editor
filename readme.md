@@ -46,5 +46,8 @@ Thanks to everyone at [7kfans.com/](http://www.7kfans.com/), the new home of Sev
 
 ## license
 The project is primarily governed by the [MIT license](http://www.opensource.org/licenses/mit-license.php) Game content from 7KAA remains under that project's license, [http://www.7kfans.com/wiki/index.php/Seven_Kingdoms:Copyrights](mostly GPLv3). See the [License Readme](https://github.com/sraboy/skaa_editor/tree/master/other/licenses/_license_readme.md) for details on the license for each component in the project.
+<<<<<<< HEAD
 
 The project changed from GPLv3 to MIT on 22-Dec-2015. The license headers in the source code have not yet been updated due to a bit of merge hell.
+=======
+>>>>>>> mvp_implementation

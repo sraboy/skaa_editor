@@ -1,12 +1,31 @@
-﻿using System;
+﻿#region Copyright Notice
+/***************************************************************************
+* The MIT License (MIT)
+*
+* Copyright © 2015-2016 Steven Lavoie
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of
+* this software and associated documentation files (the "Software"), to deal in
+* the Software without restriction, including without limitation the rights to
+* use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+* the Software, and to permit persons to whom the Software is furnished to do so,
+* subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+* COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+* IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+* CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+***************************************************************************/
+#endregion
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SkaaEditorUI;
-using SkaaGameDataLib;
-using System.Data;
-using System.Drawing;
 
 namespace SkaaEditorUnitTester
 {
@@ -36,30 +55,30 @@ namespace SkaaEditorUnitTester
             Debug.Assert(Directory.CreateDirectory(this.TempDirectory) != null, $"Failed to create TempDirectory: {this.TempDirectory}");
         }
 
-        private Project GetNewProject(string palettePath = null)
-        {
-            Project proj = new Project();
-            if (palettePath == null)
-                palettePath = this.DataDirectory + "pal_std.res";
+        //private oldProject GetNewProject(string palettePath = null)
+        //{
+        //    oldProject proj = new oldProject();
+        //    if (palettePath == null)
+        //        palettePath = this.DataDirectory + "pal_std.res";
 
-            proj.OpenPalette(palettePath);
-            return proj;
-        }
+        //    proj.OpenPalette(palettePath);
+        //    return proj;
+        //}
 
-        [TestMethod]
-        public void LoadResDbf()
-        {
-            var proj = GetNewProject();
+        //[TestMethod]
+        //public void LoadResDbf()
+        //{
+        //    var proj = GetNewProject();
 
-            string primaryDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rock1.res";
-            string animationDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockani1.res";
-            string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
-            string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
+        //    //string primaryDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rock1.res";
+        //    //string animationDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockani1.res";
+        //    //string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
+        //    string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
 
-            Tuple<Sprite, DataTable> tuple = Project.LoadResDbf(rockBmpDbf, proj.ActivePalette);
-            Debug.Assert(tuple.Item1 != null, "Failed to load sprite data.");
-            Debug.Assert(tuple.Item2.Rows.Count > 0, "Failed to load data rows.");
-        }
+        //    var tuple = oldProject.LoadResDbf(rockBmpDbf, proj.ActivePalette);
+        //    Debug.Assert(tuple.Item1 != null, "Failed to load sprite data.");
+        //    Debug.Assert(tuple.Item2.Rows.Count > 0, "Failed to load data rows.");
+        //}
 
         //[TestMethod]
         //public void MakeProjectGameSetPaletteSprite()
