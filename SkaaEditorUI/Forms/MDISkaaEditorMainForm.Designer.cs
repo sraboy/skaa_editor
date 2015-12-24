@@ -60,6 +60,7 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,7 +79,6 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
-            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -233,14 +233,14 @@
             // newProjectToolStripMenuItem
             // 
             this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.newProjectToolStripMenuItem.Text = "Project";
             // 
             // spriteToolStripMenuItem
             // 
             this.spriteToolStripMenuItem.Enabled = false;
             this.spriteToolStripMenuItem.Name = "spriteToolStripMenuItem";
-            this.spriteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.spriteToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.spriteToolStripMenuItem.Text = "Sprite";
             // 
             // openToolStripMenuItem
@@ -286,6 +286,14 @@
             this.openGameSetToolStripMenuItem.Name = "openGameSetToolStripMenuItem";
             this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.openGameSetToolStripMenuItem.Text = "Game Set";
+            this.openGameSetToolStripMenuItem.Click += new System.EventHandler(this.openGameSetToolStripMenuItem_Click);
+            // 
+            // loadPaletteToolStripMenuItem
+            // 
+            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
+            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.loadPaletteToolStripMenuItem.Text = "Palette";
+            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
             // 
             // saveProjectToolStripMenuItem
             // 
@@ -351,7 +359,7 @@
             this.toolStripSeparator2,
             this.exportAllFramesTo32bppBmpToolStripMenuItem});
             this.exportPngToolStripMenuItem.Name = "exportPngToolStripMenuItem";
-            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.exportPngToolStripMenuItem.Text = "Export PNG";
             // 
             // currentFrameTobmp32bppToolStripMenuItem
@@ -416,13 +424,6 @@
             this.tsStatusLblFileType.Spring = true;
             this.tsStatusLblFileType.Text = "No File Loaded";
             this.tsStatusLblFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // loadPaletteToolStripMenuItem
-            // 
-            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
-            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.loadPaletteToolStripMenuItem.Text = "Palette";
-            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
             // 
             // MDISkaaEditorMainForm
             // 

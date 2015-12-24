@@ -29,6 +29,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Forms;
 using SkaaEditorUI.Misc;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -39,6 +40,7 @@ namespace SkaaEditorUI.Presenters
         private Dictionary<string, string> fileTypes;
         private static OpenFileDialog _dlg;
         private T _gameObject;
+        private FileFormats _fileFormat;
 
         protected string FileDialogFilter { get { return GetFileDialogFilter(FileTypes); } }
         protected abstract Dictionary<string, string> FileTypes { get; }
@@ -52,6 +54,18 @@ namespace SkaaEditorUI.Presenters
             set
             {
                 SetField(ref this._gameObject, value, () => OnPropertyChanged(GetDesignModeValue(() => this.GameObject)));
+            }
+        }
+        public FileFormats FileFormat
+        {
+            get
+            {
+                return _fileFormat;
+            }
+
+            set
+            {
+                SetField(ref this._fileFormat, value, () => OnPropertyChanged(GetDesignModeValue(() => this._fileFormat)));
             }
         }
 
@@ -85,7 +99,7 @@ namespace SkaaEditorUI.Presenters
                 fileExtensions += kv.Value + '|';
             }
 
-            string filter = $"{fileTypes + fileExtensions}|{allFiles}";
+            string filter = $"{fileTypes + fileExtensions + allFiles}";
             return filter;
         }
 
@@ -95,8 +109,10 @@ namespace SkaaEditorUI.Presenters
         //    this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));
         //    return this as PresenterBase<T1>;
         //}
-        PresenterBase<T1> IPresenterBase<T>.Open<T1>(object loadParam)
+        PresenterBase<T1> IPresenterBase<T>.Open<T1>(params object[] loadParam)
         {
+            this.FileFormat = (FileFormats)(loadParam[0]);
+
             using (var dlg = new OpenFileDialog())
             {
                 this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));

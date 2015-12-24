@@ -92,9 +92,7 @@ namespace SkaaEditorUI
                 this._gameSet = value;
             }
         }
-
         
-
         public Project()
         {
         }

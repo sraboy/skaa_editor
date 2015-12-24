@@ -32,6 +32,6 @@ namespace SkaaEditorUI.Presenters
     {
         T GameObject { get; set; }
         string GetFileDialogFilter(Dictionary<string, string> fileTypeDic);
-        PresenterBase<T1> Open<T1>(object loadParam = null) where T1 : class;
+        PresenterBase<T1> Open<T1>(params object[] loadParam) where T1 : class;
     }
 }

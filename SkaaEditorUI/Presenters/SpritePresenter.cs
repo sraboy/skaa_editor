@@ -32,6 +32,7 @@ using System.Linq.Expressions;
 using System;
 using System.IO;
 using SkaaEditorUI.Misc;
+using System.Data;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -142,11 +143,30 @@ namespace SkaaEditorUI.Presenters
         /// <remarks>
         protected override SkaaSprite Load(string filePath, params object[] param)
         {
-            ColorPalette pal = (param[0] as object[])[0] as ColorPalette;
+            ColorPalette pal = param[1] as ColorPalette;
+
+            //if (this.FileFormat != FileFormats.SpriteSpr || this.FileFormat != FileFormats.ResIdxMultiBmp)
+            //    throw new ArgumentException($"Invalid file format specified: {this.FileFormat}");
 
             if (pal == null)
                 throw new ArgumentNullException("param", "You must specify a ColorPalette to load a sprite.");
 
+            switch (this.FileFormat)
+            {
+                case FileFormats.SpriteSpr:
+                    LoadSpr(filePath, pal);
+                    break;
+                case FileFormats.ResIdxMultiBmp:
+                    LoadResIdxMultiBmp(filePath, pal);
+                    break;
+                default:
+                    return null;
+            }
+
+            return this.GameObject;
+        }
+        private void LoadSpr(string filePath, ColorPalette pal)
+        {
             SkaaSprite spr;
 
             using (FileStream spritestream = File.OpenRead(filePath))
@@ -154,9 +174,52 @@ namespace SkaaEditorUI.Presenters
 
             this.GameObject = spr;
             SetFrames();
-            return this.GameObject;
         }
+        private void LoadResIdxMultiBmp(string filePath, ColorPalette pal)
+        {
+            Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, pal);
+            DataSet ds = new DataSet();
+            ds.Tables.Add(tup.Item2);
+            ds.AddDataSource(Path.GetFileName(filePath));
+            this.GameObject = tup.Item1;
+            this.GameObject.SetSpriteDataView(new DataView(tup.Item2));
+        }
+        private static Tuple<SkaaSprite, DataTable> ReadFrames(string filepath, ColorPalette pal)
+        {
+            SkaaSprite spr = new SkaaSprite();
+            DataTable dt = new DataTable();
+            dt.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, filepath);
+            dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = SkaaGameDataLib.DataRowExtensions.FrameNameColumn });
+            dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = SkaaGameDataLib.DataRowExtensions.FrameOffsetColumn });
 
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            {
+                Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs, true);
+                spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
+                dt.TableName = spr.SpriteId;
+
+                foreach (string key in dic.Keys)
+                {
+                    fs.Position = dic[key];
+                    SkaaSpriteFrame sf = new SkaaSpriteFrame(null);
+                    sf.Name = key;
+                    IndexedBitmap iBmp = new IndexedBitmap(pal);
+                    sf.IndexedBitmap = iBmp;
+                    iBmp.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
+
+                    spr.Frames.Add(sf);
+
+                    DataRow row = dt.NewRow();
+                    dt.Rows.Add(row);
+                    row.BeginEdit();
+                    row[SkaaGameDataLib.DataRowExtensions.FrameNameColumn] = key;
+                    row[SkaaGameDataLib.DataRowExtensions.FrameOffsetColumn] = dic[key];
+                    row.AcceptChanges();
+                }
+            }
+
+            return new Tuple<SkaaSprite, DataTable>(spr, dt);
+        }
         public void SetActiveFrame(int index)
         {
             this.ActiveFrame = this.Frames?[index];

@@ -221,7 +221,7 @@ namespace SkaaEditorUI.Forms
             if (this.ActivePalette?.GameObject == null)
                 loadPaletteToolStripMenuItem_Click(sender, e);
 
-            SpritePresenter spr = (SpritePresenter)ProjectManager.Open<SkaaSprite, SpritePresenter>(this.ActivePalette.GameObject);
+            SpritePresenter spr = (SpritePresenter)ProjectManager.Open<SkaaSprite, SpritePresenter>(FileFormats.SpriteSpr, this.ActivePalette.GameObject, ProjectManager.ActiveProject.GameSet);
             spr.PropertyChanged += ActiveSprite_PropertyChanged;
 
             var doc = ((ImageEditorContainer)this.dockPanel.ActiveDocument);
@@ -234,7 +234,7 @@ namespace SkaaEditorUI.Forms
         }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.ActivePalette = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>();
+            this.ActivePalette = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
             _toolBoxContainer.SetPalette(this.ActivePalette.GameObject);
         }
         ///////////////////////////// Other UI Changes /////////////////////////////
@@ -263,5 +263,11 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.Palette);
         }
         #endregion
+
+        private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(true);
+            
+        }
     }
 }

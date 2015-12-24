@@ -47,9 +47,9 @@ namespace SkaaEditorUI.Presenters
         /// <param name="filePath">The path to the file</param>
         /// <param name="merge">Whether to merge the loaded <see cref="DataSet"/> with the current <see cref="GameObject"/></param>
         /// <returns>A new <see cref="DataSet"/> containing all the tables and records of the specified file</returns>
-        protected override DataSet Load(string filePath, params object[] param)
+        protected override DataSet Load(string filePath, params object[] loadParam)
         {
-            bool merge = (bool)param[0];
+            bool merge = (bool)(loadParam[1] as object[])[0];
 
             DataSet ds = new DataSet();
 

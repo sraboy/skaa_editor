@@ -24,16 +24,9 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using SkaaGameDataLib;
-using SkaaEditorUI.Misc;
 using SkaaEditorUI.Forms;
 using SkaaEditorUI.Presenters;
 
@@ -117,7 +110,7 @@ namespace SkaaEditorUI
 
         #region Private Methods
         /// <summary>
-        /// Creates a new <see cref="TempDirectory"/> in <see cref="Path.GetTempPath()"/>\<see cref="Path.GetRandomFileName()"/>
+        /// Creates a new <see cref="TempDirectory"/> in <see cref="Path.GetTempPath()"/>
         /// </summary>
         private static string GetTemporaryDirectory()
         {
@@ -147,8 +140,19 @@ namespace SkaaEditorUI
         public void SetMainForm(MDISkaaEditorMainForm form)
         {
             this._mainForm = form;
+            this._mainForm.FormClosed += _mainForm_FormClosed;
         }
-
+        public void CleanTempFiles()
+        {
+            foreach (string dir in this._tempFiles)
+            {
+                if (Directory.Exists(dir))
+                {
+                    Directory.Delete(dir, true);
+                    Trace.WriteLine($"Temp directory deleted: {dir}");
+                }
+            }
+        }
         /// <summary>
         /// Creates a new <see cref="Project"/> in <see cref="TempDirectory"/> 
         /// </summary>
@@ -170,8 +174,33 @@ namespace SkaaEditorUI
         }
         public bool SaveProject(Project project, string filePath)
         {
-            Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
+            SaveSprites(FileFormats.SpriteSpr);
+
+            using (FileStream fs = new FileStream(this.SaveDirectory, FileMode.Create))
+            {
+                var str = this.ActiveProject.GameSet.GetStandardGameSetStream();
+                str.Position = 0;
+                str.CopyTo(fs);
+            }
+
+                Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
             return true;
+        }
+        public void SaveSprites(FileFormats format)
+        {
+            foreach (SpritePresenter spr in this.ActiveProject.OpenSprites)
+            {
+                if (spr.FileFormat != format)
+                    continue;
+
+                var str = spr.GetActiveSpriteStream();
+
+                using (FileStream sprStream = new FileStream(this.SaveDirectory + $"\\{spr.SpriteId}.spr", FileMode.Create))
+                {
+                    str.Position = 0;
+                    str.CopyTo(sprStream);
+                }
+            }
         }
         /// <summary>
         /// Closes the <see cref="ActiveProject"/> and unsubscribes from all events
@@ -181,7 +210,6 @@ namespace SkaaEditorUI
             this.ActiveProject = null;
             //Unsubscribe();
         }
-
         /// <summary>
         /// Calls the <see cref="IPresenterBase{T}.Open{T1}(object)"/> method of the specified type
         /// </summary>
@@ -190,19 +218,25 @@ namespace SkaaEditorUI
         /// <returns></returns>
         public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
+            //param[0] is FileFormat
+            //param[1] is ColorPalette for SpritePresenter, bool merge for GameSetPresenter
+            //param[2] is GameSet for SpritePresenter
             T1 presenter = new T1();
             presenter.Open<T>(param);
             return presenter;
         }
 
-        //public void AddSprite(SpritePresenter spr)
-        //{
-        //    this.ActiveProject.OpenSprites.Add(spr);
-        //}
-
         public static FileFormats CheckFileType(string filePath)
         {
             return FileTypeChecks.CheckFileType(filePath);
+        }
+        #endregion
+
+        #region Event Handlers
+        private void _mainForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+        {
+            CleanTempFiles();
+            //throw new NotImplementedException();
         }
         #endregion
     }
