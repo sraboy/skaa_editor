@@ -37,14 +37,10 @@ namespace SkaaEditorUI.Forms.DockPanels
         private DrawingToolbox _drawingToolbox;
         private SkaaColorChooser _colorGridChooser;
 
-        public ToolboxContainer(System.Drawing.Imaging.ColorPalette pal)
-        {
-            SetColorPalette(pal);
-            Initialize(pal);
-        }
         public ToolboxContainer()
         {
             Initialize();
+            SetPalette(null);
         }
 
         private void Initialize(System.Drawing.Imaging.ColorPalette pal = null)
@@ -87,7 +83,7 @@ namespace SkaaEditorUI.Forms.DockPanels
             this.PerformLayout();
         }
 
-        public void SetColorPalette(System.Drawing.Imaging.ColorPalette pal)
+        public void SetPalette(System.Drawing.Imaging.ColorPalette pal)
         {
            if(pal != null)
             {

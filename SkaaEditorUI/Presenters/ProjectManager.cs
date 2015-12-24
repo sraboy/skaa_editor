@@ -33,7 +33,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SkaaGameDataLib;
-using SkaaEditorUI.Utilities;
+using SkaaEditorUI.Misc;
 using SkaaEditorUI.Forms;
 using SkaaEditorUI.Presenters;
 
@@ -141,35 +141,18 @@ namespace SkaaEditorUI
             else
                 return false;
         }
-        
-        /// <summary>
-        /// Loads a <see cref="ColorPalette"/> from the specified file
-        /// </summary>
-        /// <param name="filePath">The 7KAA-formatted file</param>
-        /// <returns>A new <see cref="ColorPalettePresenter"/></returns>
-        private static ColorPalettePresenter LoadPalette(string filePath)
-        {
-            var pal = PaletteLoader.FromResFile(filePath);
-
-            if (pal == null)
-                Logger.TraceEvent(TraceEventType.Error, 0, $"{typeof(PaletteLoader)} returned null. Failed to load palette: {filePath}");
-
-            return new ColorPalettePresenter(pal);
-        }
-
         #endregion
 
         #region Public Methods
-        // Set up //
         public void SetMainForm(MDISkaaEditorMainForm form)
         {
             this._mainForm = form;
         }
+
         /// <summary>
         /// Creates a new <see cref="Project"/> in <see cref="TempDirectory"/> 
         /// </summary>
         /// <returns>A new <see cref="Project"/></returns>
-        // Managing the Project //
         public Project CreateNewProject()
         {
             this.IsInTempDirectory = true;
@@ -198,34 +181,25 @@ namespace SkaaEditorUI
             this.ActiveProject = null;
             //Unsubscribe();
         }
-        // Opening Files //
-        public T Open<T>() where T : PresenterBase<T>, new()
+
+        /// <summary>
+        /// Calls the <see cref="IPresenterBase{T}.Open{T1}(object)"/> method of the specified type
+        /// </summary>
+        /// <typeparam name="T">A SkaaGameDataLib object</typeparam>
+        /// <typeparam name="T1">An <see cref="IPresenterBase{T}"/> object on which to call Open()</typeparam>
+        /// <returns></returns>
+        public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
-            T presenter = new T();
-            presenter.Open();
+            T1 presenter = new T1();
+            presenter.Open<T>(param);
             return presenter;
         }
-        //public void OpenStandardSet()
+
+        //public void AddSprite(SpritePresenter spr)
         //{
-        //    GameSetPresenter gsp = new GameSetPresenter();
-        //    using (var dlg = gsp.GetOpenFileDialog())
-        //        gsp.GameSet = dlg.Open(this.SaveDirectory, () => LoadStandardGameSet(dlg.FileName));
-        //    this.ActiveProject.GameSet = gsp.GameSet;
+        //    this.ActiveProject.OpenSprites.Add(spr);
         //}
-        //public void OpenPalette()
-        //{
-        //    ColorPalettePresenter pal = new ColorPalettePresenter(null);
-        //    using (var dlg = pal.GetOpenFileDialog())
-        //        pal = dlg.Open(this.SaveDirectory, () => LoadPalette(dlg.FileName));
-        //    this.ActiveProject.ActivePalette = pal.ColorPalette;
-        //}
-        //public void OpenSprite()
-        //{
-        //    SpritePresenter spr = new SpritePresenter();
-        //    using (var dlg = spr.GetOpenFileDialog())
-        //        spr = dlg.Open(this.SaveDirectory, () => LoadSprite(dlg.FileName, this._mainForm.ActivePalette));
-        //    this.ActiveProject.AddSprite(spr);
-        //}
+
         public static FileFormats CheckFileType(string filePath)
         {
             return FileTypeChecks.CheckFileType(filePath);

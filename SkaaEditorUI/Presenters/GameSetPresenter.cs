@@ -31,7 +31,6 @@ namespace SkaaEditorUI.Presenters
 {
     public class GameSetPresenter : PresenterBase<DataSet>
     {
-        //protected static readonly new string _fileExtension = ".set";
         private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Game Set", ".std" } };
 
         protected override Dictionary<string, string> FileTypes

@@ -437,8 +437,8 @@ namespace SkaaEditorUI.Forms
             // 
             this.imageEditorBox.ActivePrimaryColor = System.Drawing.Color.Empty;
             this.imageEditorBox.ActiveSecondaryColor = System.Drawing.Color.Empty;
-            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.imageEditorBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.imageEditorBox.AutoPan = false;
             this.imageEditorBox.Font = new System.Drawing.Font("Calibri", 12.75F);
@@ -475,8 +475,8 @@ namespace SkaaEditorUI.Forms
             // 
             // spriteViewer1
             // 
-            this.spriteViewer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.spriteViewer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.spriteViewer1.Location = new System.Drawing.Point(952, 52);
             this.spriteViewer1.Name = "spriteViewer1";

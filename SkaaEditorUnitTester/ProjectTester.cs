@@ -22,15 +22,10 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SkaaEditorUI;
-using SkaaGameDataLib;
-using System.Data;
-using System.Drawing;
 
 namespace SkaaEditorUnitTester
 {
@@ -60,30 +55,30 @@ namespace SkaaEditorUnitTester
             Debug.Assert(Directory.CreateDirectory(this.TempDirectory) != null, $"Failed to create TempDirectory: {this.TempDirectory}");
         }
 
-        private oldProject GetNewProject(string palettePath = null)
-        {
-            oldProject proj = new oldProject();
-            if (palettePath == null)
-                palettePath = this.DataDirectory + "pal_std.res";
+        //private oldProject GetNewProject(string palettePath = null)
+        //{
+        //    oldProject proj = new oldProject();
+        //    if (palettePath == null)
+        //        palettePath = this.DataDirectory + "pal_std.res";
 
-            proj.OpenPalette(palettePath);
-            return proj;
-        }
+        //    proj.OpenPalette(palettePath);
+        //    return proj;
+        //}
 
-        [TestMethod]
-        public void LoadResDbf()
-        {
-            var proj = GetNewProject();
+        //[TestMethod]
+        //public void LoadResDbf()
+        //{
+        //    var proj = GetNewProject();
 
-            //string primaryDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rock1.res";
-            //string animationDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockani1.res";
-            //string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
-            string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
+        //    //string primaryDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rock1.res";
+        //    //string animationDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockani1.res";
+        //    //string rockblockDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockblk1.res";
+        //    string rockBmpDbf = @"E:\Nerd\c_and_c++\7kaa\data\resource\rockbmp1.res";
 
-            var tuple = oldProject.LoadResDbf(rockBmpDbf, proj.ActivePalette);
-            Debug.Assert(tuple.Item1 != null, "Failed to load sprite data.");
-            Debug.Assert(tuple.Item2.Rows.Count > 0, "Failed to load data rows.");
-        }
+        //    var tuple = oldProject.LoadResDbf(rockBmpDbf, proj.ActivePalette);
+        //    Debug.Assert(tuple.Item1 != null, "Failed to load sprite data.");
+        //    Debug.Assert(tuple.Item2.Rows.Count > 0, "Failed to load data rows.");
+        //}
 
         //[TestMethod]
         //public void MakeProjectGameSetPaletteSprite()

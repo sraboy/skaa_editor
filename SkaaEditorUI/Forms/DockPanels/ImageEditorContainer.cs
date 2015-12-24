@@ -25,6 +25,8 @@
 using WeifenLuo.WinFormsUI.Docking;
 using Capslock.WinForms.ImageEditor;
 using SkaaEditorUI.Presenters;
+using System;
+using System.Linq;
 
 namespace SkaaEditorUI.Forms.DockPanels
 {
@@ -33,6 +35,34 @@ namespace SkaaEditorUI.Forms.DockPanels
         private ImageEditorBox _imageEditorBox;
         private SpritePresenter _activeSprite;
 
+        #region Events
+        [NonSerialized]
+        private EventHandler _activeSpriteChanged;
+        public event EventHandler ActiveSpriteChanged
+        {
+            add
+            {
+                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
+                {
+                    _activeSpriteChanged += value;
+                }
+            }
+            remove
+            {
+                _activeSpriteChanged -= value;
+            }
+        }
+        private void OnActiveSpriteChanged(EventArgs e)
+        {
+            EventHandler handler = _activeSpriteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        #endregion
+
         public SpritePresenter ActiveSprite
         {
             get
@@ -40,15 +70,23 @@ namespace SkaaEditorUI.Forms.DockPanels
                 return _activeSprite;
             }
 
-            set
+            private set
             {
                 this._activeSprite = value;
+                OnActiveSpriteChanged(EventArgs.Empty);
             }
         }
 
         public ImageEditorContainer()
         {
             InitializeComponent();
+        }
+
+        public void SetSprite(SpritePresenter spr, int activeFrameIndex = 0)
+        {
+            this.ActiveSprite = spr;
+            this.ActiveSprite?.SetActiveFrame(activeFrameIndex);
+            this._imageEditorBox.Image = spr?.ActiveFrame?.Bitmap;
         }
 
         private void InitializeComponent()

@@ -28,11 +28,11 @@ using System.Drawing;
 
 namespace Capslock.WinForms.SpriteViewer
 {
-    public interface IFrame : INotifyPropertyChanged
+    public interface IFrame
     {
-        long BitmapOffset { get; }
-        string Name { get; }
-        Bitmap Bitmap { get; }
-        Guid Guid { get; }
+        long BitmapOffset { get; set; }
+        string Name { get; set; }
+        Bitmap Bitmap { get; set; }
+        Guid Guid { get; set; }
     }
 }

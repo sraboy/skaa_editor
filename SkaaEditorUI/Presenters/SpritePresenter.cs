@@ -31,28 +31,22 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System;
 using System.IO;
+using SkaaEditorUI.Misc;
 
 namespace SkaaEditorUI.Presenters
 {
-    public class SpritePresenter : PresenterBase<SkaaSprite>, INotifyPropertyChanged
+    public class SpritePresenter : PresenterBase<SkaaSprite>
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Sprite", ".spr" }, { "Sprite", ".res" } };
+        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "SpriteSpr", ".spr" }, { "SpriteRes", ".res" } };
 
+        #region Private Members
         private IFrame _activeFrame;
-        private static readonly SkaaSprite _skaaSprite = new SkaaSprite();
-
-        #region PropertyChangedEvent
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-                handler(this, new PropertyChangedEventArgs(propertyName));
-        }
+        private string _spriteId;
+        private TrulyObservableCollection<FramePresenter> _frames = new TrulyObservableCollection<FramePresenter>();
         #endregion
 
         #region Public Members
-        public ColorPalette ActivePalette
+        public ColorPalette Palette
         {
             get
             {
@@ -65,13 +59,34 @@ namespace SkaaEditorUI.Presenters
             {
                 return _activeFrame;
             }
-
             set
             {
-                Misc.SetField(ref this._activeFrame, value, () => OnPropertyChanged(Misc.GetDesignModeValue(() => this.ActiveFrame)));
-                this._activeFrame = value;
+                SetField(ref this._activeFrame, value, () => OnPropertyChanged(GetDesignModeValue(() => this.ActiveFrame)));
             }
         }
+        public string SpriteId
+        {
+            get
+            {
+                return this.GameObject.SpriteId;
+            }
+            set
+            {
+                SetField(ref this._spriteId, value, () => OnPropertyChanged(GetDesignModeValue(() => this.SpriteId)));
+            }
+        }
+        public TrulyObservableCollection<FramePresenter> Frames
+        {
+            get
+            {
+                return this._frames;
+            }
+            set
+            {
+                SetField(ref this._frames, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Frames)));
+            }
+        }
+        #endregion
 
         protected override Dictionary<string, string> FileTypes
         {
@@ -80,46 +95,80 @@ namespace SkaaEditorUI.Presenters
                 return _fileTypes;
             }
         }
-        #endregion
 
         #region Constructors
-        public SpritePresenter() { }
+        public SpritePresenter()
+        {
+
+        }
+        [Obsolete("This is for the old project class and should no longer be used.")]
         public SpritePresenter(SkaaSprite spr)
         {
+            throw new NotImplementedException();
+            this.GameObject = spr;
             this.ActiveFrame = (IFrame)spr.Frames[0];
+            SetFrames();
         }
         #endregion
 
-        public TrulyObservableCollection<IFrame> GetIFrames()
+        private void SetFrames()
         {
-            TrulyObservableCollection<IFrame> frames = new TrulyObservableCollection<IFrame>();// = (SkaaEditorFrame)this.Frames[0];
-            foreach (SkaaFrame sf in this.Frames)
+            foreach (SkaaFrame f in this.GameObject.Frames)
             {
-                frames.Add(new FramePresenter(sf));
+                var fp = new FramePresenter(f);
+                this.Frames.Add(fp);
             }
-
-            return frames;
         }
 
+        protected override void OnPropertyChanged(string propertyName)
+        {
+            base.OnPropertyChanged(propertyName);
+        }
+        //private List<IFrame> GetIFrames()
+        //{
+        //    List<IFrame> frames = new List<IFrame>();
+        //    foreach (SkaaFrame sf in frames)
+        //    {
+        //        frames.Add(new FramePresenter(sf));
+        //    }
+        //    return frames;
+        //}
+
         /// <summary>
-        /// Creates a <see cref="SpritePresenter"/> object from an SPR-formatted file
+        /// Creates a <see cref="SkaaSprite"/> object from an SPR-formatted file
         /// </summary>
         /// <param name="filePath">The absolute path to the SPR file to open</param>
-        /// <returns>The newly-created <see cref="SpritePresenter"/></returns>
+        /// <returns>The newly-created <see cref="SkaaSprite"/></returns>
         /// <remarks>
-        protected SpritePresenter Load(string filePath, ColorPalette pal)
+        protected override SkaaSprite Load(string filePath, params object[] param)
         {
+            ColorPalette pal = (param[0] as object[])[0] as ColorPalette;
+
             if (pal == null)
-                throw new ArgumentNullException("pal", "You must specify a ColorPalette to load a sprite.");
+                throw new ArgumentNullException("param", "You must specify a ColorPalette to load a sprite.");
 
             SkaaSprite spr;
 
             using (FileStream spritestream = File.OpenRead(filePath))
                 spr = SkaaSprite.FromSprStream(spritestream, pal);
 
-            spr.SpriteId = Path.GetFileNameWithoutExtension(filePath);
+            this.GameObject = spr;
+            SetFrames();
+            return this.GameObject;
+        }
 
-            return new SpritePresenter(spr);
+        public void SetActiveFrame(int index)
+        {
+            this.ActiveFrame = this.Frames?[index];
+        }
+        public Stream GetActiveSpriteStream()
+        {
+            var spr = new MemoryStream();
+            var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
+            foreach (byte[] ba in sprBytes)
+                spr.Write(ba, 0, ba.Length);
+
+            return spr;
         }
     }
 }

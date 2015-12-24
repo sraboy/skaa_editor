@@ -23,17 +23,13 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SkaaEditorUI.Misc;
 using SkaaEditorUI.Presenters;
-using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
@@ -42,31 +38,6 @@ namespace SkaaEditorUI
         private static readonly TraceSource Logger = new TraceSource($"{typeof(Project)}", SourceLevels.All);
 
         #region Events
-        [NonSerialized]
-        private EventHandler _paletteChanged;
-        public event EventHandler PaletteChanged
-        {
-            add
-            {
-                if (_paletteChanged == null || !_paletteChanged.GetInvocationList().Contains(value))
-                {
-                    _paletteChanged += value;
-                }
-            }
-            remove
-            {
-                _paletteChanged -= value;
-            }
-        }
-        protected virtual void OnPaletteChanged(EventArgs e)
-        {
-            EventHandler handler = _paletteChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
         [NonSerialized]
         private EventHandler _activeSpriteChanged;
         public event EventHandler ActiveSpriteChanged
@@ -95,42 +66,8 @@ namespace SkaaEditorUI
         #endregion
 
         private TrulyObservableCollection<SpritePresenter> _openSprites;
-        private SpritePresenter _activeSprite;
-        private ColorPalette _activePalette;
         private DataSet _gameSet;
-
-        public SpritePresenter ActiveSprite
-        {
-            get
-            {
-                return _activeSprite;
-            }
-
-            private set
-            {
-                if (this._activeSprite != value)
-                {
-                    this._activeSprite = value;
-                    OnActiveSpriteChanged(EventArgs.Empty);
-                }
-            }
-        }
-        public ColorPalette ActivePalette
-        {
-            get
-            {
-                return _activePalette;
-            }
-
-            set
-            {
-                if (this._activePalette != value)
-                {
-                    this._activePalette = value;
-                    OnPaletteChanged(EventArgs.Empty);
-                }
-            }
-        }
+ 
         public TrulyObservableCollection<SpritePresenter> OpenSprites
         {
             get
@@ -166,7 +103,6 @@ namespace SkaaEditorUI
         {
             this.OpenSprites = this.OpenSprites ?? new TrulyObservableCollection<SpritePresenter>();
             this.OpenSprites.Add(spr);
-            this.ActiveSprite = spr;
         }
 
         //public List<Stream> GetProjectStreams()
@@ -179,14 +115,6 @@ namespace SkaaEditorUI
             
         //}
 
-        public Stream GetActiveSpriteStream()
-        {
-            var spr = new MemoryStream();
-            var sprBytes = this.ActiveSprite.GetSpriteFrameByteArrays();
-            foreach (byte[] ba in sprBytes)
-                spr.Write(ba, 0, ba.Length);
 
-            return spr;
-        }
     }
 }

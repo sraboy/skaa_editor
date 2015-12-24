@@ -35,7 +35,6 @@ using System.Diagnostics;
 using Cyotek.Windows.Forms;
 using Capslock.WinForms.ImageEditor;
 using System.Data;
-using Capslock.WinForms.SpriteViewer;
 using SkaaEditorUI.Presenters;
 
 namespace SkaaEditorUI.Forms
@@ -130,7 +129,7 @@ namespace SkaaEditorUI.Forms
             //need to adjust our actions based on the tool selected
             this.drawingToolbox.SelectedToolChanged += DrawingToolbox_SelectedToolChanged;
 
-            ConfigSettingsDebug();
+            //ConfigSettingsDebug();
             ConfigSettings();
             SetupUI();
         }
@@ -154,7 +153,7 @@ namespace SkaaEditorUI.Forms
             Directory.CreateDirectory(props.ProjectsDirectory);
             MakeTempFolder();
         }
-  
+
         /// <summary>
         /// Loads <see cref="oldProject.ActivePalette"/>, if specified, and enables/disables the form's <see cref="SkaaColorChooser"/> object based on whether or not a palette is loaded.
         /// </summary>
@@ -196,7 +195,7 @@ namespace SkaaEditorUI.Forms
             this.openGameSetToolStripMenuItem.Enabled = this.ActiveProject == null ? false : true;
 
             //can't save what's not there
-            this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;            
+            this.saveSpriteToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;
             this.exportPngToolStripMenuItem.Enabled = (this.imageEditorBox.Image == null || this.ActiveProject?.ActiveSprite == null) ? false : true;
             this.saveGameSetToolStripMenuItem.Enabled = (this.ActiveProject?.ActiveGameSet == null) ? false : true;
 
@@ -227,7 +226,7 @@ namespace SkaaEditorUI.Forms
         //////////////////////////////// Opening Things ////////////////////////////////
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(this.ActiveProject != null)
+            if (this.ActiveProject != null)
                 if (!TrySaveCloseProject(null, null))
                     return;
 
@@ -282,7 +281,7 @@ namespace SkaaEditorUI.Forms
             List<string> files = new List<string>();
 
             //enumerate all files in multiple directories
-            foreach (string filename in (string[]) e.Data.GetData(DataFormats.FileDrop))
+            foreach (string filename in (string[])e.Data.GetData(DataFormats.FileDrop))
             {
                 if (Directory.Exists(filename))
                     files.AddRange(Directory.EnumerateFiles(filename, "*.*", SearchOption.AllDirectories));
@@ -295,7 +294,7 @@ namespace SkaaEditorUI.Forms
             foreach (string filename in files)
             {
                 TryOpenFile(filename, FileFormats.Any, null);
-                
+
                 //todo: move these to their own method or separate form
                 //For debugging: Gets all files and their formats. Resets active gameset in case we open two set files
                 //this.ActiveProject.ActiveGameSet = new System.Data.DataSet();
@@ -309,7 +308,8 @@ namespace SkaaEditorUI.Forms
             if (this.ActiveProject != null)
             {
                 bool isFile = e.Data.GetDataPresent(DataFormats.FileDrop);
-                if (isFile) e.Effect = DragDropEffects.Copy;
+                if (isFile)
+                    e.Effect = DragDropEffects.Copy;
             }
         }
 
@@ -353,11 +353,13 @@ namespace SkaaEditorUI.Forms
                         dlg.Filter = $"7KAA Sprite Files (*.spr)|*{props.SprFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SprFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => 
+                        OpenFile(dlg, format, () =>
                         {
                             SpritePresenter spr;
-                            if (this.ActiveProject.ActiveSprite == null) spr = new SpritePresenter();
-                            else spr = this.ActiveProject.ActiveSprite;
+                            if (this.ActiveProject.ActiveSprite == null)
+                                spr = new SpritePresenter();
+                            else
+                                spr = this.ActiveProject.ActiveSprite;
                             spr.Frames.Add(oldProject.LoadFrame(dlg.FileName, this.ActiveProject.ActivePalette));
                             this.ActiveProject.ActiveSprite = spr;
                         });
@@ -366,7 +368,7 @@ namespace SkaaEditorUI.Forms
                         dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => 
+                        OpenFile(dlg, format, () =>
                         {
                             Tuple<SpritePresenter, DataTable> tup = oldProject.LoadResDbf(dlg.FileName, this.ActiveProject.ActivePalette);
                             //this.ActiveProject.ActiveSprite = tup.Item1;
@@ -385,7 +387,7 @@ namespace SkaaEditorUI.Forms
                         dlg.Filter = $"7KAA Resource Files (*.res)|*{props.ResFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.ResFileExtension;
                         dlg.FileName = filepath;
-                        OpenFile(dlg, format, () => 
+                        OpenFile(dlg, format, () =>
                         {
                             Tuple<SpritePresenter, DataTable> tup = oldProject.LoadResIdxMultiBmp(dlg.FileName, this.ActiveProject.ActivePalette);
                             this.ActiveProject.ActiveGameSet = this.ActiveProject.ActiveGameSet ?? new DataSet();
@@ -441,7 +443,7 @@ namespace SkaaEditorUI.Forms
             {
                 openMethod();
             }
-            
+
             return actualFormat;
         }
         //////////////////////////////// Saving Things ////////////////////////////////
@@ -450,8 +452,8 @@ namespace SkaaEditorUI.Forms
             if (this.imageEditorBox.Image == null)
                 Logger.TraceInformation("The SkaaImageBox.Image object cannot be null!");
 
-            
-            bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+
+            bool changes = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite?.GameObject);
             if (changes)
             {
                 SaveFile(FileFormats.SpriteSpr);
@@ -487,7 +489,7 @@ namespace SkaaEditorUI.Forms
         }
         private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(this.ActiveProject != null)
+            if (this.ActiveProject != null)
                 TrySaveCloseProject(sender, e);
         }
         private void exportAllFramesToPngToolStripMenuItem_Click(object sender, EventArgs e)
@@ -507,7 +509,7 @@ namespace SkaaEditorUI.Forms
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    using (Bitmap bmp = this.ActiveProject.ActiveSprite.ToBitmap())
+                    using (Bitmap bmp = this.ActiveProject.ActiveSprite.GameObject.ToBitmap())
                     {
                         using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
                         {
@@ -533,8 +535,8 @@ namespace SkaaEditorUI.Forms
                 dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
-                {                   
-                    this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap = (this.imageEditorBox.Image as Bitmap);
+                {
+                    this.ActiveProject.ActiveFrame.GameObject.IndexedBitmap.Bitmap = (this.imageEditorBox.Image as Bitmap);
 
                     using (FileStream fs = new FileStream(dlg.FileName, FileMode.OpenOrCreate))
                         this.imageEditorBox.Image.Save(fs, ImageFormat.Png);
@@ -653,8 +655,8 @@ namespace SkaaEditorUI.Forms
         private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
-            this.spriteViewer1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetIFrames());
-            this.ActiveProject.ActiveFrame = new FramePresenter(this.ActiveProject?.ActiveSprite?.Frames[0]);
+            //this.spriteViewer1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetIFrames());
+            this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
 
             //since a sprite has been un/loaded
             SetupUI();
@@ -667,7 +669,7 @@ namespace SkaaEditorUI.Forms
             }
             else
             {
-                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap;
+                this.imageEditorBox.Image = this.ActiveProject.ActiveFrame.GameObject.IndexedBitmap.Bitmap;
 
                 //if (!this.spriteViewer1.SetCurrentFrameTo(this.imageEditorBox.Image))
                 //    throw new Exception("Failed to update TimelineControl as the specified image does not exist in the List!");
@@ -684,7 +686,7 @@ namespace SkaaEditorUI.Forms
         }
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
-            if (this.imageEditorBox.SelectedTool != DrawingTools.Pan && 
+            if (this.imageEditorBox.SelectedTool != DrawingTools.Pan &&
                 this.imageEditorBox.SelectedTool != DrawingTools.None)
             {
                 this.spriteViewer1.UpdateFrame(this.ActiveProject.ActiveFrame);
@@ -711,7 +713,7 @@ namespace SkaaEditorUI.Forms
         {
             Trace.WriteLine($"MainForm closing. Reason: {e.CloseReason}");
 
-            foreach(string dir in this._tempFiles)
+            foreach (string dir in this._tempFiles)
             {
                 if (Directory.Exists(dir))
                 {
@@ -769,20 +771,20 @@ namespace SkaaEditorUI.Forms
             newProject.PaletteChanged += ActiveProject_PaletteChanged;
 
             string paletteFile = props.DataDirectory + props.PalStd;
-            
+
             this.ActiveProject = newProject;
             this.ActiveProject.OpenPalette(paletteFile); //need to call this after setting ActiveProject so ActiveProject isn't null when we set up the ColorGrid
         }
         private void OpenProject(string projectPath)
         {
             Debug.Assert(projectPath != null, "Failed to specify a path to open!");
-            
+
             //todo: enumerate the files to see what ProjectType it is
             oldProject open = new oldProject();
 
             props.ProjectDirectory = projectPath;
             open.ProjectName = Path.GetFileName(projectPath); //GetFileName just assumes the last thing is a "file" and will give us the directory name
-            
+
             //need these events to fire before loading the objects
             //open.ActiveSpriteChanged += ActiveProject_ActiveSpriteChanged;
             //open.ActiveFrameChanged += ActiveProject_ActiveFrameChanged;
@@ -813,7 +815,7 @@ namespace SkaaEditorUI.Forms
             {
                 open.ActiveSprite = (SpritePresenter)oldProject.LoadSprite(sprFiles.ElementAt(0), this.ActiveProject.ActivePalette);
                 open.SetActiveSpriteSframeDbfDataView();
-                this.spriteViewer1.SetFrameList(this.ActiveProject.ActiveSprite.GetIFrames());
+                //this.spriteViewer1.SetFrameList(this.ActiveProject.ActiveSprite.GetIFrames());
             }
         }
         private void CloseProject()
@@ -840,7 +842,8 @@ namespace SkaaEditorUI.Forms
         /// <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
         private bool TrySaveCloseProject(object sender, EventArgs e)
         {
-            if (this.ActiveProject == null) return true;
+            if (this.ActiveProject == null)
+                return true;
 
             DialogResult saveChanges = UserShouldSaveChanges();
 
@@ -860,7 +863,7 @@ namespace SkaaEditorUI.Forms
         }
         private DialogResult UserShouldSaveChanges()
         {
-            bool spriteHasChanges = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+            bool spriteHasChanges = CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite?.GameObject);
 
             if (!spriteHasChanges)// && this.ActiveProject?.UnsavedSprites?.Count == 0)
                 return DialogResult.No;
@@ -869,18 +872,19 @@ namespace SkaaEditorUI.Forms
         }
         private bool CheckSpriteForPendingChanges(SkaaSprite spr)
         {
-            if (spr == null) return false;
+            if (spr == null)
+                return false;
 
             bool frameHasChanges = false;
-            foreach (FramePresenter sf in spr.Frames)
+            foreach (SkaaFrame sf in spr.Frames)
             {
-                frameHasChanges = sf.PendingChanges | frameHasChanges;
+                //frameHasChanges = sf.PendingChanges | frameHasChanges;
             }
 
             return frameHasChanges;
         }
         #endregion
-        
+
         #region Helper Methods
         //private void ProcessSpriteUpdates()
         //{
@@ -890,7 +894,7 @@ namespace SkaaEditorUI.Forms
 
         private void SetDefaultActiveColors()
         {
-            Color primary = Color.Black, secondary = Color.FromArgb(0,0,0,0);
+            Color primary = Color.Black, secondary = Color.FromArgb(0, 0, 0, 0);
             SetActiveColors(primary, secondary);
 
             //todo: detect transparent color in palette: Color.Transparent is {0,255,255,255} (trans white) but we use {0,0,0,0} (trans black) in pal_std.res.
@@ -941,7 +945,7 @@ namespace SkaaEditorUI.Forms
                     var dr = dt.NewRow();
                     dt.Rows.Add(dr);
                     dr.BeginEdit();
-                    dr[0] = Path.GetFileName((string) dsdt.ExtendedProperties["FileName"]);
+                    dr[0] = Path.GetFileName((string)dsdt.ExtendedProperties["FileName"]);
                     dr[1] = dsdt.TableName;
                     dr[2] = false;
                     dr.AcceptChanges();

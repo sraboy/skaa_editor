@@ -23,26 +23,33 @@
 ***************************************************************************/
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Capslock.WinForms.SpriteViewer;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
-    public class FramePresenter : SkaaFrame, IFrame
+    public class FramePresenter : PresenterBase<SkaaFrame>, IFrame
     {
-        private Guid _guid;
+        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Frame", ".res" } };
 
-        public bool PendingChanges;
+        #region Private Members
+        private Guid _guid;
+        private Bitmap _bitmap;
+        private long _bitmapOffset;
+        private string _name;
+        #endregion
+
         public Bitmap Bitmap
         {
             get
             {
-                return base.IndexedBitmap.Bitmap;
+                return this.GameObject.IndexedBitmap.Bitmap;
             }
             set
             {
-                base.IndexedBitmap.Bitmap = value;
+                SetField(ref this._bitmap, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Bitmap)));
             }
         }
         public Guid Guid
@@ -53,33 +60,54 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                this._guid = value;
+                SetField(ref this._guid, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Guid)));
+            }
+        }
+        public long BitmapOffset
+        {
+            get
+            {
+                return this.GameObject.BitmapOffset;
+            }
+            set
+            {
+                SetField(ref this._bitmapOffset, value, () => OnPropertyChanged(GetDesignModeValue(() => this.BitmapOffset)));
+            }
+        }
+        public string Name
+        {
+            get
+            {
+                return this.GameObject.Name;
+            }
+            set
+            {
+                SetField(ref this._name, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Name)));
             }
         }
 
-        long IFrame.BitmapOffset
+        protected override Dictionary<string, string> FileTypes
         {
             get
             {
-                return this.BitmapOffset;
+                throw new NotImplementedException();
             }
         }
-        string IFrame.Name
-        {
-            get
-            {
-                return this.Name;
-            }
-        }
+
+        public FramePresenter() { }
 
         public FramePresenter(SkaaFrame sgf)
         {
             this.Guid = Guid.NewGuid();
-            this.PendingChanges = false;
+            this.GameObject = this.GameObject ?? new SkaaFrame();
+            this.GameObject.Name = sgf.Name;
+            this.GameObject.BitmapOffset = sgf.BitmapOffset;
+            this.GameObject.IndexedBitmap = sgf.IndexedBitmap;
+        }
 
-            this.Name = sgf.Name;
-            this.BitmapOffset = sgf.BitmapOffset;
-            this.IndexedBitmap = sgf.IndexedBitmap;
+        protected override SkaaFrame Load(string filePath, params object[] param)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -24,29 +24,14 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using SkaaGameDataLib;
 
-namespace SkaaEditorUI
+namespace SkaaEditorUI.Presenters
 {
-    public static class Misc
+    public interface IPresenterBase<T> where T : class
     {
-        public static string GetDesignModeValue<T>(Expression<Func<T>> propertyExpression)
-        {
-            //adapted from: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
-            return (propertyExpression.Body as MemberExpression).Member.Name;
-        }
-
-        public static bool SetField<T>(ref T field, T value, Action onPropertyChanged)
-        {
-            //adapted from: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
-            if (EqualityComparer<T>.Default.Equals(field, value))
-                return false;
-            field = value;
-            onPropertyChanged();
-            return true;
-        }
+        T GameObject { get; set; }
+        string GetFileDialogFilter(Dictionary<string, string> fileTypeDic);
+        PresenterBase<T1> Open<T1>(object loadParam = null) where T1 : class;
     }
 }

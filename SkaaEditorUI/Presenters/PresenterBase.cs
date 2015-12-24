@@ -24,25 +24,36 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Windows.Forms;
-using SkaaGameDataLib;
-using SkaaEditorUI.Utilities;
+using SkaaEditorUI.Misc;
 
 namespace SkaaEditorUI.Presenters
 {
-    public abstract class PresenterBase<T> where T : class, new()
+    public abstract class PresenterBase<T> : INotifyPropertyChanged, IPresenterBase<T> where T : class
     {
-        private Dictionary<string, string> fileTypes;// = new Dictionary<string, string>() { };
+        public static readonly TraceSource Logger = new TraceSource($"{typeof(PresenterBase<T>)}", SourceLevels.All);
+
+        private Dictionary<string, string> fileTypes;
         private static OpenFileDialog _dlg;
-        public static implicit operator T(PresenterBase<T> obj) { return obj.GameObject; }
+        private T _gameObject;
 
         protected string FileDialogFilter { get { return GetFileDialogFilter(FileTypes); } }
         protected abstract Dictionary<string, string> FileTypes { get; }
 
-        public T GameObject { get; set; }
+        public T GameObject
+        {
+            get
+            {
+                return this._gameObject;
+            }
+            set
+            {
+                SetField(ref this._gameObject, value, () => OnPropertyChanged(GetDesignModeValue(() => this.GameObject)));
+            }
+        }
 
         //Passed as a delegate in Open() so derived types must implement
         protected abstract T Load(string filePath, params object[] param);
@@ -52,28 +63,85 @@ namespace SkaaEditorUI.Presenters
             _dlg = new OpenFileDialog();
         }
 
+        #region PropertyChangedEvent
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+                handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
         public string GetFileDialogFilter(Dictionary<string, string> fileTypeDic)
         {
             string fileTypes = "7KAA";
             string fileExtensions = "";
             string allFiles = "All Files (*.*)|*.*";
 
-            foreach (KeyValuePair<string, string> kv in )
+            foreach (KeyValuePair<string, string> kv in fileTypeDic)
             {
                 fileTypes += kv.Key + $" Files (*{kv.Value})|";
                 fileExtensions += kv.Value + '|';
             }
-            
+
             string filter = $"{fileTypes + fileExtensions}|{allFiles}";
             return filter;
         }
 
-        public T Open(object loadParam = null)
+        //public PresenterBase<T1> Open<T1>(object loadParam = null) where T1 : class
+        //{
+        //    var dlg = new OpenFileDialog();
+        //    this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));
+        //    return this as PresenterBase<T1>;
+        //}
+        PresenterBase<T1> IPresenterBase<T>.Open<T1>(object loadParam)
         {
-            //T obj;
-            var dlg = new OpenFileDialog();
-            this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));
-            return this.GameObject;
+            using (var dlg = new OpenFileDialog())
+            {
+                this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));
+            }
+            return this as PresenterBase<T1>;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="propertyExpression"></param>
+        /// <returns></returns>
+        /// <remarks> 
+        /// This specific method is licensed under CC-BY-SA v2.5 as it was adapted from a StackOverflow user post. 
+        /// Original: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
+        /// License: CC-BY-SA v2.5 (http://creativecommons.org/licenses/by-sa/2.5/)
+        /// </remarks>
+        public static string GetDesignModeValue<T1>(Expression<Func<T1>> propertyExpression)
+        {
+            //adapted from: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
+            return (propertyExpression.Body as MemberExpression).Member.Name;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <param name="onPropertyChanged"></param>
+        /// <returns></returns>
+        /// <remarks> 
+        /// This specific method is licensed under CC-BY-SA v2.5 as it was adapted from a StackOverflow user post. 
+        /// Original: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
+        /// License: CC-BY-SA v2.5 (http://creativecommons.org/licenses/by-sa/2.5/)
+        /// </remarks>
+        public static bool SetField<T1>(ref T1 field, T1 value, Action onPropertyChanged)
+        {
+            //adapted from: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
+            if (EqualityComparer<T1>.Default.Equals(field, value))
+                return false;
+            field = value;
+            onPropertyChanged();
+            return true;
         }
     }
 }

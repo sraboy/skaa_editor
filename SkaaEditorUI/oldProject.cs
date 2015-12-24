@@ -44,7 +44,7 @@ namespace SkaaEditorUI
     public partial class oldProject
     {
         public static readonly TraceSource Logger = new TraceSource("oldProject", SourceLevels.All);
-        
+
         #region Private Members
         private Properties.Settings props = Properties.Settings.Default;
         private FramePresenter _activeFrame;
@@ -228,10 +228,11 @@ namespace SkaaEditorUI
             if (!File.Exists(filepath))
                 filepath = props.DataDirectory + props.SetStd;
 
-            
-                this.ActiveGameSet = this.ActiveGameSet ?? new DataSet();
-                if(this.ActiveGameSet.OpenStandardGameSet(filepath) == false) return false;
-            
+
+            this.ActiveGameSet = this.ActiveGameSet ?? new DataSet();
+            if (this.ActiveGameSet.OpenStandardGameSet(filepath) == false)
+                return false;
+
 
             SetActiveSpriteSframeDbfDataView();
 
@@ -263,7 +264,7 @@ namespace SkaaEditorUI
         public static SpritePresenter LoadSprite(string filepath, ColorPalette pal)
         {
             if (pal == null)
-            { 
+            {
                 Logger.TraceEvent(TraceEventType.Error, 0, "Cannot load a Sprite without a specified palette.");
                 return null;
             }
@@ -311,7 +312,7 @@ namespace SkaaEditorUI
                     IndexedBitmap iBmp = new IndexedBitmap(pal);
                     sf.IndexedBitmap = iBmp;
                     iBmp.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
-                    
+
                     spr.Frames.Add(sf);
 
                     DataRow row = dt.NewRow();
@@ -323,7 +324,7 @@ namespace SkaaEditorUI
                 }
             }
 
-            return new Tuple<SpritePresenter, DataTable>( new SpritePresenter(spr), dt );
+            return new Tuple<SpritePresenter, DataTable>(new SpritePresenter(spr), dt);
         }
         public static Tuple<SpritePresenter, DataTable> LoadResDbf(string filepath, ColorPalette pal)
         {
@@ -334,7 +335,7 @@ namespace SkaaEditorUI
             {
                 DbfFile file = new DbfFile();
 
-                if(file.ReadStream(fs) != true)
+                if (file.ReadStream(fs) != true)
                     throw new Exception("Failed to read DBF file.");
 
                 file.DataTable.TableName = Path.GetFileNameWithoutExtension(filepath);
@@ -352,20 +353,20 @@ namespace SkaaEditorUI
                 using (MemoryStream headerstream = new MemoryStream())
                 {
                     DataTable dt = this.ActiveGameSet.Tables[this.ActiveSprite.SpriteId];
-                    if (dt.TableName != Path.GetFileNameWithoutExtension((string) dt.ExtendedProperties["FileName"]))
+                    if (dt.TableName != Path.GetFileNameWithoutExtension((string)dt.ExtendedProperties["FileName"]))
                         throw new Exception("TableName does not match file's original file name!");
 
                     int headersize = (dt.Rows.Count + 1) * ResourceDatabase.ResIdxDefinitionSize;
-                    byte[] recordcount = BitConverter.GetBytes((short) dt.Rows.Count + 1); //+1 for the empty record
+                    byte[] recordcount = BitConverter.GetBytes((short)dt.Rows.Count + 1); //+1 for the empty record
                     headerstream.Write(recordcount, 0, recordcount.Length);
 
                     int datalen;
 
                     using (MemoryStream bmpstream = new MemoryStream())
                     {
-                        foreach(SkaaFrame f in this.ActiveSprite.Frames)
+                        foreach (FramePresenter f in this.ActiveSprite.Frames)
                         {
-                            byte[] framedata = f.ToSprFile();
+                            byte[] framedata = f.GameObject.ToSprFile();
                             bmpstream.Write(framedata, 0, framedata.Length);
                             //update the frame's [future] offset in the file-to-be-written (needed for ResIdx header)
                             f.BitmapOffset = headersize + bmpstream.Position;
@@ -385,7 +386,7 @@ namespace SkaaEditorUI
                         //write out empty record with file size
                         for (int i = 0; i < ResourceDatabase.ResIdxDefinitionSize; i++)
                             headerstream.WriteByte(0x0); //null name entry
-                        byte[] filesize = BitConverter.GetBytes((uint) (headersize + datalen));
+                        byte[] filesize = BitConverter.GetBytes((uint)(headersize + datalen));
                         headerstream.Write(filesize, 0, filesize.Length); //file's size
 
                         //reset positions and copy streams to write out
@@ -422,12 +423,12 @@ namespace SkaaEditorUI
 
         public static void Export<T>(string filepath, T obj)
         {
-            if(obj.GetType() == typeof(SkaaSprite))
+            if (obj.GetType() == typeof(SkaaSprite))
                 (obj as SkaaSprite).ToBitmap().Save(filepath);
             else if (obj.GetType() == typeof(SkaaFrame))
                 (obj as SkaaFrame).IndexedBitmap.Bitmap.Save(filepath);
         }
-        
+
         public void SetActiveSpriteSframeDbfDataView()
         {
             if (this.ActiveSprite != null)
@@ -436,7 +437,7 @@ namespace SkaaEditorUI
                 if (dv != null)
                 {
                     dv.RowFilter = $"SPRITE = '{this.ActiveSprite.SpriteId}'";
-                    this.ActiveSprite.SetSpriteDataView(dv);
+                    //this.ActiveSprite.SetSpriteDataView(dv);
                 }
             }
         }
