@@ -9,7 +9,7 @@ using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
-    public class ColorPalettePresenter : ICustomOpenFileDialog
+    public class ColorPalettePresenter : IPresenter
     {
         private static readonly string ResFileExtension = ".res";
         private static readonly string ColFileExtension = ".col";

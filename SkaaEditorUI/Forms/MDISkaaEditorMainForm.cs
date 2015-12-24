@@ -75,15 +75,7 @@ namespace SkaaEditorUI.Forms
             ProjectManager.ActiveProject.PaletteChanged += ActiveProject_PaletteChanged;
         }
 
-        private void ActiveProject_PaletteChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
-        private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         private void SetUpDockPanel()
         {
@@ -101,17 +93,6 @@ namespace SkaaEditorUI.Forms
         public void SetPalette(ColorPalette pal)
         {
             this._toolBoxContainer.SetColorPalette(((ImageEditorContainer)this.dockPanel.ActiveDocument)?.ActiveSprite?.ActivePalette);
-        }
-
-        private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
-        {
-            SetPalette(((ImageEditorContainer)this.dockPanel.ActiveDocument)?.ActiveSprite?.ActivePalette);
-        }
-
-        private void toolStripBtnNewProject_Click(object sender, EventArgs e)
-        {
-            if (TrySaveCloseProject())
-                ProjectManager.CreateNewProject();
         }
 
         /// <summary>
@@ -146,27 +127,34 @@ namespace SkaaEditorUI.Forms
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
 
+        #region Event Handlers
         private void toolStripBtnOpenProject_Click(object sender, EventArgs e)
         {
 
         }
-
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dlg = new OpenFileDialog())
-            {
-                ProjectManager.OpenSprite(dlg);
-            }
+            ProjectManager.Open<SpritePresenter>();
+            ProjectManager.OpenSprite();
         }
-
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dlg = new OpenFileDialog())
-            {
-                ProjectManager.OpenPalette(dlg);
-            }
+            ProjectManager.OpenPalette();
         }
+        private void ActiveProject_PaletteChanged(object sender, EventArgs e) => SetPalette(this.ActivePalette);
+        private void ActiveProject_ActiveSpriteChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
+        {
+            SetPalette(((ImageEditorContainer)this.dockPanel.ActiveDocument)?.ActiveSprite?.ActivePalette);
+        }
+        private void toolStripBtnNewProject_Click(object sender, EventArgs e)
+        {
+            if (TrySaveCloseProject())
+                ProjectManager.CreateNewProject();
+        }
+        #endregion
     }
-
- 
 }

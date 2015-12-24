@@ -152,8 +152,9 @@
     </Compile>
     <Compile Include="Misc.cs" />
     <Compile Include="Presenters\ColorPalettePresenter.cs" />
-    <Compile Include="Presenters\ICustomOpenFileDialog.cs" />
+    <Compile Include="Presenters\PresenterBase.cs" />
     <Compile Include="oldProject.cs" />
+    <Compile Include="Presenters\GameSetPresenter.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Presenters\ProjectManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -181,6 +182,7 @@
       <DependentUpon>SkaaSAVEditorTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Presenters\SpritePresenter.cs" />
+    <Compile Include="TrulyObservableCollection.cs" />
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>

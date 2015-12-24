@@ -30,14 +30,16 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System;
+using System.IO;
 
 namespace SkaaEditorUI.Presenters
 {
-    public class SpritePresenter : SkaaSprite, ICustomOpenFileDialog, INotifyPropertyChanged
+    public class SpritePresenter : PresenterBase<SkaaSprite>, INotifyPropertyChanged
     {
-        private static readonly string _fileExtension = ".spr";
+        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Sprite", ".spr" }, { "Sprite", ".res" } };
 
         private IFrame _activeFrame;
+        private static readonly SkaaSprite _skaaSprite = new SkaaSprite();
 
         #region PropertyChangedEvent
         public event PropertyChangedEventHandler PropertyChanged;
@@ -70,22 +72,21 @@ namespace SkaaEditorUI.Presenters
                 this._activeFrame = value;
             }
         }
-        public string FileExtension
+
+        protected override Dictionary<string, string> FileTypes
         {
             get
             {
-                return _fileExtension;
+                return _fileTypes;
             }
         }
         #endregion
 
         #region Constructors
         public SpritePresenter() { }
-        public SpritePresenter(SkaaSprite sgs)
+        public SpritePresenter(SkaaSprite spr)
         {
-            this.Frames = sgs.Frames;
-            this.SpriteId = sgs.SpriteId;
-            this.ActiveFrame = (IFrame)this.Frames[0];
+            this.ActiveFrame = (IFrame)spr.Frames[0];
         }
         #endregion
 
@@ -100,12 +101,25 @@ namespace SkaaEditorUI.Presenters
             return frames;
         }
 
-        public OpenFileDialog GetOpenFileDialog()
+        /// <summary>
+        /// Creates a <see cref="SpritePresenter"/> object from an SPR-formatted file
+        /// </summary>
+        /// <param name="filePath">The absolute path to the SPR file to open</param>
+        /// <returns>The newly-created <see cref="SpritePresenter"/></returns>
+        /// <remarks>
+        protected SpritePresenter Load(string filePath, ColorPalette pal)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = $"7KAA Sprite Files (*{FileExtension})|*{FileExtension}|All Files (*.*)|*.*";
-            dlg.DefaultExt = FileExtension;
-            return dlg;
+            if (pal == null)
+                throw new ArgumentNullException("pal", "You must specify a ColorPalette to load a sprite.");
+
+            SkaaSprite spr;
+
+            using (FileStream spritestream = File.OpenRead(filePath))
+                spr = SkaaSprite.FromSprStream(spritestream, pal);
+
+            spr.SpriteId = Path.GetFileNameWithoutExtension(filePath);
+
+            return new SpritePresenter(spr);
         }
     }
 }

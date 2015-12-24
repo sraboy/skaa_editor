@@ -117,26 +117,7 @@ namespace SkaaEditorUI
             else
                 return false;
         }
-        /// <summary>
-        /// Creates a <see cref="SpritePresenter"/> object from an SPR-formatted file
-        /// </summary>
-        /// <param name="filePath">The absolute path to the SPR file to open</param>
-        /// <returns>The newly-created <see cref="SpritePresenter"/></returns>
-        /// <remarks>
-        private static SpritePresenter LoadSprite(string filePath, ColorPalette pal)
-        {
-            if (pal == null)
-                throw new ArgumentNullException("pal", "You must specify a ColorPalette to load a sprite.");
-
-            SkaaSprite spr;
-
-            using (FileStream spritestream = File.OpenRead(filePath))
-                spr = SkaaSprite.FromSprStream(spritestream, pal);
-
-            spr.SpriteId = Path.GetFileNameWithoutExtension(filePath);
-
-            return new SpritePresenter(spr);
-        }
+        
         /// <summary>
         /// Loads a <see cref="ColorPalette"/> from the specified file
         /// </summary>
@@ -151,6 +132,7 @@ namespace SkaaEditorUI
 
             return new ColorPalettePresenter(pal);
         }
+
         #endregion
 
         #region Public Methods
@@ -193,43 +175,33 @@ namespace SkaaEditorUI
             //Unsubscribe();
         }
         // Opening Files //
-        /// <summary>
-        /// This function will open the specified 7KAA <see cref="GameSetFile"/>
-        /// </summary>
-        /// <param name="filePath">The complete path to the SET file.</param>
-        /// <remarks>
-        ///  A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
-        /// </remarks>
-        public bool OpenStandardSet(string filePath)
+        public T Open<T>() where T : PresenterBase<T>, new()
         {
-            DataSet ds = new DataSet();
-
-            if (ds.OpenStandardGameSet(filePath) == false)
-                return false;
-            else
-            {
-                this.ActiveProject.GameSet = ds;
-                return true;
-            }
+            T presenter = new T();
+            presenter.Open();
+            return presenter;
         }
-        /// <summary>
-        /// Loads a 7KAA-formatted palette file.
-        /// </summary>
-        /// <param name="filePath">The specific palette file to load.</param>
-        /// <returns>A ColorPalette built from the palette file</returns>
-        public void OpenPalette(OpenFileDialog dlg)
-        {
-            ColorPalettePresenter pal = null;
-            pal = dlg.Open(this.SaveDirectory, () => LoadPalette(dlg.FileName));
-            this.ActiveProject.ActivePalette = pal.ColorPalette;
-            //this._mainForm.SetPalette(this.ActiveProject.ActivePalette);
-        }
-        public void OpenSprite(OpenFileDialog dlg)
-        {
-            SpritePresenter spr = null;
-            spr = dlg.Open(this.SaveDirectory, () => LoadSprite(dlg.FileName, this._mainForm.ActivePalette));
-            this.ActiveProject.AddSprite(spr);
-        }
+        //public void OpenStandardSet()
+        //{
+        //    GameSetPresenter gsp = new GameSetPresenter();
+        //    using (var dlg = gsp.GetOpenFileDialog())
+        //        gsp.GameSet = dlg.Open(this.SaveDirectory, () => LoadStandardGameSet(dlg.FileName));
+        //    this.ActiveProject.GameSet = gsp.GameSet;
+        //}
+        //public void OpenPalette()
+        //{
+        //    ColorPalettePresenter pal = new ColorPalettePresenter(null);
+        //    using (var dlg = pal.GetOpenFileDialog())
+        //        pal = dlg.Open(this.SaveDirectory, () => LoadPalette(dlg.FileName));
+        //    this.ActiveProject.ActivePalette = pal.ColorPalette;
+        //}
+        //public void OpenSprite()
+        //{
+        //    SpritePresenter spr = new SpritePresenter();
+        //    using (var dlg = spr.GetOpenFileDialog())
+        //        spr = dlg.Open(this.SaveDirectory, () => LoadSprite(dlg.FileName, this._mainForm.ActivePalette));
+        //    this.ActiveProject.AddSprite(spr);
+        //}
         public static FileFormats CheckFileType(string filePath)
         {
             return FileTypeChecks.CheckFileType(filePath);
