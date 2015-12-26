@@ -79,6 +79,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
+            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -251,7 +252,8 @@
             this.toolStripSeparator3,
             this.openSpriteToolStripMenuItem,
             this.openGameSetToolStripMenuItem,
-            this.loadPaletteToolStripMenuItem});
+            this.loadPaletteToolStripMenuItem,
+            this.spriteResToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.openToolStripMenuItem.Text = "Open";
@@ -425,6 +427,13 @@
             this.tsStatusLblFileType.Text = "No File Loaded";
             this.tsStatusLblFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // spriteResToolStripMenuItem
+            // 
+            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
+            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
+            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.spriteResToolStripMenuItem_Click);
+            // 
             // MDISkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -486,5 +495,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
         private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem spriteResToolStripMenuItem;
     }
 }

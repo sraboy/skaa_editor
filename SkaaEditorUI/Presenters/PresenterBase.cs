@@ -43,7 +43,9 @@ namespace SkaaEditorUI.Presenters
         private FileFormats _fileFormat;
 
         protected string FileDialogFilter { get { return GetFileDialogFilter(FileTypes); } }
-        protected abstract Dictionary<string, string> FileTypes { get; }
+
+        protected abstract Dictionary<string, string> FileTypes
+        { get; }
 
         public T GameObject
         {
@@ -70,7 +72,8 @@ namespace SkaaEditorUI.Presenters
         }
 
         //Passed as a delegate in Open() so derived types must implement
-        protected abstract T Load(string filePath, params object[] param);
+        public abstract T Load(string filePath, params object[] param);
+        public abstract bool Save(string filePath, params object[] param);
 
         static PresenterBase()
         {
@@ -109,15 +112,28 @@ namespace SkaaEditorUI.Presenters
         //    this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));
         //    return this as PresenterBase<T1>;
         //}
+        
         PresenterBase<T1> IPresenterBase<T>.Open<T1>(params object[] loadParam)
         {
             this.FileFormat = (FileFormats)(loadParam[0]);
 
             using (var dlg = new OpenFileDialog())
             {
-                this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));
+                this.GameObject = dlg.CustomShowDialog(() => this.Load(dlg.FileName, loadParam));
             }
             return this as PresenterBase<T1>;
+        }
+
+        bool IPresenterBase<T>.Save<T1>(params object[] loadParam)
+        {
+            bool result;
+
+            using (var dlg = new SaveFileDialog())
+            {
+                result = dlg.CustomShowDialog(() => this.Save(dlg.FileName, loadParam));
+            }
+
+            return result;
         }
 
         /// <summary>

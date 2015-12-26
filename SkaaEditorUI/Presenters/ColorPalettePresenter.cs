@@ -22,6 +22,7 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Imaging;
@@ -46,7 +47,7 @@ namespace SkaaEditorUI.Presenters
             this.GameObject = pal;
         }
 
-        protected override ColorPalette Load(string filePath, params object[] param)
+        public override ColorPalette Load(string filePath, params object[] param)
         {
             var pal = PaletteLoader.FromResFile(filePath);
 
@@ -54,6 +55,11 @@ namespace SkaaEditorUI.Presenters
                 Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load palette: {filePath}");
 
             return pal;
+        }
+
+        public override bool Save(string filePath, params object[] param)
+        {
+            throw new NotImplementedException();
         }
     }
 }

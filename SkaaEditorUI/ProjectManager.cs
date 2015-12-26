@@ -174,7 +174,7 @@ namespace SkaaEditorUI
         }
         public bool SaveProject(Project project, string filePath)
         {
-            SaveSprites(FileFormats.SpriteSpr);
+            SaveSprites(/*FileFormats.SpriteSpr*/);
 
             using (FileStream fs = new FileStream(this.SaveDirectory, FileMode.Create))
             {
@@ -186,21 +186,9 @@ namespace SkaaEditorUI
                 Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
             return true;
         }
-        public void SaveSprites(FileFormats format)
+        public void SaveSprites(/*FileFormats format*/)
         {
-            foreach (SpritePresenter spr in this.ActiveProject.OpenSprites)
-            {
-                if (spr.FileFormat != format)
-                    continue;
-
-                var str = spr.GetActiveSpriteStream();
-
-                using (FileStream sprStream = new FileStream(this.SaveDirectory + $"\\{spr.SpriteId}.spr", FileMode.Create))
-                {
-                    str.Position = 0;
-                    str.CopyTo(sprStream);
-                }
-            }
+            //call Save on each MultiImagePresenter
         }
         /// <summary>
         /// Closes the <see cref="ActiveProject"/> and unsubscribes from all events
@@ -219,12 +207,31 @@ namespace SkaaEditorUI
         public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
             //param[0] is FileFormat
-            //param[1] is ColorPalette for SpritePresenter, bool merge for GameSetPresenter
+            //param[1] is bool merge for GameSetPresenter
             //param[2] is GameSet for SpritePresenter
             T1 presenter = new T1();
+
+            if (presenter is MultiImagePresenterBase)
+                (presenter as MultiImagePresenterBase).PalettePresenter = this._mainForm.ActivePalette;
+
             presenter.Open<T>(param);
             return presenter;
         }
+
+        //public MultiImagePresenterBase Open<T, T1>() where T : class where T1 : MultiImagePresenterBase, new()
+        //{
+        //    T1 presenter = new T1();
+        //    (presenter as MultiImagePresenterBase).PalettePresenter = this._mainForm.ActivePalette;
+        //    presenter.Open();
+        //    return presenter;
+        //}
+        //public IMultiImagePresenter<T> Open<T, T1>(ColorPalettePresenter pal) where T : SkaaSprite where T1 : MultiImagePresenterBase, new()
+        //{
+        //    T1 spr = new T1();
+        //    spr.PalettePresenter = pal;
+        //    spr.Open();
+        //    return (IMultiImagePresenter<T>) spr;
+        //}
 
         public static FileFormats CheckFileType(string filePath)
         {

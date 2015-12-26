@@ -33,7 +33,7 @@ namespace SkaaEditorUI.Forms.DockPanels
     public partial class ImageEditorContainer : DockContent
     {
         private ImageEditorBox _imageEditorBox;
-        private SpritePresenter _activeSprite;
+        private MultiImagePresenterBase _activeSprite;
 
         #region Events
         [NonSerialized]
@@ -63,7 +63,7 @@ namespace SkaaEditorUI.Forms.DockPanels
         }
         #endregion
 
-        public SpritePresenter ActiveSprite
+        public MultiImagePresenterBase ActiveSprite
         {
             get
             {
@@ -82,7 +82,7 @@ namespace SkaaEditorUI.Forms.DockPanels
             InitializeComponent();
         }
 
-        public void SetSprite(SpritePresenter spr, int activeFrameIndex = 0)
+        public void SetSprite(MultiImagePresenterBase spr, int activeFrameIndex = 0)
         {
             this.ActiveSprite = spr;
             this.ActiveSprite?.SetActiveFrame(activeFrameIndex);

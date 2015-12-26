@@ -44,7 +44,7 @@ namespace SkaaEditorUI.Forms
     public partial class MDISkaaEditorMainForm : Form
     {
         // We should never instantiate these. They're only set based on the ProjectManager's ActiveSprite
-        private static SpritePresenter _activeSprite;
+        private static MultiImagePresenterBase _activeSprite;
         private static ColorPalettePresenter _activePalette;
 
         private ToolboxContainer _toolBoxContainer;
@@ -119,7 +119,7 @@ namespace SkaaEditorUI.Forms
                 }
             }
         }
-        public SpritePresenter ActiveSprite
+        public MultiImagePresenterBase ActiveSprite
         {
             get
             {
@@ -193,15 +193,13 @@ namespace SkaaEditorUI.Forms
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
 
-        private void OpenNewTab(SpritePresenter spr)
+        private void OpenNewTab(MultiImagePresenterBase spr)
         {
             ImageEditorContainer iec = new ImageEditorContainer();
             iec.Show(dockPanel, DockState.Document);
             iec.SetSprite(spr);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
         }
-
-
 
         #region Event Handlers
         ///////////////////////////// Button Clicks /////////////////////////////
@@ -217,20 +215,31 @@ namespace SkaaEditorUI.Forms
         }
         private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            OpenSprite<SpritePresenter>( sender, e);
+        }
+        private void spriteResToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenSprite<ResIdxMultiBmpPresenter>(sender, e);
+        }
+        private void OpenSprite<T>(object sender, EventArgs e) where T : MultiImagePresenterBase, new()
+        {
             //set palette first
             if (this.ActivePalette?.GameObject == null)
                 loadPaletteToolStripMenuItem_Click(sender, e);
 
-            SpritePresenter spr = (SpritePresenter)ProjectManager.Open<SkaaSprite, SpritePresenter>(FileFormats.SpriteSpr, this.ActivePalette.GameObject, ProjectManager.ActiveProject.GameSet);
+            T spr = (T)ProjectManager.Open<SkaaSprite, T>(FileFormats.SpriteSpr, ProjectManager.ActiveProject.GameSet);
             spr.PropertyChanged += ActiveSprite_PropertyChanged;
 
-            var doc = ((ImageEditorContainer)this.dockPanel.ActiveDocument);
-            if (doc?.ActiveSprite == null)
-                this.ActiveSprite = spr;
-            else
-                OpenNewTab(spr);
+            if (spr.Frames.Count > 0)
+            {
+                spr.SetActiveFrame(0);
+                var doc = ((ImageEditorContainer)this.dockPanel.ActiveDocument);
 
-            spr.SetActiveFrame(0);
+                if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
+                    this.ActiveSprite = spr;   //let the event handle the update
+                else
+                    OpenNewTab(spr);           //open a new document tab with our sprite, which sets this.ActiveSprite
+            }
         }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -242,10 +251,10 @@ namespace SkaaEditorUI.Forms
         {
             //get the palette for the currently-loaded sprite, if any
             var iec = (ImageEditorContainer)this.dockPanel.ActiveDocument;
-            var pal = iec?.ActiveSprite?.Palette;
+            var pal = iec?.ActiveSprite?.PalettePresenter;
 
             if (pal != null)
-                this.ActivePalette.GameObject = pal;
+                this.ActivePalette = pal;
 
             UpdatePalette(iec);
         }
@@ -260,7 +269,7 @@ namespace SkaaEditorUI.Forms
 
         private void UpdatePalette(ImageEditorContainer iec)
         {
-            this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.Palette);
+            this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
         }
         #endregion
 

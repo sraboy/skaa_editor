@@ -105,7 +105,12 @@ namespace SkaaEditorUI.Presenters
             this.GameObject.IndexedBitmap = sgf.IndexedBitmap;
         }
 
-        protected override SkaaFrame Load(string filePath, params object[] param)
+        public override SkaaFrame Load(string filePath, params object[] param)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Save(string filePath, params object[] param)
         {
             throw new NotImplementedException();
         }

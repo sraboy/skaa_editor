@@ -22,16 +22,23 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System.Collections.Generic;
+using System.Drawing.Imaging;
+using Capslock.WinForms.SpriteViewer;
+using SkaaEditorUI.Misc;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
-    public interface IPresenterBase<T> where T : class
+    public interface IMultiImagePresenter<T> : IPresenterBase<T> where T : SkaaSprite
     {
-        T GameObject
+        ColorPalettePresenter PalettePresenter
         { get; set; }
-        string GetFileDialogFilter(Dictionary<string, string> fileTypeDic);
-        PresenterBase<T1> Open<T1>(params object[] loadParam) where T1 : class;
-        bool Save<T1>(params object[] loadParam) where T1 : class;
+        IFrame ActiveFrame
+        { get; set; }
+        TrulyObservableCollection<FramePresenter> Frames
+        { get; set; }
+
+        void LoadPalette(string filePath);
+        //IMultiImagePresenter<SkaaSprite> Open();// where T : SkaaSprite;
     }
 }
