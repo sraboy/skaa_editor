@@ -139,11 +139,13 @@ namespace Capslock.WinForms.SpriteViewer
         private void ListViewer1_ActiveFrameChanged(object sender, EventArgs e)
         {
             var fe = (e as FrameChangedEventArgs);
+            this.timeline1.SetCurrentFrameTo(fe.FrameGuid);
             RaiseActiveFrameChangedEvent(fe);
         }
         private void Timeline1_ActiveFrameChanged(object sender, EventArgs e)
         {
             var fe = (e as FrameChangedEventArgs);
+            this.listViewer1.SetSelectedItem(fe.FrameGuid);
             RaiseActiveFrameChangedEvent(fe);
         }
         //private void OnActiveFrameChanged(object sender, EventArgs e)

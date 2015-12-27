@@ -70,7 +70,8 @@ namespace Capslock.WinForms.SpriteViewer
             | System.Windows.Forms.AnchorStyles.Right)));
             this._picBoxFrame.Location = new System.Drawing.Point(0, 3);
             this._picBoxFrame.Name = "_picBoxFrame";
-            this._picBoxFrame.Size = new System.Drawing.Size(235, 225);
+            this._picBoxFrame.Size = new System.Drawing.Size(235, 241);
+            this._picBoxFrame.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this._picBoxFrame.TabIndex = 4;
             this._picBoxFrame.TabStop = false;
             this._picBoxFrame.DoubleClick += new System.EventHandler(this.picBoxFrame_DoubleClick);
@@ -84,18 +85,20 @@ namespace Capslock.WinForms.SpriteViewer
             this._sliderBar.LargeChange = 4;
             this._sliderBar.Location = new System.Drawing.Point(0, 231);
             this._sliderBar.Name = "_sliderBar";
-            this._sliderBar.Size = new System.Drawing.Size(235, 45);
+            this._sliderBar.Size = new System.Drawing.Size(235, 61);
             this._sliderBar.TabIndex = 5;
             this._sliderBar.ValueChanged += new System.EventHandler(this.frameSlider_ValueChanged);
             // 
-            // Timeline
+            // TimelineView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this._sliderBar);
             this.Controls.Add(this._picBoxFrame);
-            this.Name = "Timeline";
-            this.Size = new System.Drawing.Size(235, 275);
+            this.Name = "TimelineView";
+            this.Size = new System.Drawing.Size(235, 291);
             ((System.ComponentModel.ISupportInitialize)(this._picBoxFrame)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._sliderBar)).EndInit();
             this.ResumeLayout(false);

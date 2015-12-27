@@ -219,20 +219,10 @@ namespace SkaaEditorUI
             return presenter;
         }
 
-        //public MultiImagePresenterBase Open<T, T1>() where T : class where T1 : MultiImagePresenterBase, new()
-        //{
-        //    T1 presenter = new T1();
-        //    (presenter as MultiImagePresenterBase).PalettePresenter = this._mainForm.ActivePalette;
-        //    presenter.Open();
-        //    return presenter;
-        //}
-        //public IMultiImagePresenter<T> Open<T, T1>(ColorPalettePresenter pal) where T : SkaaSprite where T1 : MultiImagePresenterBase, new()
-        //{
-        //    T1 spr = new T1();
-        //    spr.PalettePresenter = pal;
-        //    spr.Open();
-        //    return (IMultiImagePresenter<T>) spr;
-        //}
+        public void Save<T>(IPresenterBase<T> pres) where T : class
+        {
+            pres.Save<T>(null);
+        }
 
         public static FileFormats CheckFileType(string filePath)
         {

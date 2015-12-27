@@ -86,12 +86,15 @@ namespace Capslock.WinForms.SpriteViewer
             this.objectListView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.objectListView1.CellEditUseWholeCell = false;
+            this.objectListView1.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
+            this.objectListView1.CellEditEnterChangesRows = true;
+            this.objectListView1.CellEditTabChangesRows = true;
             this.objectListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName,
             this.colOffset,
             this.colImage});
             this.objectListView1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.objectListView1.FullRowSelect = true;
             this.objectListView1.HighlightBackgroundColor = System.Drawing.Color.Empty;
             this.objectListView1.HighlightForegroundColor = System.Drawing.Color.Empty;
             this.objectListView1.Location = new System.Drawing.Point(0, 1);
@@ -101,12 +104,14 @@ namespace Capslock.WinForms.SpriteViewer
             this.objectListView1.UseCompatibleStateImageBehavior = false;
             this.objectListView1.View = System.Windows.Forms.View.Details;
             // 
-            // ListViewer
+            // ListView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.objectListView1);
-            this.Name = "ListViewer";
+            this.Name = "ListView";
             this.Size = new System.Drawing.Size(235, 356);
             ((System.ComponentModel.ISupportInitialize)(this.objectListView1)).EndInit();
             this.ResumeLayout(false);

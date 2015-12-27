@@ -99,7 +99,7 @@ namespace Capslock.WinForms.SpriteViewer
             *  At least for now, I'm maintaining the List<Image> and will allow both to be used, so the control
             *  can be used for simpler image displays in other areas.
             */
-            this._frameImages = new List<Image>();
+            //this._frameImages = new List<Image>();
             this._frames = new TrulyObservableCollection<IFrame>();
         }
 
@@ -195,6 +195,7 @@ namespace Capslock.WinForms.SpriteViewer
         }
         private void UpdateCurrentFrame()
         {
+            if()
             this._picBoxFrame.Image = this._frameImages?[this._currentFrameIndex] ?? null;
             this._sliderBar.Value = this._currentFrameIndex;
 

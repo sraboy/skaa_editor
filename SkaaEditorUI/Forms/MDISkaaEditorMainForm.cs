@@ -197,8 +197,6 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
         }
         
-
-
         public System.Drawing.Imaging.ColorPalette GetActivePalette()
         {
             return this._toolBoxContainer.ActivePalette;

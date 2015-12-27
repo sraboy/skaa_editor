@@ -91,9 +91,6 @@ namespace SkaaEditorUI.Presenters
         /// <remarks>
         public override SkaaSprite Load(string filePath, params object[] param)
         {
-            //if (this.PalettePresenter?.GameObject == null)
-            //    throw new ArgumentNullException("param", "You must specify a ColorPalette to load a sprite.");
-
             SkaaSprite spr;
 
             using (FileStream fs = File.OpenRead(filePath))
