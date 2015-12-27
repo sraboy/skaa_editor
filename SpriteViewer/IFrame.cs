@@ -28,7 +28,7 @@ using System.Drawing;
 
 namespace Capslock.WinForms.SpriteViewer
 {
-    public interface IFrame
+    public interface IFrame : INotifyPropertyChanged
     {
         long BitmapOffset { get; set; }
         string Name { get; set; }

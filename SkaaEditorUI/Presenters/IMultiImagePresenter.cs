@@ -26,6 +26,7 @@ using System.Drawing.Imaging;
 using Capslock.WinForms.SpriteViewer;
 using SkaaEditorUI.Misc;
 using SkaaGameDataLib;
+using TrulyObservableCollection;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -35,7 +36,7 @@ namespace SkaaEditorUI.Presenters
         { get; set; }
         IFrame ActiveFrame
         { get; set; }
-        TrulyObservableCollection<FramePresenter> Frames
+        TrulyObservableCollection<IFrame> Frames
         { get; set; }
 
         void LoadPalette(string filePath);

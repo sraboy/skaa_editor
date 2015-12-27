@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
+using TrulyObservableCollection;
 
 namespace Capslock.WinForms.SpriteViewer
 {
@@ -88,7 +89,7 @@ namespace Capslock.WinForms.SpriteViewer
         {
             //todo: dynamically generate columns with Name/Aspect set from List<string>
         }
-        internal void SetObjects(List<IFrame> frames)
+        internal void SetObjects(TrulyObservableCollection<IFrame> frames)
         {
             //if(this.objectListView1.Columns.Count > 0)
             this.objectListView1.SetObjects(frames);

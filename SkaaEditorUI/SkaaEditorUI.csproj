@@ -184,9 +184,11 @@
       <DependentUpon>SkaaSAVEditorTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Presenters\SpritePresenter.cs" />
-    <Compile Include="Misc\TrulyObservableCollection.cs" />
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DockPanels\SpriteViewerContainer.resx">
+      <DependentUpon>SpriteViewerContainer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDISkaaEditorMainForm.resx">
       <DependentUpon>MDISkaaEditorMainForm.cs</DependentUpon>
@@ -243,6 +245,10 @@
     <ProjectReference Include="..\SpriteViewer\Capslock.WinForms.SpriteViewer.csproj">
       <Project>{97298eea-3f5c-4639-89ec-47c4fc8e13da}</Project>
       <Name>Capslock.WinForms.SpriteViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TrulyObservableCollection\TrulyObservableCollection.csproj">
+      <Project>{c4f5a035-f92a-4fdc-bc51-c53b2d29b608}</Project>
+      <Name>TrulyObservableCollection</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -83,6 +83,10 @@
       <Project>{4159c8d3-c18d-4bed-8be6-9bad1b0ca4f6}</Project>
       <Name>Cyotek.Windows.Forms.ImageBox</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TrulyObservableCollection\TrulyObservableCollection.csproj">
+      <Project>{c4f5a035-f92a-4fdc-bc51-c53b2d29b608}</Project>
+      <Name>TrulyObservableCollection</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DrawingToolbox.resx">

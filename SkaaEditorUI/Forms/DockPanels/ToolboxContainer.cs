@@ -57,7 +57,6 @@ namespace SkaaEditorUI.Forms.DockPanels
                 this._drawingToolbox.SelectedToolChanged -= value;
             }
         }
-
         public event EventHandler ColorChanged
         {
             add
@@ -69,8 +68,6 @@ namespace SkaaEditorUI.Forms.DockPanels
                 this._colorGridChooser.ColorChanged -= value;
             }
         }
-
-
 
         public ToolboxContainer()
         {

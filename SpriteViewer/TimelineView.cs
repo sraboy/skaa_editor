@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Diagnostics;
+using TrulyObservableCollection;
 
 namespace Capslock.WinForms.SpriteViewer
 {
@@ -63,7 +64,7 @@ namespace Capslock.WinForms.SpriteViewer
             }
         }
         #endregion
-        private List<IFrame> _frames;
+        private TrulyObservableCollection<IFrame> _frames;
         private List<Image> _frameImages;
         private int _currentFrameIndex;
         private int _animationStartPoint;
@@ -99,7 +100,7 @@ namespace Capslock.WinForms.SpriteViewer
             *  can be used for simpler image displays in other areas.
             */
             this._frameImages = new List<Image>();
-            this._frames = new List<IFrame>();
+            this._frames = new TrulyObservableCollection<IFrame>();
         }
 
         #region Internal Methods
@@ -109,7 +110,7 @@ namespace Capslock.WinForms.SpriteViewer
             this._animationTimer.Enabled = false;
             SetupUI();
         }
-        internal void SetFrameList(List<IFrame> frames)
+        internal void SetFrameList(TrulyObservableCollection<IFrame> frames)
         {
             this._frames = frames;
             foreach (IFrame f in frames)
@@ -132,12 +133,12 @@ namespace Capslock.WinForms.SpriteViewer
         }
         internal void UpdateCurrentFrame(IFrame frame)
         {
-            this._currentFrameIndex = this._frames.FindIndex(img => img.Guid == frame.Guid);
+            this._currentFrameIndex = this._frames.IndexOf(this._frames.First(f => f.Guid == frame.Guid));
             this.UpdateCurrentFrame();
         }
         internal void UpdateFrame(IFrame frame)
         {
-            var f = this._frames.Find(img => img.Guid == frame.Guid);
+            var f = this._frames.First(img => img.Guid == frame.Guid);
             f = frame;
         }
         /// <summary>
@@ -159,12 +160,12 @@ namespace Capslock.WinForms.SpriteViewer
         /// <returns>true if the <see cref="IFrame"/> was found and the control was updated, false otherwise</returns>
         internal bool SetCurrentFrameTo(IFrame frame)
         {
-            this._currentFrameIndex = this._frames.FindIndex(f => f == frame);
+            this._currentFrameIndex = this._frames.IndexOf(this._frames.First(f => f.Guid == frame.Guid));
             return SetCurrentFrame();
         }
         internal bool SetCurrentFrameTo(Guid frameGuid)
         {
-            this._currentFrameIndex = this._frames.FindIndex(f => f.Guid == frameGuid);
+            this._currentFrameIndex = this._frames.IndexOf(this._frames.First(f => f.Guid == frameGuid));
 
             return SetCurrentFrame();
         }

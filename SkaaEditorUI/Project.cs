@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using SkaaEditorUI.Misc;
 using SkaaEditorUI.Presenters;
+using TrulyObservableCollection;
 
 namespace SkaaEditorUI
 {

@@ -25,6 +25,9 @@
 using WeifenLuo.WinFormsUI.Docking;
 using Capslock.WinForms.SpriteViewer;
 using SkaaEditorUI.Presenters;
+using System;
+using System.Linq;
+using TrulyObservableCollection;
 
 namespace SkaaEditorUI.Forms.DockPanels
 {
@@ -32,6 +35,33 @@ namespace SkaaEditorUI.Forms.DockPanels
     {
         private SpriteView spriteViewer;
         private MultiImagePresenterBase _activeSprite;
+
+        #region Events
+        private EventHandler _activeSpriteChanged;
+        public event EventHandler ActiveSpriteChanged
+        {
+            add
+            {
+                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
+                {
+                    _activeSpriteChanged += value;
+                }
+            }
+            remove
+            {
+                _activeSpriteChanged -= value;
+            }
+        }
+        private void OnActiveSpriteChanged(EventArgs e)
+        {
+            EventHandler handler = _activeSpriteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        #endregion
 
         public MultiImagePresenterBase ActiveSprite
         {
@@ -43,14 +73,10 @@ namespace SkaaEditorUI.Forms.DockPanels
             set
             {
                 this._activeSprite = value;
+                OnActiveSpriteChanged(EventArgs.Empty);
             }
         }
 
-        public SpriteViewerContainer(MultiImagePresenterBase spr)
-        {
-            this.ActiveSprite = spr;
-            InitializeComponent();
-        }
         public SpriteViewerContainer()
         {
             InitializeComponent();
@@ -60,6 +86,13 @@ namespace SkaaEditorUI.Forms.DockPanels
         //{
         //    var f = this.ActiveSprite.Frames.
         //}
+
+        public void SetSprite(MultiImagePresenterBase spr, int activeFrameIndex = 0)
+        {
+            this.ActiveSprite = spr;
+            this.ActiveSprite?.SetActiveFrame(activeFrameIndex);
+            this.spriteViewer.SetFrameList(this.ActiveSprite.Frames);
+        }
 
         private void InitializeComponent()
         {
@@ -74,6 +107,7 @@ namespace SkaaEditorUI.Forms.DockPanels
             this.spriteViewer.Location = new System.Drawing.Point(1, 0);
             this.spriteViewer.Name = "spriteViewer1";
             this.spriteViewer.Size = new System.Drawing.Size(316, 830);
+            this.spriteViewer.MinimumSize = new System.Drawing.Size(316, 830);
             this.spriteViewer.TabIndex = 20;
             // 
             // SpriteViewerContainer

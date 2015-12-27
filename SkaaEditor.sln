@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUI", "SkaaEditorUI\SkaaEditorUI.csproj", "{35FE87C7-BA8E-4CB1-9059-D21D91063381}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUnitTester", "SkaaEditorUnitTester\SkaaEditorUnitTester.csproj", "{A00CB25F-5DF6-4430-B2A3-4C871DD5DF4D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capslock.WinForms.SpriteViewer", "SpriteViewer\Capslock.WinForms.SpriteViewer.csproj", "{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrulyObservableCollection", "TrulyObservableCollection\TrulyObservableCollection.csproj", "{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -298,6 +300,36 @@ Global
 		{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}.Test|x64.Build.0 = Release|Any CPU
 		{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}.Test|x86.ActiveCfg = Release|Any CPU
 		{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}.Test|x86.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|ARM.Build.0 = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|x64.Build.0 = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Debug|x86.Build.0 = Debug|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|ARM.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|ARM.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|x64.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|x64.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|x86.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Release|x86.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|Any CPU.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|Any CPU.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|ARM.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|ARM.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|Mixed Platforms.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|x64.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|x64.Build.0 = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|x86.ActiveCfg = Release|Any CPU
+		{C4F5A035-F92A-4FDC-BC51-C53B2D29B608}.Test|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

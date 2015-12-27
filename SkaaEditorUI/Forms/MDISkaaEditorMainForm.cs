@@ -102,20 +102,9 @@ namespace SkaaEditorUI.Forms
             ImageEditorContainer iec = new ImageEditorContainer();
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
-            //iec.ImageEdited += ImageEditorContainer_ImageEdited;
         }
-
-        //private void ImageEditorContainer_ImageEdited(object sender, EventArgs e)
-        //{
-        //    var iec = (ImageEditorContainer)sender;
-
-        //    if (iec != (ImageEditorContainer)this._dockPanel.ActiveDocument)
-        //        throw new Exception("Image updated was not ActiveDocument!");
-
-
-        //    this._spriteViewerContainer.UpdateFrame()
-        //}
-
+        
+        #region Click Events
         private void ToolboxContainer_SelectedToolChanged(object sender, EventArgs e)
         {
             var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
@@ -145,11 +134,22 @@ namespace SkaaEditorUI.Forms
         {
             OpenSprite<ResIdxMultiBmpPresenter>(sender, e);
         }
+        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
+            _toolBoxContainer.SetPalette(pal.GameObject);
+        }
+        private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(true);
+        }
+        #endregion
 
         private void SetActiveSprite(MultiImagePresenterBase spr)
         {
             var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;// ?? new ImageEditorContainer();
             iec.SetSprite(spr);
+            this._spriteViewerContainer.SetSprite(spr);
         }
 
         private void OpenSprite<T>(object sender, EventArgs e) where T : MultiImagePresenterBase, new()
@@ -178,13 +178,7 @@ namespace SkaaEditorUI.Forms
                 }
             }
         }
-
-        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
-            _toolBoxContainer.SetPalette(pal.GameObject);
-        }
-
+        
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
             //get the palette for the currently-loaded sprite, if any
@@ -203,11 +197,7 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
         }
         
-        private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(true);
-            
-        }
+
 
         public System.Drawing.Imaging.ColorPalette GetActivePalette()
         {

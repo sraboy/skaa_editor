@@ -28,6 +28,7 @@ using System.IO;
 using Capslock.WinForms.SpriteViewer;
 using SkaaEditorUI.Misc;
 using SkaaGameDataLib;
+using TrulyObservableCollection;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -35,7 +36,7 @@ namespace SkaaEditorUI.Presenters
     {
         private ColorPalettePresenter _palettePresenter = new ColorPalettePresenter();
         private IFrame _activeFrame;
-        private TrulyObservableCollection<FramePresenter> _frames = new TrulyObservableCollection<FramePresenter>();
+        private TrulyObservableCollection<IFrame> _frames = new TrulyObservableCollection<IFrame>();
 
         public ColorPalettePresenter PalettePresenter
         {
@@ -60,7 +61,7 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._activeFrame, value, () => OnPropertyChanged(GetDesignModeValue(() => this.ActiveFrame)));
             }
         }
-        public TrulyObservableCollection<FramePresenter> Frames
+        public TrulyObservableCollection<IFrame> Frames
         {
             get
             {

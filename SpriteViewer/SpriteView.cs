@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using TrulyObservableCollection;
 
 namespace Capslock.WinForms.SpriteViewer
 {
@@ -75,12 +76,19 @@ namespace Capslock.WinForms.SpriteViewer
 
         #region Public Methods
         public void SetImageGetter(ImageGetterDelegate imageGetter) => this.listViewer1.SetImageGetter(imageGetter);
-        public void SetFrameList(List<IFrame> frames)
+        //public void SetFrameList(List<IFrame> frames)
+        //{
+        //    this.listViewer1.SetObjects(frames);
+        //    this.timeline1.SetFrameList(frames);
+        //    this._activeFrameGuid = frames[0].Guid;
+        //}
+        public void SetFrameList(TrulyObservableCollection<IFrame> frames)
         {
             this.listViewer1.SetObjects(frames);
             this.timeline1.SetFrameList(frames);
             this._activeFrameGuid = frames[0].Guid;
         }
+        
         public void UpdateFrame(IFrame f)
         {
             this.timeline1.UpdateFrame(f);

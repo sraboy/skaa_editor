@@ -36,6 +36,7 @@ using Cyotek.Windows.Forms;
 using Capslock.WinForms.ImageEditor;
 using System.Data;
 using SkaaEditorUI.Presenters;
+using Capslock.WinForms.SpriteViewer;
 
 namespace SkaaEditorUI.Forms
 {
@@ -656,7 +657,7 @@ namespace SkaaEditorUI.Forms
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
             //this.spriteViewer1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetIFrames());
-            this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
+            this.ActiveProject.ActiveFrame = (FramePresenter)this.ActiveProject?.ActiveSprite?.Frames[0];
 
             //since a sprite has been un/loaded
             SetupUI();
