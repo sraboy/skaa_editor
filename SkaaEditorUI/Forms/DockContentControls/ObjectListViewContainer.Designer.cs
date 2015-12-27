@@ -1,4 +1,4 @@
-﻿namespace SkaaEditorUI.Forms
+﻿namespace SkaaEditorUI.Forms.DockContentControls
 {
     partial class ObjectListViewContainer
     {

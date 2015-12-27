@@ -29,7 +29,7 @@ using System;
 using System.Linq;
 using System.Drawing;
 
-namespace SkaaEditorUI.Forms.DockPanels
+namespace SkaaEditorUI.Forms.DockContentControls
 {
     public partial class ImageEditorContainer : DockContent
     {

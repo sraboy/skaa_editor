@@ -31,7 +31,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using Cyotek.Windows.Forms;
 using System;
 
-namespace SkaaEditorUI.Forms.DockPanels
+namespace SkaaEditorUI.Forms.DockContentControls
 {
     public partial class ToolboxContainer : DockContent
     {

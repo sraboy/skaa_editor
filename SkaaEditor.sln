@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUI", "SkaaEditorUI\SkaaEditorUI.csproj", "{35FE87C7-BA8E-4CB1-9059-D21D91063381}"
 EndProject
@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ImageB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capslock.WinForms.ImageEditor", "Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj", "{89F261AB-A077-4198-9640-24D6728F0451}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorUnitTester", "SkaaEditorUnitTester\SkaaEditorUnitTester.csproj", "{A00CB25F-5DF6-4430-B2A3-4C871DD5DF4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorTests", "SkaaEditorTests\SkaaEditorTests.csproj", "{A00CB25F-5DF6-4430-B2A3-4C871DD5DF4D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capslock.WinForms.SpriteViewer", "SpriteViewer\Capslock.WinForms.SpriteViewer.csproj", "{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}"
 EndProject

@@ -22,37 +22,54 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SkaaEditorUI;
+using SkaaEditorUI.Presenters;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUnitTester
 {
     [TestClass]
     public class ProjectTester
     {
-        string ApplicationDirectory, DataDirectory, TempDirectory, ProjectsDirectory;
+        string ApplicationDirectory, DataDirectory, TempDirectory, TestProjectDirectory;
 
-        //[STAThread]
-        //static void Main()
-        //{
-        //    ProjectTester pj = new ProjectTester();
-        //    pj.MakeNewProject();
-        //}
+        IProjectManager ProjectManager = new ProjectManager();
+
+        [STAThread]
+        static void Main()
+        {
+            ProjectTester pj = new ProjectTester();
+        }
 
         public ProjectTester()
         {
             this.ApplicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + '\\';
-            //Trace.AutoFlush = true;
-            //Logger.TraceInformation.TraceEvent(TraceEventType.Start, 0, $"Log started: {string.Concat(DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString())}");
 
             this.DataDirectory = ApplicationDirectory + "data\\";
             this.TempDirectory = ApplicationDirectory + "temp\\";
-            this.ProjectsDirectory = ApplicationDirectory + "projects\\";
+            this.TestProjectDirectory = ApplicationDirectory + "projects\\_test\\basic";
 
-            Debug.Assert(Directory.CreateDirectory(this.ProjectsDirectory) != null, $"Failed to create ProjectsDirectory: {this.ProjectsDirectory}");
+            Debug.Assert(Directory.CreateDirectory(this.TestProjectDirectory) != null, $"Failed to create ProjectsDirectory: {this.TestProjectDirectory}");
             Debug.Assert(Directory.CreateDirectory(this.TempDirectory) != null, $"Failed to create TempDirectory: {this.TempDirectory}");
+
+            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
+        }
+
+        [TestMethod]
+        public void OpenSpriteSpr()
+        {
+            //IMultiImagePresenter<SkaaSprite> spr = ProjectManager.Open<SpritePresenter, SkaaSprite>(null);
+        }
+
+        [TestMethod]
+        public void OpenResIdxMultiBmp()
+        {
+
         }
 
         //private oldProject GetNewProject(string palettePath = null)
