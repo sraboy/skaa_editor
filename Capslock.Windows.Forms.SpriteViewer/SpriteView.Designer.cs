@@ -24,7 +24,7 @@
 ***************************************************************************/
 
 using System.Windows.Forms;
-namespace Capslock.WinForms.SpriteViewer
+namespace Capslock.Windows.Forms.SpriteViewer
 {
     partial class SpriteView
     {
@@ -54,8 +54,8 @@ namespace Capslock.WinForms.SpriteViewer
         /// </summary>
         private void InitializeComponent()
         {
-            this.listViewer1 = new Capslock.WinForms.SpriteViewer.ListView();
-            this.timeline1 = new Capslock.WinForms.SpriteViewer.TimelineView();
+            this.listViewer1 = new Capslock.Windows.Forms.SpriteViewer.ListView();
+            this.timeline1 = new Capslock.Windows.Forms.SpriteViewer.TimelineView();
             this.SuspendLayout();
             // 
             // listViewer1

@@ -7,8 +7,8 @@
     <ProjectGuid>{89F261AB-A077-4198-9640-24D6728F0451}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Capslock.WinForms.ImageEditor</RootNamespace>
-    <AssemblyName>Capslock.WinForms.ImageEditor</AssemblyName>
+    <RootNamespace>Capslock.Windows.Forms.ImageEditor</RootNamespace>
+    <AssemblyName>Capslock.Windows.Forms.ImageEditor</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -99,7 +99,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Capslock.WinForms.ImageEditor.licenseheader" />
+    <None Include="Capslock.Windows.Forms.ImageEditor.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\ToolbarIcons\PaintBucketIcon.png" />

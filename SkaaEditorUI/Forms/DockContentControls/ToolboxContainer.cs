@@ -25,7 +25,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Capslock.WinForms.ImageEditor;
+using Capslock.Windows.Forms.ImageEditor;
 using SkaaEditorControls;
 using WeifenLuo.WinFormsUI.Docking;
 using Cyotek.Windows.Forms;

@@ -30,7 +30,7 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using TrulyObservableCollection;
 
-namespace Capslock.WinForms.SpriteViewer
+namespace Capslock.Windows.Forms.SpriteViewer
 {
     public partial class ListView : UserControl
     {

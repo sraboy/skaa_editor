@@ -23,14 +23,14 @@
 ***************************************************************************/
 #endregion
 using System.Drawing.Imaging;
-using Capslock.WinForms.SpriteViewer;
+using Capslock.Windows.Forms.SpriteViewer;
 using SkaaEditorUI.Misc;
 using SkaaGameDataLib;
 using TrulyObservableCollection;
 
 namespace SkaaEditorUI.Presenters
 {
-    public interface IMultiImagePresenter<T> : IPresenterBase<T> where T : SkaaSprite
+    public interface IMultiImagePresenter//<T> : IPresenterBase<T> where T : SkaaSprite
     {
         ColorPalettePresenter PalettePresenter
         { get; set; }

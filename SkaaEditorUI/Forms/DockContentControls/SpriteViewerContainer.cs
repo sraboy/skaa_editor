@@ -23,7 +23,7 @@
 ***************************************************************************/
 #endregion
 using WeifenLuo.WinFormsUI.Docking;
-using Capslock.WinForms.SpriteViewer;
+using Capslock.Windows.Forms.SpriteViewer;
 using SkaaEditorUI.Presenters;
 using System;
 using System.Linq;
@@ -99,7 +99,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
 
         private void InitializeComponent()
         {
-            this.spriteViewer = new Capslock.WinForms.SpriteViewer.SpriteView();
+            this.spriteViewer = new Capslock.Windows.Forms.SpriteViewer.SpriteView();
             this.SuspendLayout();
             // 
             // spriteViewer

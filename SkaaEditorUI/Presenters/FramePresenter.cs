@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Capslock.WinForms.SpriteViewer;
+using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters

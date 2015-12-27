@@ -32,7 +32,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using TrulyObservableCollection;
 
-namespace Capslock.WinForms.SpriteViewer
+namespace Capslock.Windows.Forms.SpriteViewer
 {
     public partial class SpriteView : UserControl
     {

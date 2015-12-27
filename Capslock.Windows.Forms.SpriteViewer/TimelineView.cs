@@ -30,7 +30,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using TrulyObservableCollection;
 
-namespace Capslock.WinForms.SpriteViewer
+namespace Capslock.Windows.Forms.SpriteViewer
 {
     public partial class TimelineView : UserControl
     {
@@ -113,6 +113,9 @@ namespace Capslock.WinForms.SpriteViewer
         internal void SetFrameList(TrulyObservableCollection<IFrame> frames)
         {
             this._frames = frames;
+
+            this._frameImages = this._frameImages ?? new List<Image>();
+
             foreach (IFrame f in frames)
                 this._frameImages.Add(f.Bitmap);
 
@@ -195,7 +198,7 @@ namespace Capslock.WinForms.SpriteViewer
         }
         private void UpdateCurrentFrame()
         {
-            if()
+            //if()
             this._picBoxFrame.Image = this._frameImages?[this._currentFrameIndex] ?? null;
             this._sliderBar.Value = this._currentFrameIndex;
 

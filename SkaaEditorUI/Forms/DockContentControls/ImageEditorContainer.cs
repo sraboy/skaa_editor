@@ -23,7 +23,7 @@
 ***************************************************************************/
 #endregion
 using WeifenLuo.WinFormsUI.Docking;
-using Capslock.WinForms.ImageEditor;
+using Capslock.Windows.Forms.ImageEditor;
 using SkaaEditorUI.Presenters;
 using System;
 using System.Linq;
@@ -140,7 +140,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
 
         private void InitializeComponent()
         {
-            this._imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
+            this._imageEditorBox = new Capslock.Windows.Forms.ImageEditor.ImageEditorBox();
             this.SuspendLayout();
             // 
             // imageEditorBox

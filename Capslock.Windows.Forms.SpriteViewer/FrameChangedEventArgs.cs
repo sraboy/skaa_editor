@@ -3,7 +3,6 @@
 * The MIT License (MIT)
 *
 * Copyright © 2015-2016 Steven Lavoie
-* Copyright © 2013-2015 Cyotek Ltd.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of
 * this software and associated documentation files (the "Software"), to deal in
@@ -24,19 +23,47 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Capslock.WinForms.ImageEditor
+namespace Capslock.Windows.Forms.SpriteViewer
 {
-    public enum DrawingTools
+    public class FrameChangedEventArgs : EventArgs
     {
-        None,
-        Pan,
-        Pencil,
-        Line,
-        PaintBucket
-    };
+        private Guid _frameGuid;
+        //private Frame _selectedFrame;
+
+        //public Frame SelectedFrame
+        //{
+        //    get
+        //    {
+        //        return _selectedFrame;
+        //    }
+
+        //    private set
+        //    {
+        //        this._selectedFrame = value;
+        //    }
+        //}
+        public Guid FrameGuid
+        {
+            get
+            {
+                return _frameGuid;
+            }
+
+            set
+            {
+                this._frameGuid = value;
+            }
+        }
+
+        //public FrameChangedEventArgs(Frame SelectedFrame)
+        //{
+        //    this.SelectedFrame = SelectedFrame;
+        //    this.FrameGuid = SelectedFrame.Guid;
+        //}
+        public FrameChangedEventArgs(Guid SelectedFrameGuid)
+        {
+            this.FrameGuid = SelectedFrameGuid;
+        }
+    }
 }

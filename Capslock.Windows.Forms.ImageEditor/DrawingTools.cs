@@ -24,28 +24,19 @@
 ***************************************************************************/
 #endregion
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Capslock.WinForms.ImageEditor
+namespace Capslock.Windows.Forms.ImageEditor
 {
-    public class DrawingToolSelectedEventArgs : EventArgs
+    public enum DrawingTools
     {
-        private DrawingTools _selectedTool;
-        public DrawingTools SelectedTool
-        {
-            get
-            {
-                return this._selectedTool;
-            }
-            private set
-            {
-                if (this._selectedTool != value)
-                    this._selectedTool = value;
-            }
-        }
-
-        public DrawingToolSelectedEventArgs(DrawingTools selectedTool)
-        {
-            this.SelectedTool = selectedTool;
-        }
-    }
+        None,
+        Pan,
+        Pencil,
+        Line,
+        PaintBucket
+    };
 }

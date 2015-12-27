@@ -30,11 +30,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Capslock.WinForms.ImageEditor")]
+[assembly: AssemblyTitle("Capslock.Windows.Forms.ImageEditor")]
 [assembly: AssemblyDescription("An editable implementation of Cyotek's ImageBox with supporting classes.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Capslock.WinForms.ImageEditor")]
+[assembly: AssemblyProduct("Capslock.Windows.Forms.ImageEditor")]
 [assembly: AssemblyCopyright("Copyright © 2015 Steven Lavoie")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

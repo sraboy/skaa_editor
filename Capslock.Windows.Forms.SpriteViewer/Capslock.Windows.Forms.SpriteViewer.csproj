@@ -7,8 +7,8 @@
     <ProjectGuid>{97298EEA-3F5C-4639-89EC-47C4FC8E13DA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Capslock.WinForms.SpriteViewer</RootNamespace>
-    <AssemblyName>SpriteViewer</AssemblyName>
+    <RootNamespace>Capslock.Windows.Forms.SpriteViewer</RootNamespace>
+    <AssemblyName>Capslock.Windows.Forms.SpriteViewer</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -84,7 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Capslock.WinForms.SpriteViewer.licenseheader" />
+    <None Include="Capslock.Windows.Forms.SpriteViewer.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TrulyObservableCollection\TrulyObservableCollection.csproj">

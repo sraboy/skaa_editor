@@ -27,7 +27,7 @@ using System;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Capslock.WinForms.ImageEditor
+namespace Capslock.Windows.Forms.ImageEditor
 {
     public partial class DrawingToolbox : UserControl
     {

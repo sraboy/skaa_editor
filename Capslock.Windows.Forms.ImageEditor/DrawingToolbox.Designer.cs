@@ -1,4 +1,4 @@
-﻿namespace Capslock.WinForms.ImageEditor
+﻿namespace Capslock.Windows.Forms.ImageEditor
 {
     partial class DrawingToolbox
     {
@@ -49,7 +49,7 @@
             // btnPaintBucketTool
             // 
             this.btnPaintBucketTool.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnPaintBucketTool.Image = global::Capslock.WinForms.ImageEditor.Properties.Resources.PaintBucketIcon;
+            this.btnPaintBucketTool.Image = global::Capslock.Windows.Forms.ImageEditor.Properties.Resources.PaintBucketIcon;
             this.btnPaintBucketTool.Location = new System.Drawing.Point(55, 3);
             this.btnPaintBucketTool.Name = "btnPaintBucketTool";
             this.btnPaintBucketTool.Size = new System.Drawing.Size(25, 25);
@@ -60,7 +60,7 @@
             // btnPencilTool
             // 
             this.btnPencilTool.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnPencilTool.Image = global::Capslock.WinForms.ImageEditor.Properties.Resources.PencilToolIcon;
+            this.btnPencilTool.Image = global::Capslock.Windows.Forms.ImageEditor.Properties.Resources.PencilToolIcon;
             this.btnPencilTool.Location = new System.Drawing.Point(29, 3);
             this.btnPencilTool.Name = "btnPencilTool";
             this.btnPencilTool.Size = new System.Drawing.Size(25, 25);
@@ -71,7 +71,7 @@
             // btnPanTool
             // 
             this.btnPanTool.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnPanTool.Image = global::Capslock.WinForms.ImageEditor.Properties.Resources.PanToolIcon;
+            this.btnPanTool.Image = global::Capslock.Windows.Forms.ImageEditor.Properties.Resources.PanToolIcon;
             this.btnPanTool.Location = new System.Drawing.Point(3, 3);
             this.btnPanTool.Name = "btnPanTool";
             this.btnPanTool.Size = new System.Drawing.Size(25, 25);

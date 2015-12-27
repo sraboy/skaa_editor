@@ -35,21 +35,21 @@ namespace SkaaEditorUI
     /// <summary>
     /// A singleton class that will manage a <see cref="Project"/>'s file operations
     /// </summary>
-    public sealed class SProjectManager
+    public class ProjectManager : IProjectManager
     {
-        private static readonly TraceSource Logger = new TraceSource($"{typeof(SProjectManager)}", SourceLevels.All);
+        private static readonly TraceSource Logger = new TraceSource($"{typeof(ProjectManager)}", SourceLevels.All);
 
-        #region Lazy Singleton
-        private static readonly Lazy<SProjectManager> lazyPm = new Lazy<SProjectManager>(() => new SProjectManager());
-        public static SProjectManager ProjectManager { get { return lazyPm.Value; } }
-        private SProjectManager() { this._tempFiles.Add(this.TempDirectory); }
-        #endregion
+        //#region Lazy Singleton
+        //private static readonly Lazy<SProjectManager> lazyPm = new Lazy<SProjectManager>(() => new SProjectManager());
+        //public static SProjectManager ProjectManager { get { return lazyPm.Value; } }
+        public ProjectManager() { this._tempFiles.Add(this.TempDirectory); }
+        //#endregion
 
         #region Private Members
         private Project _activeProject = new Project();
         private MDISkaaEditorMainForm _mainForm;
 
-        private bool _hasUnsavedChanges = false;
+        private bool _hasUnsavedChanges = false; //todo: track image changes so we know if items are unsaved
         private bool _isInTempDirectory = false;
 
         private List<string> _tempFiles = new List<string>();
@@ -129,7 +129,9 @@ namespace SkaaEditorUI
         /// </summary>
         private static bool IsFileFormatUnknown(FileFormats format)
         {
-            if (format == FileFormats.Unknown || format == FileFormats.ResUnknown || format == FileFormats.ResIdxUnknown)
+            if (format == FileFormats.Unknown || 
+                format == FileFormats.ResUnknown || 
+                format == FileFormats.ResIdxUnknown)
                 return true;
             else
                 return false;
@@ -137,6 +139,9 @@ namespace SkaaEditorUI
         #endregion
 
         #region Public Methods
+
+        //////////////////////////////// Setup/Teardown/Utilities ////////////////////////////////
+
         public void SetMainForm(MDISkaaEditorMainForm form)
         {
             this._mainForm = form;
@@ -153,6 +158,13 @@ namespace SkaaEditorUI
                 }
             }
         }
+        public static FileFormats CheckFileType(string filePath)
+        {
+            return FileTypeChecks.CheckFileType(filePath);
+        }
+
+        /////////////////////////////////// Project Management ///////////////////////////////////
+
         /// <summary>
         /// Creates a new <see cref="Project"/> in <see cref="TempDirectory"/> 
         /// </summary>
@@ -174,7 +186,7 @@ namespace SkaaEditorUI
         }
         public bool SaveProject(Project project, string filePath)
         {
-            SaveSprites(/*FileFormats.SpriteSpr*/);
+            //SaveSprites(/*FileFormats.SpriteSpr*/);
 
             using (FileStream fs = new FileStream(this.SaveDirectory, FileMode.Create))
             {
@@ -186,10 +198,6 @@ namespace SkaaEditorUI
                 Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
             return true;
         }
-        public void SaveSprites(/*FileFormats format*/)
-        {
-            //call Save on each MultiImagePresenter
-        }
         /// <summary>
         /// Closes the <see cref="ActiveProject"/>
         /// </summary>
@@ -197,6 +205,9 @@ namespace SkaaEditorUI
         {
             this.ActiveProject = null;
         }
+
+        /////////////////////////////////// Presenter Management ///////////////////////////////////
+
         /// <summary>
         /// Calls the <see cref="IPresenterBase{T}.Open{T1}(object)"/> method of the specified type
         /// </summary>
@@ -205,6 +216,12 @@ namespace SkaaEditorUI
         /// <returns></returns>
         public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
+            //todo: test with FramePresenter
+
+            //This method signature is really verbose, which is a pain for the caller, but it allows this one single method
+            //to open SpritePresenters, ResIdxMultiBmpPresenters and GameSetPresenters. T1 is necessary to specify either
+            //SkaaSprite or DataSet
+
             //param[0] is FileFormat
             //param[1] is bool merge for GameSetPresenter
             //param[2] is GameSet for SpritePresenter
@@ -224,10 +241,6 @@ namespace SkaaEditorUI
             pres.Save<T>(null);
         }
 
-        public static FileFormats CheckFileType(string filePath)
-        {
-            return FileTypeChecks.CheckFileType(filePath);
-        }
         #endregion
 
         #region Event Handlers

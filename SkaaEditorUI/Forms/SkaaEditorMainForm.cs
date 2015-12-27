@@ -33,10 +33,10 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Cyotek.Windows.Forms;
-using Capslock.WinForms.ImageEditor;
+using Capslock.Windows.Forms.ImageEditor;
 using System.Data;
 using SkaaEditorUI.Presenters;
-using Capslock.WinForms.SpriteViewer;
+using SkaaEditorUI.Forms.DockContentControls;
 
 namespace SkaaEditorUI.Forms
 {

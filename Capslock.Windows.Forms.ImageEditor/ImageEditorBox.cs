@@ -39,7 +39,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing.Drawing2D;
 
-namespace Capslock.WinForms.ImageEditor
+namespace Capslock.Windows.Forms.ImageEditor
 {
     [DefaultProperty("Image")]
     [ToolboxBitmap(typeof(ImageBox), "ImageBox.bmp")]

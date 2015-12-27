@@ -25,14 +25,14 @@ using System.Drawing.Imaging;
 ***************************************************************************/
 #endregion
 using System.IO;
-using Capslock.WinForms.SpriteViewer;
+using Capslock.Windows.Forms.SpriteViewer;
 using SkaaEditorUI.Misc;
 using SkaaGameDataLib;
 using TrulyObservableCollection;
 
 namespace SkaaEditorUI.Presenters
 {
-    public abstract class MultiImagePresenterBase : PresenterBase<SkaaSprite>, IMultiImagePresenter<SkaaSprite>
+    public abstract class MultiImagePresenterBase : PresenterBase<SkaaSprite>, IMultiImagePresenter//<SkaaSprite>
     {
         private ColorPalettePresenter _palettePresenter = new ColorPalettePresenter();
         private IFrame _activeFrame;

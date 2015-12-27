@@ -1,4 +1,4 @@
-﻿namespace Capslock.WinForms.ImageEditor
+﻿namespace Capslock.Windows.Forms.ImageEditor
 {
     public partial class ImageEditorBox
     {

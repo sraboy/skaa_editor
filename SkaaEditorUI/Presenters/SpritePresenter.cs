@@ -23,7 +23,7 @@
 ***************************************************************************/
 #endregion
 using SkaaGameDataLib;
-using Capslock.WinForms.SpriteViewer;
+using Capslock.Windows.Forms.SpriteViewer;
 using System.Drawing.Imaging;
 using System;
 using System.IO;

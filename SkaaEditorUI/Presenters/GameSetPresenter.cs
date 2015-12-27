@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows.Forms;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -49,15 +48,17 @@ namespace SkaaEditorUI.Presenters
         /// <returns>A new <see cref="DataSet"/> containing all the tables and records of the specified file</returns>
         public override DataSet Load(string filePath, params object[] loadParam)
         {
-            bool merge = (bool)(loadParam[1] as object[])[0];
+            bool merge = (bool)loadParam[1];
 
             DataSet ds = new DataSet();
 
             if (ds.OpenStandardGameSet(filePath) == false)
                 return null;
 
+            this.GameObject = this.GameObject ?? new DataSet();
+
             if (merge)
-                this.GameObject?.Merge(ds);
+                this.GameObject.Merge(ds);
             else
                 this.GameObject = ds;
 

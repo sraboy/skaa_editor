@@ -26,7 +26,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 
-namespace Capslock.WinForms.SpriteViewer
+namespace Capslock.Windows.Forms.SpriteViewer
 {
     public interface IFrame : INotifyPropertyChanged
     {
