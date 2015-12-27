@@ -83,7 +83,7 @@ namespace Capslock.WinForms.SpriteViewer
         }
         public void UpdateFrame(IFrame f)
         {
-            //this.timeline1.UpdateCurrentFrame()
+            this.timeline1.UpdateFrame(f);
         }
         #endregion
 

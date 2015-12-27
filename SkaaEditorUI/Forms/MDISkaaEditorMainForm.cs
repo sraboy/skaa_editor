@@ -106,6 +106,17 @@ namespace SkaaEditorUI.Forms
             ImageEditorContainer iec = new ImageEditorContainer();
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
+            iec.ImageEdited += Iec_ImageEdited;
+        }
+
+        private void Iec_ImageEdited(object sender, EventArgs e)
+        {
+            var iec = (ImageEditorContainer)sender;
+
+            if (iec != (ImageEditorContainer)this._dockPanel.ActiveDocument)
+                throw new Exception("Image updated was not ActiveDocument!");
+
+            this._spriteViewerContainer
         }
 
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)

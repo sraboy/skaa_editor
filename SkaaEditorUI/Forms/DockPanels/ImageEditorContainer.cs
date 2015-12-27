@@ -36,7 +36,6 @@ namespace SkaaEditorUI.Forms.DockPanels
         private MultiImagePresenterBase _activeSprite;
 
         #region Events
-        [NonSerialized]
         private EventHandler _activeSpriteChanged;
         public event EventHandler ActiveSpriteChanged
         {
@@ -55,6 +54,31 @@ namespace SkaaEditorUI.Forms.DockPanels
         private void OnActiveSpriteChanged(EventArgs e)
         {
             EventHandler handler = _activeSpriteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private EventHandler _imageEdited;
+        public event EventHandler ImageEdited
+        {
+            add
+            {
+                if (_imageEdited == null || !_imageEdited.GetInvocationList().Contains(value))
+                {
+                    _imageEdited += value;
+                }
+            }
+            remove
+            {
+                _imageEdited -= value;
+            }
+        }
+        private void OnImagedEdited(EventArgs e)
+        {
+            EventHandler handler = _imageEdited;
 
             if (handler != null)
             {
@@ -87,7 +111,19 @@ namespace SkaaEditorUI.Forms.DockPanels
             this.ActiveSprite = spr;
             this.ActiveSprite?.SetActiveFrame(activeFrameIndex);
             this._imageEditorBox.Image = spr?.ActiveFrame?.Bitmap;
+            this._imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
         }
+
+        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
+        {
+            if (this._imageEditorBox.SelectedTool != DrawingTools.Pan &&
+                this._imageEditorBox.SelectedTool != DrawingTools.None)
+            {
+                OnImagedEdited(EventArgs.Empty);
+            }
+        }
+
+
 
         private void InitializeComponent()
         {

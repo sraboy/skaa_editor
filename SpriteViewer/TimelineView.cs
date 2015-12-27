@@ -130,11 +130,16 @@ namespace Capslock.WinForms.SpriteViewer
         {
             return this._currentFrameIndex;
         }
-        //internal void UpdateCurrentFrame(Image frame)
-        //{
-        //    this._currentFrameIndex = this._frameImages.FindIndex(img => img == frame);
-        //    this.UpdateCurrentFrame();
-        //}
+        internal void UpdateCurrentFrame(IFrame frame)
+        {
+            this._currentFrameIndex = this._frames.FindIndex(img => img.Guid == frame.Guid);
+            this.UpdateCurrentFrame();
+        }
+        internal void UpdateFrame(IFrame frame)
+        {
+            var f = this._frames.Find(img => img.Guid == frame.Guid);
+            f = frame;
+        }
         /// <summary>
         /// Updates the control to display the specified image, if it exists in the <see cref="List"/> 
         /// passed to <see cref="SetFrameList(List{Image})"/>

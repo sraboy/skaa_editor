@@ -56,6 +56,10 @@ namespace SkaaEditorUI.Forms.DockPanels
             InitializeComponent();
         }
 
+        public void UpdateFrame(IFrame frame)
+        {
+            var f = this.ActiveSprite.Frames.
+        }
 
         private void InitializeComponent()
         {
