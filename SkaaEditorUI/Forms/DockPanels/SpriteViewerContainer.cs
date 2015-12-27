@@ -31,9 +31,9 @@ namespace SkaaEditorUI.Forms.DockPanels
     public partial class SpriteViewerContainer : DockContent
     {
         private SpriteView spriteViewer;
-        private SpritePresenter _activeSprite;
+        private MultiImagePresenterBase _activeSprite;
 
-        public SpritePresenter ActiveSprite
+        public MultiImagePresenterBase ActiveSprite
         {
             get
             {
@@ -46,7 +46,7 @@ namespace SkaaEditorUI.Forms.DockPanels
             }
         }
 
-        public SpriteViewerContainer(SpritePresenter spr)
+        public SpriteViewerContainer(MultiImagePresenterBase spr)
         {
             this.ActiveSprite = spr;
             InitializeComponent();
@@ -56,10 +56,10 @@ namespace SkaaEditorUI.Forms.DockPanels
             InitializeComponent();
         }
 
-        public void UpdateFrame(IFrame frame)
-        {
-            var f = this.ActiveSprite.Frames.
-        }
+        //public void UpdateFrame(IFrame frame)
+        //{
+        //    var f = this.ActiveSprite.Frames.
+        //}
 
         private void InitializeComponent()
         {

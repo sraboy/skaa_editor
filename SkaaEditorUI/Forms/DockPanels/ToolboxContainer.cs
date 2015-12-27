@@ -29,6 +29,7 @@ using Capslock.WinForms.ImageEditor;
 using SkaaEditorControls;
 using WeifenLuo.WinFormsUI.Docking;
 using Cyotek.Windows.Forms;
+using System;
 
 namespace SkaaEditorUI.Forms.DockPanels
 {
@@ -45,6 +46,31 @@ namespace SkaaEditorUI.Forms.DockPanels
                 return this._activePalette;
             }
         }
+        public event EventHandler SelectedToolChanged
+        {
+            add
+            {
+                this._drawingToolbox.SelectedToolChanged += value;
+            }
+            remove
+            {
+                this._drawingToolbox.SelectedToolChanged -= value;
+            }
+        }
+
+        public event EventHandler ColorChanged
+        {
+            add
+            {
+                this._colorGridChooser.ColorChanged += value;
+            }
+            remove
+            {
+                this._colorGridChooser.ColorChanged -= value;
+            }
+        }
+
+
 
         public ToolboxContainer()
         {

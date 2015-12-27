@@ -23,16 +23,11 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Cyotek.Windows.Forms;
 using SkaaEditorUI.Forms.DockPanels;
 using SkaaEditorUI.Presenters;
 using SkaaGameDataLib;
@@ -43,10 +38,6 @@ namespace SkaaEditorUI.Forms
 {
     public partial class MDISkaaEditorMainForm : Form
     {
-        // We should never instantiate these. They're only set based on the ProjectManager's ActiveSprite
-        private static MultiImagePresenterBase _activeSprite;
-        private static ColorPalettePresenter _activePalette;
-
         private ToolboxContainer _toolBoxContainer;
         private SpriteViewerContainer _spriteViewerContainer;
 
@@ -55,6 +46,9 @@ namespace SkaaEditorUI.Forms
             InitializeComponent();
             SetUpDockPanel();
             ProjectManager.SetMainForm(this);
+            this.showGridToolStripMenuItem.Checked = true;
+            this._toolBoxContainer.ColorChanged += ToolboxContainer_ColorChanged;
+            this._toolBoxContainer.SelectedToolChanged += ToolboxContainer_SelectedToolChanged;
         }
 
         private void SetUpDockPanel()
@@ -71,7 +65,7 @@ namespace SkaaEditorUI.Forms
         }
 
         /// <summary>
-        /// Closes the current project and saves changes, if needed.
+        /// Closes the current project and saves any changes, if needed.
         /// </summary>
         /// <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
         private bool TrySaveCloseProject()
@@ -100,25 +94,39 @@ namespace SkaaEditorUI.Forms
             else
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
-
+        /// <summary>
+        /// Opens a new document tab, which is automatically set as the <see cref="DockPanel.ActiveDocument"/>
+        /// </summary>
         private void OpenNewTab()
         {
             ImageEditorContainer iec = new ImageEditorContainer();
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
-            iec.ImageEdited += Iec_ImageEdited;
+            //iec.ImageEdited += ImageEditorContainer_ImageEdited;
         }
 
-        private void Iec_ImageEdited(object sender, EventArgs e)
+        //private void ImageEditorContainer_ImageEdited(object sender, EventArgs e)
+        //{
+        //    var iec = (ImageEditorContainer)sender;
+
+        //    if (iec != (ImageEditorContainer)this._dockPanel.ActiveDocument)
+        //        throw new Exception("Image updated was not ActiveDocument!");
+
+
+        //    this._spriteViewerContainer.UpdateFrame()
+        //}
+
+        private void ToolboxContainer_SelectedToolChanged(object sender, EventArgs e)
         {
-            var iec = (ImageEditorContainer)sender;
-
-            if (iec != (ImageEditorContainer)this._dockPanel.ActiveDocument)
-                throw new Exception("Image updated was not ActiveDocument!");
-
-            this._spriteViewerContainer
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
+            iec.ChangeToolMode(sender, e);
         }
-
+        private void ToolboxContainer_ColorChanged(object sender, EventArgs e)
+        {
+            //todo: create a ColorChangedEventArgs so we can just pass sender/e like SelectedToolChanged
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
+            iec.SetActiveColors((sender as ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
+        }
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)
         {
             if (TrySaveCloseProject())
@@ -173,7 +181,7 @@ namespace SkaaEditorUI.Forms
 
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var pal = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
+            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
             _toolBoxContainer.SetPalette(pal.GameObject);
         }
 
@@ -201,7 +209,7 @@ namespace SkaaEditorUI.Forms
             
         }
 
-        public ColorPalette GetActivePalette()
+        public System.Drawing.Imaging.ColorPalette GetActivePalette()
         {
             return this._toolBoxContainer.ActivePalette;
         }

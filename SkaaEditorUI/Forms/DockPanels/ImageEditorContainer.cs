@@ -27,6 +27,7 @@ using Capslock.WinForms.ImageEditor;
 using SkaaEditorUI.Presenters;
 using System;
 using System.Linq;
+using System.Drawing;
 
 namespace SkaaEditorUI.Forms.DockPanels
 {
@@ -104,6 +105,8 @@ namespace SkaaEditorUI.Forms.DockPanels
         public ImageEditorContainer()
         {
             InitializeComponent();
+            this._imageEditorBox.ShowPixelGrid = true;
+            SetActiveColors(Color.Black, Color.FromArgb(0, 0, 0, 0));
         }
 
         public void SetSprite(MultiImagePresenterBase spr, int activeFrameIndex = 0)
@@ -114,16 +117,26 @@ namespace SkaaEditorUI.Forms.DockPanels
             this._imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
         }
 
+        public void ChangeToolMode(object sender, EventArgs e)
+        {
+            this._imageEditorBox.ChangeToolMode(sender, e);
+        }
+
         private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
         {
             if (this._imageEditorBox.SelectedTool != DrawingTools.Pan &&
                 this._imageEditorBox.SelectedTool != DrawingTools.None)
             {
+                this.ActiveSprite.ActiveFrame.Bitmap = this._imageEditorBox.Image as Bitmap;
                 OnImagedEdited(EventArgs.Empty);
             }
         }
 
-
+        public void SetActiveColors(Color primary, Color secondary)
+        {
+            this._imageEditorBox.ActivePrimaryColor = primary;
+            this._imageEditorBox.ActiveSecondaryColor = secondary;
+        }
 
         private void InitializeComponent()
         {
