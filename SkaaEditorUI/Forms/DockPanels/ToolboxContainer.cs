@@ -36,6 +36,15 @@ namespace SkaaEditorUI.Forms.DockPanels
     {
         private DrawingToolbox _drawingToolbox;
         private SkaaColorChooser _colorGridChooser;
+        private System.Drawing.Imaging.ColorPalette _activePalette;
+
+        public System.Drawing.Imaging.ColorPalette ActivePalette
+        {
+            get
+            {
+                return this._activePalette;
+            }
+        }
 
         public ToolboxContainer()
         {
@@ -85,7 +94,9 @@ namespace SkaaEditorUI.Forms.DockPanels
 
         public void SetPalette(System.Drawing.Imaging.ColorPalette pal)
         {
-           if(pal != null)
+            this._activePalette = pal;
+
+            if (pal != null)
             {
                 IEnumerable<Color> distinct = pal.Entries.Distinct();
                 this._colorGridChooser.Colors = new ColorCollection(distinct);

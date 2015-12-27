@@ -43,7 +43,7 @@
             WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient3 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+            this._dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripBtnNewProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnOpenProject = new System.Windows.Forms.ToolStripButton();
@@ -87,12 +87,12 @@
             // 
             // dockPanel
             // 
-            this.dockPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this._dockPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dockPanel.Location = new System.Drawing.Point(0, 52);
-            this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Size = new System.Drawing.Size(795, 506);
+            this._dockPanel.Location = new System.Drawing.Point(0, 52);
+            this._dockPanel.Name = "dockPanel";
+            this._dockPanel.Size = new System.Drawing.Size(795, 506);
             dockPanelGradient1.EndColor = System.Drawing.SystemColors.ControlLight;
             dockPanelGradient1.StartColor = System.Drawing.SystemColors.ControlLight;
             autoHideStripSkin1.DockStripGradient = dockPanelGradient1;
@@ -138,8 +138,8 @@
             dockPaneStripToolWindowGradient1.InactiveTabGradient = tabGradient7;
             dockPaneStripSkin1.ToolWindowGradient = dockPaneStripToolWindowGradient1;
             dockPanelSkin1.DockPaneStripSkin = dockPaneStripSkin1;
-            this.dockPanel.Skin = dockPanelSkin1;
-            this.dockPanel.TabIndex = 0;
+            this._dockPanel.Skin = dockPanelSkin1;
+            this._dockPanel.TabIndex = 0;
             // 
             // toolStrip1
             // 
@@ -442,7 +442,7 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.mainMenuStrip);
-            this.Controls.Add(this.dockPanel);
+            this.Controls.Add(this._dockPanel);
             this.IsMdiContainer = true;
             this.Name = "MDISkaaEditorMainForm";
             this.Text = "MDISkaaEditorMainForm";
@@ -459,7 +459,7 @@
 
         #endregion
 
-        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel;
+        private WeifenLuo.WinFormsUI.Docking.DockPanel _dockPanel;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripBtnNewProject;
         private System.Windows.Forms.ToolStripButton toolStripBtnOpenProject;

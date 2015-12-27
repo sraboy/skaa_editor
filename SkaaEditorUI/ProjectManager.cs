@@ -191,12 +191,11 @@ namespace SkaaEditorUI
             //call Save on each MultiImagePresenter
         }
         /// <summary>
-        /// Closes the <see cref="ActiveProject"/> and unsubscribes from all events
+        /// Closes the <see cref="ActiveProject"/>
         /// </summary>
         public void CloseProject()
         {
             this.ActiveProject = null;
-            //Unsubscribe();
         }
         /// <summary>
         /// Calls the <see cref="IPresenterBase{T}.Open{T1}(object)"/> method of the specified type
@@ -212,7 +211,9 @@ namespace SkaaEditorUI
             T1 presenter = new T1();
 
             if (presenter is MultiImagePresenterBase)
-                (presenter as MultiImagePresenterBase).PalettePresenter = this._mainForm.ActivePalette;
+            {
+                (presenter as MultiImagePresenterBase).PalettePresenter = new ColorPalettePresenter(this._mainForm.GetActivePalette());
+            }
 
             presenter.Open<T>(param);
             return presenter;

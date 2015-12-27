@@ -50,103 +50,11 @@ namespace SkaaEditorUI.Forms
         private ToolboxContainer _toolBoxContainer;
         private SpriteViewerContainer _spriteViewerContainer;
 
-        #region Events
-        [NonSerialized]
-        private EventHandler _activeSpriteChanged;
-        public event EventHandler ActiveSpriteChanged
-        {
-            add
-            {
-                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
-                {
-                    _activeSpriteChanged += value;
-                }
-            }
-            remove
-            {
-                _activeSpriteChanged -= value;
-            }
-        }
-        private void OnActiveSpriteChanged(EventArgs e)
-        {
-            EventHandler handler = _activeSpriteChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-        
-        [NonSerialized]
-        private EventHandler _activePaletteChanged;
-        public event EventHandler ActivePaletteChanged
-        {
-            add
-            {
-                if (_activePaletteChanged == null || !_activePaletteChanged.GetInvocationList().Contains(value))
-                {
-                    _activePaletteChanged += value;
-                }
-            }
-            remove
-            {
-                _activePaletteChanged -= value;
-            }
-        }
-        private void OnActivePaletteChanged(EventArgs e)
-        {
-            EventHandler handler = _activePaletteChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-        #endregion
-
-        public ColorPalettePresenter ActivePalette
-        {
-            get
-            {
-                return _activePalette;
-            }
-            set
-            {
-                if (_activePalette != value)
-                {
-                    _activePalette = value;
-                    OnActivePaletteChanged(EventArgs.Empty);
-                }
-            }
-        }
-        public MultiImagePresenterBase ActiveSprite
-        {
-            get
-            {
-                return _activeSprite;
-            }
-
-            set
-            {
-                if (_activeSprite != value)
-                {
-                    _activeSprite = value;
-                    OnActiveSpriteChanged(EventArgs.Empty);
-                }
-            }
-        }
-
         public MDISkaaEditorMainForm()
         {
             InitializeComponent();
             SetUpDockPanel();
             ProjectManager.SetMainForm(this);
-        }
-
-        private void ActiveSprite_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var iec = (ImageEditorContainer)this.dockPanel.ActiveDocument ?? new ImageEditorContainer();
-            iec.SetSprite(this.ActiveSprite);
         }
 
         private void SetUpDockPanel()
@@ -156,10 +64,10 @@ namespace SkaaEditorUI.Forms
             this._spriteViewerContainer = new SpriteViewerContainer();
             this._spriteViewerContainer.HideOnClose = true;
 
-            this.dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
-            _toolBoxContainer.Show(dockPanel, DockState.DockLeft);
-            _spriteViewerContainer.Show(dockPanel, DockState.DockRight);
-            OpenNewTab(this.ActiveSprite);
+            this._dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
+            _toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
+            _spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
+            OpenNewTab();
         }
 
         /// <summary>
@@ -193,16 +101,13 @@ namespace SkaaEditorUI.Forms
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
 
-        private void OpenNewTab(MultiImagePresenterBase spr)
+        private void OpenNewTab()
         {
             ImageEditorContainer iec = new ImageEditorContainer();
-            iec.Show(dockPanel, DockState.Document);
-            iec.SetSprite(spr);
+            iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
         }
 
-        #region Event Handlers
-        ///////////////////////////// Button Clicks /////////////////////////////
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)
         {
             if (TrySaveCloseProject())
@@ -221,42 +126,54 @@ namespace SkaaEditorUI.Forms
         {
             OpenSprite<ResIdxMultiBmpPresenter>(sender, e);
         }
+
+        private void SetActiveSprite(MultiImagePresenterBase spr)
+        {
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;// ?? new ImageEditorContainer();
+            iec.SetSprite(spr);
+        }
+
         private void OpenSprite<T>(object sender, EventArgs e) where T : MultiImagePresenterBase, new()
         {
-            //set palette first
-            if (this.ActivePalette?.GameObject == null)
+            //check for a palette first
+            //if not loaded, set it
+            var pal = this._toolBoxContainer.ActivePalette;
+            if (pal == null)
                 loadPaletteToolStripMenuItem_Click(sender, e);
 
             T spr = (T)ProjectManager.Open<SkaaSprite, T>(FileFormats.SpriteSpr, ProjectManager.ActiveProject.GameSet);
-            spr.PropertyChanged += ActiveSprite_PropertyChanged;
+
+            if (spr == null) //user canceled or loading failed
+                return;
 
             if (spr.Frames.Count > 0)
             {
-                spr.SetActiveFrame(0);
-                var doc = ((ImageEditorContainer)this.dockPanel.ActiveDocument);
+                var doc = ((ImageEditorContainer)this._dockPanel.ActiveDocument);
 
                 if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
-                    this.ActiveSprite = spr;   //let the event handle the update
+                    SetActiveSprite(spr);
                 else
-                    OpenNewTab(spr);           //open a new document tab with our sprite, which sets this.ActiveSprite
+                {
+                    OpenNewTab();           //open a new document tab
+                    SetActiveSprite(spr);
+                }
             }
         }
+
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.ActivePalette = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
-            _toolBoxContainer.SetPalette(this.ActivePalette.GameObject);
+            var pal = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
+            _toolBoxContainer.SetPalette(pal.GameObject);
         }
-        ///////////////////////////// Other UI Changes /////////////////////////////
+
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
             //get the palette for the currently-loaded sprite, if any
-            var iec = (ImageEditorContainer)this.dockPanel.ActiveDocument;
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
             var pal = iec?.ActiveSprite?.PalettePresenter;
 
             if (pal != null)
-                this.ActivePalette = pal;
-
-            UpdatePalette(iec);
+                this._toolBoxContainer.SetPalette(pal.GameObject);
         }
         /// <summary>
         /// Updates the palette in the <see cref="ToolboxContainer"/> with that of the <see cref="SkaaSprite"/> the user is viewing
@@ -264,19 +181,18 @@ namespace SkaaEditorUI.Forms
         private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e)
         {
             var iec = sender as ImageEditorContainer;
-            UpdatePalette(iec);
-        }
-
-        private void UpdatePalette(ImageEditorContainer iec)
-        {
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
         }
-        #endregion
-
+        
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(true);
             
+        }
+
+        public ColorPalette GetActivePalette()
+        {
+            return this._toolBoxContainer.ActivePalette;
         }
     }
 }
