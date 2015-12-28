@@ -84,8 +84,8 @@ namespace SkaaEditorUI.Forms
         }
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)
         {
-            if (TrySaveCloseProject())
-                ProjectManager.CreateNewProject();
+            //if (TrySaveCloseProject())
+            //    ProjectManager.CreateNewProject();
         }
         private void toolStripBtnOpenProject_Click(object sender, EventArgs e)
         {
@@ -141,7 +141,7 @@ namespace SkaaEditorUI.Forms
 
             if (saveChanges == DialogResult.Yes)
             {
-                ProjectManager.CloseProject();
+                //ProjectManager.CloseProject();
                 return true;
             }
             else if (saveChanges == DialogResult.No)

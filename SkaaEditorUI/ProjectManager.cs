@@ -171,8 +171,8 @@ namespace SkaaEditorUI
         /// </summary>
         private static bool IsFileFormatUnknown(FileFormats format)
         {
-            if (format == FileFormats.Unknown || 
-                format == FileFormats.ResUnknown || 
+            if (format == FileFormats.Unknown ||
+                format == FileFormats.ResUnknown ||
                 format == FileFormats.ResIdxUnknown)
                 return true;
             else
@@ -187,7 +187,7 @@ namespace SkaaEditorUI
         public void SetMainForm(MDISkaaEditorMainForm form)
         {
             this._mainForm = form;
-            this._mainForm.FormClosed += _mainForm_FormClosed;
+            this._mainForm.FormClosed += MainForm_FormClosed;
         }
         public void CleanTempFiles()
         {
@@ -211,33 +211,33 @@ namespace SkaaEditorUI
         /// Creates a new <see cref="Project"/> in <see cref="TempDirectory"/> 
         /// </summary>
         /// <returns>A new <see cref="Project"/></returns>
-        public Project CreateNewProject()
+        public void CreateNewProject()
         {
             this.IsInTempDirectory = true;
-            return CreateNewProject(this.TempDirectory);
+            //return CreateNewProject(this.TempDirectory);
         }
         /// <summary>
         /// Creates a new <see cref="Project"/> in a the specified directory
         /// </summary>
         /// <returns>A new <see cref="Project"/></returns>
-        public Project CreateNewProject(string filePath)
-        {
-            var p = new Project();
-            Logger.TraceInformation($"Created new {typeof(Project)} in {filePath}.");
-            return p;
-        }
-        public bool SaveProject(Project project, string filePath)
+        //public Project CreateNewProject(string filePath)
+        //{
+        //    var p = new Project();
+        //    Logger.TraceInformation($"Created new {typeof(Project)} in {filePath}.");
+        //    return p;
+        //}
+        public bool SaveProject(string filePath)
         {
             //SaveSprites(/*FileFormats.SpriteSpr*/);
 
-            using (FileStream fs = new FileStream(this.SaveDirectory, FileMode.Create))
-            {
-                var str = this.ActiveProject.GameSet.GetStandardGameSetStream();
-                str.Position = 0;
-                str.CopyTo(fs);
-            }
+            //using (FileStream fs = new FileStream(this.SaveDirectory, FileMode.Create))
+            //{
+            //    var str = this.GameSet.GetStandardGameSetStream();
+            //    str.Position = 0;
+            //    str.CopyTo(fs);
+            //}
 
-                Logger.TraceInformation($"Saved {typeof(Project)} in {filePath}.");
+            Logger.TraceInformation($"Saved {typeof(ProjectManager)} in {filePath}.");
             return true;
         }
         /// <summary>
@@ -245,7 +245,12 @@ namespace SkaaEditorUI
         /// </summary>
         public void CloseProject()
         {
-            this.ActiveProject = null;
+            CleanTempFiles();
+
+        }
+        private void MainForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+        {
+            CloseProject();
         }
 
         /////////////////////////////////// Presenter Management ///////////////////////////////////
@@ -266,7 +271,6 @@ namespace SkaaEditorUI
 
             //param[0] is FileFormat
             //param[1] is bool merge for GameSetPresenter
-            //param[2] is GameSet for SpritePresenter
             T1 presenter = new T1();
 
             if (presenter is MultiImagePresenterBase)
@@ -280,17 +284,13 @@ namespace SkaaEditorUI
 
         public void Save<T>(IPresenterBase<T> pres) where T : class
         {
-            pres.Save<T>(null);
+            var result = pres.Save<T>(null);
         }
 
         #endregion
 
-        #region Event Handlers
-        private void _mainForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
-        {
-            CleanTempFiles();
-            //throw new NotImplementedException();
-        }
-        #endregion
+
+
+
     }
 }

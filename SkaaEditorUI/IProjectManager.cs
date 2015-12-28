@@ -14,16 +14,12 @@ namespace SkaaEditorUI
         string TempDirectory { get; }
 
         event EventHandler ActiveSpriteChanged;
-
-        void CleanTempFiles();
         void CloseProject();
-        Project CreateNewProject();
-        Project CreateNewProject(string filePath);
+        void CleanTempFiles();
         IPresenterBase<T> Open<T, T1>(params object[] param)
             where T : class
             where T1 : IPresenterBase<T>, new();
         void Save<T>(IPresenterBase<T> pres) where T : class;
-        bool SaveProject(Project project, string filePath);
         void SetMainForm(MDISkaaEditorMainForm form);
     }
 }

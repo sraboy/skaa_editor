@@ -158,6 +158,7 @@
     <Compile Include="Presenters\PresenterBase.cs" />
     <Compile Include="oldProject.cs" />
     <Compile Include="Presenters\GameSetPresenter.cs" />
+    <Compile Include="Misc\PresenterFileDialogEventArgs.cs" />
     <Compile Include="Presenters\ResIdxMultiBmpPresenter.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="ProjectManager.cs" />
