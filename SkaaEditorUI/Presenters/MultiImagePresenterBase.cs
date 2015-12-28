@@ -22,6 +22,7 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System.Data;
 using System.IO;
 using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib;
@@ -31,10 +32,23 @@ namespace SkaaEditorUI.Presenters
 {
     public abstract class MultiImagePresenterBase : PresenterBase<SkaaSprite>, IMultiImagePresenter
     {
+        private TrulyObservableCollection<IFrame> _frames = new TrulyObservableCollection<IFrame>();
         private ColorPalettePresenter _palettePresenter;
         private IFrame _activeFrame;
-        private TrulyObservableCollection<IFrame> _frames = new TrulyObservableCollection<IFrame>();
+        private string _spriteId;
+        private DataView _dataView;
 
+        public TrulyObservableCollection<IFrame> Frames
+        {
+            get
+            {
+                return this._frames;
+            }
+            set
+            {
+                SetField(ref this._frames, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Frames)));
+            }
+        }
         public ColorPalettePresenter PalettePresenter
         {
             get
@@ -58,25 +72,41 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._activeFrame, value, () => OnPropertyChanged(GetDesignModeValue(() => this.ActiveFrame)));
             }
         }
-        public TrulyObservableCollection<IFrame> Frames
+        public string SpriteId
         {
             get
             {
-                return this._frames;
+                return this._spriteId;
             }
+
             set
             {
-                SetField(ref this._frames, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Frames)));
+                SetField(ref this._spriteId, value, () => OnPropertyChanged(GetDesignModeValue(() => this.SpriteId)));
+            }
+        }
+        public DataView DataView
+        {
+            get
+            {
+                return this._dataView;
+            }
+            internal set
+            {
+                SetField(ref this._dataView, value, () => OnPropertyChanged(GetDesignModeValue(() => this.DataView)));
             }
         }
 
-        protected void SetFrames()
+        protected TrulyObservableCollection<IFrame> BuildFramePresenters()
         {
+            TrulyObservableCollection<IFrame> frames = new TrulyObservableCollection<IFrame>();
+
             foreach (SkaaFrame f in this.GameObject.Frames)
             {
                 var fp = new FramePresenter(f);
-                this.Frames.Add(fp);
+                frames.Add(fp);
             }
+
+            return frames;
         }
 
         public Stream GetSpriteStream()
@@ -100,6 +130,19 @@ namespace SkaaEditorUI.Presenters
         public void SetActiveFrame(int index)
         {
             this.ActiveFrame = this.Frames?[index];
+        }
+
+        public void SetSpriteDataView(GameSetPresenter gsp)
+        {
+            DataView dv;
+
+            dv = new DataView(gsp.GameObject?.Tables?["SFRAME"]);
+            dv.RowFilter = $"SPRITE = '{this.SpriteId.ToUpper()}'";
+
+            this.DataView = dv;
+            this.GameObject.SetSpriteDataView(dv);
+
+            this.Frames = BuildFramePresenters();
         }
     }
 }

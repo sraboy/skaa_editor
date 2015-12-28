@@ -57,7 +57,7 @@ namespace SkaaEditorUI.Presenters
         {
             dlg.DefaultExt = ".res";
             dlg.Filter = $"7KAA Palette Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
-            //dlg.FileName = "pal_std";
+            dlg.FileName = "pal_std";
         }
     }
 }

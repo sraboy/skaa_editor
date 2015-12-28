@@ -9,7 +9,7 @@ namespace SkaaEditorUI
     {
         GameSetPresenter GameSet { get; set; }
         bool IsInTempDirectory { get; }
-        TrulyObservableCollection<SpritePresenter> OpenSprites { get; }
+        TrulyObservableCollection<MultiImagePresenterBase> OpenSprites { get; }
         string SaveDirectory { get; }
         string TempDirectory { get; }
 
@@ -21,5 +21,6 @@ namespace SkaaEditorUI
             where T1 : IPresenterBase<T>, new();
         void Save<T>(IPresenterBase<T> pres) where T : class;
         void SetMainForm(MDISkaaEditorMainForm form);
+        void SetSpriteDataViews();
     }
 }

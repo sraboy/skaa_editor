@@ -36,29 +36,12 @@ namespace SkaaEditorUI.Presenters
         private string _spriteId;
         #endregion
 
-        #region Public Members
-        public string SpriteId
-        {
-            get
-            {
-                return this.GameObject.SpriteId;
-            }
-            set
-            {
-                SetField(ref this._spriteId, value, () => OnPropertyChanged(GetDesignModeValue(() => this.SpriteId)));
-            }
-        }
-        #endregion
-
         #region Constructors
         public SpritePresenter() { }
         [Obsolete("This is for the old project class and should no longer be used.")]
         public SpritePresenter(SkaaSprite spr)
         {
             throw new NotImplementedException();
-            this.GameObject = spr;
-            this.ActiveFrame = (IFrame)spr.Frames[0];
-            SetFrames();
         }
         #endregion
 
@@ -76,7 +59,9 @@ namespace SkaaEditorUI.Presenters
                 spr = SkaaSprite.FromSprStream(fs, this.PalettePresenter.GameObject);
 
             this.GameObject = spr;
-            SetFrames();
+            this.SpriteId = spr.SpriteId;
+
+            this.Frames = BuildFramePresenters();
             return this.GameObject;
         }
 
@@ -94,13 +79,7 @@ namespace SkaaEditorUI.Presenters
         {
             dlg.DefaultExt = ".spr";
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
-            dlg.FileName = this.SpriteId;
-        }
-
-        public void SetDataView(string filter)
-        {
-
-
+            dlg.FileName = this.SpriteId ?? null;
         }
     }
 }

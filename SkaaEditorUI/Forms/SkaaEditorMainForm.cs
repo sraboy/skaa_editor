@@ -23,20 +23,20 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Windows.Forms;
-using System.IO;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using SkaaGameDataLib;
-using System.Reflection;
+using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
-using Cyotek.Windows.Forms;
+using System.Reflection;
+using System.Windows.Forms;
 using Capslock.Windows.Forms.ImageEditor;
-using System.Data;
-using SkaaEditorUI.Presenters;
+using Cyotek.Windows.Forms;
 using SkaaEditorUI.Forms.DockContentControls;
+using SkaaEditorUI.Presenters;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Forms
 {
@@ -932,7 +932,7 @@ namespace SkaaEditorUI.Forms
         {
             string tableToSave = string.Empty;
 
-            using (ObjectListViewContainer olvc = new ObjectListViewContainer())
+            using (GameSetViewerContainer olvc = new GameSetViewerContainer())
             {
                 //olvc.SetDataSource(this.ActiveProject?.ActiveGameSet?.Tables["SFRAME"]);
                 DataTable dt = new DataTable();
@@ -952,11 +952,11 @@ namespace SkaaEditorUI.Forms
                     dr.AcceptChanges();
                 }
                 dt.AcceptChanges();
-                olvc.SetDataSource(dt);
+                //olvc.SetDataSource(dt);
 
                 if (olvc.ShowDialog() == DialogResult.OK)
                 {
-                    tableToSave = olvc.TableToSave;
+                    //tableToSave = olvc.TableToSave;
                 }
             }
 

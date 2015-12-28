@@ -139,11 +139,11 @@
     <Compile Include="Forms\MDISkaaEditorMainForm.Designer.cs">
       <DependentUpon>MDISkaaEditorMainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\DockContentControls\ObjectListViewContainer.cs">
+    <Compile Include="Forms\DockContentControls\GameSetViewerContainer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\DockContentControls\ObjectListViewContainer.Designer.cs">
-      <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
+    <Compile Include="Forms\DockContentControls\GameSetViewerContainer.Designer.cs">
+      <DependentUpon>GameSetViewerContainer.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\DockContentControls\SpriteViewerContainer.cs">
       <SubType>Form</SubType>
@@ -160,7 +160,6 @@
     <Compile Include="Presenters\GameSetPresenter.cs" />
     <Compile Include="Misc\PresenterFileDialogEventArgs.cs" />
     <Compile Include="Presenters\ResIdxMultiBmpPresenter.cs" />
-    <Compile Include="Project.cs" />
     <Compile Include="ProjectManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -195,8 +194,8 @@
     <EmbeddedResource Include="Forms\MDISkaaEditorMainForm.resx">
       <DependentUpon>MDISkaaEditorMainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DockContentControls\ObjectListViewContainer.resx">
-      <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\DockContentControls\GameSetViewerContainer.resx">
+      <DependentUpon>GameSetViewerContainer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SkaaEditorMainForm.resx">
       <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>

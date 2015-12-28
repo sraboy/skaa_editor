@@ -57,7 +57,7 @@ namespace SkaaEditorUI.Presenters
             //ds.AddDataSource(Path.GetFileName(filePath));
             this.GameObject = tup.Item1;
             this.DataTable = tup.Item2;
-            SetFrames();
+            this.Frames = BuildFramePresenters();
             return this.GameObject;
         }
 
@@ -107,6 +107,7 @@ namespace SkaaEditorUI.Presenters
         {
             dlg.DefaultExt = ".res";
             dlg.Filter = $"7KAA Resource Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
+            dlg.FileName = this.SpriteId ?? null;
         }
     }
 }

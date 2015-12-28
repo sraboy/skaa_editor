@@ -1,6 +1,6 @@
 ﻿namespace SkaaEditorUI.Forms.DockContentControls
 {
-    partial class ObjectListViewContainer
+    partial class GameSetViewerContainer
     {
         /// <summary>
         /// Required designer variable.
@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             this.dataListView1 = new BrightIdeasSoftware.DataListView();
-            this.lblInstructions = new System.Windows.Forms.Label();
-            this.btnDone = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataListView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -43,52 +41,30 @@
             this.dataListView1.DataSource = null;
             this.dataListView1.HighlightBackgroundColor = System.Drawing.Color.Empty;
             this.dataListView1.HighlightForegroundColor = System.Drawing.Color.Empty;
-            this.dataListView1.Location = new System.Drawing.Point(1, 34);
+            this.dataListView1.Location = new System.Drawing.Point(2, 1);
             this.dataListView1.Name = "dataListView1";
-            this.dataListView1.Size = new System.Drawing.Size(614, 451);
+            this.dataListView1.Size = new System.Drawing.Size(688, 523);
             this.dataListView1.TabIndex = 0;
             this.dataListView1.UseCompatibleStateImageBehavior = false;
             this.dataListView1.View = System.Windows.Forms.View.Details;
             // 
-            // lblInstructions
-            // 
-            this.lblInstructions.AutoSize = true;
-            this.lblInstructions.Location = new System.Drawing.Point(3, 9);
-            this.lblInstructions.Name = "lblInstructions";
-            this.lblInstructions.Size = new System.Drawing.Size(197, 13);
-            this.lblInstructions.TabIndex = 1;
-            this.lblInstructions.Text = "Select the table you wish to save below:";
-            // 
-            // btnDone
-            // 
-            this.btnDone.Location = new System.Drawing.Point(282, 4);
-            this.btnDone.Name = "btnDone";
-            this.btnDone.Size = new System.Drawing.Size(75, 23);
-            this.btnDone.TabIndex = 2;
-            this.btnDone.Text = "Done!";
-            this.btnDone.UseVisualStyleBackColor = true;
-            this.btnDone.Click += new System.EventHandler(this.btnDone_Click);
-            // 
-            // ObjectListViewContainer
+            // GameSetViewerContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(615, 485);
-            this.Controls.Add(this.btnDone);
-            this.Controls.Add(this.lblInstructions);
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(690, 524);
             this.Controls.Add(this.dataListView1);
-            this.Name = "ObjectListViewContainer";
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Name = "GameSetViewerContainer";
             this.Text = "ObjectListViewContainer";
             ((System.ComponentModel.ISupportInitialize)(this.dataListView1)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private BrightIdeasSoftware.DataListView dataListView1;
-        private System.Windows.Forms.Label lblInstructions;
-        private System.Windows.Forms.Button btnDone;
     }
 }

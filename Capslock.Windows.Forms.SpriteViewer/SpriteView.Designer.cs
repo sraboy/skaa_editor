@@ -54,49 +54,45 @@ namespace Capslock.Windows.Forms.SpriteViewer
         /// </summary>
         private void InitializeComponent()
         {
-            this.listViewer1 = new Capslock.Windows.Forms.SpriteViewer.ListView();
-            this.timeline1 = new Capslock.Windows.Forms.SpriteViewer.TimelineView();
+            this.timelineView1 = new Capslock.Windows.Forms.SpriteViewer.TimelineView();
+            this.listView1 = new Capslock.Windows.Forms.SpriteViewer.ListView();
             this.SuspendLayout();
             // 
-            // listViewer1
+            // timelineView1
             // 
-            this.listViewer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewer1.AutoSize = true;
-            this.listViewer1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.listViewer1.Location = new System.Drawing.Point(0, 283);
-            this.listViewer1.Name = "listViewer1";
-            this.listViewer1.Size = new System.Drawing.Size(283, 535);
-            this.listViewer1.TabIndex = 1;
+            this.timelineView1.AutoSize = true;
+            this.timelineView1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.timelineView1.Location = new System.Drawing.Point(0, 0);
+            this.timelineView1.Name = "timelineView1";
+            this.timelineView1.Size = new System.Drawing.Size(283, 249);
+            this.timelineView1.TabIndex = 0;
             // 
-            // timeline1
+            // listView1
             // 
-            this.timeline1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.timeline1.AutoSize = true;
-            this.timeline1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.timeline1.Location = new System.Drawing.Point(0, 2);
-            this.timeline1.Name = "timeline1";
-            this.timeline1.Size = new System.Drawing.Size(281, 326);
-            this.timeline1.TabIndex = 0;
+            this.listView1.AutoSize = true;
+            this.listView1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.listView1.Location = new System.Drawing.Point(0, 255);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(283, 417);
+            this.listView1.TabIndex = 1;
             // 
             // SpriteView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.listViewer1);
-            this.Controls.Add(this.timeline1);
+            this.AutoSize = true;
+            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.timelineView1);
             this.Name = "SpriteView";
-            this.Size = new System.Drawing.Size(283, 821);
+            this.Size = new System.Drawing.Size(286, 675);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private TimelineView timeline1;
-        private ListView listViewer1;
+
+        private TimelineView timelineView1;
+        private ListView listView1;
     }
 }

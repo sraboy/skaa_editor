@@ -22,11 +22,10 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using SkaaEditorUI.Forms;
 using SkaaEditorUI.Presenters;
 using SkaaGameDataLib;
@@ -37,44 +36,15 @@ namespace SkaaEditorUI
     /// <summary>
     /// A singleton class that will manage a <see cref="Project"/>'s file operations
     /// </summary>
-    public class ProjectManager : IProjectManager
+    public class ProjectManager
     {
         private static readonly TraceSource Logger = new TraceSource($"{typeof(ProjectManager)}", SourceLevels.All);
-
-        public ProjectManager() { this._tempFiles.Add(this.TempDirectory); }
-        #region Events
-        private EventHandler _activeSpriteChanged;
-        public event EventHandler ActiveSpriteChanged
-        {
-            add
-            {
-                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
-                {
-                    _activeSpriteChanged += value;
-                }
-            }
-            remove
-            {
-                _activeSpriteChanged -= value;
-            }
-        }
-        protected virtual void OnActiveSpriteChanged(EventArgs e)
-        {
-            EventHandler handler = _activeSpriteChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-        #endregion
-
 
 
         #region Private Members
         private MDISkaaEditorMainForm _mainForm;
-        private TrulyObservableCollection<SpritePresenter> _openSprites;
-        private GameSetPresenter _gameSetPresenter = new GameSetPresenter();
+        private TrulyObservableCollection<MultiImagePresenterBase> _openSprites;
+        //private GameSetPresenter _gameSetPresenter = new GameSetPresenter();
 
         private bool _hasUnsavedChanges = false; //todo: track image changes so we know if items are unsaved
         private bool _isInTempDirectory = false;
@@ -83,7 +53,6 @@ namespace SkaaEditorUI
         private string _tempDirectory = GetTemporaryDirectory();
         private string _saveDirectory;
         #endregion
-
 
 
         #region Public Members
@@ -123,7 +92,7 @@ namespace SkaaEditorUI
                 this._saveDirectory = value;
             }
         }
-        public TrulyObservableCollection<SpritePresenter> OpenSprites
+        public TrulyObservableCollection<MultiImagePresenterBase> OpenSprites
         {
             get
             {
@@ -135,19 +104,19 @@ namespace SkaaEditorUI
                 this._openSprites = value;
             }
         }
-        public GameSetPresenter GameSet
-        {
-            get
-            {
-                return _gameSetPresenter;
-            }
+        //public GameSetPresenter GameSet
+        //{
+        //    get
+        //    {
+        //        return _gameSetPresenter;
+        //    }
 
-            set
-            {
-                this._gameSetPresenter = value;
+        //    set
+        //    {
+        //        this._gameSetPresenter = value;
 
-            }
-        }
+        //    }
+        //}
         #endregion
 
         #region Private Methods
@@ -183,7 +152,11 @@ namespace SkaaEditorUI
         #region Public Methods
 
         //////////////////////////////// Setup/Teardown/Utilities ////////////////////////////////
-
+        public ProjectManager()
+        {
+            this._tempFiles.Add(this.TempDirectory);
+            this.OpenSprites = new TrulyObservableCollection<MultiImagePresenterBase>();
+        }
         public void SetMainForm(MDISkaaEditorMainForm form)
         {
             this._mainForm = form;
@@ -216,16 +189,7 @@ namespace SkaaEditorUI
             this.IsInTempDirectory = true;
             //return CreateNewProject(this.TempDirectory);
         }
-        /// <summary>
-        /// Creates a new <see cref="Project"/> in a the specified directory
-        /// </summary>
-        /// <returns>A new <see cref="Project"/></returns>
-        //public Project CreateNewProject(string filePath)
-        //{
-        //    var p = new Project();
-        //    Logger.TraceInformation($"Created new {typeof(Project)} in {filePath}.");
-        //    return p;
-        //}
+
         public bool SaveProject(string filePath)
         {
             //SaveSprites(/*FileFormats.SpriteSpr*/);
@@ -245,16 +209,16 @@ namespace SkaaEditorUI
         /// </summary>
         public void CloseProject()
         {
+            SaveProject(this.SaveDirectory ?? this.TempDirectory);
             CleanTempFiles();
-
         }
+
         private void MainForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
             CloseProject();
         }
 
         /////////////////////////////////// Presenter Management ///////////////////////////////////
-
         /// <summary>
         /// Calls the <see cref="IPresenterBase{T}.Open{T1}(object)"/> method of the specified type
         /// </summary>
@@ -263,19 +227,19 @@ namespace SkaaEditorUI
         /// <returns></returns>
         public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
-            //todo: test with FramePresenter
+            //param[0] is FileFormat
+            //param[1] is bool merge for GameSetPresenter
 
             //This method signature is really verbose, which is a pain for the caller, but it allows this one single method
             //to open SpritePresenters, ResIdxMultiBmpPresenters and GameSetPresenters. T1 is necessary to specify either
             //SkaaSprite or DataSet
 
-            //param[0] is FileFormat
-            //param[1] is bool merge for GameSetPresenter
             T1 presenter = new T1();
 
             if (presenter is MultiImagePresenterBase)
             {
                 (presenter as MultiImagePresenterBase).PalettePresenter = new ColorPalettePresenter(this._mainForm.GetActivePalette());
+                this.OpenSprites.Add(presenter as MultiImagePresenterBase);
             }
 
             presenter.Open<T>(param);
@@ -287,9 +251,15 @@ namespace SkaaEditorUI
             var result = pres.Save<T>(null);
         }
 
+        public void SetSpriteDataViews(GameSetPresenter gsp)
+        {
+            if (gsp == null)
+                return;
+
+            foreach (var spr in this.OpenSprites)
+                spr.SetSpriteDataView(gsp);
+        }
         #endregion
-
-
 
 
     }

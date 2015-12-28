@@ -38,8 +38,8 @@ namespace SkaaEditorUI.Forms
     {
         private ToolboxContainer _toolBoxContainer;
         private SpriteViewerContainer _spriteViewerContainer;
-        private ObjectListViewContainer _objectListViewContainer;
-        private IProjectManager ProjectManager = new ProjectManager();
+        private GameSetViewerContainer _gameSetViewerContainer;
+        private ProjectManager ProjectManager = new ProjectManager();
 
         public MDISkaaEditorMainForm()
         {
@@ -57,7 +57,8 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.HideOnClose = true;
             this._spriteViewerContainer = new SpriteViewerContainer();
             this._spriteViewerContainer.HideOnClose = true;
-            this._objectListViewContainer = new ObjectListViewContainer();
+            this._gameSetViewerContainer = new GameSetViewerContainer();
+            this._gameSetViewerContainer.HideOnClose = true;
 
             this._dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
             _toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
@@ -65,7 +66,7 @@ namespace SkaaEditorUI.Forms
             OpenNewTab();
 
             //we don't want this as the ActiveDocument, so show it after OpenNewTab()
-            this._objectListViewContainer.Show(_dockPanel, DockState.Document);
+            this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
         }
 
 
@@ -208,6 +209,8 @@ namespace SkaaEditorUI.Forms
                 }
             }
 
+
+            SetSpriteDataViews(this._gameSetViewerContainer.GameSetPresenter);
             return spr;
         }
 
@@ -234,12 +237,18 @@ namespace SkaaEditorUI.Forms
             if (gsp.GameObject == null)
                 return null;
 
+            this._gameSetViewerContainer.GameSetPresenter = gsp;
+            SetSpriteDataViews(gsp);
+
             return gsp;
         }
 
-
-
-
+        private void SetSpriteDataViews(GameSetPresenter gsp)
+        {
+            ProjectManager.SetSpriteDataViews(gsp);
+            //var spr = (this._dockPanel.ActiveDocument as ImageEditorContainer).ActiveSprite;
+            //this._spriteViewerContainer.SetSprite(spr);
+        }
 
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {

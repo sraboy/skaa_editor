@@ -43,7 +43,7 @@ namespace SkaaEditorUI.Presenters
         {
             get
             {
-                return this.GameObject.IndexedBitmap.Bitmap;
+                return this._bitmap;
             }
             set
             {
@@ -65,7 +65,7 @@ namespace SkaaEditorUI.Presenters
         {
             get
             {
-                return this.GameObject.BitmapOffset;
+                return this._bitmapOffset;
             }
             set
             {
@@ -93,6 +93,10 @@ namespace SkaaEditorUI.Presenters
             this.GameObject.Name = sgf.Name;
             this.GameObject.BitmapOffset = sgf.BitmapOffset;
             this.GameObject.IndexedBitmap = sgf.IndexedBitmap;
+
+            this.Bitmap = this.GameObject.IndexedBitmap.Bitmap;
+            this.Name = this.GameObject.Name;
+            this.BitmapOffset = this.GameObject.BitmapOffset;
         }
 
         public override SkaaFrame Load(string filePath, params object[] param)
@@ -109,7 +113,7 @@ namespace SkaaEditorUI.Presenters
         {
             dlg.DefaultExt = ".spr";
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
-            dlg.FileName = this.Name;
+            dlg.FileName = this.Name ?? null;
         }
     }
 }
