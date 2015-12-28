@@ -22,19 +22,16 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using SkaaGameDataLib;
-using Capslock.Windows.Forms.SpriteViewer;
-using System.Drawing.Imaging;
 using System;
 using System.IO;
-using System.Collections.Generic;
+using System.Windows.Forms;
+using Capslock.Windows.Forms.SpriteViewer;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
     public class SpritePresenter : MultiImagePresenterBase
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "SpriteSpr", ".spr" } };
-
         #region Private Members
         private string _spriteId;
         #endregion
@@ -51,14 +48,6 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._spriteId, value, () => OnPropertyChanged(GetDesignModeValue(() => this.SpriteId)));
             }
         }
-
-        protected override Dictionary<string, string> FileTypes
-        {
-            get
-            {
-                return _fileTypes;
-            }
-        }
         #endregion
 
         #region Constructors
@@ -72,16 +61,6 @@ namespace SkaaEditorUI.Presenters
             SetFrames();
         }
         #endregion
-
-        //private List<IFrame> GetIFrames()
-        //{
-        //    List<IFrame> frames = new List<IFrame>();
-        //    foreach (SkaaFrame sf in frames)
-        //    {
-        //        frames.Add(new FramePresenter(sf));
-        //    }
-        //    return frames;
-        //}
 
         /// <summary>
         /// Creates a <see cref="SkaaSprite"/> object from an SPR-formatted file
@@ -111,9 +90,17 @@ namespace SkaaEditorUI.Presenters
             return true;
         }
 
-        protected override void OnPropertyChanged(string propertyName)
+        protected override void SetupFileDialog(FileDialog dlg)
         {
-            base.OnPropertyChanged(propertyName);
+            dlg.DefaultExt = ".spr";
+            dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
+            dlg.FileName = this.SpriteId;
+        }
+
+        public void SetDataView(string filter)
+        {
+
+
         }
     }
 }

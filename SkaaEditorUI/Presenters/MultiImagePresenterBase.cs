@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing.Imaging;
-#region Copyright Notice
+﻿#region Copyright Notice
 /***************************************************************************
 * The MIT License (MIT)
 *
@@ -26,15 +24,14 @@ using System.Drawing.Imaging;
 #endregion
 using System.IO;
 using Capslock.Windows.Forms.SpriteViewer;
-using SkaaEditorUI.Misc;
 using SkaaGameDataLib;
 using TrulyObservableCollection;
 
 namespace SkaaEditorUI.Presenters
 {
-    public abstract class MultiImagePresenterBase : PresenterBase<SkaaSprite>, IMultiImagePresenter//<SkaaSprite>
+    public abstract class MultiImagePresenterBase : PresenterBase<SkaaSprite>, IMultiImagePresenter
     {
-        private ColorPalettePresenter _palettePresenter = new ColorPalettePresenter();
+        private ColorPalettePresenter _palettePresenter;
         private IFrame _activeFrame;
         private TrulyObservableCollection<IFrame> _frames = new TrulyObservableCollection<IFrame>();
 
@@ -82,11 +79,6 @@ namespace SkaaEditorUI.Presenters
             }
         }
 
-        protected override void OnPropertyChanged(string propertyName)
-        {
-            base.OnPropertyChanged(propertyName);
-        }
-
         public Stream GetSpriteStream()
         {
             var str = new MemoryStream();
@@ -99,13 +91,9 @@ namespace SkaaEditorUI.Presenters
             return str;
         }
 
-        //public IMultiImagePresenter<SkaaSprite> Open()
-        //{
-        //    return (IMultiImagePresenter<SkaaSprite>)((IPresenterBase<SkaaSprite>)this).Open<SkaaSprite>(this.FileFormat, this.PalettePresenter);
-        //}
-
         public void LoadPalette(string filePath)
         {
+            this.PalettePresenter = new ColorPalettePresenter();
             this.PalettePresenter.Load(filePath, null);
         }
 

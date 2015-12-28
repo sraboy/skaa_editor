@@ -89,26 +89,31 @@ namespace SkaaEditorUI.Forms
         }
         private void toolStripBtnOpenProject_Click(object sender, EventArgs e)
         {
+            if (OpenProject() == false)
+                MessageBox.Show("Failed to open project!");
             //Browse folders to find a project directory
             //Check all file types and load them
         }
+
         private void openSpriteSprToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenSprite<SpritePresenter>(sender, e);
+            if (OpenSprite<SpritePresenter>() == null)
+                MessageBox.Show("Failed to load sprite!");
         }
         private void openSpriteResToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenSprite<ResIdxMultiBmpPresenter>(sender, e);
+            if (OpenSprite<ResIdxMultiBmpPresenter>() == null)
+                MessageBox.Show("Failed to load sprite!");
         }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
-            _toolBoxContainer.SetPalette(pal.GameObject);
+            if (OpenPalette() == false)
+                MessageBox.Show("Failed to load palette!");
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(FileFormats.GameSet, true);
-
+            if (OpenGameSet() == null)
+                MessageBox.Show("Failed to load game set!");
         }
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -118,6 +123,13 @@ namespace SkaaEditorUI.Forms
             ProjectManager.Save(spr);
         }
         #endregion
+
+        public System.Drawing.Imaging.ColorPalette GetActivePalette()
+        {
+            return this._toolBoxContainer.ActivePalette;
+        }
+
+
 
         /// <summary>
         /// Closes the current project and saves any changes, if needed.
@@ -152,32 +164,36 @@ namespace SkaaEditorUI.Forms
         /// <summary>
         /// Opens a new document tab, which is automatically set as the <see cref="DockPanel.ActiveDocument"/>
         /// </summary>
-        private void OpenNewTab()
+        public void OpenNewTab()
         {
             ImageEditorContainer iec = new ImageEditorContainer();
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
         }
 
-        private void SetActiveSprite(MultiImagePresenterBase spr)
+        public void SetActiveSprite(MultiImagePresenterBase spr)
         {
             var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;// ?? new ImageEditorContainer();
             iec.SetSprite(spr);
             this._spriteViewerContainer.SetSprite(spr);
         }
-
-        private void OpenSprite<T>(object sender, EventArgs e) where T : MultiImagePresenterBase, new()
+        /// <summary>
+        /// Opens a <see cref="SkaaSprite"/>
+        /// </summary>
+        /// <typeparam name="T">A presenter class that implements <see cref="MultiImagePresenterBase"/></typeparam>
+        /// <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
+        public T OpenSprite<T>() where T : MultiImagePresenterBase, new()
         {
             //check for a palette first
             //if not loaded, set it
-            var pal = this._toolBoxContainer.ActivePalette;
-            if (pal == null)
-                loadPaletteToolStripMenuItem_Click(sender, e);
+            if (this._toolBoxContainer.ActivePalette == null)
+                if (OpenPalette() == false)
+                    return null;
 
-            T spr = (T)ProjectManager.Open<SkaaSprite, T>(FileFormats.SpriteSpr, ProjectManager.ActiveProject.GameSet);
+            T spr = (T)ProjectManager.Open<SkaaSprite, T>(FileFormats.SpriteSpr);
 
             if (spr == null) //user canceled or loading failed
-                return;
+                return null;
 
             if (spr.Frames.Count > 0)
             {
@@ -191,7 +207,39 @@ namespace SkaaEditorUI.Forms
                     SetActiveSprite(spr);
                 }
             }
+
+            return spr;
         }
+
+        public bool OpenPalette()
+        {
+            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
+            if (pal?.GameObject == null)
+                return false;
+            else
+                _toolBoxContainer.SetPalette(pal.GameObject);
+
+            return true;
+        }
+
+        public bool OpenProject()
+        {
+            throw new NotImplementedException();
+        }
+
+        public GameSetPresenter OpenGameSet()
+        {
+            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(FileFormats.GameSet, true);
+
+            if (gsp.GameObject == null)
+                return null;
+
+            return gsp;
+        }
+
+
+
+
 
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
@@ -211,10 +259,7 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
         }
 
-        public System.Drawing.Imaging.ColorPalette GetActivePalette()
-        {
-            return this._toolBoxContainer.ActivePalette;
-        }
+
 
 
     }

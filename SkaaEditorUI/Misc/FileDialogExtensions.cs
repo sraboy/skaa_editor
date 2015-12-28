@@ -29,13 +29,15 @@ namespace SkaaEditorUI.Misc
 {
     public static class FileDialogExtensions
     {
-        public static T CustomShowDialog<T>(this OpenFileDialog dlg, Func<T> loadFileDelegate) where T : class
+        public static T CustomShowDialog<T>(this FileDialog dlg, Func<T> loadFileDelegate) where T : class
         {
             if (dlg.ShowDialog() == DialogResult.OK)
                 return loadFileDelegate();
             else
                 return null;
         }
+
+        //todo: Create a FileDialogResults class and return that so it can always be parsed
 
         public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
         {

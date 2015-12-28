@@ -27,13 +27,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Forms;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
     public class ResIdxMultiBmpPresenter : MultiImagePresenterBase
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "SpriteRes", ".res" } };
         private DataTable _dataTable;
 
         public DataTable DataTable
@@ -47,18 +47,6 @@ namespace SkaaEditorUI.Presenters
             {
                 this._dataTable = value;
             }
-        }
-        protected override Dictionary<string, string> FileTypes
-        {
-            get
-            {
-                return _fileTypes;
-            }
-        }
-
-        protected override void OnPropertyChanged(string propertyName)
-        {
-            base.OnPropertyChanged(propertyName);
         }
 
         public override SkaaSprite Load(string filePath, params object[] param)
@@ -113,6 +101,12 @@ namespace SkaaEditorUI.Presenters
         public override bool Save(string filePath, params object[] param)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void SetupFileDialog(FileDialog dlg)
+        {
+            dlg.DefaultExt = ".res";
+            dlg.Filter = $"7KAA Resource Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
         }
     }
 }

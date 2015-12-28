@@ -23,8 +23,8 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib;
 
@@ -32,8 +32,6 @@ namespace SkaaEditorUI.Presenters
 {
     public class FramePresenter : PresenterBase<SkaaFrame>, IFrame
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Frame", ".res" } };
-
         #region Private Members
         private Guid _guid;
         private Bitmap _bitmap;
@@ -86,14 +84,6 @@ namespace SkaaEditorUI.Presenters
             }
         }
 
-        protected override Dictionary<string, string> FileTypes
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public FramePresenter() { }
 
         public FramePresenter(SkaaFrame sgf)
@@ -113,6 +103,13 @@ namespace SkaaEditorUI.Presenters
         public override bool Save(string filePath, params object[] param)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void SetupFileDialog(FileDialog dlg)
+        {
+            dlg.DefaultExt = ".spr";
+            dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
+            dlg.FileName = this.Name;
         }
     }
 }

@@ -1,14 +1,19 @@
-﻿using SkaaEditorUI.Forms;
+﻿using System;
+using SkaaEditorUI.Forms;
 using SkaaEditorUI.Presenters;
+using TrulyObservableCollection;
 
 namespace SkaaEditorUI
 {
     public interface IProjectManager
     {
-        Project ActiveProject { get; }
+        GameSetPresenter GameSet { get; set; }
         bool IsInTempDirectory { get; }
+        TrulyObservableCollection<SpritePresenter> OpenSprites { get; }
         string SaveDirectory { get; }
         string TempDirectory { get; }
+
+        event EventHandler ActiveSpriteChanged;
 
         void CleanTempFiles();
         void CloseProject();

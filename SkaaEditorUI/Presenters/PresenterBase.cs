@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using SkaaEditorUI.Misc;
 using SkaaGameDataLib;
@@ -37,15 +38,9 @@ namespace SkaaEditorUI.Presenters
     {
         public static readonly TraceSource Logger = new TraceSource($"{typeof(PresenterBase<T>)}", SourceLevels.All);
 
-        private Dictionary<string, string> fileTypes;
         private static OpenFileDialog _dlg;
         private T _gameObject;
         private FileFormats _fileFormat;
-
-        protected string FileDialogFilter { get { return GetFileDialogFilter(FileTypes); } }
-
-        protected abstract Dictionary<string, string> FileTypes
-        { get; }
 
         public T GameObject
         {
@@ -71,9 +66,9 @@ namespace SkaaEditorUI.Presenters
             }
         }
 
-        //Passed as a delegate in Open() so derived types must implement
-        public abstract T Load(string filePath, params object[] param);
-        public abstract bool Save(string filePath, params object[] param);
+        public abstract T Load(string filePath, params object[] param);     //Passed as a delegate in Open()
+        public abstract bool Save(string filePath, params object[] param);  //Passed as a delegate in Save()
+        protected abstract void SetupFileDialog(FileDialog dlg);            //Caled in both Open/Save
 
         static PresenterBase()
         {
@@ -82,7 +77,7 @@ namespace SkaaEditorUI.Presenters
 
         #region PropertyChangedEvent
         public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
@@ -90,35 +85,13 @@ namespace SkaaEditorUI.Presenters
         }
         #endregion
 
-        public string GetFileDialogFilter(Dictionary<string, string> fileTypeDic)
-        {
-            string fileTypes = "7KAA";
-            string fileExtensions = "";
-            string allFiles = "All Files (*.*)|*.*";
-
-            foreach (KeyValuePair<string, string> kv in fileTypeDic)
-            {
-                fileTypes += kv.Key + $" Files (*{kv.Value})|";
-                fileExtensions += kv.Value + '|';
-            }
-
-            string filter = $"{fileTypes + fileExtensions + allFiles}";
-            return filter;
-        }
-
-        //public PresenterBase<T1> Open<T1>(object loadParam = null) where T1 : class
-        //{
-        //    var dlg = new OpenFileDialog();
-        //    this.GameObject = dlg.ShowDialog<T>(() => this.Load(dlg.FileName, loadParam));
-        //    return this as PresenterBase<T1>;
-        //}
-        
         PresenterBase<T1> IPresenterBase<T>.Open<T1>(params object[] loadParam)
         {
             this.FileFormat = (FileFormats)(loadParam[0]);
 
             using (var dlg = new OpenFileDialog())
             {
+                SetupFileDialog(dlg);
                 this.GameObject = dlg.CustomShowDialog(() => this.Load(dlg.FileName, loadParam));
             }
             return this as PresenterBase<T1>;
@@ -130,6 +103,7 @@ namespace SkaaEditorUI.Presenters
 
             using (var dlg = new SaveFileDialog())
             {
+                SetupFileDialog(dlg);
                 result = dlg.CustomShowDialog(() => this.Save(dlg.FileName, loadParam));
             }
 

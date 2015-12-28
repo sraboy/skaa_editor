@@ -26,9 +26,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using SkaaGameDataLib;
+using System.Linq;
 using SkaaEditorUI.Forms;
 using SkaaEditorUI.Presenters;
+using SkaaGameDataLib;
+using TrulyObservableCollection;
 
 namespace SkaaEditorUI
 {
@@ -39,15 +41,40 @@ namespace SkaaEditorUI
     {
         private static readonly TraceSource Logger = new TraceSource($"{typeof(ProjectManager)}", SourceLevels.All);
 
-        //#region Lazy Singleton
-        //private static readonly Lazy<SProjectManager> lazyPm = new Lazy<SProjectManager>(() => new SProjectManager());
-        //public static SProjectManager ProjectManager { get { return lazyPm.Value; } }
         public ProjectManager() { this._tempFiles.Add(this.TempDirectory); }
-        //#endregion
+        #region Events
+        private EventHandler _activeSpriteChanged;
+        public event EventHandler ActiveSpriteChanged
+        {
+            add
+            {
+                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
+                {
+                    _activeSpriteChanged += value;
+                }
+            }
+            remove
+            {
+                _activeSpriteChanged -= value;
+            }
+        }
+        protected virtual void OnActiveSpriteChanged(EventArgs e)
+        {
+            EventHandler handler = _activeSpriteChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        #endregion
+
+
 
         #region Private Members
-        private Project _activeProject = new Project();
         private MDISkaaEditorMainForm _mainForm;
+        private TrulyObservableCollection<SpritePresenter> _openSprites;
+        private GameSetPresenter _gameSetPresenter = new GameSetPresenter();
 
         private bool _hasUnsavedChanges = false; //todo: track image changes so we know if items are unsaved
         private bool _isInTempDirectory = false;
@@ -56,6 +83,8 @@ namespace SkaaEditorUI
         private string _tempDirectory = GetTemporaryDirectory();
         private string _saveDirectory;
         #endregion
+
+
 
         #region Public Members
         public bool IsInTempDirectory
@@ -94,16 +123,29 @@ namespace SkaaEditorUI
                 this._saveDirectory = value;
             }
         }
-        public Project ActiveProject
+        public TrulyObservableCollection<SpritePresenter> OpenSprites
         {
             get
             {
-                return _activeProject;
+                return _openSprites;
             }
 
             private set
             {
-                this._activeProject = value;
+                this._openSprites = value;
+            }
+        }
+        public GameSetPresenter GameSet
+        {
+            get
+            {
+                return _gameSetPresenter;
+            }
+
+            set
+            {
+                this._gameSetPresenter = value;
+
             }
         }
         #endregion
