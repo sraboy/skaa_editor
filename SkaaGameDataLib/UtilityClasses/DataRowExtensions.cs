@@ -32,6 +32,7 @@ namespace SkaaGameDataLib
     public static class DataRowExtensions
     {
         public static readonly string FrameNameColumn = "FrameName";
+        public static readonly string FrameOffsetColumn = "FrameOffset";
 
         public static void WriteResDefinition(this DataRow dr, Stream str, uint offset, bool isIdx)
         {

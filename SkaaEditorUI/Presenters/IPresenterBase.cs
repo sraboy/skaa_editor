@@ -22,16 +22,18 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
-    public interface IPresenterBase<T> where T : class
+    public interface IPresenterBase<T> : INotifyPropertyChanged where T : class
     {
+        FileFormats FileFormat { get; set; }
         T GameObject { get; set; }
-        string GetFileDialogFilter(Dictionary<string, string> fileTypeDic);
-        PresenterBase<T1> Open<T1>(object loadParam = null) where T1 : class;
+
+        PresenterBase<T1> Open<T1>(params object[] loadParam) where T1 : class;
+        bool Save<T1>(params object[] loadParam) where T1 : class;
     }
 }

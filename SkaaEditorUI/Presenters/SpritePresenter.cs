@@ -22,117 +22,28 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System.Collections.Generic;
-using SkaaGameDataLib;
-using Capslock.WinForms.SpriteViewer;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.Linq.Expressions;
 using System;
 using System.IO;
-using SkaaEditorUI.Misc;
+using System.Windows.Forms;
+using Capslock.Windows.Forms.SpriteViewer;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
-    public class SpritePresenter : PresenterBase<SkaaSprite>
+    public class SpritePresenter : MultiImagePresenterBase
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "SpriteSpr", ".spr" }, { "SpriteRes", ".res" } };
-
         #region Private Members
-        private IFrame _activeFrame;
         private string _spriteId;
-        private TrulyObservableCollection<FramePresenter> _frames = new TrulyObservableCollection<FramePresenter>();
         #endregion
-
-        #region Public Members
-        public ColorPalette Palette
-        {
-            get
-            {
-                return this.ActiveFrame?.Bitmap?.Palette;
-            }
-        }
-        public IFrame ActiveFrame
-        {
-            get
-            {
-                return _activeFrame;
-            }
-            set
-            {
-                SetField(ref this._activeFrame, value, () => OnPropertyChanged(GetDesignModeValue(() => this.ActiveFrame)));
-            }
-        }
-        public string SpriteId
-        {
-            get
-            {
-                return this.GameObject.SpriteId;
-            }
-            set
-            {
-                SetField(ref this._spriteId, value, () => OnPropertyChanged(GetDesignModeValue(() => this.SpriteId)));
-            }
-        }
-        public TrulyObservableCollection<FramePresenter> Frames
-        {
-            get
-            {
-                return this._frames;
-            }
-            set
-            {
-                SetField(ref this._frames, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Frames)));
-            }
-        }
-        #endregion
-
-        protected override Dictionary<string, string> FileTypes
-        {
-            get
-            {
-                return _fileTypes;
-            }
-        }
 
         #region Constructors
-        public SpritePresenter()
-        {
-
-        }
+        public SpritePresenter() { }
         [Obsolete("This is for the old project class and should no longer be used.")]
         public SpritePresenter(SkaaSprite spr)
         {
             throw new NotImplementedException();
-            this.GameObject = spr;
-            this.ActiveFrame = (IFrame)spr.Frames[0];
-            SetFrames();
         }
         #endregion
-
-        private void SetFrames()
-        {
-            foreach (SkaaFrame f in this.GameObject.Frames)
-            {
-                var fp = new FramePresenter(f);
-                this.Frames.Add(fp);
-            }
-        }
-
-        protected override void OnPropertyChanged(string propertyName)
-        {
-            base.OnPropertyChanged(propertyName);
-        }
-        //private List<IFrame> GetIFrames()
-        //{
-        //    List<IFrame> frames = new List<IFrame>();
-        //    foreach (SkaaFrame sf in frames)
-        //    {
-        //        frames.Add(new FramePresenter(sf));
-        //    }
-        //    return frames;
-        //}
 
         /// <summary>
         /// Creates a <see cref="SkaaSprite"/> object from an SPR-formatted file
@@ -140,35 +51,35 @@ namespace SkaaEditorUI.Presenters
         /// <param name="filePath">The absolute path to the SPR file to open</param>
         /// <returns>The newly-created <see cref="SkaaSprite"/></returns>
         /// <remarks>
-        protected override SkaaSprite Load(string filePath, params object[] param)
+        public override SkaaSprite Load(string filePath, params object[] param)
         {
-            ColorPalette pal = (param[0] as object[])[0] as ColorPalette;
-
-            if (pal == null)
-                throw new ArgumentNullException("param", "You must specify a ColorPalette to load a sprite.");
-
             SkaaSprite spr;
 
-            using (FileStream spritestream = File.OpenRead(filePath))
-                spr = SkaaSprite.FromSprStream(spritestream, pal);
+            using (FileStream fs = File.OpenRead(filePath))
+                spr = SkaaSprite.FromSprStream(fs, this.PalettePresenter.GameObject);
 
             this.GameObject = spr;
-            SetFrames();
+            this.SpriteId = spr.SpriteId;
+
+            this.Frames = BuildFramePresenters();
             return this.GameObject;
         }
 
-        public void SetActiveFrame(int index)
+        public override bool Save(string filePath, params object[] param)
         {
-            this.ActiveFrame = this.Frames?[index];
-        }
-        public Stream GetActiveSpriteStream()
-        {
-            var spr = new MemoryStream();
-            var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
-            foreach (byte[] ba in sprBytes)
-                spr.Write(ba, 0, ba.Length);
+            using (FileStream fs = File.Open(filePath, FileMode.Create))
+            {
+                this.GetSpriteStream().CopyTo(fs);
+            }
 
-            return spr;
+            return true;
+        }
+
+        protected override void SetupFileDialog(FileDialog dlg)
+        {
+            dlg.DefaultExt = ".spr";
+            dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
+            dlg.FileName = this.SpriteId ?? null;
         }
     }
 }

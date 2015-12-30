@@ -23,7 +23,6 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -31,37 +30,42 @@ namespace SkaaEditorUI.Presenters
 {
     public class GameSetPresenter : PresenterBase<DataSet>
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Game Set", ".std" } };
-
-        protected override Dictionary<string, string> FileTypes
-        {
-            get
-            {
-                return _fileTypes;
-            }
-        }
-
         /// <summary>
         /// Loads a 7KAA-format SET file (e.g., std.set)
         /// </summary>
         /// <param name="filePath">The path to the file</param>
         /// <param name="merge">Whether to merge the loaded <see cref="DataSet"/> with the current <see cref="GameObject"/></param>
         /// <returns>A new <see cref="DataSet"/> containing all the tables and records of the specified file</returns>
-        protected override DataSet Load(string filePath, params object[] param)
+        public override DataSet Load(string filePath, params object[] loadParam)
         {
-            bool merge = (bool)param[0];
+            bool merge = (bool)loadParam[1];
 
             DataSet ds = new DataSet();
 
             if (ds.OpenStandardGameSet(filePath) == false)
                 return null;
 
+            this.GameObject = this.GameObject ?? new DataSet();
+
             if (merge)
-                this.GameObject?.Merge(ds);
+                this.GameObject.Merge(ds);
             else
                 this.GameObject = ds;
 
             return this.GameObject;
+        }
+
+        public override bool Save(string filePath, params object[] param)
+        {
+
+            throw new NotImplementedException();
+        }
+
+        protected override void SetupFileDialog(FileDialog dlg)
+        {
+            dlg.DefaultExt = ".set";
+            dlg.Filter = $"7KAA Set Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
+            dlg.FileName = "std";
         }
     }
 }

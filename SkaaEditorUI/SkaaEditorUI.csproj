@@ -122,6 +122,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IProjectManager.cs" />
     <Compile Include="Misc\FileDialogExtensions.cs" />
     <Compile Include="Forms\AboutForm.cs">
       <SubType>Form</SubType>
@@ -129,7 +130,7 @@
     <Compile Include="Forms\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\DockPanels\ImageEditorContainer.cs">
+    <Compile Include="Forms\DockContentControls\ImageEditorContainer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MDISkaaEditorMainForm.cs">
@@ -138,25 +139,28 @@
     <Compile Include="Forms\MDISkaaEditorMainForm.Designer.cs">
       <DependentUpon>MDISkaaEditorMainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ObjectListViewContainer.cs">
+    <Compile Include="Forms\DockContentControls\GameSetViewerContainer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ObjectListViewContainer.Designer.cs">
-      <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
+    <Compile Include="Forms\DockContentControls\GameSetViewerContainer.Designer.cs">
+      <DependentUpon>GameSetViewerContainer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\DockPanels\SpriteViewerContainer.cs">
+    <Compile Include="Forms\DockContentControls\SpriteViewerContainer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\DockPanels\ToolboxContainer.cs">
+    <Compile Include="Forms\DockContentControls\ToolboxContainer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Presenters\ColorPalettePresenter.cs" />
+    <Compile Include="Presenters\IMultiImagePresenter.cs" />
     <Compile Include="Presenters\IPresenterBase.cs" />
+    <Compile Include="Presenters\MultiImagePresenterBase.cs" />
     <Compile Include="Presenters\PresenterBase.cs" />
     <Compile Include="oldProject.cs" />
     <Compile Include="Presenters\GameSetPresenter.cs" />
-    <Compile Include="Project.cs" />
-    <Compile Include="Presenters\ProjectManager.cs" />
+    <Compile Include="Misc\PresenterFileDialogEventArgs.cs" />
+    <Compile Include="Presenters\ResIdxMultiBmpPresenter.cs" />
+    <Compile Include="ProjectManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -181,15 +185,17 @@
       <DependentUpon>SkaaSAVEditorTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Presenters\SpritePresenter.cs" />
-    <Compile Include="Misc\TrulyObservableCollection.cs" />
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DockContentControls\SpriteViewerContainer.resx">
+      <DependentUpon>SpriteViewerContainer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDISkaaEditorMainForm.resx">
       <DependentUpon>MDISkaaEditorMainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ObjectListViewContainer.resx">
-      <DependentUpon>ObjectListViewContainer.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\DockContentControls\GameSetViewerContainer.resx">
+      <DependentUpon>GameSetViewerContainer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SkaaEditorMainForm.resx">
       <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
@@ -217,9 +223,13 @@
     <None Include="SkaaEditorUI.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Capslock.WinForms.ImageEditor\Capslock.WinForms.ImageEditor.csproj">
+    <ProjectReference Include="..\Capslock.Windows.Forms.ImageEditor\Capslock.Windows.Forms.ImageEditor.csproj">
       <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
-      <Name>Capslock.WinForms.ImageEditor</Name>
+      <Name>Capslock.Windows.Forms.ImageEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Capslock.Windows.Forms.SpriteViewer\Capslock.Windows.Forms.SpriteViewer.csproj">
+      <Project>{97298eea-3f5c-4639-89ec-47c4fc8e13da}</Project>
+      <Name>Capslock.Windows.Forms.SpriteViewer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
       <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>
@@ -237,9 +247,9 @@
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
       <Name>SkaaGameDataLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SpriteViewer\Capslock.WinForms.SpriteViewer.csproj">
-      <Project>{97298eea-3f5c-4639-89ec-47c4fc8e13da}</Project>
-      <Name>Capslock.WinForms.SpriteViewer</Name>
+    <ProjectReference Include="..\TrulyObservableCollection\TrulyObservableCollection.csproj">
+      <Project>{c4f5a035-f92a-4fdc-bc51-c53b2d29b608}</Project>
+      <Name>TrulyObservableCollection</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -263,7 +273,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="license.txt" />
     <Content Include="Resources\Kazuya-Hartless.ico" />
     <Content Include="Resources\Kazuya-Hartless.png" />
   </ItemGroup>

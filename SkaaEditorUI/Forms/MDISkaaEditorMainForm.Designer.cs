@@ -43,7 +43,7 @@
             WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient3 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
             WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+            this._dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripBtnNewProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnOpenProject = new System.Windows.Forms.ToolStripButton();
@@ -58,8 +58,10 @@
             this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.openSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openSpriteSprToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,20 +80,19 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
-            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // dockPanel
+            // _dockPanel
             // 
-            this.dockPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this._dockPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dockPanel.Location = new System.Drawing.Point(0, 52);
-            this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Size = new System.Drawing.Size(795, 506);
+            this._dockPanel.Location = new System.Drawing.Point(0, 52);
+            this._dockPanel.Name = "_dockPanel";
+            this._dockPanel.Size = new System.Drawing.Size(944, 647);
             dockPanelGradient1.EndColor = System.Drawing.SystemColors.ControlLight;
             dockPanelGradient1.StartColor = System.Drawing.SystemColors.ControlLight;
             autoHideStripSkin1.DockStripGradient = dockPanelGradient1;
@@ -137,8 +138,8 @@
             dockPaneStripToolWindowGradient1.InactiveTabGradient = tabGradient7;
             dockPaneStripSkin1.ToolWindowGradient = dockPaneStripToolWindowGradient1;
             dockPanelSkin1.DockPaneStripSkin = dockPaneStripSkin1;
-            this.dockPanel.Skin = dockPanelSkin1;
-            this.dockPanel.TabIndex = 0;
+            this._dockPanel.Skin = dockPanelSkin1;
+            this._dockPanel.TabIndex = 0;
             // 
             // toolStrip1
             // 
@@ -149,7 +150,7 @@
             this.toolStripBtnCloseProject});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(794, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(943, 25);
             this.toolStrip1.TabIndex = 19;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -204,7 +205,7 @@
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(794, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(943, 24);
             this.mainMenuStrip.TabIndex = 18;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -233,14 +234,14 @@
             // newProjectToolStripMenuItem
             // 
             this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.newProjectToolStripMenuItem.Text = "Project";
             // 
             // spriteToolStripMenuItem
             // 
             this.spriteToolStripMenuItem.Enabled = false;
             this.spriteToolStripMenuItem.Name = "spriteToolStripMenuItem";
-            this.spriteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.spriteToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.spriteToolStripMenuItem.Text = "Sprite";
             // 
             // openToolStripMenuItem
@@ -249,7 +250,8 @@
             this.openProjectToolStripMenuItem,
             this.openFileToolStripMenuItem,
             this.toolStripSeparator3,
-            this.openSpriteToolStripMenuItem,
+            this.openSpriteSprToolStripMenuItem,
+            this.spriteResToolStripMenuItem,
             this.openGameSetToolStripMenuItem,
             this.loadPaletteToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
@@ -274,18 +276,33 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(151, 6);
             // 
-            // openSpriteToolStripMenuItem
+            // openSpriteSprToolStripMenuItem
             // 
-            this.openSpriteToolStripMenuItem.Name = "openSpriteToolStripMenuItem";
-            this.openSpriteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.openSpriteToolStripMenuItem.Text = "Sprite";
-            this.openSpriteToolStripMenuItem.Click += new System.EventHandler(this.openSpriteToolStripMenuItem_Click);
+            this.openSpriteSprToolStripMenuItem.Name = "openSpriteSprToolStripMenuItem";
+            this.openSpriteSprToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.openSpriteSprToolStripMenuItem.Text = "Sprite (Spr)";
+            this.openSpriteSprToolStripMenuItem.Click += new System.EventHandler(this.openSpriteSprToolStripMenuItem_Click);
             // 
             // openGameSetToolStripMenuItem
             // 
             this.openGameSetToolStripMenuItem.Name = "openGameSetToolStripMenuItem";
             this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.openGameSetToolStripMenuItem.Text = "Game Set";
+            this.openGameSetToolStripMenuItem.Click += new System.EventHandler(this.openGameSetToolStripMenuItem_Click);
+            // 
+            // loadPaletteToolStripMenuItem
+            // 
+            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
+            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.loadPaletteToolStripMenuItem.Text = "Palette";
+            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
+            // 
+            // spriteResToolStripMenuItem
+            // 
+            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
+            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
+            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.openSpriteResToolStripMenuItem_Click);
             // 
             // saveProjectToolStripMenuItem
             // 
@@ -317,6 +334,7 @@
             this.saveSpriteToolStripMenuItem.Name = "saveSpriteToolStripMenuItem";
             this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.saveSpriteToolStripMenuItem.Text = "Sprite";
+            this.saveSpriteToolStripMenuItem.Click += new System.EventHandler(this.saveSpriteToolStripMenuItem_Click);
             // 
             // saveSpriteFrameToolStripMenuItem
             // 
@@ -351,7 +369,7 @@
             this.toolStripSeparator2,
             this.exportAllFramesTo32bppBmpToolStripMenuItem});
             this.exportPngToolStripMenuItem.Name = "exportPngToolStripMenuItem";
-            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportPngToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.exportPngToolStripMenuItem.Text = "Export PNG";
             // 
             // currentFrameTobmp32bppToolStripMenuItem
@@ -403,36 +421,29 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsStatusLblFileType});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 562);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 703);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(794, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(943, 22);
             this.statusStrip1.TabIndex = 20;
             this.statusStrip1.Text = "SkaaEditor ALPHA v0.1";
             // 
             // tsStatusLblFileType
             // 
             this.tsStatusLblFileType.Name = "tsStatusLblFileType";
-            this.tsStatusLblFileType.Size = new System.Drawing.Size(779, 17);
+            this.tsStatusLblFileType.Size = new System.Drawing.Size(928, 17);
             this.tsStatusLblFileType.Spring = true;
             this.tsStatusLblFileType.Text = "No File Loaded";
             this.tsStatusLblFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // loadPaletteToolStripMenuItem
-            // 
-            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
-            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.loadPaletteToolStripMenuItem.Text = "Palette";
-            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
             // 
             // MDISkaaEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(794, 584);
+            this.ClientSize = new System.Drawing.Size(943, 725);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.mainMenuStrip);
-            this.Controls.Add(this.dockPanel);
+            this.Controls.Add(this._dockPanel);
             this.IsMdiContainer = true;
             this.Name = "MDISkaaEditorMainForm";
             this.Text = "MDISkaaEditorMainForm";
@@ -449,7 +460,7 @@
 
         #endregion
 
-        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel;
+        private WeifenLuo.WinFormsUI.Docking.DockPanel _dockPanel;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripBtnNewProject;
         private System.Windows.Forms.ToolStripButton toolStripBtnOpenProject;
@@ -464,7 +475,7 @@
         private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem openSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openSpriteSprToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openGameSetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
@@ -485,5 +496,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
         private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem spriteResToolStripMenuItem;
     }
 }

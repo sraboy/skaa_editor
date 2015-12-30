@@ -22,29 +22,20 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
-using System.Windows.Forms;
+using System.Data;
+using Capslock.Windows.Forms.SpriteViewer;
+using TrulyObservableCollection;
 
-namespace SkaaEditorUI.Misc
+namespace SkaaEditorUI.Presenters
 {
-    public static class FileDialogExtensions
+    public interface IMultiImagePresenter
     {
-        public static T CustomShowDialog<T>(this FileDialog dlg, Func<T> loadFileDelegate) where T : class
-        {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return loadFileDelegate();
-            else
-                return null;
-        }
+        TrulyObservableCollection<IFrame> Frames { get; set; }
+        ColorPalettePresenter PalettePresenter { get; set; }
+        DataView DataView { get; }
+        IFrame ActiveFrame { get; set; }
+        string SpriteId { get; set; }
 
-        //todo: Create a FileDialogResults class and return that so it can always be parsed
-
-        public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
-        {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return saveFileDelegate();
-            else
-                return false;
-        }
+        void LoadPalette(string filePath);
     }
 }

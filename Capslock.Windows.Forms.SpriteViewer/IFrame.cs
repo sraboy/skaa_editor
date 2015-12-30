@@ -23,28 +23,16 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Windows.Forms;
+using System.ComponentModel;
+using System.Drawing;
 
-namespace SkaaEditorUI.Misc
+namespace Capslock.Windows.Forms.SpriteViewer
 {
-    public static class FileDialogExtensions
+    public interface IFrame : INotifyPropertyChanged
     {
-        public static T CustomShowDialog<T>(this FileDialog dlg, Func<T> loadFileDelegate) where T : class
-        {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return loadFileDelegate();
-            else
-                return null;
-        }
-
-        //todo: Create a FileDialogResults class and return that so it can always be parsed
-
-        public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
-        {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return saveFileDelegate();
-            else
-                return false;
-        }
+        long BitmapOffset { get; set; }
+        string Name { get; set; }
+        Bitmap Bitmap { get; set; }
+        Guid Guid { get; set; }
     }
 }

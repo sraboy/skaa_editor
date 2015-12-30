@@ -22,29 +22,51 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
+using System.Data;
 using System.Windows.Forms;
+using BrightIdeasSoftware;
+using SkaaEditorUI.Presenters;
+using WeifenLuo.WinFormsUI.Docking;
 
-namespace SkaaEditorUI.Misc
+namespace SkaaEditorUI.Forms.DockContentControls
 {
-    public static class FileDialogExtensions
+    public partial class GameSetViewerContainer : DockContent
     {
-        public static T CustomShowDialog<T>(this FileDialog dlg, Func<T> loadFileDelegate) where T : class
+        private GameSetPresenter _gameSetPresenter;
+        public GameSetPresenter GameSetPresenter
         {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return loadFileDelegate();
-            else
-                return null;
+            get
+            {
+                return _gameSetPresenter;
+            }
+
+            set
+            {
+                this._gameSetPresenter = value;
+                SetDataSource(this._gameSetPresenter?.GameObject);
+            }
         }
 
-        //todo: Create a FileDialogResults class and return that so it can always be parsed
-
-        public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
+        public GameSetViewerContainer()
         {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return saveFileDelegate();
-            else
-                return false;
+            InitializeComponent();
+            this.dataListView1.ItemChecked += DataListView1_ItemChecked;
+        }
+
+        private void DataListView1_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+        }
+
+        private void SetDataSource(DataSet ds)
+        {
+            this.dataListView1.DataSource = ds;
+            this.dataListView1.AutoSizeColumns();
+            //this.dataListView1.CheckBoxes = true;
+            this.dataListView1.ShowGroups = true;
+            this.dataListView1.DataMember = "SFRAME";
+            //this.dataListView1.CheckedAspectName = "Save";
+            foreach (OLVColumn c in this.dataListView1.Columns)
+                c.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
     }
 }

@@ -23,28 +23,47 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Windows.Forms;
 
-namespace SkaaEditorUI.Misc
+namespace Capslock.Windows.Forms.SpriteViewer
 {
-    public static class FileDialogExtensions
+    public class FrameChangedEventArgs : EventArgs
     {
-        public static T CustomShowDialog<T>(this FileDialog dlg, Func<T> loadFileDelegate) where T : class
+        private Guid _frameGuid;
+        //private Frame _selectedFrame;
+
+        //public Frame SelectedFrame
+        //{
+        //    get
+        //    {
+        //        return _selectedFrame;
+        //    }
+
+        //    private set
+        //    {
+        //        this._selectedFrame = value;
+        //    }
+        //}
+        public Guid FrameGuid
         {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return loadFileDelegate();
-            else
-                return null;
+            get
+            {
+                return _frameGuid;
+            }
+
+            set
+            {
+                this._frameGuid = value;
+            }
         }
 
-        //todo: Create a FileDialogResults class and return that so it can always be parsed
-
-        public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
+        //public FrameChangedEventArgs(Frame SelectedFrame)
+        //{
+        //    this.SelectedFrame = SelectedFrame;
+        //    this.FrameGuid = SelectedFrame.Guid;
+        //}
+        public FrameChangedEventArgs(Guid SelectedFrameGuid)
         {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return saveFileDelegate();
-            else
-                return false;
+            this.FrameGuid = SelectedFrameGuid;
         }
     }
 }

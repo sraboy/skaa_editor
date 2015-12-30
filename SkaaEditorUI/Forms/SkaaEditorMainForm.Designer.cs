@@ -93,11 +93,11 @@ namespace SkaaEditorUI.Forms
             this.toolStripBtnOpenProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnSaveProject = new System.Windows.Forms.ToolStripButton();
             this.toolStripBtnCloseProject = new System.Windows.Forms.ToolStripButton();
-            this.drawingToolbox = new Capslock.WinForms.ImageEditor.DrawingToolbox();
-            this.imageEditorBox = new Capslock.WinForms.ImageEditor.ImageEditorBox();
+            this.drawingToolbox = new Capslock.Windows.Forms.ImageEditor.DrawingToolbox();
+            this.imageEditorBox = new Capslock.Windows.Forms.ImageEditor.ImageEditorBox();
             this.btnBrowseGameSet = new System.Windows.Forms.Button();
             this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
-            this.spriteViewer1 = new Capslock.WinForms.SpriteViewer.SpriteView();
+            this.spriteViewer1 = new Capslock.Windows.Forms.SpriteViewer.SpriteViewer();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -528,7 +528,7 @@ namespace SkaaEditorUI.Forms
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private Capslock.WinForms.ImageEditor.ImageEditorBox imageEditorBox;
+        private Capslock.Windows.Forms.ImageEditor.ImageEditorBox imageEditorBox;
         private System.Windows.Forms.Button btnDebugAction;
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -548,7 +548,7 @@ namespace SkaaEditorUI.Forms
         private System.Windows.Forms.ToolStripMenuItem spriteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private Capslock.WinForms.ImageEditor.DrawingToolbox drawingToolbox;
+        private Capslock.Windows.Forms.ImageEditor.DrawingToolbox drawingToolbox;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripBtnNewProject;
         private System.Windows.Forms.ToolStripButton toolStripBtnOpenProject;
@@ -560,6 +560,6 @@ namespace SkaaEditorUI.Forms
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
         private System.Windows.Forms.Button btnBrowseGameSet;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private Capslock.WinForms.SpriteViewer.SpriteView spriteViewer1;
+        private Capslock.Windows.Forms.SpriteViewer.SpriteViewer spriteViewer1;
     }
 }

@@ -22,31 +22,23 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System.Collections.Generic;
+using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
     public class ColorPalettePresenter : PresenterBase<ColorPalette>
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Skaa General Palette", ".res" }, { "Skaa Encyclopedia Palette", ".col" } };
-        protected override Dictionary<string, string> FileTypes
-        {
-            get
-            {
-                return _fileTypes;
-            }
-        }
-
         public ColorPalettePresenter() { }
         public ColorPalettePresenter(ColorPalette pal)
         {
             this.GameObject = pal;
         }
 
-        protected override ColorPalette Load(string filePath, params object[] param)
+        public override ColorPalette Load(string filePath, params object[] param)
         {
             var pal = PaletteLoader.FromResFile(filePath);
 
@@ -54,6 +46,18 @@ namespace SkaaEditorUI.Presenters
                 Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load palette: {filePath}");
 
             return pal;
+        }
+
+        public override bool Save(string filePath, params object[] param)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void SetupFileDialog(FileDialog dlg)
+        {
+            dlg.DefaultExt = ".res";
+            dlg.Filter = $"7KAA Palette Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
+            dlg.FileName = "pal_std";
         }
     }
 }

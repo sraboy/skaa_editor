@@ -23,116 +23,29 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SkaaEditorUI.Forms.DockPanels;
+using SkaaEditorUI.Forms.DockContentControls;
 using SkaaEditorUI.Presenters;
 using SkaaGameDataLib;
 using WeifenLuo.WinFormsUI.Docking;
-using static SkaaEditorUI.SProjectManager;
 
 namespace SkaaEditorUI.Forms
 {
     public partial class MDISkaaEditorMainForm : Form
     {
-        // We should never instantiate these. They're only set based on the ProjectManager's ActiveSprite
-        private static SpritePresenter _activeSprite;
-        private static ColorPalettePresenter _activePalette;
-
         private ToolboxContainer _toolBoxContainer;
         private SpriteViewerContainer _spriteViewerContainer;
+        private GameSetViewerContainer _gameSetViewerContainer;
+        private ProjectManager ProjectManager = new ProjectManager();
 
-        #region Events
-        [NonSerialized]
-        private EventHandler _activeSpriteChanged;
-        public event EventHandler ActiveSpriteChanged
-        {
-            add
-            {
-                if (_activeSpriteChanged == null || !_activeSpriteChanged.GetInvocationList().Contains(value))
-                {
-                    _activeSpriteChanged += value;
-                }
-            }
-            remove
-            {
-                _activeSpriteChanged -= value;
-            }
-        }
-        private void OnActiveSpriteChanged(EventArgs e)
-        {
-            EventHandler handler = _activeSpriteChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-        
-        [NonSerialized]
-        private EventHandler _activePaletteChanged;
-        public event EventHandler ActivePaletteChanged
-        {
-            add
-            {
-                if (_activePaletteChanged == null || !_activePaletteChanged.GetInvocationList().Contains(value))
-                {
-                    _activePaletteChanged += value;
-                }
-            }
-            remove
-            {
-                _activePaletteChanged -= value;
-            }
-        }
-        private void OnActivePaletteChanged(EventArgs e)
-        {
-            EventHandler handler = _activePaletteChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-        #endregion
-
-        public ColorPalettePresenter ActivePalette
+        public ColorPalette ActivePalette
         {
             get
             {
-                return _activePalette;
-            }
-            set
-            {
-                if (_activePalette != value)
-                {
-                    _activePalette = value;
-                    OnActivePaletteChanged(EventArgs.Empty);
-                }
-            }
-        }
-        public SpritePresenter ActiveSprite
-        {
-            get
-            {
-                return _activeSprite;
-            }
-
-            set
-            {
-                if (_activeSprite != value)
-                {
-                    _activeSprite = value;
-                    OnActiveSpriteChanged(EventArgs.Empty);
-                }
+                return this._toolBoxContainer.ActivePalette;
             }
         }
 
@@ -141,12 +54,9 @@ namespace SkaaEditorUI.Forms
             InitializeComponent();
             SetUpDockPanel();
             ProjectManager.SetMainForm(this);
-        }
-
-        private void ActiveSprite_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var iec = (ImageEditorContainer)this.dockPanel.ActiveDocument ?? new ImageEditorContainer();
-            iec.SetSprite(this.ActiveSprite);
+            this.showGridToolStripMenuItem.Checked = true;
+            this._toolBoxContainer.ColorChanged += ToolboxContainer_ColorChanged;
+            this._toolBoxContainer.SelectedToolChanged += ToolboxContainer_SelectedToolChanged;
         }
 
         private void SetUpDockPanel()
@@ -155,15 +65,77 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.HideOnClose = true;
             this._spriteViewerContainer = new SpriteViewerContainer();
             this._spriteViewerContainer.HideOnClose = true;
+            this._gameSetViewerContainer = new GameSetViewerContainer();
+            this._gameSetViewerContainer.HideOnClose = true;
 
-            this.dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
-            _toolBoxContainer.Show(dockPanel, DockState.DockLeft);
-            _spriteViewerContainer.Show(dockPanel, DockState.DockRight);
-            OpenNewTab(this.ActiveSprite);
+            this._dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
+            _toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
+            _spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
+            OpenNewTab();
+
+            //we don't want this as the ActiveDocument, so show it after OpenNewTab()
+            this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
         }
 
+
+
+        #region Click Events
+        private void ToolboxContainer_SelectedToolChanged(object sender, EventArgs e)
+        {
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
+            iec.ChangeToolMode(sender, e);
+        }
+        private void ToolboxContainer_ColorChanged(object sender, EventArgs e)
+        {
+            //todo: create a ColorChangedEventArgs so we can just pass sender/e like SelectedToolChanged
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
+            iec.SetActiveColors((sender as Cyotek.Windows.Forms.ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
+        }
+        private void toolStripBtnNewProject_Click(object sender, EventArgs e)
+        {
+            //if (TrySaveCloseProject())
+            //    ProjectManager.CreateNewProject();
+        }
+        private void toolStripBtnOpenProject_Click(object sender, EventArgs e)
+        {
+            if (OpenProject() == false)
+                MessageBox.Show("Failed to open project!");
+            //Browse folders to find a project directory
+            //Check all file types and load them
+        }
+
+        private void openSpriteSprToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (OpenSprite<SpritePresenter>() == null)
+                MessageBox.Show("Failed to load sprite!");
+        }
+        private void openSpriteResToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (OpenSprite<ResIdxMultiBmpPresenter>() == null)
+                MessageBox.Show("Failed to load sprite!");
+        }
+        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (OpenPalette() == false)
+                MessageBox.Show("Failed to load palette!");
+        }
+        private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (OpenGameSet() == null)
+                MessageBox.Show("Failed to load game set!");
+        }
+        private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var doc = this._dockPanel.ActiveDocument as ImageEditorContainer;
+            var spr = doc.ActiveSprite;
+
+            ProjectManager.Save(spr);
+        }
+        #endregion
+
+
         /// <summary>
-        /// Closes the current project and saves changes, if needed.
+        /// Closes the current project and saves any changes, if needed.
         /// </summary>
         /// <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
         private bool TrySaveCloseProject()
@@ -172,7 +144,7 @@ namespace SkaaEditorUI.Forms
 
             if (saveChanges == DialogResult.Yes)
             {
-                ProjectManager.CloseProject();
+                //ProjectManager.CloseProject();
                 return true;
             }
             else if (saveChanges == DialogResult.No)
@@ -192,62 +164,104 @@ namespace SkaaEditorUI.Forms
             else
                 return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
         }
-
-        private void OpenNewTab(SpritePresenter spr)
+        /// <summary>
+        /// Opens a new document tab, which is automatically set as the <see cref="DockPanel.ActiveDocument"/>
+        /// </summary>
+        public ImageEditorContainer OpenNewTab()
         {
             ImageEditorContainer iec = new ImageEditorContainer();
-            iec.Show(dockPanel, DockState.Document);
-            iec.SetSprite(spr);
+            iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
+            iec.ImageChanged += ImageEditorContainer_ImageChanged;
+            return iec;
         }
 
-
-
-        #region Event Handlers
-        ///////////////////////////// Button Clicks /////////////////////////////
-        private void toolStripBtnNewProject_Click(object sender, EventArgs e)
+        public void SetActiveSprite(MultiImagePresenterBase spr)
         {
-            if (TrySaveCloseProject())
-                ProjectManager.CreateNewProject();
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;// ?? new ImageEditorContainer();
+            iec.SetSprite(spr);
+            this._spriteViewerContainer.SetSprite(spr);
         }
-        private void toolStripBtnOpenProject_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Opens a <see cref="SkaaSprite"/>
+        /// </summary>
+        /// <typeparam name="T">A presenter class that implements <see cref="MultiImagePresenterBase"/></typeparam>
+        /// <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
+        public T OpenSprite<T>() where T : MultiImagePresenterBase, new()
         {
-            //Browse folders to find a project directory
-            //Check all file types and load them
+            //check for a palette first
+            //if not loaded, set it
+            if (this._toolBoxContainer.ActivePalette == null)
+                if (OpenPalette() == false)
+                    return null;
+
+            T spr = (T)ProjectManager.Open<SkaaSprite, T>(FileFormats.SpriteSpr);
+
+            if (spr == null) //user canceled or loading failed
+                return null;
+
+            if (spr.Frames.Count > 0)
+            {
+                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewTab();
+
+                if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
+                    SetActiveSprite(spr);
+                else
+                {
+                    OpenNewTab();           //open a new document tab
+                    SetActiveSprite(spr);
+                }
+            }
+
+
+            SetSpriteDataViews(this._gameSetViewerContainer.GameSetPresenter);
+            return spr;
         }
-        private void openSpriteToolStripMenuItem_Click(object sender, EventArgs e)
+
+        public bool OpenPalette()
         {
-            //set palette first
-            if (this.ActivePalette?.GameObject == null)
-                loadPaletteToolStripMenuItem_Click(sender, e);
-
-            SpritePresenter spr = (SpritePresenter)ProjectManager.Open<SkaaSprite, SpritePresenter>(this.ActivePalette.GameObject);
-            spr.PropertyChanged += ActiveSprite_PropertyChanged;
-
-            var doc = ((ImageEditorContainer)this.dockPanel.ActiveDocument);
-            if (doc?.ActiveSprite == null)
-                this.ActiveSprite = spr;
+            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
+            if (pal?.GameObject == null)
+                return false;
             else
-                OpenNewTab(spr);
+                _toolBoxContainer.SetPalette(pal.GameObject);
 
-            spr.SetActiveFrame(0);
+            return true;
         }
-        private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+
+        public bool OpenProject()
         {
-            this.ActivePalette = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>();
-            _toolBoxContainer.SetPalette(this.ActivePalette.GameObject);
+            throw new NotImplementedException();
         }
-        ///////////////////////////// Other UI Changes /////////////////////////////
+
+        public GameSetPresenter OpenGameSet()
+        {
+            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(FileFormats.GameSet, true);
+
+            if (gsp.GameObject == null)
+                return null;
+
+            this._gameSetViewerContainer.GameSetPresenter = gsp;
+            SetSpriteDataViews(gsp);
+
+            return gsp;
+        }
+
+        private void SetSpriteDataViews(GameSetPresenter gsp)
+        {
+            ProjectManager.SetSpriteDataViews(gsp);
+            //var spr = (this._dockPanel.ActiveDocument as ImageEditorContainer).ActiveSprite;
+            //this._spriteViewerContainer.SetSprite(spr);
+        }
+
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
             //get the palette for the currently-loaded sprite, if any
-            var iec = (ImageEditorContainer)this.dockPanel.ActiveDocument;
-            var pal = iec?.ActiveSprite?.Palette;
+            var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
+            var pal = iec?.ActiveSprite?.PalettePresenter;
 
             if (pal != null)
-                this.ActivePalette.GameObject = pal;
-
-            UpdatePalette(iec);
+                this._toolBoxContainer.SetPalette(pal.GameObject);
         }
         /// <summary>
         /// Updates the palette in the <see cref="ToolboxContainer"/> with that of the <see cref="SkaaSprite"/> the user is viewing
@@ -255,13 +269,25 @@ namespace SkaaEditorUI.Forms
         private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e)
         {
             var iec = sender as ImageEditorContainer;
-            UpdatePalette(iec);
+            this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
+            this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
         }
 
-        private void UpdatePalette(ImageEditorContainer iec)
+        /// <summary>
+        /// Forces redraws of child controls displaying the image
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e)
         {
-            this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.Palette);
+            //todo: force an update of the individual cell containing the image
+            // It only updates after a mouseover. Refresh/Invalidate/Update
+            // do nothing but SetSprite actually resets the list of objects,
+            // which works, but could be a performance issue with large sprites.
+            var iec = sender as ImageEditorContainer;
+            this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
         }
-        #endregion
+
+
     }
 }

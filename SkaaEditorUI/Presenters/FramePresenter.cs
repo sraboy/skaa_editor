@@ -23,33 +23,38 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using Capslock.WinForms.SpriteViewer;
+using System.Windows.Forms;
+using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
     public class FramePresenter : PresenterBase<SkaaFrame>, IFrame
     {
-        private static readonly Dictionary<string, string> _fileTypes = new Dictionary<string, string>() { { "Frame", ".res" } };
-
         #region Private Members
         private Guid _guid;
         private Bitmap _bitmap;
         private long _bitmapOffset;
         private string _name;
         #endregion
-
+        /// <summary>
+        /// Sets the <see cref="Bitmap"/> property to the specified value and raises the
+        /// <see cref="PresenterBase{T}.PropertyChanged"/> event without doing a comparison.
+        /// </summary>
         public Bitmap Bitmap
         {
             get
             {
-                return this.GameObject.IndexedBitmap.Bitmap;
+                return this._bitmap;
             }
             set
             {
-                SetField(ref this._bitmap, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Bitmap)));
+                this._bitmap = value;
+                OnPropertyChanged();
+                //We can't use SetField unless we implement a custom comparer for Bitmaps.
+                //More often than not, it is likely the case that the image has indeed changed.
+                //SetField(ref this._bitmap, value, () => OnPropertyChanged());// GetDesignModeValue(() => this.Bitmap)));
             }
         }
         public Guid Guid
@@ -60,18 +65,18 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._guid, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Guid)));
+                SetField(ref this._guid, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Guid)));
             }
         }
         public long BitmapOffset
         {
             get
             {
-                return this.GameObject.BitmapOffset;
+                return this._bitmapOffset;
             }
             set
             {
-                SetField(ref this._bitmapOffset, value, () => OnPropertyChanged(GetDesignModeValue(() => this.BitmapOffset)));
+                SetField(ref this._bitmapOffset, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.BitmapOffset)));
             }
         }
         public string Name
@@ -82,15 +87,7 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._name, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Name)));
-            }
-        }
-
-        protected override Dictionary<string, string> FileTypes
-        {
-            get
-            {
-                throw new NotImplementedException();
+                SetField(ref this._name, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Name)));
             }
         }
 
@@ -103,11 +100,27 @@ namespace SkaaEditorUI.Presenters
             this.GameObject.Name = sgf.Name;
             this.GameObject.BitmapOffset = sgf.BitmapOffset;
             this.GameObject.IndexedBitmap = sgf.IndexedBitmap;
+
+            this.Bitmap = this.GameObject.IndexedBitmap.Bitmap;
+            this.Name = this.GameObject.Name;
+            this.BitmapOffset = this.GameObject.BitmapOffset;
         }
 
-        protected override SkaaFrame Load(string filePath, params object[] param)
+        public override SkaaFrame Load(string filePath, params object[] param)
         {
             throw new NotImplementedException();
+        }
+
+        public override bool Save(string filePath, params object[] param)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void SetupFileDialog(FileDialog dlg)
+        {
+            dlg.DefaultExt = ".spr";
+            dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
+            dlg.FileName = this.Name ?? null;
         }
     }
 }

@@ -23,19 +23,19 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Windows.Forms;
-using System.IO;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using SkaaGameDataLib;
-using System.Reflection;
+using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Reflection;
+using System.Windows.Forms;
 using Cyotek.Windows.Forms;
-using Capslock.WinForms.ImageEditor;
-using System.Data;
+using SkaaEditorUI.Forms.DockContentControls;
 using SkaaEditorUI.Presenters;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Forms
 {
@@ -119,8 +119,8 @@ namespace SkaaEditorUI.Forms
             //this event is only called when the entire image changes: during frame changes or loading/closing a sprite
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
 
-            //this event is called any time the user edits the image
-            this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
+            ////this event is called any time the user edits the image
+            //this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
 
             //it only shows when zoomed in and that's exactly when it's most needed.
             this.imageEditorBox.ShowPixelGrid = true;
@@ -656,7 +656,7 @@ namespace SkaaEditorUI.Forms
         {
             //todo: implement Undo/Redo from here with pairs of old/new sprites
             //this.spriteViewer1.SetFrameList(this.ActiveProject?.ActiveSprite?.GetIFrames());
-            this.ActiveProject.ActiveFrame = this.ActiveProject?.ActiveSprite?.Frames[0];
+            this.ActiveProject.ActiveFrame = (FramePresenter)this.ActiveProject?.ActiveSprite?.Frames[0];
 
             //since a sprite has been un/loaded
             SetupUI();
@@ -683,16 +683,13 @@ namespace SkaaEditorUI.Forms
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
             SetupUI();
-        }
-        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
-        {
-            if (this.imageEditorBox.SelectedTool != DrawingTools.Pan &&
-                this.imageEditorBox.SelectedTool != DrawingTools.None)
-            {
-                this.spriteViewer1.UpdateFrame(this.ActiveProject.ActiveFrame);
-                //this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
-                //this.timelineControl1.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
-            }
+            //if (this.imageEditorBox.SelectedTool != DrawingTools.Pan &&
+            //    this.imageEditorBox.SelectedTool != DrawingTools.None)
+            //{
+            //    this.spriteViewer1.UpdateFrame(this.ActiveProject.ActiveFrame);
+            //    this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
+            //    this.timelineControl1.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
+            //}
         }
         private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
         {
@@ -931,7 +928,7 @@ namespace SkaaEditorUI.Forms
         {
             string tableToSave = string.Empty;
 
-            using (ObjectListViewContainer olvc = new ObjectListViewContainer())
+            using (GameSetViewerContainer olvc = new GameSetViewerContainer())
             {
                 //olvc.SetDataSource(this.ActiveProject?.ActiveGameSet?.Tables["SFRAME"]);
                 DataTable dt = new DataTable();
@@ -951,11 +948,11 @@ namespace SkaaEditorUI.Forms
                     dr.AcceptChanges();
                 }
                 dt.AcceptChanges();
-                olvc.SetDataSource(dt);
+                //olvc.SetDataSource(dt);
 
                 if (olvc.ShowDialog() == DialogResult.OK)
                 {
-                    tableToSave = olvc.TableToSave;
+                    //tableToSave = olvc.TableToSave;
                 }
             }
 

@@ -3,6 +3,7 @@
 * The MIT License (MIT)
 *
 * Copyright © 2015-2016 Steven Lavoie
+* Copyright © 2013-2015 Cyotek Ltd.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of
 * this software and associated documentation files (the "Software"), to deal in
@@ -23,28 +24,28 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Windows.Forms;
 
-namespace SkaaEditorUI.Misc
+namespace Capslock.Windows.Forms.ImageEditor
 {
-    public static class FileDialogExtensions
+    public class DrawingToolSelectedEventArgs : EventArgs
     {
-        public static T CustomShowDialog<T>(this FileDialog dlg, Func<T> loadFileDelegate) where T : class
+        private DrawingTools _selectedTool;
+        public DrawingTools SelectedTool
         {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return loadFileDelegate();
-            else
-                return null;
+            get
+            {
+                return this._selectedTool;
+            }
+            private set
+            {
+                if (this._selectedTool != value)
+                    this._selectedTool = value;
+            }
         }
 
-        //todo: Create a FileDialogResults class and return that so it can always be parsed
-
-        public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
+        public DrawingToolSelectedEventArgs(DrawingTools selectedTool)
         {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return saveFileDelegate();
-            else
-                return false;
+            this.SelectedTool = selectedTool;
         }
     }
 }

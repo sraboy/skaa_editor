@@ -22,29 +22,37 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
-using System.Windows.Forms;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SkaaEditorUI.Forms;
+using SkaaEditorUI.Presenters;
+using SkaaGameDataLib;
 
-namespace SkaaEditorUI.Misc
+namespace SkaaEditorUnitTester
 {
-    public static class FileDialogExtensions
+    [TestClass]
+    public class ProjectTester
     {
-        public static T CustomShowDialog<T>(this FileDialog dlg, Func<T> loadFileDelegate) where T : class
-        {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return loadFileDelegate();
-            else
-                return null;
-        }
+        public TestContext testContext { get; set; }
+        public MDISkaaEditorMainForm mainForm = new MDISkaaEditorMainForm();
+        public string ProjectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data\\projects\\_test\\basic\\";
 
-        //todo: Create a FileDialogResults class and return that so it can always be parsed
 
-        public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
+        [TestMethod]
+        public void OpenSpriteTest()
         {
-            if (dlg.ShowDialog() == DialogResult.OK)
-                return saveFileDelegate();
-            else
-                return false;
+            var sprpresenter = new SpritePresenter();
+            var palpresenter = new ColorPalettePresenter();
+
+            var pal = palpresenter.Load(ProjectPath + "pal_std.res");
+            Assert.IsInstanceOfType(palpresenter.GameObject, typeof(ColorPalette));
+
+            sprpresenter.PalettePresenter = palpresenter;
+
+            sprpresenter.Load(ProjectPath + "ballista.spr", FileFormats.SpriteSpr);
+            Assert.IsInstanceOfType(sprpresenter.GameObject, typeof(SkaaSprite));
         }
     }
 }
