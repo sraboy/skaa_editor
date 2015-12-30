@@ -75,7 +75,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Capslock.Windows.Forms.ImageEditor\Capslock.Windows.Forms.ImageEditor.csproj">
       <Project>{89f261ab-a077-4198-9640-24d6728f0451}</Project>
-      <Name>Capslock.WinForms.ImageEditor</Name>
+      <Name>Capslock.Windows.Forms.ImageEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
       <Project>{fb2a5786-cd2e-42ce-bc5d-0fce90034221}</Project>

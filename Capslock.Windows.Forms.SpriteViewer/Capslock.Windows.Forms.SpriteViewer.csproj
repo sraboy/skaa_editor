@@ -48,11 +48,11 @@
   <ItemGroup>
     <Compile Include="FrameChangedEventArgs.cs" />
     <Compile Include="IFrame.cs" />
-    <Compile Include="SpriteView.cs">
+    <Compile Include="SpriteViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SpriteView.Designer.cs">
-      <DependentUpon>SpriteView.cs</DependentUpon>
+    <Compile Include="SpriteViewer.Designer.cs">
+      <DependentUpon>SpriteViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ListView.cs">
@@ -69,8 +69,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SpriteView.resx">
-      <DependentUpon>SpriteView.cs</DependentUpon>
+    <EmbeddedResource Include="SpriteViewer.resx">
+      <DependentUpon>SpriteViewer.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ListView.resx">

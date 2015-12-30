@@ -26,18 +26,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Cyotek.Windows.Forms;
-using System.Drawing.Imaging;
-using BitmapProcessing;
 using System.Diagnostics;
-using System.IO;
-using System.Drawing.Drawing2D;
+using System.Drawing;
+using System.Windows.Forms;
+using BitmapProcessing;
+using Cyotek.Windows.Forms;
 
 namespace Capslock.Windows.Forms.ImageEditor
 {
@@ -46,7 +39,8 @@ namespace Capslock.Windows.Forms.ImageEditor
     [ToolboxItem(true)]
     public partial class ImageEditorBox : ImageBox
     {
-        #region Private Vars
+        //todo: with a _bitmap var, expose Image as a Bitmap to eliminate the casting that goes on with all the drawing
+        #region Private Fields
         private bool _isPanning;
         private Color _activePrimaryColor;
         private Color _activeSecondaryColor;
@@ -63,7 +57,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         [DefaultValue("false")]
         [Category("Behavior")]
         protected virtual bool IsDrawing { get; set; }
- 
+
         #region Public Accessors
         [Category("Behavior")]
         public Color ActivePrimaryColor
@@ -143,26 +137,35 @@ namespace Capslock.Windows.Forms.ImageEditor
                 }
             }
         }
+        public override Image Image
+        {
+            get
+            {
+                return base.Image;
+            }
+
+            set
+            {
+                //if (!FastBitmapComparer.Compare((base.Image as Bitmap), (value as Bitmap)))
+                if (!Utils.Compare(base.Image, value))
+                {
+                    base.Image = value;
+                    OnImageChanged(EventArgs.Empty);
+                }
+            }
+        }
         #endregion
 
         #region Events
-        public event EventHandler ImageUpdated;
-        protected virtual void OnImageUpdated(EventArgs e)
-        {
-            Bitmap bmp = this.Image as Bitmap;
-            this.fbmp = new FastBitmap(bmp);
-
-            EventHandler handler = ImageUpdated;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
+        /// <summary>
+        /// Raises the <see cref="Cyotek.Windows.Forms.ImageBox.ImageChanged" /> event. Overridden to use <see cref="FastBitmap"/>.
+        /// </summary>
+        /// <param name="e">
+        /// The <see cref="EventArgs"/> instance containing the event data.
+        /// </param>
         protected override void OnImageChanged(EventArgs e)
         {
-            this.fbmp = new FastBitmap((Bitmap) this.Image);
+            this.fbmp = new FastBitmap((Bitmap)this.Image);
             base.OnImageChanged(e);
         }
         #endregion
@@ -171,7 +174,9 @@ namespace Capslock.Windows.Forms.ImageEditor
         public ImageEditorBox() : base()
         {
             //have to load these dynamically since they're not just black/white
-            //var str = this.GetType().Assembly.GetManifestResourceNames();
+#if DEBUG
+            var str = this.GetType().Assembly.GetManifestResourceNames();
+#endif
             this._panCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur")));
             this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
             this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
@@ -182,6 +187,18 @@ namespace Capslock.Windows.Forms.ImageEditor
         #endregion
 
         #region Mouse Events
+        /// <summary>
+        /// Calls the base class' <see cref="Control.OnMouseClick(MouseEventArgs)"/> 
+        /// event after any drawing action is completed, based on <see cref="SelectedTool"/>.
+        /// <see cref="DrawingTools.Pencil"/> is the only tool that functions with just a click,
+        /// by only filling in the single pixel.
+        /// </summary>
+        /// <remarks>
+        /// Other <see cref="DrawingTools"/> are based on multiple clicks, mouse movement or MouseUp.
+        /// For example, <see cref="DrawingTools.PaintBucket"/> requires 
+        /// <see cref="OnMouseUp(MouseEventArgs)"/> so that the user can hold the mouse button down 
+        /// and then adjust to ensure they paint the proper area.
+        /// </remarks>
         protected override void OnMouseClick(MouseEventArgs e)
         {
             switch (this.SelectedTool)
@@ -195,14 +212,13 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if(!this.IsDrawing)
+            if (!this.IsDrawing)
                 base.OnMouseDown(e);
 
-            switch(this.SelectedTool)
+            switch (this.SelectedTool)
             {
                 case DrawingTools.Line:
                     this._linePoints.Enqueue(e.Location);
-                    //this._drawLinePoints.Add(e.Location);
                     break;
                 case DrawingTools.Pencil:
                     this.PencilDraw(e);
@@ -214,7 +230,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            //if (!this.IsDrawing)
+            //todo: Implement a real-time drawn line for the line tool. It should match the zoom level and pixelation of the image.
             base.OnMouseMove(e);
 
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
@@ -233,12 +249,6 @@ namespace Capslock.Windows.Forms.ImageEditor
         {
             base.OnMouseUp(e);
 
-            if (this.IsDrawing)
-            {
-                this.IsDrawing = false;
-                OnImageUpdated(EventArgs.Empty);
-            }
-
             switch (this.SelectedTool)
             {
                 case DrawingTools.PaintBucket:
@@ -246,9 +256,25 @@ namespace Capslock.Windows.Forms.ImageEditor
                     break;
                 case DrawingTools.Line:
                     this._linePoints.Enqueue(e.Location);
-                    //this._drawLinePoints.Clear();
                     this.LineDraw(e);
                     break;
+            }
+
+            // Each of the drawing methods below sets this.IsDrawing = true. We only
+            // want OnMouseUp() raising the OnImageChanged event if we were drawing and
+            // not just because the user clicked somewhere; therefore, those methods do
+            // not set this.IsDrawing = false when they're done.
+            //
+            // This is a bit dirty but, so far, it works.
+            // todo: Abstract out a Draw() method, passing in a delegate to the actual drawing method
+            // That way, Draw() can set IsDrawing then raise OnImageChanged itself. It'll be a lot 
+            // cleaner than worrying about where it's set within which methods. Also, Draw() can handle
+            // calling Invalidate(). The drawing methods should simply manipulate the image; though LineDraw
+            // will still need to Invalidate the control once the real-time line is drawn.
+            if (this.IsDrawing)
+            {
+                this.IsDrawing = false;
+                OnImageChanged(EventArgs.Empty);
             }
         }
         #endregion
@@ -257,7 +283,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         /// Overrides base to perform tool-based panning instead of auto-panning with the mouse
         /// </summary>
         /// <param name="e">
-        ///   The <see cref="MouseEventArgs" /> instance containing the event data.
+        /// The <see cref="MouseEventArgs" /> instance containing the event data.
         /// </param>
         protected override void ProcessPanning(MouseEventArgs e)
         {
@@ -312,7 +338,7 @@ namespace Capslock.Windows.Forms.ImageEditor
 
             Color col;
 
-            switch(e.Button)
+            switch (e.Button)
             {
                 case MouseButtons.Left:
                     col = this.ActivePrimaryColor;
@@ -324,10 +350,10 @@ namespace Capslock.Windows.Forms.ImageEditor
                     col = this.ActivePrimaryColor;
                     break;
             }
-            
+
             Point startPoint = Point.Empty;
             Point endPoint = Point.Empty;
-           
+
             if (this._linePoints.Count > 1)
             {
                 startPoint = this.PointToImage(this._linePoints.Dequeue());
@@ -386,10 +412,10 @@ namespace Capslock.Windows.Forms.ImageEditor
 
             if ((currentPoint.X < Image.Width && currentPoint.Y < Image.Height) && (currentPoint.X >= 0 && currentPoint.Y >= 0))
             {
-                if (e.Button == MouseButtons.Left)
+                if (e.Button == MouseButtons.Left) //todo: implement Right-click for secondary color
                 {
                     this.fbmp = new FastBitmap(this.Image as Bitmap);
-                    this.fbmp.LockImage();
+                    this.fbmp.LockImage(); //note: if using the unsafe Bitmap comparer and Fill were changed to return the edited image, set this.Image after fbmp.UnlockImage()
                     Fill(this.Image as Bitmap, currentPoint, this.fbmp.GetPixel(currentPoint.X, currentPoint.Y), this.ActivePrimaryColor);
                     this.fbmp.UnlockImage();
                 }
@@ -397,11 +423,12 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.Invalidate(this.ViewPortRectangle);
             }
         }
+
         private void Fill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
             Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
 
-            //original algorithm courtesy http://rosettacode.org/wiki/Bitmap/Flood_fill
+            //Some changes made, but the original algorithm is courtesy of http://rosettacode.org/wiki/Bitmap/Flood_fill
 
             Queue<Point> q = new Queue<Point>();
             q.Enqueue(pt);

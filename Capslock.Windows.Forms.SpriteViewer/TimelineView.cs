@@ -117,11 +117,21 @@ namespace Capslock.Windows.Forms.SpriteViewer
             this._frameImages = this._frameImages ?? new List<Image>();
 
             foreach (IFrame f in frames)
+            {
                 this._frameImages.Add(f.Bitmap);
+                f.PropertyChanged += Frame_PropertyChanged;
+            }
 
             this._animationTimer.Enabled = false;
             SetupUI();
         }
+
+        private void Frame_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Refresh();
+            //Invalidate(true);
+        }
+
         internal Image GetActiveFrameImage()
         {
             return this._frameImages[this._currentFrameIndex];

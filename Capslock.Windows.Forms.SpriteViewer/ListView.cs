@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using TrulyObservableCollection;
+using System.ComponentModel;
 
 namespace Capslock.Windows.Forms.SpriteViewer
 {
@@ -93,7 +94,15 @@ namespace Capslock.Windows.Forms.SpriteViewer
         {
             //if(this.objectListView1.Columns.Count > 0)
             this.objectListView1.SetObjects(frames);
+            foreach (IFrame f in frames)
+                f.PropertyChanged += Frame_PropertyChanged;
         }
+
+        private void Frame_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            this.Update();
+        }
+
         internal void SetSelectedItem(Guid frameGuid)
         {
             IEnumerable<IFrame> frames = this.objectListView1.Objects as IEnumerable<IFrame>;

@@ -23,6 +23,7 @@
 ***************************************************************************/
 #endregion
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -33,7 +34,7 @@ using TrulyObservableCollection;
 
 namespace Capslock.Windows.Forms.SpriteViewer
 {
-    public partial class SpriteView : UserControl
+    public partial class SpriteViewer : UserControl
     {
         #region ActiveFrameChanged Event
         [field: NonSerialized]
@@ -52,7 +53,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
                 _activeFrameChanged -= value;
             }
         }
-        protected virtual void RaiseActiveFrameChangedEvent(FrameChangedEventArgs e)
+        protected virtual void OnActiveFrameChanged(FrameChangedEventArgs e)
         {
             EventHandler handler = _activeFrameChanged;
 
@@ -65,7 +66,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
 
         private Guid _activeFrameGuid;
 
-        public SpriteView()
+        public SpriteViewer()
         {
             InitializeComponent();
             this.timelineView1.ActiveFrameChanged += Timeline1_ActiveFrameChanged;
@@ -88,10 +89,11 @@ namespace Capslock.Windows.Forms.SpriteViewer
             this._activeFrameGuid = frames[0].Guid;
         }
 
-        public void UpdateFrame(IFrame f)
-        {
-            this.timelineView1.UpdateFrame(f);
-        }
+
+        //public void UpdateFrame(IFrame f)
+        //{
+        //    this.timelineView1.UpdateFrame(f);
+        //}
         #endregion
 
         #region Private Methods
@@ -139,20 +141,14 @@ namespace Capslock.Windows.Forms.SpriteViewer
         {
             var fe = (e as FrameChangedEventArgs);
             this.timelineView1.SetCurrentFrameTo(fe.FrameGuid);
-            RaiseActiveFrameChangedEvent(fe);
+            OnActiveFrameChanged(fe);
         }
         private void Timeline1_ActiveFrameChanged(object sender, EventArgs e)
         {
             var fe = (e as FrameChangedEventArgs);
             this.listView1.SetSelectedItem(fe.FrameGuid);
-            RaiseActiveFrameChangedEvent(fe);
+            OnActiveFrameChanged(fe);
         }
-        //private void OnActiveFrameChanged(object sender, EventArgs e)
-        //{
-        //    var fe = (e as FrameChangedEventArgs);
-        //    if (ChangeActiveFrame(fe.FrameGuid))
-        //        RaiseActiveFrameChangedEvent(fe);
-        //}
         #endregion
     }
 }

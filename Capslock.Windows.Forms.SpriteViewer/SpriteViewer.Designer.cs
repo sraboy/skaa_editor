@@ -26,7 +26,7 @@
 using System.Windows.Forms;
 namespace Capslock.Windows.Forms.SpriteViewer
 {
-    partial class SpriteView
+    partial class SpriteViewer
     {
         /// <summary> 
         /// Required designer variable.
