@@ -167,12 +167,13 @@ namespace SkaaEditorUI.Forms
         /// <summary>
         /// Opens a new document tab, which is automatically set as the <see cref="DockPanel.ActiveDocument"/>
         /// </summary>
-        public void OpenNewTab()
+        public ImageEditorContainer OpenNewTab()
         {
             ImageEditorContainer iec = new ImageEditorContainer();
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
             iec.ImageChanged += ImageEditorContainer_ImageChanged;
+            return iec;
         }
 
         public void SetActiveSprite(MultiImagePresenterBase spr)
@@ -201,7 +202,7 @@ namespace SkaaEditorUI.Forms
 
             if (spr.Frames.Count > 0)
             {
-                var doc = ((ImageEditorContainer)this._dockPanel.ActiveDocument);
+                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewTab();
 
                 if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
                     SetActiveSprite(spr);
