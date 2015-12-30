@@ -248,6 +248,8 @@ namespace SkaaEditorUI
         public void Save<T>(IPresenterBase<T> pres) where T : class
         {
             var result = pres.Save<T>(null);
+            if (result == false)
+                Debugger.Break(); //still need to refactor the FileDialog stuff so we can get a more useful return value
         }
 
         public void SetSpriteDataViews(GameSetPresenter gsp)
