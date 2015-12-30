@@ -23,15 +23,12 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
-    public class DbaseIIIDataColumn : DataColumn
+    public static class DataColumnExtensions
     {
         /// <summary>
         /// Describes the length, in bytes, that this field must occupy in the DBF file. Text fields
@@ -40,19 +37,32 @@ namespace SkaaGameDataLib
         /// function that corresponds to the needed number type. This field is separate and 
         /// unrelated to the <see cref="DataColumn.MaxLength"/> property.
         /// </summary>
-        public byte ByteLength;
+        public static readonly string ByteLengthPropertyName = "ByteLength";
+        /// <summary>
+        /// Returns the value of the <see cref="DataColumn.ExtendedProperties"/> element named <see cref="ByteLengthPropertyName"/>
+        /// </summary>
+        public static byte GetByteLength(this DataColumn dc)
+        {
+            return (byte)(dc.ExtendedProperties[ByteLengthPropertyName] ?? 0);
+        }
+        /// <summary>
+        /// Sets the value of the <see cref="DataColumn.ExtendedProperties"/> element named <see cref="ByteLengthPropertyName"/>
+        /// </summary>
+        public static void SetByteLength(this DataColumn dc, byte value)
+        {
+            if (!dc.ExtendedProperties.Contains(ByteLengthPropertyName))
+                dc.ExtendedProperties.Add(ByteLengthPropertyName, value);
+            else
+                dc.ExtendedProperties[ByteLengthPropertyName] = value;
 
-        public DbaseIIIDataColumn() : base() { }
-        public DbaseIIIDataColumn(string columnName) : base(columnName) { }
-        public DbaseIIIDataColumn(string columnName, Type dataType) : base(columnName, dataType) { }
-
-        internal DbfFile.FieldDescriptor GetFieldDescriptor()
+        }
+        internal static DbfFile.FieldDescriptor GetFieldDescriptor(this DataColumn dc)
         {
             DbfFile.FieldDescriptor fd = new DbfFile.FieldDescriptor();
 
-            fd.FieldName = this.ColumnName;
-            fd.FieldLength = this.ByteLength;
-            
+            fd.FieldName = dc.ColumnName;
+            fd.FieldLength = dc.GetByteLength();
+
             fd.DecimalCount = 0;
             fd.WorkAreaId = 0;
             fd.ReservedMultiUserOne = Enumerable.Repeat<byte>(0x0, 2).ToArray();
@@ -61,17 +71,17 @@ namespace SkaaGameDataLib
             fd.Reserved = Enumerable.Repeat<byte>(0x0, 7).ToArray();
             fd.IndexFieldFlag = 0;
 
-            if (this.DataType == typeof(string))
+            if (dc.DataType == typeof(string))
             {
                 fd.FieldType = 'C';
             }
-            else if (this.DataType == typeof(long))
+            else if (dc.DataType == typeof(long))
             {
                 fd.FieldType = 'N'; //int64 (up to 18 chars according to dBase spec)
             }
-            else if (this.DataType == typeof(bool)) //nullable bool, byte
+            else if (dc.DataType == typeof(bool)) //nullable bool, byte
                 fd.FieldType = 'L';
-            else if (this.DataType == typeof(double)) //double (8 bytes)
+            else if (dc.DataType == typeof(double)) //double (8 bytes)
                 fd.FieldType = 'O';
             //else if (this.DataType == typeof(dBaseShortDate)) //YYYYMMDD
             //    fd.FieldType = 'D';
@@ -80,7 +90,7 @@ namespace SkaaGameDataLib
             //else if (this.DataType == typeof(dbaseAutoIncrement)) //auto-increment (long)
             //    fd.FieldType = '+';
             else
-                throw new Exception($"Unknown column type: \'{this.ColumnName}\' is {this.DataType.ToString()}");
+                throw new Exception($"Unknown column type: \'{dc.ColumnName}\' is {dc.DataType.ToString()}");
 
             return fd;
         }

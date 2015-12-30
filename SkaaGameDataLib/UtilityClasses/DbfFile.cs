@@ -27,9 +27,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
@@ -193,7 +191,7 @@ namespace SkaaGameDataLib
 
             this.Header = DbfFileHeader.GetDefaultHeader();
             this.Header.NumberOfRecords = dt.Rows.Count;// + 1;
-            this.Header.LastEdited = new byte[] { (byte) (DateTime.Today.Year - millenium), (byte) DateTime.Today.Month, (byte) DateTime.Today.Day };
+            this.Header.LastEdited = new byte[] { (byte)(DateTime.Today.Year - millenium), (byte)DateTime.Today.Month, (byte)DateTime.Today.Day };
 
             this.Header.LengthOfHeader = (short)
                                       (sizeof(byte) //version

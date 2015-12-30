@@ -34,6 +34,7 @@ namespace SkaaEditorUI
     public static class DataSetExtensions
     {
         public static readonly TraceSource Logger = new TraceSource($"{typeof(DataSetExtensions)}", SourceLevels.All);
+
         private static readonly string StandardGameSetDefaultName = "std.set";
         public static readonly string DataSourcesPropertyName = "DataSources";
 
@@ -73,7 +74,7 @@ namespace SkaaEditorUI
 
         /// <summary>
         /// Opens the specified <see cref="GameSetFile"/>, adds all of its tables and records to the <see cref="DataSet"/> and adds the file's name, 
-        /// from <see cref="Path.GetFileName()"/>, as a new data source
+        /// from <see cref="Path.GetFileName(string)"/>, as a new data source
         /// </summary>
         /// <param name="filepath"></param>
         /// <returns>false if <see cref="DbfFile.ReadStream(Stream)"/> returned false, true otherwise</returns>
@@ -97,7 +98,7 @@ namespace SkaaEditorUI
                         if (file.ReadStream(fs) != true)
                             return false;
                         file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);
-                        file.DataTable.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, (fs as FileStream)?.Name);
+                        file.DataTable.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, Path.GetFileName((fs as FileStream)?.Name));
 
                         if (ds.Tables.Contains(file.DataTable.TableName))
                         {
@@ -133,6 +134,7 @@ namespace SkaaEditorUI
             using (FileStream fs = new FileStream(filepath, FileMode.Create))
             {
                 var stream = ds.GetGameSetStream(setName);
+                stream.Position = 0;
                 stream.CopyTo(fs);
             }
 
