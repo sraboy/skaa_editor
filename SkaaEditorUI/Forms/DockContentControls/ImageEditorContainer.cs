@@ -22,12 +22,12 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using WeifenLuo.WinFormsUI.Docking;
+using System;
+using System.Drawing;
+using System.Linq;
 using Capslock.Windows.Forms.ImageEditor;
 using SkaaEditorUI.Presenters;
-using System;
-using System.Linq;
-using System.Drawing;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkaaEditorUI.Forms.DockContentControls
 {
@@ -62,24 +62,24 @@ namespace SkaaEditorUI.Forms.DockContentControls
             }
         }
 
-        private EventHandler _imageEdited;
-        public event EventHandler ImageEdited
+        private EventHandler _imageChanged;
+        public event EventHandler ImageChanged
         {
             add
             {
-                if (_imageEdited == null || !_imageEdited.GetInvocationList().Contains(value))
+                if (_imageChanged == null || !_imageChanged.GetInvocationList().Contains(value))
                 {
-                    _imageEdited += value;
+                    _imageChanged += value;
                 }
             }
             remove
             {
-                _imageEdited -= value;
+                _imageChanged -= value;
             }
         }
-        private void OnImagedEdited(EventArgs e)
+        private void OnImagedChanged(EventArgs e)
         {
-            EventHandler handler = _imageEdited;
+            EventHandler handler = _imageChanged;
 
             if (handler != null)
             {
@@ -114,7 +114,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
             this.ActiveSprite = spr;
             this.ActiveSprite?.SetActiveFrame(activeFrameIndex);
             this._imageEditorBox.Image = spr?.ActiveFrame?.Bitmap;
-            this._imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
+            this._imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
         }
 
         public void ChangeToolMode(object sender, EventArgs e)
@@ -122,13 +122,13 @@ namespace SkaaEditorUI.Forms.DockContentControls
             this._imageEditorBox.ChangeToolMode(sender, e);
         }
 
-        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
+        private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
             if (this._imageEditorBox.SelectedTool != DrawingTools.Pan &&
                 this._imageEditorBox.SelectedTool != DrawingTools.None)
             {
                 this.ActiveSprite.ActiveFrame.Bitmap = this._imageEditorBox.Image as Bitmap;
-                OnImagedEdited(EventArgs.Empty);
+                OnImagedChanged(EventArgs.Empty);
             }
         }
 

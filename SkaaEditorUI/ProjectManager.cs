@@ -23,7 +23,6 @@
 ***************************************************************************/
 #endregion
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using SkaaEditorUI.Forms;
@@ -238,7 +237,7 @@ namespace SkaaEditorUI
 
             if (presenter is MultiImagePresenterBase)
             {
-                (presenter as MultiImagePresenterBase).PalettePresenter = new ColorPalettePresenter(this._mainForm.GetActivePalette());
+                (presenter as MultiImagePresenterBase).PalettePresenter = new ColorPalettePresenter(this._mainForm.ActivePalette);
                 this.OpenSprites.Add(presenter as MultiImagePresenterBase);
             }
 

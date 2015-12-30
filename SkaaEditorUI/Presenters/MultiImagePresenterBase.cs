@@ -46,7 +46,7 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._frames, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Frames)));
+                SetField(ref this._frames, value, () => OnPropertyChanged());// GetDesignModeValue(() => this.Frames)));
             }
         }
         public ColorPalettePresenter PalettePresenter
@@ -58,7 +58,7 @@ namespace SkaaEditorUI.Presenters
 
             set
             {
-                SetField(ref this._palettePresenter, value, () => OnPropertyChanged(GetDesignModeValue(() => this.PalettePresenter)));
+                SetField(ref this._palettePresenter, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.PalettePresenter)));
             }
         }
         public IFrame ActiveFrame
@@ -69,7 +69,7 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._activeFrame, value, () => OnPropertyChanged(GetDesignModeValue(() => this.ActiveFrame)));
+                SetField(ref this._activeFrame, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.ActiveFrame)));
             }
         }
         public string SpriteId
@@ -81,7 +81,7 @@ namespace SkaaEditorUI.Presenters
 
             set
             {
-                SetField(ref this._spriteId, value, () => OnPropertyChanged(GetDesignModeValue(() => this.SpriteId)));
+                SetField(ref this._spriteId, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.SpriteId)));
             }
         }
         public DataView DataView
@@ -92,7 +92,7 @@ namespace SkaaEditorUI.Presenters
             }
             internal set
             {
-                SetField(ref this._dataView, value, () => OnPropertyChanged(GetDesignModeValue(() => this.DataView)));
+                SetField(ref this._dataView, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.DataView)));
             }
         }
 

@@ -32,7 +32,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
 {
     public partial class SpriteViewerContainer : DockContent
     {
-        private SpriteView spriteViewer;
+        private SpriteViewer _spriteViewer;
         private MultiImagePresenterBase _activeSprite;
 
         #region Events
@@ -91,32 +91,32 @@ namespace SkaaEditorUI.Forms.DockContentControls
         {
             this.ActiveSprite = spr;
             this.ActiveSprite?.SetActiveFrame(activeFrameIndex);
-            this.spriteViewer.SetFrameList(this.ActiveSprite.Frames);
+            this._spriteViewer.SetFrameList(this.ActiveSprite.Frames);
             if (spr != null)
                 this.Enabled = true;
         }
 
         private void InitializeComponent()
         {
-            this.spriteViewer = new Capslock.Windows.Forms.SpriteViewer.SpriteView();
+            this._spriteViewer = new Capslock.Windows.Forms.SpriteViewer.SpriteViewer();
             this.SuspendLayout();
             // 
             // spriteViewer
             // 
-            this.spriteViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this._spriteViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.spriteViewer.Location = new System.Drawing.Point(-5, 0);
-            this.spriteViewer.Name = "spriteViewer";
-            this.spriteViewer.Size = new System.Drawing.Size(286, 675);
-            this.spriteViewer.TabIndex = 20;
+            this._spriteViewer.Location = new System.Drawing.Point(-5, 0);
+            this._spriteViewer.Name = "spriteViewer";
+            this._spriteViewer.Size = new System.Drawing.Size(286, 675);
+            this._spriteViewer.TabIndex = 20;
             // 
             // SpriteViewerContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(277, 674);
-            this.Controls.Add(this.spriteViewer);
+            this.Controls.Add(this._spriteViewer);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SpriteViewerContainer";
             this.Text = "SpriteViewerContainer";

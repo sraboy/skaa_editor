@@ -38,7 +38,10 @@ namespace SkaaEditorUI.Presenters
         private long _bitmapOffset;
         private string _name;
         #endregion
-
+        /// <summary>
+        /// Sets the <see cref="Bitmap"/> property to the specified value and raises the
+        /// <see cref="PresenterBase{T}.PropertyChanged"/> event without doing a comparison.
+        /// </summary>
         public Bitmap Bitmap
         {
             get
@@ -47,7 +50,11 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._bitmap, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Bitmap)));
+                this._bitmap = value;
+                OnPropertyChanged();
+                //We can't use SetField unless we implement a custom comparer for Bitmaps.
+                //More often than not, it is likely the case that the image has indeed changed.
+                //SetField(ref this._bitmap, value, () => OnPropertyChanged());// GetDesignModeValue(() => this.Bitmap)));
             }
         }
         public Guid Guid
@@ -58,7 +65,7 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._guid, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Guid)));
+                SetField(ref this._guid, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Guid)));
             }
         }
         public long BitmapOffset
@@ -69,7 +76,7 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._bitmapOffset, value, () => OnPropertyChanged(GetDesignModeValue(() => this.BitmapOffset)));
+                SetField(ref this._bitmapOffset, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.BitmapOffset)));
             }
         }
         public string Name
@@ -80,7 +87,7 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._name, value, () => OnPropertyChanged(GetDesignModeValue(() => this.Name)));
+                SetField(ref this._name, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Name)));
             }
         }
 

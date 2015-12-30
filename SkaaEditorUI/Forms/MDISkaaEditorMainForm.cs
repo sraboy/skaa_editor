@@ -25,8 +25,8 @@
 using System;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
-using Cyotek.Windows.Forms;
 using SkaaEditorUI.Forms.DockContentControls;
 using SkaaEditorUI.Presenters;
 using SkaaGameDataLib;
@@ -40,6 +40,14 @@ namespace SkaaEditorUI.Forms
         private SpriteViewerContainer _spriteViewerContainer;
         private GameSetViewerContainer _gameSetViewerContainer;
         private ProjectManager ProjectManager = new ProjectManager();
+
+        public ColorPalette ActivePalette
+        {
+            get
+            {
+                return this._toolBoxContainer.ActivePalette;
+            }
+        }
 
         public MDISkaaEditorMainForm()
         {
@@ -81,7 +89,7 @@ namespace SkaaEditorUI.Forms
         {
             //todo: create a ColorChangedEventArgs so we can just pass sender/e like SelectedToolChanged
             var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
-            iec.SetActiveColors((sender as ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
+            iec.SetActiveColors((sender as Cyotek.Windows.Forms.ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
         }
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)
         {
@@ -125,12 +133,6 @@ namespace SkaaEditorUI.Forms
         }
         #endregion
 
-        public System.Drawing.Imaging.ColorPalette GetActivePalette()
-        {
-            return this._toolBoxContainer.ActivePalette;
-        }
-
-
 
         /// <summary>
         /// Closes the current project and saves any changes, if needed.
@@ -170,6 +172,7 @@ namespace SkaaEditorUI.Forms
             ImageEditorContainer iec = new ImageEditorContainer();
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
+            iec.ImageChanged += ImageEditorContainer_ImageChanged;
         }
 
         public void SetActiveSprite(MultiImagePresenterBase spr)
@@ -266,9 +269,23 @@ namespace SkaaEditorUI.Forms
         {
             var iec = sender as ImageEditorContainer;
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
+            this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
         }
 
-
+        /// <summary>
+        /// Forces redraws of child controls displaying the image
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e)
+        {
+            //todo: force an update of the individual cell containing the image
+            // It only updates after a mouseover. Refresh/Invalidate/Update
+            // do nothing but SetSprite actually resets the list of objects,
+            // which works, but could be a performance issue with large sprites.
+            var iec = sender as ImageEditorContainer;
+            this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
+        }
 
 
     }

@@ -32,7 +32,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Capslock.Windows.Forms.ImageEditor;
 using Cyotek.Windows.Forms;
 using SkaaEditorUI.Forms.DockContentControls;
 using SkaaEditorUI.Presenters;
@@ -120,8 +119,8 @@ namespace SkaaEditorUI.Forms
             //this event is only called when the entire image changes: during frame changes or loading/closing a sprite
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
 
-            //this event is called any time the user edits the image
-            this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
+            ////this event is called any time the user edits the image
+            //this.imageEditorBox.ImageUpdated += imageEditorBox_ImageUpdated;
 
             //it only shows when zoomed in and that's exactly when it's most needed.
             this.imageEditorBox.ShowPixelGrid = true;
@@ -684,16 +683,13 @@ namespace SkaaEditorUI.Forms
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
             SetupUI();
-        }
-        private void imageEditorBox_ImageUpdated(object sender, EventArgs e)
-        {
-            if (this.imageEditorBox.SelectedTool != DrawingTools.Pan &&
-                this.imageEditorBox.SelectedTool != DrawingTools.None)
-            {
-                this.spriteViewer1.UpdateFrame(this.ActiveProject.ActiveFrame);
-                //this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
-                //this.timelineControl1.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
-            }
+            //if (this.imageEditorBox.SelectedTool != DrawingTools.Pan &&
+            //    this.imageEditorBox.SelectedTool != DrawingTools.None)
+            //{
+            //    this.spriteViewer1.UpdateFrame(this.ActiveProject.ActiveFrame);
+            //    this.ActiveProject.ActiveFrame.IndexedBitmap.PendingChanges = true;
+            //    this.timelineControl1.UpdateCurrentFrame(this.ActiveProject.ActiveFrame.IndexedBitmap.Bitmap);
+            //}
         }
         private void ColorGridChooser_ColorChanged(object sender, EventArgs e)
         {

@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using SkaaEditorUI.Misc;
@@ -50,7 +49,7 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._gameObject, value, () => OnPropertyChanged(GetDesignModeValue(() => this.GameObject)));
+                SetField(ref this._gameObject, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.GameObject)));
             }
         }
         public FileFormats FileFormat
@@ -62,7 +61,7 @@ namespace SkaaEditorUI.Presenters
 
             set
             {
-                SetField(ref this._fileFormat, value, () => OnPropertyChanged(GetDesignModeValue(() => this._fileFormat)));
+                SetField(ref this._fileFormat, value, () => OnPropertyChanged());//GetDesignModeValue(() => this._fileFormat)));
             }
         }
 
@@ -110,31 +109,32 @@ namespace SkaaEditorUI.Presenters
             return result;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="propertyExpression"></param>
-        /// <returns></returns>
-        /// <remarks> 
-        /// This specific method is licensed under CC-BY-SA v2.5 as it was adapted from a StackOverflow user post. 
-        /// Original: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
-        /// License: CC-BY-SA v2.5 (http://creativecommons.org/licenses/by-sa/2.5/)
-        /// </remarks>
-        public static string GetDesignModeValue<T1>(Expression<Func<T1>> propertyExpression)
-        {
-            //adapted from: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
-            return (propertyExpression.Body as MemberExpression).Member.Name;
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="propertyExpression"></param>
+        ///// <returns></returns>
+        ///// <remarks> 
+        ///// This specific method is licensed under CC-BY-SA v2.5 as it was adapted from a StackOverflow user post. 
+        ///// Original: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
+        ///// License: CC-BY-SA v2.5 (http://creativecommons.org/licenses/by-sa/2.5/)
+        ///// </remarks>
+        //public static string GetDesignModeValue<T1>(Expression<Func<T1>> propertyExpression)
+        //{
+        //    //adapted from: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
+        //    return (propertyExpression.Body as MemberExpression).Member.Name;
+        //}
 
         /// <summary>
-        /// 
+        /// Uses the default comparer to compare <paramref name="field"/> and <paramref name="value"/> and,
+        /// if different, sets <paramref name="field"/> to the value specified and calls the delegate
+        /// specified by <paramref name="onPropertyChanged"/>.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="field"></param>
-        /// <param name="value"></param>
-        /// <param name="onPropertyChanged"></param>
-        /// <returns></returns>
+        /// <param name="field">The calling accessor's backing field</param>
+        /// <param name="value">The new value being set</param>
+        /// <param name="onPropertyChanged">The <see cref="PropertyChanged"/> delegate to be called if there was a change</param>
+        /// <returns>False if the two values are equal; true otherwise</returns>
         /// <remarks> 
         /// This specific method is licensed under CC-BY-SA v2.5 as it was adapted from a StackOverflow user post. 
         /// Original: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property

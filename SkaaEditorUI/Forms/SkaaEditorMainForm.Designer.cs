@@ -97,7 +97,7 @@ namespace SkaaEditorUI.Forms
             this.imageEditorBox = new Capslock.Windows.Forms.ImageEditor.ImageEditorBox();
             this.btnBrowseGameSet = new System.Windows.Forms.Button();
             this.colorGridChooser = new SkaaEditorControls.SkaaColorChooser();
-            this.spriteViewer1 = new Capslock.Windows.Forms.SpriteViewer.SpriteView();
+            this.spriteViewer1 = new Capslock.Windows.Forms.SpriteViewer.SpriteViewer();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -560,6 +560,6 @@ namespace SkaaEditorUI.Forms
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
         private System.Windows.Forms.Button btnBrowseGameSet;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private Capslock.Windows.Forms.SpriteViewer.SpriteView spriteViewer1;
+        private Capslock.Windows.Forms.SpriteViewer.SpriteViewer spriteViewer1;
     }
 }
