@@ -98,7 +98,7 @@ namespace SkaaEditorUI
                 return _openSprites;
             }
 
-            private set
+            set
             {
                 this._openSprites = value;
             }

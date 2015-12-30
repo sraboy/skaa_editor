@@ -78,13 +78,23 @@
             </summary>
             <param name="stream">A stream with its <see cref="P:System.IO.Stream.Position"/> set to the first byte of the header, which is two int16 values for width and height.</param>
         </member>
-        <member name="F:SkaaGameDataLib.DbaseIIIDataColumn.ByteLength">
+        <member name="F:SkaaGameDataLib.DataColumnExtensions.ByteLengthPropertyName">
             <summary>
             Describes the length, in bytes, that this field must occupy in the DBF file. Text fields
             should be padded on the right with spaces (0x20) while number fields should be padded
             on the left with nulls (0x00). Numbers can be "padded" by using a <see cref="T:System.Convert"/> 
             function that corresponds to the needed number type. This field is separate and 
             unrelated to the <see cref="P:System.Data.DataColumn.MaxLength"/> property.
+            </summary>
+        </member>
+        <member name="M:SkaaGameDataLib.DataColumnExtensions.GetByteLength(System.Data.DataColumn)">
+            <summary>
+            Returns the value of the <see cref="P:System.Data.DataColumn.ExtendedProperties"/> element named <see cref="F:SkaaGameDataLib.DataColumnExtensions.ByteLengthPropertyName"/>
+            </summary>
+        </member>
+        <member name="M:SkaaGameDataLib.DataColumnExtensions.SetByteLength(System.Data.DataColumn,System.Byte)">
+            <summary>
+            Sets the value of the <see cref="P:System.Data.DataColumn.ExtendedProperties"/> element named <see cref="F:SkaaGameDataLib.DataColumnExtensions.ByteLengthPropertyName"/>
             </summary>
         </member>
         <member name="T:SkaaGameDataLib.DbfFile">
@@ -176,7 +186,7 @@
         <member name="M:SkaaEditorUI.DataSetExtensions.OpenStandardGameSet(System.Data.DataSet,System.String)">
             <summary>
             Opens the specified <see cref="T:SkaaGameDataLib.GameSetFile"/>, adds all of its tables and records to the <see cref="T:System.Data.DataSet"/> and adds the file's name, 
-            from <see cref="!:Path.GetFileName()"/>, as a new data source
+            from <see cref="M:System.IO.Path.GetFileName(System.String)"/>, as a new data source
             </summary>
             <param name="filepath"></param>
             <returns>false if <see cref="M:SkaaGameDataLib.DbfFile.ReadStream(System.IO.Stream)"/> returned false, true otherwise</returns>

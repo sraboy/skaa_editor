@@ -24,6 +24,7 @@
 #endregion
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -57,6 +58,12 @@ namespace SkaaEditorUI.Forms
             this.showGridToolStripMenuItem.Checked = true;
             this._toolBoxContainer.ColorChanged += ToolboxContainer_ColorChanged;
             this._toolBoxContainer.SelectedToolChanged += ToolboxContainer_SelectedToolChanged;
+            this.Shown += MDISkaaEditorMainForm_Shown;
+        }
+        
+        private void MDISkaaEditorMainForm_Shown(object sender, EventArgs e)
+        {
+            OpenBallistaSpriteAndStandardGameSet();
         }
 
         private void SetUpDockPanel()
@@ -129,6 +136,10 @@ namespace SkaaEditorUI.Forms
             var spr = doc.ActiveSprite;
 
             ProjectManager.Save(spr);
+        }
+        private void saveGameSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProjectManager.Save(this._gameSetViewerContainer.GameSetPresenter);
         }
         #endregion
 
@@ -286,7 +297,5 @@ namespace SkaaEditorUI.Forms
             var iec = sender as ImageEditorContainer;
             this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
         }
-
-
     }
 }

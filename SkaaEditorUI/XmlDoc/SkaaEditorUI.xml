@@ -4,45 +4,6 @@
         <name>SkaaEditorUI</name>
     </assembly>
     <members>
-        <member name="P:SkaaEditorUI.Misc.PresenterFileDialogEventArgs`1.FileDialogResults">
-            <summary>
-            The results from a FileDialog like OpenFileDialog or SaveFileDialog
-            </summary>
-        </member>
-        <member name="F:SkaaEditorUI.Forms.AboutForm.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.AboutForm.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.AboutForm.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
         <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.TrySaveCloseProject">
             <summary>
             Closes the current project and saves any changes, if needed.
@@ -90,6 +51,40 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="F:SkaaEditorUI.Forms.AboutForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.AboutForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.AboutForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.ConfigSettings">
             <summary>
             Provides for initial application settings like default directories, debug logging, etc.
@@ -128,6 +123,20 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.AddDebugArg(System.String,System.Object)">
+            <summary>
+            When debugging, creates and adds a new <see cref="T:SkaaEditorUI.Forms.SkaaEditorMainForm.DebugArgs"/> object 
+            to the <see cref="F:SkaaEditorUI.Forms.SkaaEditorMainForm._debugArgs"/> List. This is 
+            essentially a dirty hack for easy debugging with a global variable.
+            </summary>
+            <param name="methodName"></param>
+            <param name="arg"></param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.ConfigSettingsDebug">
+            <summary>
+            Configures settings for debugging/development.
+            </summary>
+        </member>
         <member name="F:SkaaEditorUI.Forms.SkaaSAVEditorTest.components">
             <summary>
             Required designer variable.
@@ -143,6 +152,11 @@
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Misc.PresenterFileDialogEventArgs`1.FileDialogResults">
+            <summary>
+            The results from a FileDialog like OpenFileDialog or SaveFileDialog
             </summary>
         </member>
         <member name="M:SkaaEditorUI.Presenters.PresenterBase`1.SetField``1(``0@,``0,System.Action)">
@@ -238,7 +252,7 @@
         </member>
         <member name="M:SkaaEditorUI.ProjectManager.CloseProject">
             <summary>
-            Closes the <see cref="!:ActiveProject"/>
+            Closes the project by saving all files to <see cref="P:SkaaEditorUI.ProjectManager.SaveDirectory"/> or, if it's null, to <see cref="P:SkaaEditorUI.ProjectManager.TempDirectory"/> and cleaning temp files
             </summary>
         </member>
         <member name="M:SkaaEditorUI.ProjectManager.Open``2(System.Object[])">

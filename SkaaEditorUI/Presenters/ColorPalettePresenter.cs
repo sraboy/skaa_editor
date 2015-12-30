@@ -45,6 +45,7 @@ namespace SkaaEditorUI.Presenters
             if (pal == null)
                 Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to load palette: {filePath}");
 
+            this.GameObject = pal;
             return pal;
         }
 

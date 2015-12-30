@@ -25,11 +25,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
@@ -44,10 +41,10 @@ namespace SkaaGameDataLib
         {
             DbfFile file = new DbfFile(dt);
             GetFieldDescriptorListFromSchema(file); //need to know how many we have to calculate below, before writing the header
-            file.Header.LengthOfHeader += (short) (file.FieldDescriptors.Count * DbfFile.FieldDescriptor.Size);
+            file.Header.LengthOfHeader += (short)(file.FieldDescriptors.Count * DbfFile.FieldDescriptor.Size);
             file.Header.LengthOfRecord = 1; //1 byte for RowState (0x20 or 0x2a)
-            foreach (DbaseIIIDataColumn col in dt.Columns)
-                file.Header.LengthOfRecord += col.ByteLength;
+            foreach (DataColumn col in dt.Columns)
+                file.Header.LengthOfRecord += col.GetByteLength();
 
             WriteHeader(file, str);
             WriteFieldDescriptors(file, str);
@@ -93,7 +90,7 @@ namespace SkaaGameDataLib
 
             int fieldAddr = 1; //first is always 1
 
-            foreach (DbaseIIIDataColumn col in file.DataTable.Columns)
+            foreach (DataColumn col in file.DataTable.Columns)
             {
                 DbfFile.FieldDescriptor fd = col.GetFieldDescriptor();
                 fd.FieldDataAddress = BitConverter.GetBytes(fieldAddr);
@@ -107,11 +104,11 @@ namespace SkaaGameDataLib
             foreach (DbfFile.FieldDescriptor fd in file.FieldDescriptors)
             {
                 StringBuilder sb = new StringBuilder(fd.FieldName);
-                sb.Append((char) 0x0, 11 - fd.FieldName.Length);
+                sb.Append((char)0x0, 11 - fd.FieldName.Length);
                 string writeme = sb.ToString();
                 str.Write(Encoding.UTF8.GetBytes(writeme), 0, 11);
 
-                str.WriteByte((byte) fd.FieldType);
+                str.WriteByte((byte)fd.FieldType);
                 str.Write(fd.FieldDataAddress, 0, 4);
                 str.WriteByte(fd.FieldLength);
                 str.WriteByte(fd.DecimalCount);
@@ -131,15 +128,15 @@ namespace SkaaGameDataLib
             {
                 str.WriteByte(DbfFile.RecordValidMarker);
 
-                foreach (DbaseIIIDataColumn col in file.DataTable.Columns)
+                foreach (DataColumn col in file.DataTable.Columns)
                 {
                     string value;
-                    //todo: create new pointer type for DbfDataColumn
+
                     if (col.DataType == typeof(string))
                     {
-                        byte[] bytes = new byte[col.ByteLength];
-                        value = dr[col] == DBNull.Value ? " " : (string) dr[col];
-                        
+                        byte[] bytes = new byte[col.GetByteLength()];
+                        value = dr[col] == DBNull.Value ? " " : (string)dr[col];
+
                         if (col.ColumnName.EndsWith("PTR")) //actually a number (C pointer), not a string
                         {
                             int val = value == "0" ? Convert.ToInt32(0) : Convert.ToInt32(value);
@@ -147,20 +144,20 @@ namespace SkaaGameDataLib
                         }
                         else
                         {
-                            value = dr[col] == DBNull.Value ? string.Empty : (string) dr[col];
-                            value = value.PadRight(col.ByteLength, ' ');
+                            value = dr[col] == DBNull.Value ? string.Empty : (string)dr[col];
+                            value = value.PadRight(col.GetByteLength(), ' ');
                             bytes = Encoding.GetEncoding(1252).GetBytes(value);
                         }
-                        str.Write(bytes, 0, col.ByteLength);
+                        str.Write(bytes, 0, col.GetByteLength());
                     }
                     else if (col.DataType == typeof(long))
                     {
-                        long val = dr[col] == DBNull.Value ? 0 : (long) dr[col];
+                        long val = dr[col] == DBNull.Value ? 0 : (long)dr[col];
                         value = val.ToString();
-                        value = value.PadLeft(col.ByteLength, ' ');
-                        byte[] bytes = new byte[col.ByteLength];
-                        Encoding.GetEncoding(1252).GetBytes(value, 0, col.ByteLength, bytes, 0);
-                        str.Write(bytes, 0, col.ByteLength);
+                        value = value.PadLeft(col.GetByteLength(), ' ');
+                        byte[] bytes = new byte[col.GetByteLength()];
+                        Encoding.GetEncoding(1252).GetBytes(value, 0, col.GetByteLength(), bytes, 0);
+                        str.Write(bytes, 0, col.GetByteLength());
                     }
                     else
                     {

@@ -249,7 +249,7 @@ namespace SkaaGameDataLib
         {
             DbfFileHeader header = new DbfFileHeader();
 
-            header.Version = (byte) str.ReadByte();
+            header.Version = (byte)str.ReadByte();
             if (header.Version != 3)
                 return null;
             str.Read(header.LastEdited, 0, 3);
@@ -267,12 +267,12 @@ namespace SkaaGameDataLib
             header.LengthOfRecord = BitConverter.ToInt16(lenRecord, 0);
 
             str.Read(header.ReservedOne, 0, 2);
-            header.IncompleteTransaction = (byte) str.ReadByte();
-            header.EncryptionFlag = (byte) str.ReadByte();
+            header.IncompleteTransaction = (byte)str.ReadByte();
+            header.EncryptionFlag = (byte)str.ReadByte();
             str.Read(header.FreeRecordThread, 0, 4);
             str.Read(header.ReservedMultiUser, 0, 8);
-            header.MdxFlag = (byte) str.ReadByte();
-            header.Language = (byte) str.ReadByte();
+            header.MdxFlag = (byte)str.ReadByte();
+            header.Language = (byte)str.ReadByte();
             str.Read(header.ReservedTwo, 0, 2);
 
             return header;
@@ -292,7 +292,7 @@ namespace SkaaGameDataLib
                 if (str.Position > str.Length)
                     throw new Exception("Attempted to read past end of file!");
 
-                byte check = (byte) str.ReadByte();
+                byte check = (byte)str.ReadByte();
 
                 if (check == EofMarker)
                 {
@@ -365,8 +365,8 @@ namespace SkaaGameDataLib
         {
             foreach (FieldDescriptor fd in this.FieldDescriptors)
             {
-                //DataColumn col = new DataColumn(fd.FieldName);
-                DbaseIIIDataColumn col = new DbaseIIIDataColumn(fd.FieldName);
+                DataColumn col = new DataColumn(fd.FieldName);
+                //DbaseIIIDataColumn col = new DbaseIIIDataColumn(fd.FieldName);
                 col.DataType = typeof(object);
 
                 //http://www.clicketyclick.dk/databases/xbase/format/data_types.html
@@ -377,11 +377,11 @@ namespace SkaaGameDataLib
                         //Below ensures we can fit an int's string representation since the original 
                         //length is specified in bytes for the char[]. Go larger if specified (like DES in HEADER.DBF).
                         col.MaxLength = fd.FieldLength < 11 ? 11 : fd.FieldLength;
-                        col.ByteLength = fd.FieldLength;//no null terminator
+                        col.SetByteLength(fd.FieldLength);
                         break;
                     case 'N': //int64 (up to 18 chars according to dBase spec)
                         col.DataType = typeof(long);
-                        col.ByteLength = fd.FieldLength;
+                        col.SetByteLength(fd.FieldLength);
                         break;
                     case 'L': //nullable bool, byte
                         throw new NotImplementedException("Encountered /'L/' for nullable bool!");
@@ -411,7 +411,7 @@ namespace SkaaGameDataLib
 
             while (checkForTerminator != Terminator)
             {
-                if(checkForTerminator != 0x0)
+                if (checkForTerminator != 0x0)
                     str.Position--; //backup since we read an extra byte to get the check value
 
                 FieldDescriptor fd = new FieldDescriptor();
@@ -420,36 +420,36 @@ namespace SkaaGameDataLib
                 str.Read(fieldName, 0, 11);
                 fd.FieldName = Encoding.UTF8.GetString(fieldName).Trim(new char[] { '\0' });
 
-                fd.FieldType = (char) str.ReadByte();
+                fd.FieldType = (char)str.ReadByte();
 
                 str.Read(fd.FieldDataAddress, 0, 4);
 
-                fd.FieldLength = (byte) str.ReadByte();
-                fd.DecimalCount = (byte) str.ReadByte();
+                fd.FieldLength = (byte)str.ReadByte();
+                fd.DecimalCount = (byte)str.ReadByte();
                 Debug.Assert(fd.DecimalCount == 0, $"Encounted non-zero DecimalCount: {fd.DecimalCount}."); //if found, must be < 15 per spec
 
                 str.Read(fd.ReservedMultiUserOne, 0, 2);
                 Debug.Assert(fd.ReservedMultiUserOne[0] == 0 && fd.ReservedMultiUserOne[1] == 0, "Encounted non-zero ReservedMultiUserOne.");
 
-                fd.WorkAreaId = (byte) str.ReadByte();
+                fd.WorkAreaId = (byte)str.ReadByte();
                 Debug.Assert(fd.WorkAreaId == 0, $"Encounted non-zero WorkAreaId: {fd.WorkAreaId}.");
 
                 str.Read(fd.ReservedMultiUserTwo, 0, 2);
                 Debug.Assert(fd.ReservedMultiUserTwo[0] == 0 && fd.ReservedMultiUserTwo[1] == 0, "Encounted non-zero ReservedMultiUserTwo.");
 
-                fd.FlagSetFields = (byte) str.ReadByte();
+                fd.FlagSetFields = (byte)str.ReadByte();
                 Debug.Assert(fd.WorkAreaId == 0, $"Encounted non-zero WorkAreaId: {fd.WorkAreaId}.");
 
                 str.Read(fd.Reserved, 0, 7);
-                foreach(byte b in fd.Reserved)
+                foreach (byte b in fd.Reserved)
                     Debug.Assert(b == 0, $"Encounted non-zero Reserved: {b}.");
 
-                fd.IndexFieldFlag = (byte) str.ReadByte();
+                fd.IndexFieldFlag = (byte)str.ReadByte();
                 Debug.Assert(fd.IndexFieldFlag == 0, $"Encounted non-zero IndexFieldFlag: {fd.IndexFieldFlag}.");
 
                 fdlist.Add(fd);
 
-                checkForTerminator = (byte) str.ReadByte();               
+                checkForTerminator = (byte)str.ReadByte();
             }
 
             return fdlist;

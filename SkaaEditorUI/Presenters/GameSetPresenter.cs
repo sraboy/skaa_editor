@@ -22,7 +22,6 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
 using System.Data;
 using System.Windows.Forms;
 
@@ -34,7 +33,8 @@ namespace SkaaEditorUI.Presenters
         /// Loads a 7KAA-format SET file (e.g., std.set)
         /// </summary>
         /// <param name="filePath">The path to the file</param>
-        /// <param name="merge">Whether to merge the loaded <see cref="DataSet"/> with the current <see cref="GameObject"/></param>
+        /// <param name="loadParam">At <c>loadParam[1]</c>, a bool value indicating whether or not 
+        /// to merge the loaded <see cref="DataSet"/> with the current <see cref="PresenterBase{T}.GameObject"/></param>
         /// <returns>A new <see cref="DataSet"/> containing all the tables and records of the specified file</returns>
         public override DataSet Load(string filePath, params object[] loadParam)
         {
@@ -57,8 +57,8 @@ namespace SkaaEditorUI.Presenters
 
         public override bool Save(string filePath, params object[] param)
         {
-
-            throw new NotImplementedException();
+            this.GameObject.SaveStandardGameSet(filePath);
+            return true;
         }
 
         protected override void SetupFileDialog(FileDialog dlg)

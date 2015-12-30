@@ -69,7 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BitmapProcessing\FastBitmap.csproj">
+    <ProjectReference Include="..\FastBitmap\FastBitmap.csproj">
       <Project>{3816600b-b417-460d-8457-96039058b03e}</Project>
       <Name>FastBitmap</Name>
     </ProjectReference>

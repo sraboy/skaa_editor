@@ -59,9 +59,9 @@
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openSpriteSprToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -283,6 +283,13 @@
             this.openSpriteSprToolStripMenuItem.Text = "Sprite (Spr)";
             this.openSpriteSprToolStripMenuItem.Click += new System.EventHandler(this.openSpriteSprToolStripMenuItem_Click);
             // 
+            // spriteResToolStripMenuItem
+            // 
+            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
+            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
+            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.openSpriteResToolStripMenuItem_Click);
+            // 
             // openGameSetToolStripMenuItem
             // 
             this.openGameSetToolStripMenuItem.Name = "openGameSetToolStripMenuItem";
@@ -296,13 +303,6 @@
             this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.loadPaletteToolStripMenuItem.Text = "Palette";
             this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
-            // 
-            // spriteResToolStripMenuItem
-            // 
-            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
-            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
-            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.openSpriteResToolStripMenuItem_Click);
             // 
             // saveProjectToolStripMenuItem
             // 
@@ -324,22 +324,23 @@
             // saveGameSetToolStripMenuItem
             // 
             this.saveGameSetToolStripMenuItem.Name = "saveGameSetToolStripMenuItem";
-            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveGameSetToolStripMenuItem.Text = "Game Set (std)";
             this.saveGameSetToolStripMenuItem.ToolTipText = "Saves the standard game set with any current edits. This file is \"std.set\" in 7KA" +
     "A an includes 36 specific data tables for use in the game.";
+            this.saveGameSetToolStripMenuItem.Click += new System.EventHandler(this.saveGameSetToolStripMenuItem_Click);
             // 
             // saveSpriteToolStripMenuItem
             // 
             this.saveSpriteToolStripMenuItem.Name = "saveSpriteToolStripMenuItem";
-            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveSpriteToolStripMenuItem.Text = "Sprite";
             this.saveSpriteToolStripMenuItem.Click += new System.EventHandler(this.saveSpriteToolStripMenuItem_Click);
             // 
             // saveSpriteFrameToolStripMenuItem
             // 
             this.saveSpriteFrameToolStripMenuItem.Name = "saveSpriteFrameToolStripMenuItem";
-            this.saveSpriteFrameToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveSpriteFrameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveSpriteFrameToolStripMenuItem.Text = "Sprite Frame";
             // 
             // closeProjectToolStripMenuItem
