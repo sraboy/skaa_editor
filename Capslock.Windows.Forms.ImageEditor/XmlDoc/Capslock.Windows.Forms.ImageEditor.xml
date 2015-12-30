@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Capslock.Windows.Forms.ImageEditor</name>
+    </assembly>
+    <members>
+        <member name="E:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.SelectedToolChanged">
+            <summary>
+            This event is raised when the currently-selected tool changes. It's default <code>add</code> accessor protects against
+            multiple subscriptions from the same subscriber by checking its invocation list.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.SelectedTool">
+            <summary>
+            The currently-selected tool from <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/>
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.CloseSelectedTool">
+            <summary>
+            This method will change the <see cref="P:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.SelectedTool"/> to <see cref="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.None"/>.
+            </summary>
+            <remarks>
+            Use this if the user's current activity makes them ineligible to use a tool (e.g., the image has been closed).
+            </remarks>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.IsPanning">
+            <summary>
+              Gets a value indicating whether this control is panning. Overridden to eliminate the changing of the cursor.
+            </summary>
+            <value>
+              <c>true</c> if this control is panning; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.OnImageChanged(System.EventArgs)">
+            <summary>
+            Raises the <see cref="E:Cyotek.Windows.Forms.ImageBox.ImageChanged" /> event. Overridden to use <see cref="T:BitmapProcessing.FastBitmap"/>.
+            </summary>
+            <param name="e">
+            The <see cref="T:System.EventArgs"/> instance containing the event data.
+            </param>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.OnMouseClick(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Calls the base class' <see cref="M:System.Windows.Forms.Control.OnMouseClick(System.Windows.Forms.MouseEventArgs)"/> 
+            event after any drawing action is completed, based on <see cref="P:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.SelectedTool"/>.
+            <see cref="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.Pencil"/> is the only tool that functions with just a click,
+            by only filling in the single pixel.
+            </summary>
+            <remarks>
+            Other <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/> are based on multiple clicks, mouse movement or MouseUp.
+            For example, <see cref="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.PaintBucket"/> requires 
+            <see cref="M:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.OnMouseUp(System.Windows.Forms.MouseEventArgs)"/> so that the user can hold the mouse button down 
+            and then adjust to ensure they paint the proper area.
+            </remarks>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.ProcessPanning(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Overrides base to perform tool-based panning instead of auto-panning with the mouse
+            </summary>
+            <param name="e">
+            The <see cref="T:System.Windows.Forms.MouseEventArgs" /> instance containing the event data.
+            </param>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Capslock.Windows.Forms.ImageEditor.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.LineToolIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.PaintBucketIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.PaintBucketToolCursor">
+            <summary>
+              Looks up a localized resource of type System.Byte[].
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.PanToolCursor">
+            <summary>
+              Looks up a localized resource of type System.Byte[].
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.PanToolCursorMouseDown">
+            <summary>
+              Looks up a localized resource of type System.Byte[].
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.PanToolIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.PencilToolCursor">
+            <summary>
+              Looks up a localized resource of type System.Byte[].
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.PencilToolIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.Utils.Compare(System.Drawing.Image,System.Drawing.Image)">
+            <summary>
+            
+            </summary>
+            <param name="img1"></param>
+            <param name="img2"></param>
+            <returns></returns>
+            <remarks>
+            This idea and code is from http://codereview.stackexchange.com/a/39989. 
+            It is licensed under CC-By-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0)
+            </remarks>
+        </member>
+    </members>
+</doc>

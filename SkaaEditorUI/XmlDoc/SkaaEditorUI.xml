@@ -1,0 +1,299 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SkaaEditorUI</name>
+    </assembly>
+    <members>
+        <member name="P:SkaaEditorUI.Misc.PresenterFileDialogEventArgs`1.FileDialogResults">
+            <summary>
+            The results from a FileDialog like OpenFileDialog or SaveFileDialog
+            </summary>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.AboutForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.AboutForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.AboutForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.TrySaveCloseProject">
+            <summary>
+            Closes the current project and saves any changes, if needed.
+            </summary>
+            <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenNewTab">
+            <summary>
+            Opens a new document tab, which is automatically set as the <see cref="P:WeifenLuo.WinFormsUI.Docking.DockPanel.ActiveDocument"/>
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenSprite``1">
+            <summary>
+            Opens a <see cref="T:SkaaGameDataLib.SkaaSprite"/>
+            </summary>
+            <typeparam name="T">A presenter class that implements <see cref="T:SkaaEditorUI.Presenters.MultiImagePresenterBase"/></typeparam>
+            <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ImageEditorContainer_ActiveSpriteChanged(System.Object,System.EventArgs)">
+            <summary>
+            Updates the palette in the <see cref="T:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer"/> with that of the <see cref="T:SkaaGameDataLib.SkaaSprite"/> the user is viewing
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ImageEditorContainer_ImageChanged(System.Object,System.EventArgs)">
+            <summary>
+            Forces redraws of child controls displaying the image
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.MDISkaaEditorMainForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.ConfigSettings">
+            <summary>
+            Provides for initial application settings like default directories, debug logging, etc.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.SetUpColorGrid">
+            <summary>
+            Loads <see cref="P:SkaaEditorUI.oldProject.ActivePalette"/>, if specified, and enables/disables the form's <see cref="!:SkaaColorChooser"/> object based on whether or not a palette is loaded.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.SetupUI">
+            <summary>
+            Sets/Resets various UI settings like menu options, etc.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.TrySaveCloseProject(System.Object,System.EventArgs)">
+            <summary>
+            Closes the current project and saves changes, if needed.
+            </summary>
+            <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.SkaaEditorMainForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.SkaaSAVEditorTest.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaSAVEditorTest.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.SkaaSAVEditorTest.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.PresenterBase`1.SetField``1(``0@,``0,System.Action)">
+            <summary>
+            Uses the default comparer to compare <paramref name="field"/> and <paramref name="value"/> and,
+            if different, sets <paramref name="field"/> to the value specified and calls the delegate
+            specified by <paramref name="onPropertyChanged"/>.
+            </summary>
+            <param name="field">The calling accessor's backing field</param>
+            <param name="value">The new value being set</param>
+            <param name="onPropertyChanged">The <see cref="E:SkaaEditorUI.Presenters.PresenterBase`1.PropertyChanged"/> delegate to be called if there was a change</param>
+            <returns>False if the two values are equal; true otherwise</returns>
+            <remarks> 
+            This specific method is licensed under CC-BY-SA v2.5 as it was adapted from a StackOverflow user post. 
+            Original: http://stackoverflow.com/questions/4364888/how-to-get-property-name-from-within-getter-setter-of-that-property
+            License: CC-BY-SA v2.5 (http://creativecommons.org/licenses/by-sa/2.5/)
+            </remarks>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.GameSetPresenter.Load(System.String,System.Object[])">
+            <summary>
+            Loads a 7KAA-format SET file (e.g., std.set)
+            </summary>
+            <param name="filePath">The path to the file</param>
+            <param name="merge">Whether to merge the loaded <see cref="T:System.Data.DataSet"/> with the current <see cref="!:GameObject"/></param>
+            <returns>A new <see cref="T:System.Data.DataSet"/> containing all the tables and records of the specified file</returns>
+        </member>
+        <member name="P:SkaaEditorUI.Presenters.FramePresenter.Bitmap">
+            <summary>
+            Sets the <see cref="P:SkaaEditorUI.Presenters.FramePresenter.Bitmap"/> property to the specified value and raises the
+            <see cref="E:SkaaEditorUI.Presenters.PresenterBase`1.PropertyChanged"/> event without doing a comparison.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.SpritePresenter.Load(System.String,System.Object[])">
+            <summary>
+            Creates a <see cref="T:SkaaGameDataLib.SkaaSprite"/> object from an SPR-formatted file
+            </summary>
+            <param name="filePath">The absolute path to the SPR file to open</param>
+            <returns>The newly-created <see cref="T:SkaaGameDataLib.SkaaSprite"/></returns>
+        </member>
+        <member name="T:SkaaEditorUI.oldProject">
+            <summary>
+            Represents a set of open files and settings.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.oldProject.OpenGameSet(System.String)">
+            <summary>
+            This function will open the specified 7KAA SET file.
+            </summary>
+            <param name="filepath">The complete path to the SET file.</param>
+            <remarks>
+             A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
+            </remarks>
+        </member>
+        <member name="M:SkaaEditorUI.oldProject.OpenPalette(System.String)">
+            <summary>
+            Loads a palette file.
+            </summary>
+            <param name="filepath">The specific palette file to load.</param>
+            <returns>A ColorPalette built from the palette file</returns>
+        </member>
+        <member name="M:SkaaEditorUI.oldProject.LoadSprite(System.String,System.Drawing.Imaging.ColorPalette)">
+            <summary>
+            Opens an SPR file and creates a <see cref="T:SkaaGameDataLib.SkaaSprite"/> object for it
+            </summary>
+            <param name="filepath">The absolute path to the SPR file to open</param>
+            <returns>The newly-created <see cref="T:SkaaGameDataLib.SkaaSprite"/></returns>
+            <remarks>
+            The original game code for reading SPR files can be found <code>ResourceDb::init_imported()</code> 
+            in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". SPR files are 
+            are considered <code>FLAT</code> by 7KAA. 
+            </remarks>
+        </member>
+        <member name="T:SkaaEditorUI.ProjectManager">
+            <summary>
+            A singleton class that will manage a <see cref="!:Project"/>'s file operations
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.ProjectManager.GetTemporaryDirectory">
+            <summary>
+            Creates a new <see cref="P:SkaaEditorUI.ProjectManager.TempDirectory"/> in <see cref="M:System.IO.Path.GetTempPath"/>
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.ProjectManager.IsFileFormatUnknown(SkaaGameDataLib.FileFormats)">
+            <summary>
+            Checks whether the specified format is any kind of unknown format
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.ProjectManager.CreateNewProject">
+            <summary>
+            Creates a new <see cref="!:Project"/> in <see cref="P:SkaaEditorUI.ProjectManager.TempDirectory"/> 
+            </summary>
+            <returns>A new <see cref="!:Project"/></returns>
+        </member>
+        <member name="M:SkaaEditorUI.ProjectManager.CloseProject">
+            <summary>
+            Closes the <see cref="!:ActiveProject"/>
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.ProjectManager.Open``2(System.Object[])">
+            <summary>
+            Calls the <see cref="!:IPresenterBase&lt;T&gt;.Open&lt;T1&gt;(object)"/> method of the specified type
+            </summary>
+            <typeparam name="T">A SkaaGameDataLib object</typeparam>
+            <typeparam name="T1">An <see cref="T:SkaaEditorUI.Presenters.IPresenterBase`1"/> object on which to call Open()</typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:SkaaEditorUI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.Kazuya_Hartless">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.MenuFileCloseIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.MenuFileNewIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.MenuFileOpenIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.MenuFileSaveIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+    </members>
+</doc>

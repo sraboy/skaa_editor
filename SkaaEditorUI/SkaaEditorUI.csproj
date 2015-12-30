@@ -56,6 +56,7 @@
     <AssemblyVersionSettings>None.None.Increment.Increment</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.None.Increment.Increment</AssemblyFileVersionSettings>
     <AssemblyInfoVersionSettings>None.None.Increment.Increment</AssemblyInfoVersionSettings>
+    <DocumentationFile>XmlDoc\SkaaEditorUI.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -72,6 +73,7 @@
     <AssemblyVersionSettings>None.IncrementOnDemand.Increment.Increment</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.IncrementOnDemand.Increment.Increment</AssemblyFileVersionSettings>
     <AssemblyInfoVersionSettings>None.IncrementOnDemand.Increment.Increment</AssemblyInfoVersionSettings>
+    <DocumentationFile>XmlDoc\SkaaEditorUI.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>D4463BF88A11B7EA0FFCD831F4094345A934E4B5</ManifestCertificateThumbprint>
@@ -99,6 +101,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>XmlDoc\SkaaEditorUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ObjectListView, Version=2.9.0.25611, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
@@ -293,6 +296,7 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /y "$(ProjectDir)..\other\test_projects\*.*" "$(ProjectDir)$(OutDir)data\projects\"
-copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"</PostBuildEvent>
+copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Capslock.Windows.Forms.SpriteViewer</name>
+    </assembly>
+    <members>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.ResizeImage(System.Drawing.Image,System.Int32,System.Int32)">
+            <summary>
+            Resize the image to the specified width and height.
+            </summary>
+            <param name="image">The image to resize.</param>
+            <param name="width">The width to resize to.</param>
+            <param name="height">The height to resize to.</param>
+            <returns>The resized image.</returns>
+            <remarks>Courtesy: http://stackoverflow.com/questions/1922040/resize-an-image-c-sharp </remarks>
+        </member>
+        <member name="F:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.SpriteViewer.ListView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.ListView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.ListView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.TimelineView.SetCurrentFrameTo(System.Drawing.Image)">
+            <summary>
+            Updates the control to display the specified image, if it exists in the <see cref="!:List"/> 
+            passed to <see cref="M:Capslock.Windows.Forms.SpriteViewer.TimelineView.SetFrameList(System.Collections.Generic.List{System.Drawing.Image})"/>
+            </summary>
+            <param name="frame">The image to find and display</param>
+            <returns>true if the image was found and the control was updated, false otherwise</returns>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.TimelineView.SetCurrentFrameTo(Capslock.Windows.Forms.SpriteViewer.IFrame)">
+            <summary>
+            Updates the control to display the specified image, if it exists in the <see cref="!:List"/> 
+            passed to <see cref="!:SetFrameList(List&lt;IFrame&gt;)"/>
+            </summary>
+            <param name="frame">The <see cref="T:Capslock.Windows.Forms.SpriteViewer.IFrame"/> to find and display</param>
+            <returns>true if the <see cref="T:Capslock.Windows.Forms.SpriteViewer.IFrame"/> was found and the control was updated, false otherwise</returns>
+        </member>
+        <member name="F:Capslock.Windows.Forms.SpriteViewer.TimelineView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.TimelineView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.TimelineView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+    </members>
+</doc>

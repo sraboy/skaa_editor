@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrulyObservableCollection.cs</name>
+    </assembly>
+    <members>
+        <member name="T:TrulyObservableCollection.TrulyObservableCollection`1">
+            <summary>
+            A custom implementation of <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> that raises events for collection member changes by enforcing
+            the implementation of <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>.
+            </summary>
+            <typeparam name="T">Any type that implements <see cref="T:System.ComponentModel.INotifyPropertyChanged"/></typeparam>
+            <remarks>
+            This specific class is licensed under CC-BY-SA v2.5 as it was adapted from a StackOverflow user post. 
+            Original: http://stackoverflow.com/questions/1427471/observablecollection-not-noticing-when-item-in-it-changes-even-with-inotifyprop/5256827#5256827
+            License: CC-BY-SA v2.5 (http://creativecommons.org/licenses/by-sa/2.5/)
+            </remarks>
+        </member>
+    </members>
+</doc>

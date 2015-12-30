@@ -103,7 +103,6 @@ namespace SkaaEditorUI.Forms
             //Browse folders to find a project directory
             //Check all file types and load them
         }
-
         private void openSpriteSprToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenSprite<SpritePresenter>() == null)

@@ -25,7 +25,6 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
@@ -50,7 +49,6 @@ namespace SkaaEditorUI.Presenters
         /// </summary>
         /// <param name="filePath">The absolute path to the SPR file to open</param>
         /// <returns>The newly-created <see cref="SkaaSprite"/></returns>
-        /// <remarks>
         public override SkaaSprite Load(string filePath, params object[] param)
         {
             SkaaSprite spr;

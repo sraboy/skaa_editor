@@ -142,19 +142,19 @@ namespace SkaaEditorUI
         /// <summary>
         /// Get a <see cref="MemoryStream"/> of the entire <see cref="DataSet"/>
         /// </summary>
-        /// <returns>A <see cref="MemoryStream"/></returns>
+        /// <returns>A <see cref="MemoryStream"/> in the format of std.set</returns>
         public static Stream GetGameSetStream(this DataSet ds) => GetGameSetStream(ds, null);
         /// <summary>
         /// Get a <see cref="MemoryStream"/> of the <see cref="DataSet"/> consisting of the standard game set, <see cref="StandardGameSetDefaultName"/>
         /// </summary>
-        /// <param name="set">A value that matches <see cref="DataSet.ExtendedProperties[\"FileName\"]"/>. If null, </param>
-        /// <returns>A <see cref="MemoryStream"/></returns>
+        /// <returns>A <see cref="MemoryStream"/> in the format of std.set</returns>
         public static Stream GetStandardGameSetStream(this DataSet ds) => GetGameSetStream(ds, StandardGameSetDefaultName);
         /// <summary>
         /// Get a <see cref="MemoryStream"/> of the <see cref="DataSet"/> consisting of the specified set
         /// </summary>
-        /// <param name="set">A value that matches <see cref="DataSet.ExtendedProperties[\"FileName\"]"/>. If null, </param>
-        /// <returns>A <see cref="MemoryStream"/></returns>
+        /// <param name="set">A value that matches the <see cref="DataSourcesPropertyName"/> element in <see cref="DataSet.ExtendedProperties"/>, 
+        /// which further matches an element of each table's <see cref="DataTable.ExtendedProperties"/>. If null, all tables are used.</param>
+        /// <returns>A <see cref="MemoryStream"/> in the format of std.set</returns>
         public static Stream GetGameSetStream(this DataSet ds, string set)
         {
             Dictionary<string, int> dic = new Dictionary<string, int>();

@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaEditorControls", "SkaaE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkaaGameDataLib", "SkaaGameDataLib\SkaaGameDataLib.csproj", "{DA473696-B41A-4C5E-879D-77AE1E12B01D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastBitmap", "BitmapProcessing\FastBitmap.csproj", "{3816600B-B417-460D-8457-96039058B03E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastBitmap", "FastBitmap\FastBitmap.csproj", "{3816600B-B417-460D-8457-96039058B03E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorPicker", "Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj", "{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}"
 EndProject

@@ -204,7 +204,7 @@ namespace SkaaEditorUI
             return true;
         }
         /// <summary>
-        /// Closes the <see cref="ActiveProject"/>
+        /// Closes the project by saving all files to <see cref="SaveDirectory"/> or, if it's null, to <see cref="TempDirectory"/> and cleaning temp files
         /// </summary>
         public void CloseProject()
         {

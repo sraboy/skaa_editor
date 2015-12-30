@@ -24,16 +24,13 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using SkaaGameDataLib;
-using System.Data;
-using System.Drawing.Imaging;
-using System.Drawing;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Threading.Tasks;
 using SkaaEditorUI.Presenters;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI
 {
@@ -405,8 +402,8 @@ namespace SkaaEditorUI
 
                 if (t == typeof(SkaaSprite))
                 {
-                    byte[] spr_data = (obj as SkaaSprite).ToSprFile();
-                    fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
+                    //byte[] spr_data = (obj as SkaaSprite).ToSprFile();
+                    //fs.Write(spr_data, 0, Buffer.ByteLength(spr_data));
                 }
                 else if (t == typeof(SkaaFrame))
                 {

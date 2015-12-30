@@ -81,7 +81,7 @@ namespace SkaaGameDataLib
             }
             set
             {
-                if(this._frames != value)
+                if (this._frames != value)
                 {
                     this._frames = value;
                 }
@@ -139,7 +139,7 @@ namespace SkaaGameDataLib
         }
         public List<Image> GetFrameImages()
         {
-           List<Image> frames = this.Frames.Select(x => x.IndexedBitmap.Bitmap).ToList<Image>();
+            List<Image> frames = this.Frames.Select(x => x.IndexedBitmap.Bitmap).ToList<Image>();
             return frames;
         }
         /// <summary>
@@ -154,7 +154,7 @@ namespace SkaaGameDataLib
             foreach (DataRowView drv in this.DataView)
             {
                 int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
-                string name = (string) drv.Row.ItemArray[8];
+                string name = (string)drv.Row.ItemArray[8];
                 SkaaFrame sf = this.Frames.Find(f => f.BitmapOffset == offset);
                 sf.Name = name;
 
@@ -187,13 +187,13 @@ namespace SkaaGameDataLib
             //figure out how many rows we need
             if (totalFrames % 1 != 0) //totalFrames is a perfect square
             {
-                rows = (int) sqrt;
-                columns = (int) sqrt;
+                rows = (int)sqrt;
+                columns = (int)sqrt;
             }
             else
             {
-                rows = (int) Math.Floor(sqrt) + 1; //adds an additional row
-                columns = (int) Math.Ceiling(sqrt);
+                rows = (int)Math.Floor(sqrt) + 1; //adds an additional row
+                columns = (int)Math.Ceiling(sqrt);
             }
 
             //need the largest tile (by height and width) to set the row/column heights
@@ -235,28 +235,36 @@ namespace SkaaGameDataLib
 
             if (bitmap == null)
                 Logger.TraceInformation($"Failed to create sprite sheet bitmap for {this.SpriteId}");
-            
+
             return bitmap;
         }
-        public byte[] ToSprFile()
-        {
-            byte[] save;
+        ///// <summary>
+        ///// Generates a byte array in the SPR format for this sprite
+        ///// </summary>
+        ///// <returns>A byte array</returns>
+        //public byte[] ToSprFile()
+        //{
+        //    byte[] save;
 
-            using (MemoryStream ms = new MemoryStream())
-            {
-                foreach (SkaaFrame f in this.Frames)
-                {
-                    byte[] frameData = f.ToSprFile();
-                    ms.Write(BitConverter.GetBytes(frameData.Length), 0, sizeof(int));
-                    ms.Write(frameData, 0, frameData.Length);
-                }
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        foreach (SkaaFrame f in this.Frames)
+        //        {
+        //            byte[] frameData = f.ToSprFile();
+        //            ms.Write(BitConverter.GetBytes(frameData.Length), 0, sizeof(int));
+        //            ms.Write(frameData, 0, frameData.Length);
+        //        }
 
-                ms.Position = 0;
-                save = ms.ToArray();
-            }
+        //        ms.Position = 0;
+        //        save = ms.ToArray();
+        //    }
 
-            return save;
-        }
+        //    return save;
+        //}
+        /// <summary>
+        /// Builds a <see cref="List{T}"/> of byte arrays, one array for each <see cref="SkaaFrame"/> in <see cref="SkaaSprite.Frames"/>
+        /// </summary>
+        /// <returns>The <see cref="List{T}"/> where T is a <see cref="T:byte[]"/></returns>
         public List<byte[]> GetSpriteFrameByteArrays()
         {
             List<byte[]> frames = new List<byte[]>();
@@ -270,15 +278,16 @@ namespace SkaaGameDataLib
         /// <param name="str">The stream to read the SPR data from</param>
         /// <param name="pal">The <see cref="ColorPalette"/> to apply to the sprite's images</param>
         /// <returns>A new <see cref="SkaaSprite"/></returns>
-        /// The original game code for reading SPR files can be found <code>ResourceDb::init_imported()</code> 
-        /// in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". SPR files are 
-        /// are considered <code>FLAT</code> by 7KAA. 
+        /// <remarks>
+        /// The original game code for reading SPR files can be found <c>ResourceDb::init_imported()</c> 
+        /// in src/ORESDB.cpp around line 72. The <c>resName</c> will be "sprite\\NAME.SPR". SPR files are 
+        /// are considered <c>FLAT</c> by 7KAA. 
         /// </remarks>
         public static SkaaSprite FromSprStream(Stream str, ColorPalette pal)
         {
             SkaaSprite spr = new SkaaSprite();
             if (str is FileStream)
-                spr.SpriteId = Path.GetFileNameWithoutExtension(((FileStream) str).Name);
+                spr.SpriteId = Path.GetFileNameWithoutExtension(((FileStream)str).Name);
             try
             {
                 while (str.Position < str.Length)
