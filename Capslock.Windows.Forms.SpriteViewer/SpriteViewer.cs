@@ -23,7 +23,6 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -69,8 +68,8 @@ namespace Capslock.Windows.Forms.SpriteViewer
         public SpriteViewer()
         {
             InitializeComponent();
-            this.timelineView1.ActiveFrameChanged += Timeline1_ActiveFrameChanged;
-            this.listView1.ActiveFrameChanged += ListViewer1_ActiveFrameChanged;
+            this.timelineView1.ActiveFrameChanged += Timeline_ActiveFrameChanged;
+            this.listView1.ActiveFrameChanged += ListViewer_ActiveFrameChanged;
             this.listView1.SetImageGetter(SpriteFrameImageGetter);
         }
 
@@ -137,13 +136,13 @@ namespace Capslock.Windows.Forms.SpriteViewer
         #endregion
 
         #region Event Handlers
-        private void ListViewer1_ActiveFrameChanged(object sender, EventArgs e)
+        private void ListViewer_ActiveFrameChanged(object sender, EventArgs e)
         {
             var fe = (e as FrameChangedEventArgs);
             this.timelineView1.SetCurrentFrameTo(fe.FrameGuid);
             OnActiveFrameChanged(fe);
         }
-        private void Timeline1_ActiveFrameChanged(object sender, EventArgs e)
+        private void Timeline_ActiveFrameChanged(object sender, EventArgs e)
         {
             var fe = (e as FrameChangedEventArgs);
             this.listView1.SetSelectedItem(fe.FrameGuid);

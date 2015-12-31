@@ -23,11 +23,11 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Linq;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using TrulyObservableCollection;
 
 namespace Capslock.Windows.Forms.SpriteViewer
@@ -113,8 +113,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
         internal void SetFrameList(TrulyObservableCollection<IFrame> frames)
         {
             this._frames = frames;
-
-            this._frameImages = this._frameImages ?? new List<Image>();
+            this._frameImages = new List<Image>();
 
             foreach (IFrame f in frames)
             {
@@ -241,7 +240,8 @@ namespace Capslock.Windows.Forms.SpriteViewer
         #region Event Handlers
         private void picBoxFrame_Click(object sender, MouseEventArgs e)
         {
-            if (!_isInitialized) return;
+            if (!_isInitialized)
+                return;
 
             if (!this._animationTimer.Enabled)
             {

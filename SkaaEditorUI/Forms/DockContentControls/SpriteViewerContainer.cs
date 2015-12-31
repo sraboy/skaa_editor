@@ -60,6 +60,30 @@ namespace SkaaEditorUI.Forms.DockContentControls
                 handler(this, e);
             }
         }
+        private EventHandler _activeFrameChanged;
+        public event EventHandler ActiveFrameChanged
+        {
+            add
+            {
+                if (_activeFrameChanged == null || !_activeFrameChanged.GetInvocationList().Contains(value))
+                {
+                    _activeFrameChanged += value;
+                }
+            }
+            remove
+            {
+                _activeFrameChanged -= value;
+            }
+        }
+        private void OnActiveFrameChanged(EventArgs e)
+        {
+            EventHandler handler = _activeFrameChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
         #endregion
 
         public MultiImagePresenterBase ActiveSprite
@@ -80,6 +104,12 @@ namespace SkaaEditorUI.Forms.DockContentControls
         {
             InitializeComponent();
             this.Enabled = false;
+            this._spriteViewer.ActiveFrameChanged += SpriteViewer_ActiveFrameChanged;
+        }
+
+        private void SpriteViewer_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            OnActiveFrameChanged(e);
         }
 
         //public void UpdateFrame(IFrame frame)
@@ -89,11 +119,15 @@ namespace SkaaEditorUI.Forms.DockContentControls
 
         public void SetSprite(MultiImagePresenterBase spr, int activeFrameIndex = 0)
         {
-            this.ActiveSprite = spr;
-            this.ActiveSprite?.SetActiveFrame(activeFrameIndex);
-            this._spriteViewer.SetFrameList(this.ActiveSprite.Frames);
+            spr?.SetActiveFrame(activeFrameIndex);
+            this._spriteViewer.SetFrameList(spr?.Frames);
+
             if (spr != null)
                 this.Enabled = true;
+            else
+                this.Enabled = false;
+
+            this.ActiveSprite = spr;
         }
 
         private void InitializeComponent()

@@ -76,14 +76,14 @@ namespace SkaaEditorUI.Forms
             this._gameSetViewerContainer.HideOnClose = true;
 
             this._dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
-            _toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
-            _spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
+            this._toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
+            this._spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
+            this._spriteViewerContainer.ActiveFrameChanged += SpriteViewerContainer_ActiveFrameChanged;
             OpenNewTab();
 
             //we don't want this as the ActiveDocument, so show it after OpenNewTab()
             this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
         }
-
 
 
         #region Click Events
@@ -190,7 +190,8 @@ namespace SkaaEditorUI.Forms
         {
             var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;// ?? new ImageEditorContainer();
             iec.SetSprite(spr);
-            this._spriteViewerContainer.SetSprite(spr);
+            //don't need to set it here because it gets set in ImageEditorContainer_ActiveSpriteChanged
+            //this._spriteViewerContainer.SetSprite(spr);
         }
         /// <summary>
         /// Opens a <see cref="SkaaSprite"/>
@@ -302,6 +303,12 @@ namespace SkaaEditorUI.Forms
             // which works, but could be a performance issue with large sprites.
             var iec = sender as ImageEditorContainer;
             this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
+        }
+
+        private void SpriteViewerContainer_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            //todo: change the frame in ActiveDocument
+            throw new NotImplementedException();
         }
     }
 }
