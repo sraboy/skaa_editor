@@ -121,14 +121,38 @@
             <param name="offset">The offset in the <see cref="T:System.IO.Stream"/> at which to begin writing</param>
             <param name="isIdx">Whether or not to use settings for <see cref="F:SkaaGameDataLib.ResourceDatabase.ResIdxDefinitionSize"/> or <see cref="F:SkaaGameDataLib.ResourceDatabase.ResDefinitionSize"/></param>
         </member>
-        <member name="M:SkaaGameDataLib.SkaaSprite.MatchFrameOffsets">
+        <member name="M:SkaaGameDataLib.SkaaSprite.MatchFramesToDataView(System.String,System.String)">
             <summary>
-            Iterates through all the rows in the <see cref="T:SkaaGameDataLib.SkaaSprite"/>'s <see cref="P:SkaaGameDataLib.SkaaSprite.DataView"/> and 
-            sets each of this sprite's <see cref="T:SkaaGameDataLib.SkaaSpriteFrame"/>'s <see cref="F:SkaaGameDataLib.SkaaSpriteFrame.GameSetDataRows"/>
-            property to the DataRow with a BITMAPPTR matching <see cref="P:SkaaGameDataLib.SkaaSpriteFrame.BitmapOffset"/>. It also
-            reads the FILENAME property into <see cref="F:SkaaGameDataLib.SkaaFrame.Name"/>.
+            Iterates through all the rows in <see cref="P:SkaaGameDataLib.SkaaSprite.DataView"/> and sets each of this
+            sprite's <see cref="T:SkaaGameDataLib.SkaaSpriteFrame"/>'s <see cref="F:SkaaGameDataLib.SkaaSpriteFrame.GameSetDataRows"/>
+            property to the DataRow with a matching <see cref="P:SkaaGameDataLib.SkaaSpriteFrame.BitmapOffset"/> or, if none is found, 
+            a matching <see cref="F:SkaaGameDataLib.SkaaFrame.Name"/>. The frame's name and offset are set based on the corresponding
+            cell in the DataView.
             </summary>
+            <param name="frameNameColName">Either FILENAME for SFRAME in std.set or FrameName for ResIdxMultiBmp files</param>
+            <param name="frameOffsetColName">Either BITMAPPTR for SFRAME in std.set or FrameOffset for ResIdxMultiBmp files</param>
             <returns>False if any frame did not have a match in the DataView. True otherwise.</returns>
+            <remarks>
+            SkaaSprite was based primarily on SPR files so a lot of the code was
+            specific to those formats and ResIdxMultiBmp-formatted RES files, like
+            i_button.res for example, were hacked in around that.
+            
+            This method will find matching frames in its Frames list based first off of the
+            offset and, failing that, off the name. This is because SPR files have no
+            frame name data in them so this was used to find those frames in std.set.
+            These frames had their offsets calculated when the file was read. This
+            allowed for opening an SPR file and opening std.set afterwards.
+            ResIdxMultiBmp files have frame names in them so that can be used as a
+            fallback.
+            
+            Additionally, an SPR's frames' names and offsets are stored in columns
+            called "FILENAME" and "BITMAPPTR". This is in std.set's SFRAME table and
+            is also used in other files. However, ResIdx files don't have field names
+            like DBF files, so they're assigned "FrameName" and "FrameOffset" by the
+            DataRowExtensions class. I chose to use these for ResIdxMultiBmpr ather 
+            than BITMAPPTR and FILENAME primarily because FILENAME would be confusing 
+            since there are no actual files for these frames; this is from the original developers.
+            </remarks>
         </member>
         <member name="M:SkaaGameDataLib.SkaaSprite.ToBitmap">
             <summary>

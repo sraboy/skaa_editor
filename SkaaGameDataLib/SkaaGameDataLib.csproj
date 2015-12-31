@@ -61,7 +61,7 @@
     <Compile Include="UtilityClasses\ResourceDatabase.cs" />
     <Compile Include="UtilityClasses\IndexedBitmap.cs" />
     <Compile Include="UtilityClasses\PaletteLoader.cs" />
-    <Compile Include="UtilityClasses\DbaseIIIDataColumn.cs" />
+    <Compile Include="UtilityClasses\DataColumnExtensions.cs" />
     <Compile Include="UtilityClasses\DbfFile.cs" />
     <Compile Include="GameObjects\GameSetFile.cs" />
     <Compile Include="UtilityClasses\FileTyping.cs" />

@@ -129,7 +129,21 @@ namespace SkaaGameDataLib
             if (dv != null)
             {
                 this.DataView = dv;
-                return this.MatchFrameOffsets();
+
+                string frameOffsetColName;
+                string frameNameColName;
+
+                if (dv.Table.Columns.Contains("BITMAPPTR"))
+                    frameNameColName = "BITMAPPTR";
+                else
+                    frameNameColName = "FrameOffset";
+
+                if (dv.Table.Columns.Contains("FILENAME"))
+                    frameOffsetColName = "FILENAME";
+                else
+                    frameOffsetColName = "FrameName";
+
+                return this.MatchFramesToDataView(frameNameColName, frameOffsetColName);
             }
             else
             {
@@ -143,20 +157,45 @@ namespace SkaaGameDataLib
             return frames;
         }
         /// <summary>
-        /// Iterates through all the rows in the <see cref="SkaaSprite"/>'s <see cref="DataView"/> and 
-        /// sets each of this sprite's <see cref="SkaaSpriteFrame"/>'s <see cref="SkaaSpriteFrame.GameSetDataRows"/>
-        /// property to the DataRow with a BITMAPPTR matching <see cref="SkaaSpriteFrame.BitmapOffset"/>. It also
-        /// reads the FILENAME property into <see cref="SkaaFrame.Name"/>.
+        /// Iterates through all the rows in <see cref="SkaaSprite.DataView"/> and sets each of this
+        /// sprite's <see cref="SkaaSpriteFrame"/>'s <see cref="SkaaSpriteFrame.GameSetDataRows"/>
+        /// property to the DataRow with a matching <see cref="SkaaSpriteFrame.BitmapOffset"/> or, if none is found, 
+        /// a matching <see cref="SkaaFrame.Name"/>. The frame's name and offset are set based on the corresponding
+        /// cell in the DataView.
         /// </summary>
+        /// <param name="frameNameColName">Either FILENAME for SFRAME in std.set or FrameName for ResIdxMultiBmp files</param>
+        /// <param name="frameOffsetColName">Either BITMAPPTR for SFRAME in std.set or FrameOffset for ResIdxMultiBmp files</param>
         /// <returns>False if any frame did not have a match in the DataView. True otherwise.</returns>
-        internal bool MatchFrameOffsets()
+        /// <remarks>
+        /// SkaaSprite was based primarily on SPR files so a lot of the code was
+        /// specific to those formats and ResIdxMultiBmp-formatted RES files, like
+        /// i_button.res for example, were hacked in around that.
+        /// 
+        /// This method will find matching frames in its Frames list based first off of the
+        /// offset and, failing that, off the name. This is because SPR files have no
+        /// frame name data in them so this was used to find those frames in std.set.
+        /// These frames had their offsets calculated when the file was read. This
+        /// allowed for opening an SPR file and opening std.set afterwards.
+        /// ResIdxMultiBmp files have frame names in them so that can be used as a
+        /// fallback.
+        /// 
+        /// Additionally, an SPR's frames' names and offsets are stored in columns
+        /// called "FILENAME" and "BITMAPPTR". This is in std.set's SFRAME table and
+        /// is also used in other files. However, ResIdx files don't have field names
+        /// like DBF files, so they're assigned "FrameName" and "FrameOffset" by the
+        /// DataRowExtensions class. I chose to use these for ResIdxMultiBmpr ather 
+        /// than BITMAPPTR and FILENAME primarily because FILENAME would be confusing 
+        /// since there are no actual files for these frames; this is from the original developers.
+        /// </remarks>
+        internal bool MatchFramesToDataView(string frameNameColName, string frameOffsetColName)
         {
             foreach (DataRowView drv in this.DataView)
             {
-                int offset = Convert.ToInt32(drv.Row.ItemArray[9]);
-                string name = (string)drv.Row.ItemArray[8];
-                SkaaFrame sf = this.Frames.Find(f => f.BitmapOffset == offset);
+                int offset = Convert.ToInt32(drv.Row[frameNameColName]);
+                string name = (string)drv.Row[frameOffsetColName];
+                SkaaFrame sf = this.Frames.Find(f => f.BitmapOffset == offset) ?? this.Frames.Find(f => f.Name == name);
                 sf.Name = name;
+                sf.BitmapOffset = offset;
 
                 if (sf == null)
                 {
