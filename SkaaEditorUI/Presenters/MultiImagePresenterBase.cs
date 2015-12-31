@@ -132,17 +132,6 @@ namespace SkaaEditorUI.Presenters
             this.ActiveFrame = this.Frames?[index];
         }
 
-        public void SetSpriteDataView(GameSetPresenter gsp)
-        {
-            DataView dv;
-
-            dv = new DataView(gsp.GameObject?.Tables?["SFRAME"]);
-            dv.RowFilter = $"SPRITE = '{this.SpriteId.ToUpper()}'";
-
-            this.DataView = dv;
-            this.GameObject.SetSpriteDataView(dv);
-
-            this.Frames = BuildFramePresenters();
-        }
+        public abstract void SetSpriteDataView(GameSetPresenter gsp);
     }
 }

@@ -68,6 +68,7 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._guid, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Guid)));
             }
         }
+       
         public long BitmapOffset
         {
             get

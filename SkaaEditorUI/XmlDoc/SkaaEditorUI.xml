@@ -180,8 +180,25 @@
             Loads a 7KAA-format SET file (e.g., std.set)
             </summary>
             <param name="filePath">The path to the file</param>
-            <param name="merge">Whether to merge the loaded <see cref="T:System.Data.DataSet"/> with the current <see cref="!:GameObject"/></param>
+            <param name="loadParam">At <c>loadParam[1]</c>, a bool value indicating whether or not 
+            to merge the loaded <see cref="T:System.Data.DataSet"/> with the current <see cref="P:SkaaEditorUI.Presenters.PresenterBase`1.GameObject"/></param>
             <returns>A new <see cref="T:System.Data.DataSet"/> containing all the tables and records of the specified file</returns>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.ReadFrames(System.String,System.Drawing.Imaging.ColorPalette)">
+            <summary>
+            Reads all the frame data from the specified file, of type <see cref="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp"/>
+            </summary>
+            <param name="filepath">The path to the file</param>
+            <param name="pal">The <see cref="T:System.Drawing.Imaging.ColorPalette"/> to use in building the frame's image</param>
+            <returns>
+            A <see cref="T:System.Tuple`2"/> where <c>T1</c> is the new <see cref="T:SkaaGameDataLib.SkaaSprite"/> and <c>T2</c> is
+            the <see cref="T:System.Data.DataTable"/> read from the ResIdx header.
+            </returns>
+            <remarks>
+            This differs from loading an SPR file in that the file contains the <see cref="T:SkaaGameDataLib.SkaaFrame"/> data
+            directly in its header rather than in the standard game set. The <see cref="T:System.Data.DataTable"/> only has
+            fields for FrameName and FrameOffset; any other data is stored in other dBaseIII files.
+            </remarks>
         </member>
         <member name="P:SkaaEditorUI.Presenters.FramePresenter.Bitmap">
             <summary>
@@ -257,7 +274,7 @@
         </member>
         <member name="M:SkaaEditorUI.ProjectManager.Open``2(System.Object[])">
             <summary>
-            Calls the <see cref="!:IPresenterBase&lt;T&gt;.Open&lt;T1&gt;(object)"/> method of the specified type
+            Calls the <see cref="M:SkaaEditorUI.Presenters.IPresenterBase`1.Open``1(System.Object[])"/> method of the specified type
             </summary>
             <typeparam name="T">A SkaaGameDataLib object</typeparam>
             <typeparam name="T1">An <see cref="T:SkaaEditorUI.Presenters.IPresenterBase`1"/> object on which to call Open()</typeparam>

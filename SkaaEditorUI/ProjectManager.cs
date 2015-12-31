@@ -219,15 +219,15 @@ namespace SkaaEditorUI
 
         /////////////////////////////////// Presenter Management ///////////////////////////////////
         /// <summary>
-        /// Calls the <see cref="IPresenterBase{T}.Open{T1}(object)"/> method of the specified type
+        /// Calls the <see cref="IPresenterBase{T}.Open{T1}(object[])"/> method of the specified type
         /// </summary>
         /// <typeparam name="T">A SkaaGameDataLib object</typeparam>
         /// <typeparam name="T1">An <see cref="IPresenterBase{T}"/> object on which to call Open()</typeparam>
         /// <returns></returns>
         public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
-            //param[0] is FileFormat
-            //param[1] is bool merge for GameSetPresenter
+            //param[0] is bool merge for GameSetPresenter 
+            //or a DataSet (GameSetPresenter.GameObject) for ResIdxMultiBmpPresenter
 
             //This method signature is really verbose, which is a pain for the caller, but it allows this one single method
             //to open SpritePresenters, ResIdxMultiBmpPresenters and GameSetPresenters. T1 is necessary to specify either

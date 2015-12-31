@@ -23,6 +23,7 @@
 ***************************************************************************/
 #endregion
 using System;
+using System.Data;
 using System.IO;
 using System.Windows.Forms;
 using SkaaGameDataLib;
@@ -73,11 +74,26 @@ namespace SkaaEditorUI.Presenters
             return true;
         }
 
+        public override void SetSpriteDataView(GameSetPresenter gsp)
+        {
+            DataView dv;
+
+            dv = new DataView(gsp.GameObject?.Tables?["SFRAME"]);
+            dv.RowFilter = $"SPRITE = '{this.SpriteId.ToUpper()}'";
+
+            this.DataView = dv;
+            this.GameObject.SetSpriteDataView(dv);
+
+            this.Frames = BuildFramePresenters();
+        }
+
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".spr";
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.SpriteId ?? null;
         }
+
+
     }
 }

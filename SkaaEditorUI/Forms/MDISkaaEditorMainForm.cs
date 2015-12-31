@@ -24,7 +24,6 @@
 #endregion
 using System;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -60,10 +59,11 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SelectedToolChanged += ToolboxContainer_SelectedToolChanged;
             this.Shown += MDISkaaEditorMainForm_Shown;
         }
-        
+
         private void MDISkaaEditorMainForm_Shown(object sender, EventArgs e)
         {
-            OpenBallistaSpriteAndStandardGameSet();
+            OpenIButtonResIdxMultiBmp();
+            //OpenBallistaSpriteAndStandardGameSet();
         }
 
         private void SetUpDockPanel()
@@ -205,7 +205,13 @@ namespace SkaaEditorUI.Forms
                 if (OpenPalette() == false)
                     return null;
 
-            T spr = (T)ProjectManager.Open<SkaaSprite, T>(FileFormats.SpriteSpr);
+            T spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter);
+            //if (typeof(T) == typeof(SpritePresenter))
+            //    spr = (T)ProjectManager.Open<SkaaSprite, T>();
+            //else if (typeof(T) == typeof(ResIdxMultiBmpPresenter))
+            //    spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter.GameObject);
+            //else
+            //    throw new ArgumentException($"Unknown Type T: {typeof(T)}");
 
             if (spr == null) //user canceled or loading failed
                 return null;

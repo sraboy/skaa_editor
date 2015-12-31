@@ -34,33 +34,53 @@ namespace SkaaEditorUI.Presenters
 {
     public class ResIdxMultiBmpPresenter : MultiImagePresenterBase
     {
-        private DataTable _dataTable;
-
-        public DataTable DataTable
-        {
-            get
-            {
-                return _dataTable;
-            }
-
-            private set
-            {
-                this._dataTable = value;
-            }
-        }
+        private string _dataTableName;
 
         public override SkaaSprite Load(string filePath, params object[] param)
         {
             Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject);
-            //DataSet ds = new DataSet();
-            //ds.Tables.Add(tup.Item2);
-            //ds.AddDataSource(Path.GetFileName(filePath));
+            ((GameSetPresenter)param[0]).GameObject = ((GameSetPresenter)param[0]).GameObject ?? new DataSet();
+            DataSet ds = ((GameSetPresenter)param[0]).GameObject;
+
+            ds.Tables.Add(tup.Item2);
+            ds.AddDataSource(Path.GetFileName(filePath));
             this.GameObject = tup.Item1;
-            this.DataTable = tup.Item2;
+            this._dataTableName = tup.Item2.TableName;
             this.Frames = BuildFramePresenters();
             return this.GameObject;
         }
 
+        public override bool Save(string filePath, params object[] param)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetSpriteDataView(GameSetPresenter gsp)
+        {
+            DataView dv;
+
+            dv = new DataView(gsp.GameObject?.Tables?[_dataTableName]);
+
+            this.DataView = dv;
+            this.GameObject.SetSpriteDataView(dv);
+
+            this.Frames = BuildFramePresenters();
+        }
+
+        /// <summary>
+        /// Reads all the frame data from the specified file, of type <see cref="FileFormats.ResIdxMultiBmp"/>
+        /// </summary>
+        /// <param name="filepath">The path to the file</param>
+        /// <param name="pal">The <see cref="ColorPalette"/> to use in building the frame's image</param>
+        /// <returns>
+        /// A <see cref="Tuple{T1, T2}"/> where <c>T1</c> is the new <see cref="SkaaSprite"/> and <c>T2</c> is
+        /// the <see cref="DataTable"/> read from the ResIdx header.
+        /// </returns>
+        /// <remarks>
+        /// This differs from loading an SPR file in that the file contains the <see cref="SkaaFrame"/> data
+        /// directly in its header rather than in the standard game set. The <see cref="DataTable"/> only has
+        /// fields for FrameName and FrameOffset; any other data is stored in other dBaseIII files.
+        /// </remarks>
         private static Tuple<SkaaSprite, DataTable> ReadFrames(string filepath, ColorPalette pal)
         {
             SkaaSprite spr = new SkaaSprite();
@@ -71,14 +91,16 @@ namespace SkaaEditorUI.Presenters
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
+                //Read the file definitions from the ResIdx header.
                 Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs, true);
                 spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
                 dt.TableName = spr.SpriteId;
 
                 foreach (string key in dic.Keys)
                 {
-                    fs.Position = dic[key];
                     SkaaSpriteFrame sf = new SkaaSpriteFrame(null);
+                    sf.BitmapOffset = dic[key];
+                    fs.Position = sf.BitmapOffset;
                     sf.Name = key;
                     IndexedBitmap iBmp = new IndexedBitmap(pal);
                     sf.IndexedBitmap = iBmp;
@@ -97,12 +119,7 @@ namespace SkaaEditorUI.Presenters
 
             return new Tuple<SkaaSprite, DataTable>(spr, dt);
         }
-
-        public override bool Save(string filePath, params object[] param)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".res";

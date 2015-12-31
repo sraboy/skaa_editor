@@ -38,7 +38,7 @@ namespace SkaaEditorUI.Presenters
         /// <returns>A new <see cref="DataSet"/> containing all the tables and records of the specified file</returns>
         public override DataSet Load(string filePath, params object[] loadParam)
         {
-            bool merge = (bool)loadParam[1];
+            bool merge = (bool)loadParam[0];
 
             DataSet ds = new DataSet();
 

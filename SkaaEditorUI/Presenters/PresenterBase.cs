@@ -52,18 +52,6 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._gameObject, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.GameObject)));
             }
         }
-        public FileFormats FileFormat
-        {
-            get
-            {
-                return _fileFormat;
-            }
-
-            set
-            {
-                SetField(ref this._fileFormat, value, () => OnPropertyChanged());//GetDesignModeValue(() => this._fileFormat)));
-            }
-        }
 
         public abstract T Load(string filePath, params object[] param);     //Passed as a delegate in Open()
         public abstract bool Save(string filePath, params object[] param);  //Passed as a delegate in Save()
@@ -86,8 +74,6 @@ namespace SkaaEditorUI.Presenters
 
         PresenterBase<T1> IPresenterBase<T>.Open<T1>(params object[] loadParam)
         {
-            this.FileFormat = (FileFormats)(loadParam[0]);
-
             using (var dlg = new OpenFileDialog())
             {
                 SetupFileDialog(dlg);
