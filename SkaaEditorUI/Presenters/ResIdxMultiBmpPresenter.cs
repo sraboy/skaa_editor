@@ -46,7 +46,7 @@ namespace SkaaEditorUI.Presenters
             ds.AddDataSource(Path.GetFileName(filePath));
             this.GameObject = tup.Item1;
             this._dataTableName = tup.Item2.TableName;
-            this.Frames = BuildFramePresenters();
+            SetIFrames();
             return this.GameObject;
         }
 
@@ -64,7 +64,7 @@ namespace SkaaEditorUI.Presenters
             this.DataView = dv;
             this.GameObject.SetSpriteDataView(dv);
 
-            this.Frames = BuildFramePresenters();
+            //this.Frames = BuildFramePresenters();
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace SkaaEditorUI.Presenters
 
             return new Tuple<SkaaSprite, DataTable>(spr, dt);
         }
-        
+
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".res";

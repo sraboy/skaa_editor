@@ -23,21 +23,42 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Linq;
-using System.Drawing;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using TrulyObservableCollection;
-using System.ComponentModel;
 
 namespace Capslock.Windows.Forms.SpriteViewer
 {
     public partial class ListView : UserControl
     {
+        private IFrame _activeFrame;
+
         #region ActiveFrameChanged Event
         [field: NonSerialized]
         private EventHandler _activeFrameChanged;
+
+        public IFrame ActiveFrame
+        {
+            get
+            {
+                return _activeFrame;
+            }
+
+            set
+            {
+                if (this._activeFrame != value)
+                {
+                    this._activeFrame = value;
+                    this.objectListView1.SelectedItem = null;
+                    this.objectListView1.SelectObject(this._activeFrame);
+                    OnActiveFrameChanged(new FrameChangedEventArgs(this._activeFrame));
+                }
+            }
+        }
+
         public event EventHandler ActiveFrameChanged
         {
             add
@@ -52,7 +73,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
                 _activeFrameChanged -= value;
             }
         }
-        protected virtual void RaiseActiveFrameChangedEvent(FrameChangedEventArgs e)
+        protected virtual void OnActiveFrameChanged(FrameChangedEventArgs e)
         {
             EventHandler handler = _activeFrameChanged;
 
@@ -62,18 +83,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
             }
         }
         #endregion
-
-        //public ObjectListView ObjectListViewControl
-        //{
-        //    get
-        //    {
-        //        return this.objectListView1;
-        //    }
-        //    set
-        //    {
-        //        this.objectListView1 = value;
-        //    }
-        //}
 
         public ListView()
         {
@@ -92,31 +101,28 @@ namespace Capslock.Windows.Forms.SpriteViewer
         }
         internal void SetObjects(TrulyObservableCollection<IFrame> frames)
         {
-            //if(this.objectListView1.Columns.Count > 0)
             this.objectListView1.SetObjects(frames);
-            foreach (IFrame f in frames)
-                f.PropertyChanged += Frame_PropertyChanged;
+            if (frames != null)
+            {
+                foreach (IFrame f in frames)
+                    f.PropertyChanged += Frame_PropertyChanged;
+
+                this.ActiveFrame = frames[0];
+            }
         }
 
         private void Frame_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             this.Update();
         }
-
-        internal void SetSelectedItem(Guid frameGuid)
-        {
-            IEnumerable<IFrame> frames = this.objectListView1.Objects as IEnumerable<IFrame>;
-            var frame = frames.Single(f => f.Guid == frameGuid);
-            this.objectListView1.SelectObject(frame);
-        }
         #endregion
 
         #region Private Methods
         private object SpriteFrameImageGetter(object rowObject)
         {
-            IFrame f = (IFrame) rowObject;
+            IFrame f = (IFrame)rowObject;
             if (this.objectListView1.RowHeight < f?.Bitmap?.Height)
-                this.objectListView1.RowHeight = (int) f?.Bitmap?.Height;
+                this.objectListView1.RowHeight = (int)f?.Bitmap?.Height;
             return f.Bitmap;
         }
         private void SetUpObjectListView()
@@ -131,12 +137,10 @@ namespace Capslock.Windows.Forms.SpriteViewer
         private void ObjectListView1_SelectionChanged(object sender, EventArgs e)
         {
             var olv = sender as ObjectListView;
-            IFrame f = olv.SelectedObject as IFrame;
-            if (f != null)
-                RaiseActiveFrameChangedEvent(new FrameChangedEventArgs(f.Guid));
+            this.ActiveFrame = olv.SelectedObject as IFrame;
         }
         #endregion
 
- 
+
     }
 }

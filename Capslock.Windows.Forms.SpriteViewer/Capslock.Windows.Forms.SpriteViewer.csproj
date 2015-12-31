@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="FrameChangedEventArgs.cs" />
     <Compile Include="IFrame.cs" />
+    <Compile Include="IMultiImagePresenter.cs" />
     <Compile Include="SpriteViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>

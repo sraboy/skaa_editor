@@ -109,10 +109,9 @@ namespace SkaaEditorUI.Forms.DockContentControls
             SetActiveColors(Color.Black, Color.FromArgb(0, 0, 0, 0));
         }
 
-        public void SetSprite(MultiImagePresenterBase spr, int activeFrameIndex = 0)
+        public void SetSprite(MultiImagePresenterBase spr)
         {
             this.ActiveSprite = spr;
-            this.ActiveSprite?.SetActiveFrame(activeFrameIndex);
             this._imageEditorBox.Image = spr?.ActiveFrame?.Bitmap;
             this._imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
         }

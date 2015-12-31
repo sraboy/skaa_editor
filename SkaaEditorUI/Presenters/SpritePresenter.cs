@@ -60,7 +60,7 @@ namespace SkaaEditorUI.Presenters
             this.GameObject = spr;
             this.SpriteId = spr.SpriteId;
 
-            this.Frames = BuildFramePresenters();
+            SetIFrames();
             return this.GameObject;
         }
 
@@ -84,7 +84,7 @@ namespace SkaaEditorUI.Presenters
             this.DataView = dv;
             this.GameObject.SetSpriteDataView(dv);
 
-            this.Frames = BuildFramePresenters();
+            SetIFrames();
         }
 
         protected override void SetupFileDialog(FileDialog dlg)

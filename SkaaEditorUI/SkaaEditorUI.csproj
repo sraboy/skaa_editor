@@ -158,7 +158,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Presenters\ColorPalettePresenter.cs" />
-    <Compile Include="Presenters\IMultiImagePresenter.cs" />
     <Compile Include="Presenters\IPresenterBase.cs" />
     <Compile Include="Presenters\MultiImagePresenterBase.cs" />
     <Compile Include="Presenters\PresenterBase.cs" />

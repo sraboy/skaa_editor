@@ -115,7 +115,7 @@ namespace SkaaEditorUI.Forms
 
             ////this is needed so we can respond when the user uses the tracking bar to change frames
             //this.timelineControl1.ActiveFrameChanged += timelineControl_ActiveFrameChanged;
-            this.spriteViewer1.ActiveFrameChanged += SpriteViewer1_ActiveFrameChanged;
+            //this.spriteViewer1.ActiveFrameChanged += SpriteViewer1_ActiveFrameChanged;
             //this event is only called when the entire image changes: during frame changes or loading/closing a sprite
             this.imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
 
@@ -828,7 +828,7 @@ namespace SkaaEditorUI.Forms
             //this.ActiveProject.ActiveFrameChanged -= ActiveProject_ActiveFrameChanged;
             this.ActiveProject.PaletteChanged -= ActiveProject_PaletteChanged;
 
-            this.spriteViewer1.SetFrameList(null);
+            this.spriteViewer1.SetActiveSprite(null);
             this.imageEditorBox.Image = null;
 
             this.ActiveProject = null; //do this last so the event fires after nulling imageEditorBox

@@ -22,18 +22,6 @@
             <typeparam name="T">A presenter class that implements <see cref="T:SkaaEditorUI.Presenters.MultiImagePresenterBase"/></typeparam>
             <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
         </member>
-        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ImageEditorContainer_ActiveSpriteChanged(System.Object,System.EventArgs)">
-            <summary>
-            Updates the palette in the <see cref="T:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer"/> with that of the <see cref="T:SkaaGameDataLib.SkaaSprite"/> the user is viewing
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ImageEditorContainer_ImageChanged(System.Object,System.EventArgs)">
-            <summary>
-            Forces redraws of child controls displaying the image
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
         <member name="F:SkaaEditorUI.Forms.MDISkaaEditorMainForm.components">
             <summary>
             Required designer variable.

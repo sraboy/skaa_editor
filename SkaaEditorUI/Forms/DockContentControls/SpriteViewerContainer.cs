@@ -104,7 +104,6 @@ namespace SkaaEditorUI.Forms.DockContentControls
         {
             InitializeComponent();
             this.Enabled = false;
-            this._spriteViewer.ActiveFrameChanged += SpriteViewer_ActiveFrameChanged;
         }
 
         private void SpriteViewer_ActiveFrameChanged(object sender, EventArgs e)
@@ -112,15 +111,9 @@ namespace SkaaEditorUI.Forms.DockContentControls
             OnActiveFrameChanged(e);
         }
 
-        //public void UpdateFrame(IFrame frame)
-        //{
-        //    var f = this.ActiveSprite.Frames.
-        //}
-
-        public void SetSprite(MultiImagePresenterBase spr, int activeFrameIndex = 0)
+        public void SetSprite(MultiImagePresenterBase spr)
         {
-            spr?.SetActiveFrame(activeFrameIndex);
-            this._spriteViewer.SetFrameList(spr?.Frames);
+            this._spriteViewer.SetActiveSprite(spr);
 
             if (spr != null)
                 this.Enabled = true;

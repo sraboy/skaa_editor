@@ -22,8 +22,10 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib;
 using TrulyObservableCollection;
@@ -37,6 +39,31 @@ namespace SkaaEditorUI.Presenters
         private IFrame _activeFrame;
         private string _spriteId;
         private DataView _dataView;
+
+        private EventHandler _activeFrameChanged;
+        public event EventHandler ActiveFrameChanged
+        {
+            add
+            {
+                if (_activeFrameChanged == null || !_activeFrameChanged.GetInvocationList().Contains(value))
+                {
+                    _activeFrameChanged += value;
+                }
+            }
+            remove
+            {
+                _activeFrameChanged -= value;
+            }
+        }
+        protected virtual void OnActiveFrameChanged(EventArgs e)
+        {
+            EventHandler handler = _activeFrameChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
 
         public TrulyObservableCollection<IFrame> Frames
         {
@@ -69,7 +96,12 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._activeFrame, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.ActiveFrame)));
+                //SetField(ref this._activeFrame, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.ActiveFrame)));
+                if (this._activeFrame != value)
+                {
+                    this._activeFrame = value;
+                    OnActiveFrameChanged(EventArgs.Empty);
+                }
             }
         }
         public string SpriteId
@@ -96,17 +128,17 @@ namespace SkaaEditorUI.Presenters
             }
         }
 
-        protected TrulyObservableCollection<IFrame> BuildFramePresenters()
+        protected void SetIFrames()
         {
-            TrulyObservableCollection<IFrame> frames = new TrulyObservableCollection<IFrame>();
+            this.Frames = new TrulyObservableCollection<IFrame>();
 
             foreach (SkaaFrame f in this.GameObject.Frames)
             {
                 var fp = new FramePresenter(f);
-                frames.Add(fp);
+                this.Frames.Add(fp);
             }
 
-            return frames;
+            this.ActiveFrame = this.Frames[0];
         }
 
         public Stream GetSpriteStream()
@@ -127,9 +159,9 @@ namespace SkaaEditorUI.Presenters
             this.PalettePresenter.Load(filePath, null);
         }
 
-        public void SetActiveFrame(int index)
+        public void SetActiveFrame(FramePresenter f)
         {
-            this.ActiveFrame = this.Frames?[index];
+            this.ActiveFrame = this.Frames?[this.Frames.IndexOf(f)];
         }
 
         public abstract void SetSpriteDataView(GameSetPresenter gsp);

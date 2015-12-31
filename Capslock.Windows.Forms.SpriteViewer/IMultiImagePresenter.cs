@@ -22,16 +22,17 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System;
 using System.Data;
-using Capslock.Windows.Forms.SpriteViewer;
 using TrulyObservableCollection;
 
-namespace SkaaEditorUI.Presenters
+namespace Capslock.Windows.Forms.SpriteViewer
 {
     public interface IMultiImagePresenter
     {
+        event EventHandler ActiveFrameChanged;
+
         TrulyObservableCollection<IFrame> Frames { get; set; }
-        ColorPalettePresenter PalettePresenter { get; set; }
         DataView DataView { get; }
         IFrame ActiveFrame { get; set; }
         string SpriteId { get; set; }

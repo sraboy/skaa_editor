@@ -26,44 +26,27 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using TrulyObservableCollection;
 
 namespace Capslock.Windows.Forms.SpriteViewer
 {
     public partial class SpriteViewer : UserControl
     {
-        #region ActiveFrameChanged Event
-        [field: NonSerialized]
-        private EventHandler _activeFrameChanged;
-        public event EventHandler ActiveFrameChanged
+        private IMultiImagePresenter _activeSprite;
+
+        public IMultiImagePresenter ActiveSprite
         {
-            add
+            get
             {
-                if (_activeFrameChanged == null || !_activeFrameChanged.GetInvocationList().Contains(value))
-                {
-                    _activeFrameChanged += value;
-                }
+                return _activeSprite;
             }
-            remove
+
+            private set
             {
-                _activeFrameChanged -= value;
+                this._activeSprite = value;
             }
         }
-        protected virtual void OnActiveFrameChanged(FrameChangedEventArgs e)
-        {
-            EventHandler handler = _activeFrameChanged;
-
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-        #endregion
-
-        private Guid _activeFrameGuid;
 
         public SpriteViewer()
         {
@@ -75,24 +58,17 @@ namespace Capslock.Windows.Forms.SpriteViewer
 
         #region Public Methods
         public void SetImageGetter(ImageGetterDelegate imageGetter) => this.listView1.SetImageGetter(imageGetter);
-        //public void SetFrameList(List<IFrame> frames)
-        //{
-        //    this.listViewer1.SetObjects(frames);
-        //    this.timeline1.SetFrameList(frames);
-        //    this._activeFrameGuid = frames[0].Guid;
-        //}
-        public void SetFrameList(TrulyObservableCollection<IFrame> frames)
+
+        public void SetActiveSprite(IMultiImagePresenter spr)
         {
-            this.listView1.SetObjects(frames);
-            this.timelineView1.SetFrameList(frames);
-            this._activeFrameGuid = frames[0].Guid;
+            this.ActiveSprite = spr;
+
+            this.timelineView1.SetFrameList(spr?.Frames);
+            this.listView1.SetObjects(spr?.Frames);
+            if (spr != null)
+                spr.ActiveFrameChanged += IMultiImagePresenter_ActiveFrameChanged;
         }
 
-
-        //public void UpdateFrame(IFrame f)
-        //{
-        //    this.timelineView1.UpdateFrame(f);
-        //}
         #endregion
 
         #region Private Methods
@@ -139,14 +115,18 @@ namespace Capslock.Windows.Forms.SpriteViewer
         private void ListViewer_ActiveFrameChanged(object sender, EventArgs e)
         {
             var fe = (e as FrameChangedEventArgs);
-            this.timelineView1.SetCurrentFrameTo(fe.FrameGuid);
-            OnActiveFrameChanged(fe);
+            this.ActiveSprite.ActiveFrame = fe.SelectedFrame;
         }
         private void Timeline_ActiveFrameChanged(object sender, EventArgs e)
         {
             var fe = (e as FrameChangedEventArgs);
-            this.listView1.SetSelectedItem(fe.FrameGuid);
-            OnActiveFrameChanged(fe);
+            this.ActiveSprite.ActiveFrame = fe.SelectedFrame;
+        }
+
+        private void IMultiImagePresenter_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            this.timelineView1.ActiveFrame = this.ActiveSprite?.ActiveFrame;
+            this.listView1.ActiveFrame = this.ActiveSprite?.ActiveFrame;
         }
         #endregion
     }

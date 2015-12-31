@@ -29,41 +29,40 @@ namespace Capslock.Windows.Forms.SpriteViewer
     public class FrameChangedEventArgs : EventArgs
     {
         private Guid _frameGuid;
-        //private Frame _selectedFrame;
+        private IFrame _selectedFrame;
 
-        //public Frame SelectedFrame
-        //{
-        //    get
-        //    {
-        //        return _selectedFrame;
-        //    }
-
-        //    private set
-        //    {
-        //        this._selectedFrame = value;
-        //    }
-        //}
-        public Guid FrameGuid
+        public IFrame SelectedFrame
         {
             get
             {
-                return _frameGuid;
+                return _selectedFrame;
             }
 
-            set
+            private set
             {
-                this._frameGuid = value;
+                this._selectedFrame = value;
             }
         }
-
-        //public FrameChangedEventArgs(Frame SelectedFrame)
+        //public Guid FrameGuid
         //{
-        //    this.SelectedFrame = SelectedFrame;
-        //    this.FrameGuid = SelectedFrame.Guid;
+        //    get
+        //    {
+        //        return _frameGuid;
+        //    }
+
+        //    set
+        //    {
+        //        this._frameGuid = value;
+        //    }
         //}
-        public FrameChangedEventArgs(Guid SelectedFrameGuid)
+
+        public FrameChangedEventArgs(IFrame f)
         {
-            this.FrameGuid = SelectedFrameGuid;
+            this.SelectedFrame = f;
         }
+        //public FrameChangedEventArgs(Guid SelectedFrameGuid)
+        //{
+        //    this.FrameGuid = SelectedFrameGuid;
+        //}
     }
 }

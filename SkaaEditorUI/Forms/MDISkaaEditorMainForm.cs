@@ -78,7 +78,6 @@ namespace SkaaEditorUI.Forms
             this._dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
             this._toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
             this._spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
-            this._spriteViewerContainer.ActiveFrameChanged += SpriteViewerContainer_ActiveFrameChanged;
             OpenNewTab();
 
             //we don't want this as the ActiveDocument, so show it after OpenNewTab()
@@ -188,10 +187,10 @@ namespace SkaaEditorUI.Forms
 
         public void SetActiveSprite(MultiImagePresenterBase spr)
         {
-            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;// ?? new ImageEditorContainer();
-            iec.SetSprite(spr);
-            //don't need to set it here because it gets set in ImageEditorContainer_ActiveSpriteChanged
-            //this._spriteViewerContainer.SetSprite(spr);
+            var iec = (this._dockPanel.ActiveDocument as ImageEditorContainer);
+            iec?.SetSprite(spr);
+            this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
+            this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
         }
         /// <summary>
         /// Opens a <see cref="SkaaSprite"/>
@@ -232,6 +231,7 @@ namespace SkaaEditorUI.Forms
 
 
             SetSpriteDataViews(this._gameSetViewerContainer.GameSetPresenter);
+            spr.ActiveFrameChanged += MultiImagePresenterBase_ActiveFrameChanged;
             return spr;
         }
 
@@ -273,42 +273,17 @@ namespace SkaaEditorUI.Forms
 
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
-            //get the palette for the currently-loaded sprite, if any
             var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
-            var pal = iec?.ActiveSprite?.PalettePresenter;
+            SetActiveSprite(iec?.ActiveSprite);
+            //get the palette for the currently-loaded sprite, if any
+            //var pal = iec?.ActiveSprite?.PalettePresenter;
 
-            if (pal != null)
-                this._toolBoxContainer.SetPalette(pal.GameObject);
-        }
-        /// <summary>
-        /// Updates the palette in the <see cref="ToolboxContainer"/> with that of the <see cref="SkaaSprite"/> the user is viewing
-        /// </summary>
-        private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e)
-        {
-            var iec = sender as ImageEditorContainer;
-            this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
-            this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
+            //if (pal != null)
+            //    this._toolBoxContainer.SetPalette(pal.GameObject);
         }
 
-        /// <summary>
-        /// Forces redraws of child controls displaying the image
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e)
-        {
-            //todo: force an update of the individual cell containing the image
-            // It only updates after a mouseover. Refresh/Invalidate/Update
-            // do nothing but SetSprite actually resets the list of objects,
-            // which works, but could be a performance issue with large sprites.
-            var iec = sender as ImageEditorContainer;
-            this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
-        }
-
-        private void SpriteViewerContainer_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            //todo: change the frame in ActiveDocument
-            throw new NotImplementedException();
-        }
+        private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e) { }
+        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e) { }
+        private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e) { }
     }
 }
