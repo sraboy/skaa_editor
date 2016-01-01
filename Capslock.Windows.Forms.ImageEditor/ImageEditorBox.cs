@@ -45,13 +45,14 @@ namespace Capslock.Windows.Forms.ImageEditor
         private Color _activePrimaryColor;
         private Color _activeSecondaryColor;
         private FastBitmap fbmp;
-        private DrawingTools _toolMode;
+        private DrawingTools _selectedTool;
         private Cursor _panCursor;
         private Cursor _pencilCursor;
         private Cursor _paintBucketCursor;
         private Point _startMousePosition;
         private Point _startScrollPosition;
         private Queue<Point> _linePoints;
+        private Color _transparentColor;
         #endregion
 
         [DefaultValue("false")]
@@ -87,12 +88,22 @@ namespace Capslock.Windows.Forms.ImageEditor
         [Category("Behavior")]
         public DrawingTools SelectedTool
         {
-            get { return _toolMode; }
+            get { return this._selectedTool; }
             protected set
             {
-                if (_toolMode != value)
+                if (this._selectedTool != value)
                 {
-                    _toolMode = value;
+                    this._selectedTool = value;
+
+                    if (this._selectedTool == DrawingTools.SelectRectangle)
+                        this.SelectionMode = ImageBoxSelectionMode.Rectangle;
+                }
+
+                if (this._selectedTool == DrawingTools.None)
+                {
+                    SelectNone();
+                    this._selectedTool = DrawingTools.None;
+                    this.SelectionMode = ImageBoxSelectionMode.None;
                 }
             }
         }
@@ -173,20 +184,24 @@ namespace Capslock.Windows.Forms.ImageEditor
         #region Constructor
         public ImageEditorBox() : base()
         {
-            //have to load these dynamically since they're not just black/white
+            //have to load these dynamically since they're not monotone, which is all that is normally supported
 #if DEBUG
             var str = this.GetType().Assembly.GetManifestResourceNames();
 #endif
             this._panCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PanToolCursor.cur")));
             this._pencilCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PencilToolCursor.cur")));
             this._paintBucketCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Assembly.GetName().Name, ".Resources.Cursors.PaintBucketToolCursor.cur")));
-            this._linePoints = new Queue<Point>();
 
-            this.AutoPan = false; //the base constructor sets this to true
+            this._linePoints = new Queue<Point>();          //for drawing a line
+            this.AutoPan = false;                           //the base constructor sets this to true but we have a tool for panning
+
+            this.KeyDown += ImageEditorBox_KeyDown;
         }
+
+
         #endregion
 
-        #region Mouse Events
+        #region Mouse & Keyboard Events
         /// <summary>
         /// Calls the base class' <see cref="Control.OnMouseClick(MouseEventArgs)"/> 
         /// event after any drawing action is completed, based on <see cref="SelectedTool"/>.
@@ -226,6 +241,7 @@ namespace Capslock.Windows.Forms.ImageEditor
                 case DrawingTools.Pan:
                     this._startMousePosition = e.Location;
                     break;
+
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
@@ -275,6 +291,26 @@ namespace Capslock.Windows.Forms.ImageEditor
             {
                 this.IsDrawing = false;
                 OnImageChanged(EventArgs.Empty);
+            }
+        }
+        protected virtual void ImageEditorBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == (Keys.Control | Keys.C) &&     //Ctrl-C for copy
+                this.SelectionRegion != RectangleF.Empty && //The user has selected a region (which also means SelectedTool is SelectRectangle)
+                this.LimitSelectionToImage == true)         //True by default in the base constructor. We don't want to copy stuff outside the image because it may not match the palette.
+            {
+                Bitmap bmp = new Bitmap((int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height);
+
+                //Select a sub-image of the current image that matches the SelectionRegion
+                using (var gr = Graphics.FromImage(bmp))
+                {
+                    Rectangle dest = new Rectangle(0, 0, (int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height);
+                    gr.DrawImage(this.Image, dest, this.SelectionRegion, GraphicsUnit.Pixel);
+                }
+
+                //Send it to the Clipboard
+                Clipboard.SetImage(bmp);
+                bmp.Save("test.png", System.Drawing.Imaging.ImageFormat.Png);
             }
         }
         #endregion
@@ -423,7 +459,6 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.Invalidate(this.ViewPortRectangle);
             }
         }
-
         private void Fill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
             Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
@@ -480,7 +515,7 @@ namespace Capslock.Windows.Forms.ImageEditor
                 case DrawingTools.Line:
                     this.Cursor = Cursors.Cross;
                     break;
-                case DrawingTools.None:
+                default:
                     this.Cursor = this.DefaultCursor;
                     break;
             }

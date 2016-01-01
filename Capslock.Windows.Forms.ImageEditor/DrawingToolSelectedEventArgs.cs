@@ -27,6 +27,9 @@ using System;
 
 namespace Capslock.Windows.Forms.ImageEditor
 {
+    /// <summary>
+    /// Used to pass a specified <see cref="DrawingTools"/> selection
+    /// </summary>
     public class DrawingToolSelectedEventArgs : EventArgs
     {
         private DrawingTools _selectedTool;

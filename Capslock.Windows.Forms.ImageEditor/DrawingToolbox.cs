@@ -65,7 +65,8 @@ namespace Capslock.Windows.Forms.ImageEditor
 
         private DrawingTools _selectedTool = DrawingTools.None;
         /// <summary>
-        /// The currently-selected tool from <see cref="DrawingTools"/>
+        /// Gets or sets the currently-selected tool from <see cref="DrawingTools"/>. It will toggle off
+        /// if set to the same tool again by setting itself to <see cref="DrawingTools.None"/>
         /// </summary>
         public virtual DrawingTools SelectedTool
         {
@@ -80,6 +81,8 @@ namespace Capslock.Windows.Forms.ImageEditor
                     this._selectedTool = value;
                     OnSelectedToolChanged(new DrawingToolSelectedEventArgs(this._selectedTool));
                 }
+                else
+                    CloseSelectedTool();
             }
         }
 
@@ -95,6 +98,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         private void btnTool_Click(object sender, EventArgs e)
         {
             CheckBox cb = (sender as CheckBox);
+
             switch (cb.Name)
             {
                 case "btnPanTool":
@@ -109,20 +113,25 @@ namespace Capslock.Windows.Forms.ImageEditor
                 case "btnLineTool":
                     this.SelectedTool = DrawingTools.Line;
                     break;
+                case "btnSelectRectangleTool":
+                    this.SelectedTool = DrawingTools.SelectRectangle;
+                    break;
                 default:
                     this.SelectedTool = DrawingTools.None;
                     break;
             }
+
             ToggleCheckBoxes(sender);
         }
         private void ToggleCheckBoxes(object sender)
         {
             string senderCheckBoxName = (sender as CheckBox)?.Name;
 
-            foreach(CheckBox c in this.Controls)
+            foreach (CheckBox c in this.Controls)
             {
-                //don't change the sender, set others to false
-                c.Checked = c.Name == senderCheckBoxName ? c.Checked : false;
+                c.Checked = (c.Name == senderCheckBoxName)
+                            ? c.Checked  //don't change the sender
+                            : false;     //set others to false
             }
         }
 
@@ -140,6 +149,6 @@ namespace Capslock.Windows.Forms.ImageEditor
     }
 }
 
- 
+
 
 

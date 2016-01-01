@@ -61,6 +61,12 @@
             <param name="str">The stream from which to read. The first two bytes must be a uint16 containing the number of definitions</param>
             <returns></returns>
         </member>
+        <member name="F:SkaaGameDataLib.IndexedBitmap._skaaTransparentColor">
+            <summary>
+            Used in <see cref="M:System.Drawing.Bitmap.MakeTransparent(System.Drawing.Color)"/>. "White transparent" is used in 7KAA's 
+            sprites and the opacity is set to 0% as needed.
+            </summary>
+        </member>
         <member name="M:SkaaGameDataLib.IndexedBitmap.GetBitmapFromRleBytes(System.Byte[],System.Drawing.Imaging.ColorPalette,System.Int32,System.Int32)">
             <summary>
             Builds a <see cref="T:System.Drawing.Bitmap"/> from an byte array of indexed color values based on the provided palette.

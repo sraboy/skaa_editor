@@ -40,6 +40,11 @@ namespace SkaaGameDataLib
         public static readonly int MaxByteSize = 6000000;
         public static readonly int MaxPixelHeight = 2000;
         public static readonly int MaxPixelWidth = 2000;
+        /// <summary>
+        /// Used in <see cref="Bitmap.MakeTransparent(Color)"/>. "White transparent" is used in 7KAA's 
+        /// sprites and the opacity is set to 0% as needed.
+        /// </summary>
+        private static readonly Color _skaaTransparentColor = Color.FromArgb(0, 255, 255, 255);
 
         #region Event Handlers
         [NonSerialized]
@@ -219,7 +224,7 @@ namespace SkaaGameDataLib
         {
             int idx;
             Bitmap bmp = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            bmp.MakeTransparent(Color.Transparent);
+            bmp.MakeTransparent(_skaaTransparentColor);
 
             //much faster GetPixel/SetPixel usage
             FastBitmap fbmp = new FastBitmap(bmp);
@@ -236,9 +241,6 @@ namespace SkaaGameDataLib
             }
 
             fbmp.UnlockImage();
-            Color transparentByte = Color.FromArgb(0xff);
-            bmp.MakeTransparent(transparentByte);
-
             bmp.Palette = pal;
             return bmp;
         }
