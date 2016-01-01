@@ -62,8 +62,10 @@ namespace SkaaEditorUI.Forms
 
         private void MDISkaaEditorMainForm_Shown(object sender, EventArgs e)
         {
-            OpenIButtonResIdxMultiBmp();
-            //OpenBallistaSpriteAndStandardGameSet();
+            //dbgOpenBallistaSprite();
+            dbgOpenIButtonResIdxMultiBmp();
+            //dbgOpenIButtonResIdxMultiBmpAndStandardGameSet();
+            //dbgOpenBallistaSpriteAndStandardGameSet();
         }
 
         private void SetUpDockPanel()
