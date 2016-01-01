@@ -206,12 +206,6 @@ namespace SkaaEditorUI.Forms
                     return null;
 
             T spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter);
-            //if (typeof(T) == typeof(SpritePresenter))
-            //    spr = (T)ProjectManager.Open<SkaaSprite, T>();
-            //else if (typeof(T) == typeof(ResIdxMultiBmpPresenter))
-            //    spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter.GameObject);
-            //else
-            //    throw new ArgumentException($"Unknown Type T: {typeof(T)}");
 
             if (spr == null) //user canceled or loading failed
                 return null;
@@ -266,20 +260,16 @@ namespace SkaaEditorUI.Forms
 
         private void SetSpriteDataViews(GameSetPresenter gsp)
         {
+            if (gsp == null)
+                return;
+
             ProjectManager.SetSpriteDataViews(gsp);
-            //var spr = (this._dockPanel.ActiveDocument as ImageEditorContainer).ActiveSprite;
-            //this._spriteViewerContainer.SetSprite(spr);
         }
 
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
             var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
             SetActiveSprite(iec?.ActiveSprite);
-            //get the palette for the currently-loaded sprite, if any
-            //var pal = iec?.ActiveSprite?.PalettePresenter;
-
-            //if (pal != null)
-            //    this._toolBoxContainer.SetPalette(pal.GameObject);
         }
 
         private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e) { }
