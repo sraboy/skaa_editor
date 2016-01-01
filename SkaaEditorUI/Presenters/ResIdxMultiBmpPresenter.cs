@@ -39,7 +39,25 @@ namespace SkaaEditorUI.Presenters
         public override SkaaSprite Load(string filePath, params object[] param)
         {
             Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject);
-            ((GameSetPresenter)param[0]).GameObject = ((GameSetPresenter)param[0]).GameObject ?? new DataSet();
+            GameSetPresenter gsp = null;
+
+            try
+            {
+                gsp = (GameSetPresenter)param[0];
+                if (gsp == null)
+                    throw new ArgumentNullException();
+            }
+            catch (Exception e)
+            {
+                if (e is IndexOutOfRangeException)      //param wasn't passed at all
+                    throw new IndexOutOfRangeException($"You must pass a non-null {typeof(GameSetPresenter)} so the ResIdx's {typeof(DataSet)} can be set.");
+                else if (e is ArgumentNullException)     //thrown above
+                    throw new ArgumentNullException($"You must pass a non-null {typeof(GameSetPresenter)} so the ResIdx's {typeof(DataSet)} can be set.");
+                else
+                    throw e;
+            }
+
+            gsp.GameObject = gsp.GameObject ?? new DataSet();
             DataSet ds = ((GameSetPresenter)param[0]).GameObject;
 
             ds.Tables.Add(tup.Item2);

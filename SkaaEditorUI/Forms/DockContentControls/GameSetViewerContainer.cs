@@ -51,6 +51,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
         {
             InitializeComponent();
             this.dataListView1.ItemChecked += DataListView1_ItemChecked;
+            this._gameSetPresenter = new GameSetPresenter();
         }
 
         private void DataListView1_ItemChecked(object sender, ItemCheckedEventArgs e)
