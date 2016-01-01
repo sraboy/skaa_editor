@@ -7,11 +7,9 @@ namespace Capslock.Windows.Forms
     public static class Utils
     {
         /// <summary>
-        /// 
+        /// Compares the two specified images by converting each to a Base64 representation and comparing the strings
         /// </summary>
-        /// <param name="img1"></param>
-        /// <param name="img2"></param>
-        /// <returns></returns>
+        /// <returns>The result of <see cref="string.Equals(string, string)"/></returns>
         /// <remarks>
         /// This idea and code is from http://codereview.stackexchange.com/a/39989. 
         /// It is licensed under CC-By-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0)

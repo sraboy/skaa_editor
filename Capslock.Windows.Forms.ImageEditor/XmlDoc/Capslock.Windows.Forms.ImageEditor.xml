@@ -12,7 +12,8 @@
         </member>
         <member name="P:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.SelectedTool">
             <summary>
-            The currently-selected tool from <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/>
+            Gets or sets the currently-selected tool from <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/>. It will toggle off
+            if set to the same tool again by setting itself to <see cref="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.None"/>
             </summary>
         </member>
         <member name="M:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.CloseSelectedTool">
@@ -38,6 +39,48 @@
             <summary> 
             Required method for Designer support - do not modify 
             the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Capslock.Windows.Forms.ImageEditor.DrawingTools">
+            <summary>
+            The various ways in which user mouse actions can interact with the image
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.None">
+            <summary>
+            Defer to OS/application default
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.Pan">
+            <summary>
+            Use a hand to "grab" the image and drag it up or down to pan while zoomed in
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.Pencil">
+            <summary>
+            Draw, pixel-by-pixel, or click and drag to scribble
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.Line">
+            <summary>
+            Draw a straight line between two points
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.PaintBucket">
+            <summary>
+            Fill an area with the specified color. The area is defined by bounds, 
+            traditionally, by only filling pixels that are of the same color as 
+            the pixel clicked on by the user.
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.SelectRectangle">
+            <summary>
+            Select a rectangular area of the image, given two points defining two diagonally-opposing corners
+            </summary>
+        </member>
+        <member name="T:Capslock.Windows.Forms.ImageEditor.DrawingToolSelectedEventArgs">
+            <summary>
+            Used to pass a specified <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/> selection
             </summary>
         </member>
         <member name="P:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.IsPanning">
@@ -145,13 +188,16 @@
               Looks up a localized resource of type System.Drawing.Bitmap.
             </summary>
         </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.RectangleSelectToolIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
         <member name="M:Capslock.Windows.Forms.Utils.Compare(System.Drawing.Image,System.Drawing.Image)">
             <summary>
-            
+            Compares the two specified images by converting each to a Base64 representation and comparing the strings
             </summary>
-            <param name="img1"></param>
-            <param name="img2"></param>
-            <returns></returns>
+            <returns>The result of <see cref="M:System.String.Equals(System.String,System.String)"/></returns>
             <remarks>
             This idea and code is from http://codereview.stackexchange.com/a/39989. 
             It is licensed under CC-By-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0)

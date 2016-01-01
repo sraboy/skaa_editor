@@ -29,11 +29,23 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DrawingToolbox));
+            this.btnSelectRectangleTool = new System.Windows.Forms.CheckBox();
             this.btnLineTool = new System.Windows.Forms.CheckBox();
             this.btnPaintBucketTool = new System.Windows.Forms.CheckBox();
             this.btnPencilTool = new System.Windows.Forms.CheckBox();
             this.btnPanTool = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
+            // 
+            // btnSelectRectangleTool
+            // 
+            this.btnSelectRectangleTool.Appearance = System.Windows.Forms.Appearance.Button;
+            this.btnSelectRectangleTool.Image = global::Capslock.Windows.Forms.ImageEditor.Properties.Resources.RectangleSelectToolIcon;
+            this.btnSelectRectangleTool.Location = new System.Drawing.Point(3, 34);
+            this.btnSelectRectangleTool.Name = "btnSelectRectangleTool";
+            this.btnSelectRectangleTool.Size = new System.Drawing.Size(25, 25);
+            this.btnSelectRectangleTool.TabIndex = 4;
+            this.btnSelectRectangleTool.UseVisualStyleBackColor = true;
+            this.btnSelectRectangleTool.CheckedChanged += new System.EventHandler(this.btnTool_Click);
             // 
             // btnLineTool
             // 
@@ -83,12 +95,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btnSelectRectangleTool);
             this.Controls.Add(this.btnLineTool);
             this.Controls.Add(this.btnPaintBucketTool);
             this.Controls.Add(this.btnPencilTool);
             this.Controls.Add(this.btnPanTool);
             this.Name = "DrawingToolbox";
-            this.Size = new System.Drawing.Size(109, 199);
+            this.Size = new System.Drawing.Size(109, 68);
             this.ResumeLayout(false);
 
         }
@@ -100,5 +113,6 @@
         private System.Windows.Forms.CheckBox btnPencilTool;
         private System.Windows.Forms.CheckBox btnLineTool;
         private System.Windows.Forms.CheckBox btnPaintBucketTool;
+        private System.Windows.Forms.CheckBox btnSelectRectangleTool;
     }
 }
