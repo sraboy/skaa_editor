@@ -195,7 +195,8 @@
         </member>
         <member name="M:Capslock.Windows.Forms.Utils.Compare(System.Drawing.Image,System.Drawing.Image)">
             <summary>
-            Compares the two specified images by converting each to a Base64 representation and comparing the strings
+            Compares the two specified images by converting each to a Base64 
+            representation of the images (as PNGs) and comparing the strings
             </summary>
             <returns>The result of <see cref="M:System.String.Equals(System.String,System.String)"/></returns>
             <remarks>
