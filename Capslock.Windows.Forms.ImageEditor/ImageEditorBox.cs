@@ -230,6 +230,8 @@ namespace Capslock.Windows.Forms.ImageEditor
             if (!this.IsDrawing)
                 base.OnMouseDown(e);
 
+            this._startMousePosition = e.Location; //used for panning and for a location to paste an image
+
             switch (this.SelectedTool)
             {
                 case DrawingTools.Line:
@@ -238,10 +240,6 @@ namespace Capslock.Windows.Forms.ImageEditor
                 case DrawingTools.Pencil:
                     this.PencilDraw(e);
                     break;
-                case DrawingTools.Pan:
-                    this._startMousePosition = e.Location;
-                    break;
-
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
@@ -299,18 +297,13 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.SelectionRegion != RectangleF.Empty && //The user has selected a region (which also means SelectedTool is SelectRectangle)
                 this.LimitSelectionToImage == true)         //True by default in the base constructor. We don't want to copy stuff outside the image because it may not match the palette.
             {
-                Bitmap bmp = new Bitmap((int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height);
-
-                //Select a sub-image of the current image that matches the SelectionRegion
-                using (var gr = Graphics.FromImage(bmp))
-                {
-                    Rectangle dest = new Rectangle(0, 0, (int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height);
-                    gr.DrawImage(this.Image, dest, this.SelectionRegion, GraphicsUnit.Pixel);
-                }
-
-                //Send it to the Clipboard
-                Clipboard.SetImage(bmp);
-                bmp.Save("test.png", System.Drawing.Imaging.ImageFormat.Png);
+                PutSelectionToClipBoard();
+            }
+            else if (e.KeyData == (Keys.Control | Keys.V) && //Ctrl-V for paste
+                     Clipboard.ContainsImage() &&
+                     this.IsPointInImage(this._startMousePosition))
+            {
+                PasteImageFromClipboard();
             }
         }
         #endregion
@@ -367,7 +360,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         #endregion
 
-        #region Drawing Methods
+        #region Tool Methods
         protected virtual void LineDraw(MouseEventArgs e)
         {
             this.IsDrawing = true;
@@ -496,6 +489,44 @@ namespace Capslock.Windows.Forms.ImageEditor
                     e.X++;
                 }
             }
+        }
+        private void PutSelectionToClipBoard()
+        {
+            using (Bitmap bmp = new Bitmap((int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height))
+            {
+                //Select a sub-image of the current image that matches the SelectionRegion
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    Rectangle dest = new Rectangle(0, 0, (int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height);
+                    g.DrawImage(this.Image, dest, this.SelectionRegion, GraphicsUnit.Pixel);
+                }
+
+                //Send it to the Clipboard
+                Clipboard.SetImage(bmp);
+            }
+        }
+        private void PasteImageFromClipboard()
+        {
+            Bitmap bmp = new Bitmap(Clipboard.GetImage());
+            Bitmap orig = new Bitmap(this.Image);
+
+            using (Graphics g = Graphics.FromImage(orig))
+            {
+                g.DrawImage(bmp, this._startMousePosition);
+            }
+
+            this.Image = orig;
+            this.Refresh();
+
+            Bitmap final = new Bitmap(Math.Max(bmp.Width, orig.Width), Math.Max(bmp.Height, orig.Height), orig.PixelFormat);
+
+            using (Graphics g = Graphics.FromImage(final))
+            {
+                g.DrawImage(orig, 0, 0);
+                g.DrawImage(bmp, 0, 0);
+            }
+
+            this.Image = final;
         }
         #endregion
 
