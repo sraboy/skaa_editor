@@ -7,7 +7,8 @@ namespace Capslock.Windows.Forms
     public static class Utils
     {
         /// <summary>
-        /// Compares the two specified images by converting each to a Base64 representation and comparing the strings
+        /// Compares the two specified images by converting each to a Base64 
+        /// representation of the images (as PNGs) and comparing the strings
         /// </summary>
         /// <returns>The result of <see cref="string.Equals(string, string)"/></returns>
         /// <remarks>
@@ -26,13 +27,13 @@ namespace Capslock.Windows.Forms
 
             using (var mstream = new MemoryStream())
             {
-                img1.Save(mstream, img1.RawFormat);
+                img1.Save(mstream, System.Drawing.Imaging.ImageFormat.Png);
                 image1Bytes = mstream.ToArray();
             }
 
             using (var mstream = new MemoryStream())
             {
-                img2.Save(mstream, img2.RawFormat);
+                img2.Save(mstream, System.Drawing.Imaging.ImageFormat.Png);
                 image2Bytes = mstream.ToArray();
             }
 
