@@ -98,8 +98,15 @@ namespace SkaaEditorUI.Forms.DockContentControls
             private set
             {
                 this._activeSprite = value;
+                if (this._activeSprite != null)
+                    this._activeSprite.ActiveFrameChanged += _activeSprite_ActiveFrameChanged;
                 OnActiveSpriteChanged(EventArgs.Empty);
             }
+        }
+
+        private void _activeSprite_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            this._imageEditorBox.Image = this.ActiveSprite.ActiveFrame.Bitmap;
         }
 
         public ImageEditorContainer()
