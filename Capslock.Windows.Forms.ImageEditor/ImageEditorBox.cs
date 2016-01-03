@@ -52,7 +52,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         private Point _startMousePosition;
         private Point _startScrollPosition;
         private Queue<Point> _linePoints;
-        private Color _transparentColor;
+        private bool _snapSelectionToGrid;
         #endregion
 
         [DefaultValue("false")]
@@ -165,6 +165,19 @@ namespace Capslock.Windows.Forms.ImageEditor
                 }
             }
         }
+
+        public bool SnapSelectionToGrid
+        {
+            get
+            {
+                return _snapSelectionToGrid;
+            }
+
+            set
+            {
+                this._snapSelectionToGrid = value;
+            }
+        }
         #endregion
 
         #region Events
@@ -194,6 +207,7 @@ namespace Capslock.Windows.Forms.ImageEditor
 
             this._linePoints = new Queue<Point>();          //for drawing a line
             this.AutoPan = false;                           //the base constructor sets this to true but we have a tool for panning
+            this.SnapSelectionToGrid = true;                //dragging to select rectangles will snap to the pixel grid, which helps in capturing specific areas while zoomed in
 
             this.KeyDown += ImageEditorBox_KeyDown;
         }
@@ -254,6 +268,22 @@ namespace Capslock.Windows.Forms.ImageEditor
                     case DrawingTools.Pencil:
                         this.PencilDraw(e);
                         break;
+                    case DrawingTools.SelectRectangle:
+                        if (this.SnapSelectionToGrid)
+                        {
+                            bool snapToGrid = true;
+
+                            if (snapToGrid)
+                            {
+                                var oldRegion = this.SelectionRegion;
+                                this.SelectionRegion = new RectangleF(
+                                    (int)oldRegion.X,
+                                    (int)oldRegion.Y,
+                                    (int)oldRegion.Width,
+                                    (int)oldRegion.Height);
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -297,7 +327,13 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.SelectionRegion != RectangleF.Empty && //The user has selected a region (which also means SelectedTool is SelectRectangle)
                 this.LimitSelectionToImage == true)         //True by default in the base constructor. We don't want to copy stuff outside the image because it may not match the palette.
             {
-                PutSelectionToClipBoard();
+                PutSelectionToClipboard();
+            }
+            else if (e.KeyData == (Keys.Control | Keys.X) && //Ctrl-X for cut
+                     this.SelectionRegion != RectangleF.Empty &&
+                     this.LimitSelectionToImage == true)
+            {
+                CutSelectionToClipboard();
             }
             else if (e.KeyData == (Keys.Control | Keys.V) && //Ctrl-V for paste
                      Clipboard.ContainsImage() &&
@@ -305,6 +341,7 @@ namespace Capslock.Windows.Forms.ImageEditor
             {
                 PasteImageFromClipboard();
             }
+
         }
         #endregion
 
@@ -490,43 +527,47 @@ namespace Capslock.Windows.Forms.ImageEditor
                 }
             }
         }
-        private void PutSelectionToClipBoard()
+        private void PutSelectionToClipboard()
         {
-            using (Bitmap bmp = new Bitmap((int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height))
-            {
-                //Select a sub-image of the current image that matches the SelectionRegion
-                using (Graphics g = Graphics.FromImage(bmp))
-                {
-                    Rectangle dest = new Rectangle(0, 0, (int)this.SelectionRegion.Width, (int)this.SelectionRegion.Height);
-                    g.DrawImage(this.Image, dest, this.SelectionRegion, GraphicsUnit.Pixel);
-                }
-
-                //Send it to the Clipboard
-                Clipboard.SetImage(bmp);
-            }
+            Clipboard.SetImage(GetSelectedImage());
         }
         private void PasteImageFromClipboard()
         {
-            Bitmap bmp = new Bitmap(Clipboard.GetImage());
-            Bitmap orig = new Bitmap(this.Image);
-
-            using (Graphics g = Graphics.FromImage(orig))
+            using (Bitmap bmp = new Bitmap(Clipboard.GetImage()))
             {
-                g.DrawImage(bmp, this._startMousePosition);
+                Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
+                var pt = this.PointToImage(_startMousePosition);
+
+                using (Graphics g = Graphics.FromImage(final))
+                {
+                    g.DrawImage(this.Image, 0, 0);
+                    g.DrawImage(bmp, pt);
+                }
+
+                this.Image = final;
+            }
+        }
+        private void CutSelectionToClipboard()
+        {
+            //todo: instead of using Color.Aqua, we should identify a color known not to be in the palette or ask the user to specify a background color
+
+            PutSelectionToClipboard();
+
+            using (Bitmap bmp = new Bitmap(Clipboard.GetImage()))
+            {
+                Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
+
+                using (Graphics g = Graphics.FromImage(this.Image))
+                {
+                    using (var br = new SolidBrush(Color.Aqua))
+                    {
+                        g.FillRectangle(br, new RectangleF(this.SelectionRegion.Location, this.SelectionRegion.Size));
+                        (this.Image as Bitmap).MakeTransparent(Color.Aqua);
+                    }
+                }
             }
 
-            this.Image = orig;
             this.Refresh();
-
-            Bitmap final = new Bitmap(Math.Max(bmp.Width, orig.Width), Math.Max(bmp.Height, orig.Height), orig.PixelFormat);
-
-            using (Graphics g = Graphics.FromImage(final))
-            {
-                g.DrawImage(orig, 0, 0);
-                g.DrawImage(bmp, 0, 0);
-            }
-
-            this.Image = final;
         }
         #endregion
 
