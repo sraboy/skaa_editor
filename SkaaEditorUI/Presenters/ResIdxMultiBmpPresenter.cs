@@ -38,7 +38,6 @@ namespace SkaaEditorUI.Presenters
 
         public override SkaaSprite Load(string filePath, params object[] param)
         {
-            Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject);
             GameSetPresenter gsp = null;
 
             try
@@ -57,9 +56,10 @@ namespace SkaaEditorUI.Presenters
                     throw e;
             }
 
-            gsp.GameObject = gsp.GameObject ?? new DataSet();
-            DataSet ds = ((GameSetPresenter)param[0]).GameObject;
+            Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject);
 
+            gsp.GameObject = gsp.GameObject ?? new DataSet();
+            DataSet ds = gsp.GameObject;
             ds.Tables.Add(tup.Item2);
             ds.AddDataSource(Path.GetFileName(filePath));
             this.GameObject = tup.Item1;
@@ -78,11 +78,10 @@ namespace SkaaEditorUI.Presenters
             DataView dv;
 
             dv = new DataView(gsp.GameObject?.Tables?[_dataTableName]);
-
             this.DataView = dv;
-            this.GameObject.SetSpriteDataView(dv);
 
-            //this.Frames = BuildFramePresenters();
+            if (this.DataView.Table != null)
+                this.GameObject.SetSpriteDataView(dv);
         }
 
         /// <summary>

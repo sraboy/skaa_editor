@@ -17,7 +17,7 @@
         </member>
         <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenSprite``1">
             <summary>
-            Opens a <see cref="T:SkaaGameDataLib.SkaaSprite"/>
+            Opens a <see cref="T:SkaaGameDataLib.SkaaSprite"/> or <see cref="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp"/>
             </summary>
             <typeparam name="T">A presenter class that implements <see cref="T:SkaaEditorUI.Presenters.MultiImagePresenterBase"/></typeparam>
             <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
@@ -168,8 +168,7 @@
             Loads a 7KAA-format SET file (e.g., std.set)
             </summary>
             <param name="filePath">The path to the file</param>
-            <param name="loadParam">At <c>loadParam[1]</c>, a bool value indicating whether or not 
-            to merge the loaded <see cref="T:System.Data.DataSet"/> with the current <see cref="P:SkaaEditorUI.Presenters.PresenterBase`1.GameObject"/></param>
+            <param name="loadParam"></param>
             <returns>A new <see cref="T:System.Data.DataSet"/> containing all the tables and records of the specified file</returns>
         </member>
         <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.ReadFrames(System.String,System.Drawing.Imaging.ColorPalette)">

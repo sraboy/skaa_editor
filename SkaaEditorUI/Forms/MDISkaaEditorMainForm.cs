@@ -128,7 +128,7 @@ namespace SkaaEditorUI.Forms
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (OpenGameSet() == null)
+            if (OpenGameSet(true) == null)
                 MessageBox.Show("Failed to load game set!");
         }
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -195,7 +195,7 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
         }
         /// <summary>
-        /// Opens a <see cref="SkaaSprite"/>
+        /// Opens a <see cref="SkaaSprite"/> or <see cref="FileFormats.ResIdxMultiBmp"/>
         /// </summary>
         /// <typeparam name="T">A presenter class that implements <see cref="MultiImagePresenterBase"/></typeparam>
         /// <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
@@ -247,15 +247,19 @@ namespace SkaaEditorUI.Forms
             throw new NotImplementedException();
         }
 
-        public GameSetPresenter OpenGameSet()
+        public GameSetPresenter OpenGameSet(bool mergeDataSets)
         {
-            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(FileFormats.GameSet, true);
+            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>();
 
             if (gsp.GameObject == null)
                 return null;
 
-            this._gameSetViewerContainer.GameSetPresenter = gsp;
-            SetSpriteDataViews(gsp);
+            if (mergeDataSets)
+                this._gameSetViewerContainer.GameSetPresenter.Merge(gsp);
+            else
+                this._gameSetViewerContainer.GameSetPresenter = gsp;
+
+            SetSpriteDataViews(this._gameSetViewerContainer.GameSetPresenter);
 
             return gsp;
         }

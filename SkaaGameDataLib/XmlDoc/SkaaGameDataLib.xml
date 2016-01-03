@@ -128,8 +128,7 @@
         </member>
         <member name="M:SkaaGameDataLib.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)">
             <summary>
-            Reads a the header of a stream containing a datatable's name and its offset in a file
-            in the format of: char[9] uint32 data.
+            Reads the header of a stream containing definitions of a piece of data's name and its offset in a file.
             </summary>
             <param name="str">
             The stream from which to read. The first two bytes at <see cref="P:System.IO.Stream.Position"/>

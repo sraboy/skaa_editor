@@ -24,6 +24,7 @@
 #endregion
 using System.Data;
 using System.Windows.Forms;
+using SkaaGameDataLib;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -33,24 +34,16 @@ namespace SkaaEditorUI.Presenters
         /// Loads a 7KAA-format SET file (e.g., std.set)
         /// </summary>
         /// <param name="filePath">The path to the file</param>
-        /// <param name="loadParam">At <c>loadParam[1]</c>, a bool value indicating whether or not 
-        /// to merge the loaded <see cref="DataSet"/> with the current <see cref="PresenterBase{T}.GameObject"/></param>
+        /// <param name="loadParam"></param>
         /// <returns>A new <see cref="DataSet"/> containing all the tables and records of the specified file</returns>
         public override DataSet Load(string filePath, params object[] loadParam)
         {
-            bool merge = (bool)loadParam[0];
-
             DataSet ds = new DataSet();
 
             if (ds.OpenStandardGameSet(filePath) == false)
                 return null;
 
-            this.GameObject = this.GameObject ?? new DataSet();
-
-            if (merge)
-                this.GameObject.Merge(ds);
-            else
-                this.GameObject = ds;
+            this.GameObject = ds;
 
             return this.GameObject;
         }
@@ -59,6 +52,14 @@ namespace SkaaEditorUI.Presenters
         {
             this.GameObject.SaveStandardGameSet(filePath);
             return true;
+        }
+
+        public void Merge(GameSetPresenter gsp)
+        {
+            this.GameObject = this.GameObject ?? new DataSet();
+            gsp.GameObject = gsp.GameObject ?? new DataSet();
+
+            this.GameObject.Merge(gsp.GameObject);
         }
 
         protected override void SetupFileDialog(FileDialog dlg)
