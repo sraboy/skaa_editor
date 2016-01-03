@@ -18,48 +18,132 @@
             <param name="dt">The DataTable to save</param>
             <param name="filepath">The fully-qualified path of the file to write to</param>
         </member>
-        <member name="F:SkaaGameDataLib.ResourceDatabase.ResIdxNameSize">
+        <member name="M:SkaaGameDataLib.DataSetExtensions.GetDataSources(System.Data.DataSet)">
             <summary>
-            The number of characters, including null, that is used to name a ResIdx 
-            field. Shorter names are padded with spaces (0x20).
+            Returns a <see cref="T:System.Collections.Generic.List`1"/> of all data sources in the <see cref="P:System.Data.DataSet.ExtendedProperties"/> element with the name of <see cref="F:SkaaGameDataLib.DataSetExtensions.DataSourcesPropertyName"/>
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.ResourceDatabase.ResNameSize">
+        <member name="M:SkaaGameDataLib.DataSetExtensions.AddDataSource(System.Data.DataSet,System.String)">
             <summary>
-            The number of characters, that is be used to name a Res 
-            field. Shorter names are padded with spaces (0x20).
+            Adds a new "data source" string to the <see cref="P:System.Data.DataSet.ExtendedProperties"/> <see cref="T:System.Collections.Generic.List`1"/> named <see cref="F:SkaaGameDataLib.DataSetExtensions.DataSourcesPropertyName"/>
+            </summary>
+            <param name="datasource">The name of the data source to add</param>
+            <remarks>If <see cref="P:System.Data.DataSet.ExtendedProperties"/> does not contain <see cref="F:SkaaGameDataLib.DataSetExtensions.DataSourcesPropertyName"/>, it will be created.</remarks>
+        </member>
+        <member name="M:SkaaGameDataLib.DataSetExtensions.RemoveDataSource(System.Data.DataSet,System.String)">
+            <summary>
+            Removes the specified data source from the <see cref="P:System.Data.DataSet.ExtendedProperties"/> <see cref="T:System.Collections.Generic.List`1"/> named <see cref="F:SkaaGameDataLib.DataSetExtensions.DataSourcesPropertyName"/>
+            </summary>
+            <param name="datasource">The name of the data source to remove</param>
+            <returns>false if the specified data source does not exist, true otherwise</returns>
+        </member>
+        <member name="M:SkaaGameDataLib.DataSetExtensions.OpenStandardGameSet(System.Data.DataSet,System.String)">
+            <summary>
+            Opens the specified <see cref="!:GameSetFile"/>, adds all of its tables and records to the <see cref="T:System.Data.DataSet"/> and adds the file's name, 
+            from <see cref="M:System.IO.Path.GetFileName(System.String)"/>, as a new data source
+            </summary>
+            <param name="filePath"></param>
+            <returns>false if <see cref="M:SkaaGameDataLib.DbfFile.ReadStream(System.IO.Stream)"/> returned false, true otherwise</returns>
+        </member>
+        <member name="M:SkaaGameDataLib.DataSetExtensions.SaveStandardGameSet(System.Data.DataSet,System.String)">
+            <summary>
+            Saves this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="!:GameSetFile"/>, only including a 
+            <see cref="T:System.Data.DataTable"/> if its <see cref="F:SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName"/> is <see cref="F:SkaaGameDataLib.DataSetExtensions.StandardGameSetDefaultName"/>
+            </summary>
+            <param name="filepath">The path and file to save this <see cref="T:System.Data.DataSet"/> to</param>
+        </member>
+        <member name="M:SkaaGameDataLib.DataSetExtensions.SaveGameSet(System.Data.DataSet,System.String,System.String)">
+            <summary>
+            Saves a portion of this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="!:GameSetFile"/>
+            </summary>
+            <param name="setName">Specifies the <see cref="!:DataTableSourcePropertyName"/> to consider part of the standard game set</param>
+            <param name="filepath">The path and file to save this <see cref="T:System.Data.DataSet"/> to</param>
+        </member>
+        <member name="M:SkaaGameDataLib.DataSetExtensions.GetGameSetStream(System.Data.DataSet)">
+            <summary>
+            Get a <see cref="T:System.IO.MemoryStream"/> of the entire <see cref="T:System.Data.DataSet"/>
+            </summary>
+            <returns>A <see cref="T:System.IO.MemoryStream"/> in the format of std.set</returns>
+        </member>
+        <member name="M:SkaaGameDataLib.DataSetExtensions.GetStandardGameSetStream(System.Data.DataSet)">
+            <summary>
+            Get a <see cref="T:System.IO.MemoryStream"/> of the <see cref="T:System.Data.DataSet"/> consisting of the standard game set, <see cref="F:SkaaGameDataLib.DataSetExtensions.StandardGameSetDefaultName"/>
+            </summary>
+            <returns>A <see cref="T:System.IO.MemoryStream"/> in the format of std.set</returns>
+        </member>
+        <member name="M:SkaaGameDataLib.DataSetExtensions.GetGameSetStream(System.Data.DataSet,System.String)">
+            <summary>
+            Get a <see cref="T:System.IO.MemoryStream"/> of the <see cref="T:System.Data.DataSet"/> consisting of the specified set
+            </summary>
+            <param name="set">A value that matches the <see cref="F:SkaaGameDataLib.DataSetExtensions.DataSourcesPropertyName"/> element in <see cref="P:System.Data.DataSet.ExtendedProperties"/>, 
+            which further matches an element of each table's <see cref="P:System.Data.DataTable.ExtendedProperties"/>. If null, all tables are used.</param>
+            <returns>A <see cref="T:System.IO.MemoryStream"/> in the format of std.set</returns>
+        </member>
+        <member name="T:SkaaGameDataLib.ResourceDefinitionReader">
+            <summary>
+            Allows for the reading of record definitions within a file's stream. A record definition
+            is simple a name and offset that describes a pieces of data. The name is a unique identifier 
+            for the data and the offset describes where the data can be found in the file. This is used
+            for reading the header of a game set file (std.set) as well as the headers of any <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/>
+            </summary>
+            <seealso cref="M:SkaaGameDataLib.DataSetExtensions.OpenStandardGameSet(System.Data.DataSet,System.String)"/>
+        </member>
+        <member name="F:SkaaGameDataLib.ResourceDefinitionReader.ResIdxNameSize">
+            <summary>
+            The number of characters, including a null terminator, that is used as the unique name of a piece of data
+            in a record within a <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/>. Shorter names are right-padded with spaces (0x20).
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.ResourceDatabase.OffsetSize">
+        <member name="F:SkaaGameDataLib.ResourceDefinitionReader.ResNameSize">
             <summary>
-            The number of bytes used to represent the offset of a RESX 
-            record. Smaller values are padded with nulls (0x0).
+            The number of characters, including a null terminator, that is used as the unique name of a piece of data
+            in a record within a <see cref="F:SkaaGameDataLib.FileFormats._ResFile"/>. Shorter names are right-padded with spaces (0x20).
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.ResourceDatabase.ResIdxDefinitionSize">
+        <member name="F:SkaaGameDataLib.ResourceDefinitionReader.OffsetSize">
             <summary>
-            The total size of a RESX definition.
+            The number of bytes used to represent the offset of the record in a <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/>
+            or <see cref="F:SkaaGameDataLib.FileFormats._ResFile"/>. Values using less than this number of bytes are simply left-padded 
+            with nulls (0x0) in order to maintain alignment of the definitions.
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.ResourceDatabase.ResDefinitionSize">
+        <member name="F:SkaaGameDataLib.ResourceDefinitionReader.ResIdxDefinitionSize">
+            <summary>
+            The total size of a record definition in a <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/>
+            </summary>
+        </member>
+        <member name="F:SkaaGameDataLib.ResourceDefinitionReader.ResDefinitionSize">
             <summary>
             The total size of a Res definition.
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.ResourceDatabase.MaxRecordCount">
+        <member name="F:SkaaGameDataLib.ResourceDefinitionReader._maxAcceptableRecordCount">
             <summary>
             Arbitrary number that isn't necessary for the game but, since the record count
-            is read from the file, it could be any 16-bit value. Since RES files have no
+            is read from the file, it could be any 16-bit value. Since *.res files have no
             header by which to identify the file, we assume a file claiming more than 150
-            records is not a valid RESX file. 
+            records is not a valid resource file. This is only relevant when trying to read
+            arbitrary files, for example, when attempting to identify a file's type.
             </summary>
         </member>
-        <member name="M:SkaaGameDataLib.ResourceDatabase.ReadDefinitions(System.IO.Stream,System.Boolean)">
+        <member name="M:SkaaGameDataLib.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)">
             <summary>
-            Reads a the header of a stream containing char[9], uint32 data: a datatable's name and its offset in a file
+            Reads a the header of a stream containing a datatable's name and its offset in a file
+            in the format of: char[9] uint32 data.
             </summary>
-            <param name="str">The stream from which to read. The first two bytes must be a uint16 containing the number of definitions</param>
-            <returns></returns>
+            <param name="str">
+            The stream from which to read. The first two bytes at <see cref="P:System.IO.Stream.Position"/>
+            must be a uint16 containing the number of definitions to be read.
+            </param>
+            <param name="isIdx">
+            Whether or not the definitions to be read are in the ResIdx format or not. 
+            See <see cref="F:SkaaGameDataLib.ResourceDefinitionReader.ResIdxNameSize"/> and <see cref="F:SkaaGameDataLib.ResourceDefinitionReader.ResIdxDefinitionSize"/>.
+            </param>
+            <returns>
+            A <see cref="T:System.Collections.Generic.Dictionary`2"/> of Name-Offset pairs, with  
+            <see cref="P:System.Collections.Generic.KeyValuePair`2.Key"/> set to the ASCII name of the record and 
+            <see cref="P:System.Collections.Generic.KeyValuePair`2.Value"/> set to that record's offset in a file.
+            </returns>
         </member>
         <member name="F:SkaaGameDataLib.IndexedBitmap._skaaTransparentColor">
             <summary>
@@ -119,13 +203,116 @@
             </summary>
             <returns>The new DataTable</returns>
         </member>
+        <member name="T:SkaaGameDataLib.FileFormats">
+            <summary>
+            Used to describe the various file and data formats in use by 7KAA. Values beginning with an underscore
+            are special values not used by the game.
+            </summary>
+            <remarks>
+            Values beginning with an underscore are special values not used by the game but used for file 
+            identification purposes or to provide a generic description for formats that share a base type. 
+            For example, <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/> is used in documentation to describe all data 
+            using the ResIdx file format. It is only the format of the records within those files that differs,
+            and this is referred to as its "data format" within documentation at http://www.7kfans.com.
+            <para>
+            A quick view of some file formats:
+            spr files:
+            [frames]
+            uint32 size; short width; short height;[/frames]
+            ----------------------------------------------------------
+            res files(bmp):
+            uint32 size; short width; short height; rle_bmp_data;
+            ----------------------------------------------------------
+            res files(multi-bmp):
+            short record_count;
+            [records]
+            char[9] record_name; uint32 bmp_offset;[/records]
+            [bmps]
+            short width; short height; rle_bmp_data; [/bmps]
+            ----------------------------------------------------------
+            res files(dbf):
+            short dBaseVersion = 0x3;
+            byte[3] dateLastEdited = { 0xYY 0xMM 0xDD }
+            ...dbf data...
+            ----------------------------------------------------------
+            res files (tut_text):
+            short record_count;
+            [records]
+            char[9] record_name; uint32 text_offset;[/records]
+            [texts]
+            short width; short height; rle_bmp_data; [/texts]
+            </para>
+            </remarks>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats._Any">
+            <summary>
+            This value is only used in file identification routines or to refer to an arbitrary format in documentation and should not otherwise be used. It differs
+            from <see cref="F:SkaaGameDataLib.FileFormats._Unknown"/> in that it implies the file type is unknown and no attempt has yet been made to identify it.
+            </summary>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats._Unknown">
+            <summary>
+            This value is only used in file identification routines or to refer to an unknown format in documentation and should not otherwise be used. It differs
+            from <see cref="F:SkaaGameDataLib.FileFormats._Any"/> in that it implies the file type could not be identified.
+            </summary>
+            <seealso cref="M:SkaaGameDataLib.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)"/>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats._ResIdxFile">
+            <summary>
+            This value is only used in file identification routines or to refer to the ResIdx format in documentation and should not otherwise be used.
+            </summary>
+            <seealso cref="M:SkaaGameDataLib.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)"/>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats._ResFile">
+            <summary>
+            This value is only used in file identification routines or to refer to the Res format in documentation and should not otherwise be used.
+            </summary>
+            <seealso cref="M:SkaaGameDataLib.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)"/>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats.SpriteSpr">
+            <summary>
+            A file, generally with an SPR extension, that contains only <see cref="T:SkaaGameDataLib.SkaaFrame"/> data and no additional header/trailer or identifier
+            </summary>
+            <see cref="T:SkaaGameDataLib.IndexedBitmap"/>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats.SpriteFrameSpr">
+            <summary>
+            Describes image data, generally within a file with an extension of SPR or RES. The data contains a <see cref="T:System.UInt32"/> value describing
+            its size, in bytes, followed by two <see cref="T:System.UInt16"/> values describing its width and height, in pixels.
+            </summary>
+            <seealso cref="T:SkaaGameDataLib.SkaaSpriteFrame"/>
+            <see cref="T:SkaaGameDataLib.SkaaFrame"/>
+            <see cref="T:SkaaGameDataLib.IndexedBitmap"/>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats.ResIdxDbf">
+            <summary>
+            This format is only used for 7KAA's game set files, of which there is only one
+            distributed with the game (as of release 2.14): std.set.
+            </summary>
+            <seealso cref="!:GameSetFile"/>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp">
+            <summary>
+            These files are similar to <see cref="F:SkaaGameDataLib.FileFormats.SpriteSpr"/> but they have a <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/> header containing
+            the names and offsets of each of the images in the file. These images, instead of being animation frames for a 
+            sprite, are simply different images. Nonetheless, the image data is formatted the same as <see cref="T:SkaaGameDataLib.SkaaFrame"/>.
+            </summary>
+            <seealso cref="M:SkaaGameDataLib.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)"/>
+            <see cref="T:SkaaGameDataLib.IndexedBitmap"/>
+        </member>
+        <member name="F:SkaaGameDataLib.FileFormats.DbaseIII">
+            <summary>
+            A dBaseIII table
+            </summary>
+            <seealso cref="T:SkaaGameDataLib.DbfFile"/>
+        </member>
         <member name="M:SkaaGameDataLib.DataTableExtensions.WriteResDefinition(System.Data.DataTable,System.IO.Stream,System.UInt32,System.Boolean)">
             <summary>
-            Writes a <see cref="T:SkaaGameDataLib.ResourceDatabase"/> header for this <see cref="T:System.Data.DataTable"/> to the <see cref="T:System.IO.Stream"/>
+            Writes a <see cref="T:SkaaGameDataLib.ResourceDefinitionReader"/> header for this <see cref="T:System.Data.DataTable"/> to the <see cref="T:System.IO.Stream"/>
             </summary>
             <param name="str">The <see cref="T:System.IO.Stream"/> to write the header to</param>
             <param name="offset">The offset in the <see cref="T:System.IO.Stream"/> at which to begin writing</param>
-            <param name="isIdx">Whether or not to use settings for <see cref="F:SkaaGameDataLib.ResourceDatabase.ResIdxDefinitionSize"/> or <see cref="F:SkaaGameDataLib.ResourceDatabase.ResDefinitionSize"/></param>
+            <param name="isIdx">Whether or not to use settings for <see cref="F:SkaaGameDataLib.ResourceDefinitionReader.ResIdxDefinitionSize"/> or <see cref="F:SkaaGameDataLib.ResourceDefinitionReader.ResDefinitionSize"/></param>
         </member>
         <member name="M:SkaaGameDataLib.SkaaSprite.MatchFramesToDataView(System.String,System.String)">
             <summary>
@@ -193,67 +380,6 @@
             </summary>
             <param name="parentSprite">The <see cref="T:SkaaGameDataLib.SkaaSprite"/> containing this <see cref="T:SkaaGameDataLib.SkaaSpriteFrame"/></param>
             <param name="stream"></param>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.GetDataSources(System.Data.DataSet)">
-            <summary>
-            Returns a <see cref="T:System.Collections.Generic.List`1"/> of all data sources in the <see cref="P:System.Data.DataSet.ExtendedProperties"/> element with the name of <see cref="F:SkaaEditorUI.DataSetExtensions.DataSourcesPropertyName"/>
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.AddDataSource(System.Data.DataSet,System.String)">
-            <summary>
-            Adds a new "data source" string to the <see cref="P:System.Data.DataSet.ExtendedProperties"/> <see cref="T:System.Collections.Generic.List`1"/> named <see cref="F:SkaaEditorUI.DataSetExtensions.DataSourcesPropertyName"/>
-            </summary>
-            <param name="datasource">The name of the data source to add</param>
-            <remarks>If <see cref="P:System.Data.DataSet.ExtendedProperties"/> does not contain <see cref="F:SkaaEditorUI.DataSetExtensions.DataSourcesPropertyName"/>, it will be created.</remarks>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.RemoveDataSource(System.Data.DataSet,System.String)">
-            <summary>
-            Removes the specified data source from the <see cref="P:System.Data.DataSet.ExtendedProperties"/> <see cref="T:System.Collections.Generic.List`1"/> named <see cref="F:SkaaEditorUI.DataSetExtensions.DataSourcesPropertyName"/>
-            </summary>
-            <param name="datasource">The name of the data source to remove</param>
-            <returns>false if the specified data source does not exist, true otherwise</returns>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.OpenStandardGameSet(System.Data.DataSet,System.String)">
-            <summary>
-            Opens the specified <see cref="T:SkaaGameDataLib.GameSetFile"/>, adds all of its tables and records to the <see cref="T:System.Data.DataSet"/> and adds the file's name, 
-            from <see cref="M:System.IO.Path.GetFileName(System.String)"/>, as a new data source
-            </summary>
-            <param name="filepath"></param>
-            <returns>false if <see cref="M:SkaaGameDataLib.DbfFile.ReadStream(System.IO.Stream)"/> returned false, true otherwise</returns>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.SaveStandardGameSet(System.Data.DataSet,System.String)">
-            <summary>
-            Saves this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="T:SkaaGameDataLib.GameSetFile"/>, only including a 
-            <see cref="T:System.Data.DataTable"/> if its <see cref="F:SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName"/> is <see cref="F:SkaaEditorUI.DataSetExtensions.StandardGameSetDefaultName"/>
-            </summary>
-            <param name="filepath">The path and file to save this <see cref="T:System.Data.DataSet"/> to</param>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.SaveGameSet(System.Data.DataSet,System.String,System.String)">
-            <summary>
-            Saves a portion of this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="T:SkaaGameDataLib.GameSetFile"/>
-            </summary>
-            <param name="setName">Specifies the <see cref="!:DataTableSourcePropertyName"/> to consider part of the standard game set</param>
-            <param name="filepath">The path and file to save this <see cref="T:System.Data.DataSet"/> to</param>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.GetGameSetStream(System.Data.DataSet)">
-            <summary>
-            Get a <see cref="T:System.IO.MemoryStream"/> of the entire <see cref="T:System.Data.DataSet"/>
-            </summary>
-            <returns>A <see cref="T:System.IO.MemoryStream"/> in the format of std.set</returns>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.GetStandardGameSetStream(System.Data.DataSet)">
-            <summary>
-            Get a <see cref="T:System.IO.MemoryStream"/> of the <see cref="T:System.Data.DataSet"/> consisting of the standard game set, <see cref="F:SkaaEditorUI.DataSetExtensions.StandardGameSetDefaultName"/>
-            </summary>
-            <returns>A <see cref="T:System.IO.MemoryStream"/> in the format of std.set</returns>
-        </member>
-        <member name="M:SkaaEditorUI.DataSetExtensions.GetGameSetStream(System.Data.DataSet,System.String)">
-            <summary>
-            Get a <see cref="T:System.IO.MemoryStream"/> of the <see cref="T:System.Data.DataSet"/> consisting of the specified set
-            </summary>
-            <param name="set">A value that matches the <see cref="F:SkaaEditorUI.DataSetExtensions.DataSourcesPropertyName"/> element in <see cref="P:System.Data.DataSet.ExtendedProperties"/>, 
-            which further matches an element of each table's <see cref="P:System.Data.DataTable.ExtendedProperties"/>. If null, all tables are used.</param>
-            <returns>A <see cref="T:System.IO.MemoryStream"/> in the format of std.set</returns>
         </member>
     </members>
 </doc>

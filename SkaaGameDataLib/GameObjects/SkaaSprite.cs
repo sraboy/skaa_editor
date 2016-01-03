@@ -277,29 +277,6 @@ namespace SkaaGameDataLib
 
             return bitmap;
         }
-        ///// <summary>
-        ///// Generates a byte array in the SPR format for this sprite
-        ///// </summary>
-        ///// <returns>A byte array</returns>
-        //public byte[] ToSprFile()
-        //{
-        //    byte[] save;
-
-        //    using (MemoryStream ms = new MemoryStream())
-        //    {
-        //        foreach (SkaaFrame f in this.Frames)
-        //        {
-        //            byte[] frameData = f.ToSprFile();
-        //            ms.Write(BitConverter.GetBytes(frameData.Length), 0, sizeof(int));
-        //            ms.Write(frameData, 0, frameData.Length);
-        //        }
-
-        //        ms.Position = 0;
-        //        save = ms.ToArray();
-        //    }
-
-        //    return save;
-        //}
         /// <summary>
         /// Builds a <see cref="List{T}"/> of byte arrays, one array for each <see cref="SkaaFrame"/> in <see cref="SkaaSprite.Frames"/>
         /// </summary>

@@ -24,62 +24,118 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaaGameDataLib
 {
-    /*  File Formats
-        
-        spr files:
-        [frames] uint32 size; short width; short height; [/frames]
-        ----------------------------------------------------------
-        res files (bmp):
-        uint32 size; short width; short height; rle_bmp_data;
-        ----------------------------------------------------------
-        res files (multi-bmp):
-        short record_count;
-        [records] char[9] record_name; uint32 bmp_offset; [/records]
-        [bmps] short width; short height; rle_bmp_data; [/bmps]
-        ----------------------------------------------------------
-        res files (dbf):
-        short dBaseVersion=0x3; 
-        byte[3] dateLastEdited = { 0xYY 0xMM 0xDD }
-        ...dbf data...
-        ----------------------------------------------------------
-        res files (tut_text):
-        short record_count;
-        [records] char[9] record_name; uint32 text_offset; [/records]
-        [texts] short width; short height; rle_bmp_data; [/texts]
-    */
-
+    /// <summary>
+    /// Used to describe the various file and data formats in use by 7KAA. Values beginning with an underscore
+    /// are special values not used by the game.
+    /// </summary>
+    /// <remarks>
+    /// Values beginning with an underscore are special values not used by the game but used for file 
+    /// identification purposes or to provide a generic description for formats that share a base type. 
+    /// For example, <see cref="FileFormats._ResIdxFile"/> is used in documentation to describe all data 
+    /// using the ResIdx file format. It is only the format of the records within those files that differs,
+    /// and this is referred to as its "data format" within documentation at http://www.7kfans.com.
+    /// <para>
+    /// A quick view of some file formats:
+    /// spr files:
+    /// [frames]
+    /// uint32 size; short width; short height;[/frames]
+    /// ----------------------------------------------------------
+    /// res files(bmp):
+    /// uint32 size; short width; short height; rle_bmp_data;
+    /// ----------------------------------------------------------
+    /// res files(multi-bmp):
+    /// short record_count;
+    /// [records]
+    /// char[9] record_name; uint32 bmp_offset;[/records]
+    /// [bmps]
+    /// short width; short height; rle_bmp_data; [/bmps]
+    /// ----------------------------------------------------------
+    /// res files(dbf):
+    /// short dBaseVersion = 0x3;
+    /// byte[3] dateLastEdited = { 0xYY 0xMM 0xDD }
+    /// ...dbf data...
+    /// ----------------------------------------------------------
+    /// res files (tut_text):
+    /// short record_count;
+    /// [records]
+    /// char[9] record_name; uint32 text_offset;[/records]
+    /// [texts]
+    /// short width; short height; rle_bmp_data; [/texts]
+    /// </para>
+    /// </remarks>
     public enum FileFormats
     {
-        Unknown,
+        /// <summary>
+        /// This value is only used in file identification routines or to refer to an arbitrary format in documentation and should not otherwise be used. It differs
+        /// from <see cref="_Unknown"/> in that it implies the file type is unknown and no attempt has yet been made to identify it.
+        /// </summary>
+        [Obsolete("This value is only used in file identification routines or to refer to an arbitrary format in documentation and should not otherwise be used.")]
+        _Any,
+        /// <summary>
+        /// This value is only used in file identification routines or to refer to an unknown format in documentation and should not otherwise be used. It differs
+        /// from <see cref="_Any"/> in that it implies the file type could not be identified.
+        /// </summary>
+        /// <seealso cref="ResourceDefinitionReader.ReadDefinitions(Stream, bool)"/>
+        [Obsolete("This value is only used in file identification routines or to refer to an unknown format in documentation and should not otherwise be used.")]
+        _Unknown,
+        /// <summary>
+        /// This value is only used in file identification routines or to refer to the ResIdx format in documentation and should not otherwise be used.
+        /// </summary>
+        /// <seealso cref="ResourceDefinitionReader.ReadDefinitions(Stream, bool)"/>
+        [Obsolete("This value is only used in file identification routines or to refer to the ResIdx format in documentation and should not otherwise be used.")]
+        _ResIdxFile,
+        /// <summary>
+        /// This value is only used in file identification routines or to refer to the Res format in documentation and should not otherwise be used.
+        /// </summary>
+        /// <seealso cref="ResourceDefinitionReader.ReadDefinitions(Stream, bool)"/>
+        [Obsolete("This value is only used in file identification routines or to refer to the Res format in documentation and should not otherwise be used.")]
+        _ResFile,
+        /// <summary>
+        /// A file, generally with an SPR extension, that contains only <see cref="SkaaFrame"/> data and no additional header/trailer or identifier
+        /// </summary>
+        /// <see cref="IndexedBitmap"/>
         SpriteSpr,
+        /// <summary>
+        /// Describes image data, generally within a file with an extension of SPR or RES. The data contains a <see cref="UInt32"/> value describing
+        /// its size, in bytes, followed by two <see cref="UInt16"/> values describing its width and height, in pixels.
+        /// </summary>
+        /// <seealso cref="SkaaSpriteFrame"/>
+        /// <see cref="SkaaFrame"/>
+        /// <see cref="IndexedBitmap"/>
         SpriteFrameSpr,
-        GameSet, //essentially a ResIdxDbf
+        /// <summary>
+        /// This format is only used for 7KAA's game set files, of which there is only one
+        /// distributed with the game (as of release 2.14): std.set.
+        /// </summary>
+        /// <seealso cref="GameSetFile"/>
+        ResIdxDbf,
+        /// <summary>
+        /// These files are similar to <see cref="SpriteSpr"/> but they have a <see cref="_ResIdxFile"/> header containing
+        /// the names and offsets of each of the images in the file. These images, instead of being animation frames for a 
+        /// sprite, are simply different images. Nonetheless, the image data is formatted the same as <see cref="SkaaFrame"/>.
+        /// </summary>
+        /// <seealso cref="ResourceDefinitionReader.ReadDefinitions(Stream, bool)"/>
+        /// <see cref="IndexedBitmap"/>
         ResIdxMultiBmp,
-        ResIdxOther,
         ResIdxText,
-        ResIdxUnknown,
         ResIdxAudio,
-        ResUnknown,
+        /// <summary>
+        /// A dBaseIII table
+        /// </summary>
+        /// <seealso cref="DbfFile"/>
         DbaseIII,
         SaveGame,
         Font,
         Palette,
         FramePNG,
         SpritePNG,
-        Any
     }
 
     public static class FileTypeChecks
@@ -102,24 +158,24 @@ namespace SkaaGameDataLib
                 case ".col":
                     return FileFormats.Palette;
                 case ".set":
-                    return FileFormats.GameSet;
+                    return FileFormats.ResIdxDbf;
                 case ".bin":
-                    return FileFormats.Unknown;
+                    return FileFormats._Unknown;
                 case ".bmp":
-                    return FileFormats.Unknown;
+                    return FileFormats._Unknown;
                 default:
                     return CheckResFileType(path);
             }
         }
-        
+
         /*********************Individual File Type Checkers*********************/
         private static FileFormats CheckResFileType(string path)
         {
             string filename = Path.GetFileNameWithoutExtension(path);
             string prefix = filename.Substring(0, 4);
-            FileFormats format = FileFormats.Unknown;
+            FileFormats format = FileFormats._Unknown;
 
-            switch(prefix)
+            switch (prefix)
             {
                 case "pal_":
                     format = FileFormats.Palette;
@@ -133,19 +189,19 @@ namespace SkaaGameDataLib
                     break;
             }
 
-            if (format == FileFormats.Unknown)
+            if (format == FileFormats._Unknown)
             {
                 using (FileStream fs = new FileStream(path, FileMode.Open))
                 {
                     format = CheckResIdxFormats(fs); //check ResIdx (code_len = 9)
 
-                    if (format == FileFormats.Unknown)
+                    if (format == FileFormats._Unknown)
                         format = CheckResFormats(fs); //check Res (code_len = 8)
 
-                    if (format == FileFormats.Unknown)
+                    if (format == FileFormats._Unknown)
                         format = CheckSprFormats(fs); //check SpriteSpr/SpriteFrameSpr
 
-                    if (format == FileFormats.Unknown) //check dBaseIII DBF
+                    if (format == FileFormats._Unknown) //check dBaseIII DBF
                         format = CheckDbfFormat(fs);
                 }
             }
@@ -157,10 +213,10 @@ namespace SkaaGameDataLib
             FileFormats format;
             long oldPos = str.Position;
 
-            var dic = ResourceDatabase.ReadDefinitions(str, true);
+            var dic = ResourceDefinitionReader.ReadDefinitions(str, true);
             if (dic == null)
-                format = FileFormats.Unknown;
-            else 
+                format = FileFormats._Unknown;
+            else
             {
                 format = CheckResIdxMultiBmp(str, dic); //returns ResIdxUnknown if it can't verify ResIdxMultiBmp
             }
@@ -168,20 +224,20 @@ namespace SkaaGameDataLib
             str.Position = oldPos;
             return format;
         }
-        private static FileFormats CheckResIdxMultiBmp(Stream str, Dictionary<string,uint> dic)
+        private static FileFormats CheckResIdxMultiBmp(Stream str, Dictionary<string, uint> dic)
         {
             FileFormats format;
             long oldPos = str.Position;
 
-            if(dic != null)
+            if (dic != null)
             {
                 foreach (KeyValuePair<string, uint> kv in dic)
                 {
                     uint recOffset = kv.Value;
                     str.Seek(recOffset, SeekOrigin.Begin);
                     format = CheckSprFormats(str);
-                    if (format == FileFormats.Unknown) //default return value from CheckSprFormats()
-                        return FileFormats.ResIdxUnknown;
+                    if (format == FileFormats._Unknown) //default return value from CheckSprFormats()
+                        return FileFormats._ResIdxFile;
                 }
             }
 
@@ -193,11 +249,11 @@ namespace SkaaGameDataLib
             FileFormats format;
             long oldPos = str.Position;
 
-            var dic = ResourceDatabase.ReadDefinitions(str, false);
+            var dic = ResourceDefinitionReader.ReadDefinitions(str, false);
             if (dic == null)
-                format = FileFormats.Unknown;
+                format = FileFormats._Unknown;
             else
-                format = FileFormats.ResUnknown;
+                format = FileFormats._ResFile;
 
             str.Position = oldPos;
             return format;
@@ -220,7 +276,7 @@ namespace SkaaGameDataLib
                 if (ibmp.SetBitmapFromRleStream(str, FileFormats.SpriteFrameSpr) != null)
                     format = FileFormats.SpriteFrameSpr;
                 else
-                    format = FileFormats.Unknown;
+                    format = FileFormats._Unknown;
             }
 
             str.Position = oldPos;
@@ -250,11 +306,11 @@ namespace SkaaGameDataLib
                 format = FileFormats.DbaseIII;
             }
             else
-                format = FileFormats.Unknown;
+                format = FileFormats._Unknown;
 
             str.Position = oldPos;
             return format;
         }
-   
+
     }
 }

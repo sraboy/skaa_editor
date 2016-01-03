@@ -297,7 +297,7 @@ namespace SkaaEditorUI
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
-                Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs, true);
+                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs, true);
                 spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
                 dt.TableName = spr.SpriteId;
 
@@ -353,7 +353,7 @@ namespace SkaaEditorUI
                     if (dt.TableName != Path.GetFileNameWithoutExtension((string)dt.ExtendedProperties["FileName"]))
                         throw new Exception("TableName does not match file's original file name!");
 
-                    int headersize = (dt.Rows.Count + 1) * ResourceDatabase.ResIdxDefinitionSize;
+                    int headersize = (dt.Rows.Count + 1) * ResourceDefinitionReader.ResIdxDefinitionSize;
                     byte[] recordcount = BitConverter.GetBytes((short)dt.Rows.Count + 1); //+1 for the empty record
                     headerstream.Write(recordcount, 0, recordcount.Length);
 
@@ -381,7 +381,7 @@ namespace SkaaEditorUI
                         datalen = (int)bmpstream.Length;
 
                         //write out empty record with file size
-                        for (int i = 0; i < ResourceDatabase.ResIdxDefinitionSize; i++)
+                        for (int i = 0; i < ResourceDefinitionReader.ResIdxDefinitionSize; i++)
                             headerstream.WriteByte(0x0); //null name entry
                         byte[] filesize = BitConverter.GetBytes((uint)(headersize + datalen));
                         headerstream.Write(filesize, 0, filesize.Length); //file's size

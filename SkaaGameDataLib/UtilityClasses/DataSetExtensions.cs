@@ -27,9 +27,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using SkaaGameDataLib;
 
-namespace SkaaEditorUI
+namespace SkaaGameDataLib
 {
     public static class DataSetExtensions
     {
@@ -76,13 +75,13 @@ namespace SkaaEditorUI
         /// Opens the specified <see cref="GameSetFile"/>, adds all of its tables and records to the <see cref="DataSet"/> and adds the file's name, 
         /// from <see cref="Path.GetFileName(string)"/>, as a new data source
         /// </summary>
-        /// <param name="filepath"></param>
+        /// <param name="filePath"></param>
         /// <returns>false if <see cref="DbfFile.ReadStream(Stream)"/> returned false, true otherwise</returns>
-        public static bool OpenStandardGameSet(this DataSet ds, string filepath)
+        public static bool OpenStandardGameSet(this DataSet ds, string filePath)
         {
-            using (FileStream fs = GameSetFile.Open(filepath))
+            using (FileStream fs = new FileStream(filePath, FileMode.Open))
             {
-                var defs = ResourceDatabase.ReadDefinitions(fs, true);
+                var defs = ResourceDefinitionReader.ReadDefinitions(fs, true);
 
                 // Create a backup copy in the event Tables.Add() succeeds for one or more tables before 
                 // failing. This will allow us to just return false without mucking up the DataSet with 
@@ -102,7 +101,7 @@ namespace SkaaEditorUI
 
                         if (ds.Tables.Contains(file.DataTable.TableName))
                         {
-                            Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to open standard game set due to a duplicate table: {file.DataTable.TableName} in {filepath}");
+                            Logger.TraceEvent(TraceEventType.Error, 0, $"Failed to open standard game set due to a duplicate table: {file.DataTable.TableName} in {filePath}");
                             return false;
                         }
                         else
@@ -111,8 +110,8 @@ namespace SkaaEditorUI
 
                     // only add the tables once we're sure there are no duplicates
                     ds.Merge(temp);
-                    ds.AddDataSource(Path.GetFileName(filepath));
-                    Logger.TraceInformation($"Opened standard game set from: {filepath}");
+                    ds.AddDataSource(Path.GetFileName(filePath));
+                    Logger.TraceInformation($"Opened standard game set from: {filePath}");
                 }
             }
             return true;
@@ -170,7 +169,7 @@ namespace SkaaEditorUI
                     //write SET header's record_count
                     short record_count = (short)ds.Tables.Count;
                     headerStream.Write(BitConverter.GetBytes(record_count), 0, sizeof(short));
-                    uint header_size = (uint)((record_count + 1) * ResourceDatabase.ResIdxDefinitionSize) + sizeof(short);
+                    uint header_size = (uint)((record_count + 1) * ResourceDefinitionReader.ResIdxDefinitionSize) + sizeof(short);
 
                     foreach (DataTable dt in ds.Tables)
                     {

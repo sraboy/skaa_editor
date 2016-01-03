@@ -184,8 +184,9 @@
             </returns>
             <remarks>
             This differs from loading an SPR file in that the file contains the <see cref="T:SkaaGameDataLib.SkaaFrame"/> data
-            directly in its header rather than in the standard game set. The <see cref="T:System.Data.DataTable"/> only has
-            fields for FrameName and FrameOffset; any other data is stored in other dBaseIII files.
+            directly in its header rather than in the standard game set (see <see cref="!:GameSetFile"/>. The 
+            <see cref="T:System.Data.DataTable"/> only has fields for FrameName and FrameOffset; any other data is stored 
+            elsewhere, generally in DBF (dBaseIII) files that may or may not be in the standard game set.
             </remarks>
         </member>
         <member name="P:SkaaEditorUI.Presenters.FramePresenter.Bitmap">

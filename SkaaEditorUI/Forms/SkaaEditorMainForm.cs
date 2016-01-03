@@ -264,11 +264,11 @@ namespace SkaaEditorUI.Forms
                 }
             }
 
-            BeginOpenFile(FileFormats.GameSet);
+            BeginOpenFile(FileFormats.ResIdxDbf);
         }
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BeginOpenFile(FileFormats.Any);
+            BeginOpenFile(FileFormats._Any);
         }
         private void loadPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -293,7 +293,7 @@ namespace SkaaEditorUI.Forms
             //todo: MDI for multiple sprites
             foreach (string filename in files)
             {
-                TryOpenFile(filename, FileFormats.Any, null);
+                TryOpenFile(filename, FileFormats._Any, null);
 
                 //todo: move these to their own method or separate form
                 //For debugging: Gets all files and their formats. Resets active gameset in case we open two set files
@@ -324,7 +324,7 @@ namespace SkaaEditorUI.Forms
 
                 switch (format)
                 {
-                    case FileFormats.GameSet: //set file
+                    case FileFormats.ResIdxDbf: //set file
                         dlg.Filter = $"7KAA Game Set Files (*.set)|*{props.SetFileExtension}|All Files (*.*)|*.*";
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = filepath;
@@ -396,13 +396,13 @@ namespace SkaaEditorUI.Forms
                             this.ActiveProject.ActiveSprite = tup.Item1;
                         });
                         break;
-                    case FileFormats.Any: //user did not specify file type via UI menus (drag/drop or generic Open File)
+                    case FileFormats._Any: //user did not specify file type via UI menus (drag/drop or generic Open File)
                         OpenFile(dlg, format, null);
                         break;
                 }
             }
 
-            if (format != FileFormats.GameSet && format != FileFormats.Palette)
+            if (format != FileFormats.ResIdxDbf && format != FileFormats.Palette)
                 this.tsStatusLblFileType.Text = format.ToString();
         }
         private void OpenFile(OpenFileDialog dlg, FileFormats requestedFormat, Action openMethod)
@@ -424,16 +424,16 @@ namespace SkaaEditorUI.Forms
             if (filePath == string.Empty)
                 throw new ArgumentException("Received null file path in TryOpenFile()!");
 
-            Debug.Assert(requestedFormat != FileFormats.Unknown, "Cannot request to open a file of FileFormat.Unknown! Use FileFormat.Any when opening arbitrary files.");
+            Debug.Assert(requestedFormat != FileFormats._Unknown, "Cannot request to open a file of FileFormat.Unknown! Use FileFormat.Any when opening arbitrary files.");
 
             this.tsStatusLblFileType.Text = "Checking file type...";
             var actualFormat = FileTypeChecks.CheckFileType(filePath);
 
-            if (requestedFormat == FileFormats.Any && actualFormat != FileFormats.Unknown) //user did not specify file type via UI menus (drag/drop or generic Open File)
+            if (requestedFormat == FileFormats._Any && actualFormat != FileFormats._Unknown) //user did not specify file type via UI menus (drag/drop or generic Open File)
             {
                 BeginOpenFile(actualFormat, filePath);                                     //now make the request again with the real file type
             }
-            else if (actualFormat == FileFormats.Unknown)                                  //we can't figure out what this. user must specify a file type
+            else if (actualFormat == FileFormats._Unknown)                                  //we can't figure out what this. user must specify a file type
             {
                 //MessageBox.Show($"Could not determine the data format of:\r\n \'{Path.GetFileName(filePath)}\'", "Unknown file type!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return actualFormat;
@@ -463,7 +463,7 @@ namespace SkaaEditorUI.Forms
         {
             if (this.ActiveProject == null)
                 Logger.TraceInformation("Failed to save GameSet. There is no ActiveProject.");
-            this.SaveFile(FileFormats.GameSet);
+            this.SaveFile(FileFormats.ResIdxDbf);
         }
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -562,7 +562,7 @@ namespace SkaaEditorUI.Forms
 
                 switch (format)
                 {
-                    case FileFormats.GameSet:
+                    case FileFormats.ResIdxDbf:
                         dlg.Filter = $"7KAA Game Set Files|*{props.SetFileExtension}";
                         dlg.DefaultExt = props.SetFileExtension;
                         dlg.FileName = "std.set";
@@ -603,7 +603,7 @@ namespace SkaaEditorUI.Forms
                         dlg.FileName = this.ActiveProject.ActiveSprite.SpriteId;
                         ShowSaveFileDialog(dlg, () => this.ActiveProject.SaveResIdxMultiBmp(dlg.FileName));
                         break;
-                    case FileFormats.Unknown:
+                    case FileFormats._Unknown:
                         break;
                 }
             }

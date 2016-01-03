@@ -96,8 +96,9 @@ namespace SkaaEditorUI.Presenters
         /// </returns>
         /// <remarks>
         /// This differs from loading an SPR file in that the file contains the <see cref="SkaaFrame"/> data
-        /// directly in its header rather than in the standard game set. The <see cref="DataTable"/> only has
-        /// fields for FrameName and FrameOffset; any other data is stored in other dBaseIII files.
+        /// directly in its header rather than in the standard game set (see <see cref="GameSetFile"/>. The 
+        /// <see cref="DataTable"/> only has fields for FrameName and FrameOffset; any other data is stored 
+        /// elsewhere, generally in DBF (dBaseIII) files that may or may not be in the standard game set.
         /// </remarks>
         private static Tuple<SkaaSprite, DataTable> ReadFrames(string filepath, ColorPalette pal)
         {
@@ -110,7 +111,7 @@ namespace SkaaEditorUI.Presenters
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
                 //Read the file definitions from the ResIdx header.
-                Dictionary<string, uint> dic = ResourceDatabase.ReadDefinitions(fs, true);
+                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs, true);
                 spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
                 dt.TableName = spr.SpriteId;
 

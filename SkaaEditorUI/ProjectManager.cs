@@ -139,9 +139,9 @@ namespace SkaaEditorUI
         /// </summary>
         private static bool IsFileFormatUnknown(FileFormats format)
         {
-            if (format == FileFormats.Unknown ||
-                format == FileFormats.ResUnknown ||
-                format == FileFormats.ResIdxUnknown)
+            if (format == FileFormats._Unknown ||
+                format == FileFormats._ResFile ||
+                format == FileFormats._ResIdxFile)
                 return true;
             else
                 return false;

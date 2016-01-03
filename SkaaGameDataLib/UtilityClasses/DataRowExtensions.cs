@@ -40,13 +40,13 @@ namespace SkaaGameDataLib
 
             if (isIdx)
             {
-                nameSize = ResourceDatabase.ResIdxNameSize;
-                definitionSize = ResourceDatabase.ResIdxDefinitionSize;
+                nameSize = ResourceDefinitionReader.ResIdxNameSize;
+                definitionSize = ResourceDefinitionReader.ResIdxDefinitionSize;
             }
             else
             {
-                nameSize = ResourceDatabase.ResNameSize;
-                definitionSize = ResourceDatabase.ResDefinitionSize;
+                nameSize = ResourceDefinitionReader.ResNameSize;
+                definitionSize = ResourceDefinitionReader.ResDefinitionSize;
             }
 
             string recordName = dr[FrameNameColumn].ToString().PadRight(nameSize, (char) 0x0);
@@ -54,9 +54,9 @@ namespace SkaaGameDataLib
             record_name = Encoding.GetEncoding(1252).GetBytes(recordName);
             str.Write(record_name, 0, nameSize);
 
-            byte[] record_size = new byte[ResourceDatabase.OffsetSize];
+            byte[] record_size = new byte[ResourceDefinitionReader.OffsetSize];
             record_size = BitConverter.GetBytes(Convert.ToUInt32(offset));
-            str.Write(record_size, 0, ResourceDatabase.OffsetSize);
+            str.Write(record_size, 0, ResourceDefinitionReader.OffsetSize);
         }
     }
 }
