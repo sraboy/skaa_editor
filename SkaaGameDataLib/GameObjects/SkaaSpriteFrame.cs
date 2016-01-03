@@ -30,7 +30,6 @@ namespace SkaaGameDataLib
     public class SkaaSpriteFrame : SkaaFrame
     {
         private SkaaSprite _parentSprite;
-        public string Test = "test";
         public string Name
         {
             get
