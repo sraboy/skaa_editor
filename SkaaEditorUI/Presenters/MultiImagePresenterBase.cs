@@ -34,12 +34,15 @@ namespace SkaaEditorUI.Presenters
 {
     public abstract class MultiImagePresenterBase : PresenterBase<SkaaSprite>, IMultiImagePresenter
     {
+        #region Private Fields
         private TrulyObservableCollection<IFrame> _frames = new TrulyObservableCollection<IFrame>();
         private ColorPalettePresenter _palettePresenter;
         private IFrame _activeFrame;
         private string _spriteId;
         private DataView _dataView;
+        #endregion
 
+        #region ActiveFrameChanged Event
         private EventHandler _activeFrameChanged;
         public event EventHandler ActiveFrameChanged
         {
@@ -64,7 +67,9 @@ namespace SkaaEditorUI.Presenters
                 handler(this, e);
             }
         }
+        #endregion
 
+        #region Public Properties
         public TrulyObservableCollection<IFrame> Frames
         {
             get
@@ -127,6 +132,7 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._dataView, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.DataView)));
             }
         }
+        #endregion
 
         protected void SetIFrames()
         {
@@ -140,8 +146,7 @@ namespace SkaaEditorUI.Presenters
 
             this.ActiveFrame = this.Frames[0];
         }
-
-        public Stream GetSpriteStream()
+        protected Stream GetSpriteStream()
         {
             var str = new MemoryStream();
             var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
@@ -151,17 +156,6 @@ namespace SkaaEditorUI.Presenters
             str.Position = 0;
 
             return str;
-        }
-
-        public void LoadPalette(string filePath)
-        {
-            this.PalettePresenter = new ColorPalettePresenter();
-            this.PalettePresenter.Load(filePath, null);
-        }
-
-        public void SetActiveFrame(FramePresenter f)
-        {
-            this.ActiveFrame = this.Frames?[this.Frames.IndexOf(f)];
         }
 
         public abstract void SetSpriteDataView(GameSetPresenter gsp);

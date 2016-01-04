@@ -36,7 +36,5 @@ namespace Capslock.Windows.Forms.SpriteViewer
         DataView DataView { get; }
         IFrame ActiveFrame { get; set; }
         string SpriteId { get; set; }
-
-        void LoadPalette(string filePath);
     }
 }

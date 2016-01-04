@@ -8,26 +8,27 @@ namespace SkaaEditorUI.Forms
 {
     partial class MDISkaaEditorMainForm
     {
+        private string dataDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data\\projects\\_test\\basic\\";
+
         [Conditional("DEBUG")]
         public void dbgOpenIButtonResIdxMultiBmp()
         {
-            string dataDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data\\projects\\_test\\basic\\";
-
             ResIdxMultiBmpPresenter spr = new ResIdxMultiBmpPresenter();
-            spr.LoadPalette(dataDir + "pal_std.res");
+            spr.PalettePresenter = new ColorPalettePresenter();
+            spr.PalettePresenter.Load(this.dataDir + "pal_std.res", null);
             spr.Load(dataDir + "i_button.res", this._gameSetViewerContainer.GameSetPresenter);
 
             ProjectManager.OpenSprites.Add(spr);
 
             if (spr.Frames.Count > 0)
             {
-                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewTab();
+                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewImageEditorContainerTab();
 
                 if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
                     SetActiveSprite(spr);
                 else
                 {
-                    OpenNewTab();           //open a new document tab
+                    OpenNewImageEditorContainerTab();           //open a new document tab
                     SetActiveSprite(spr);
                 }
             }
@@ -41,20 +42,21 @@ namespace SkaaEditorUI.Forms
             string dataDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data\\projects\\_test\\basic\\";
 
             SpritePresenter spr = new SpritePresenter();
-            spr.LoadPalette(dataDir + "pal_std.res");
+            spr.PalettePresenter = new ColorPalettePresenter();
+            spr.PalettePresenter.Load(this.dataDir + "pal_std.res", null);
             spr.Load(dataDir + "ballista.spr");
 
             ProjectManager.OpenSprites.Add(spr);
 
             if (spr.Frames.Count > 0)
             {
-                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewTab();
+                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewImageEditorContainerTab();
 
                 if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
                     SetActiveSprite(spr);
                 else
                 {
-                    OpenNewTab();           //open a new document tab
+                    OpenNewImageEditorContainerTab();           //open a new document tab
                     SetActiveSprite(spr);
                 }
             }
@@ -68,20 +70,21 @@ namespace SkaaEditorUI.Forms
             string dataDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data\\projects\\_test\\basic\\";
 
             SpritePresenter spr = new SpritePresenter();
-            spr.LoadPalette(dataDir + "pal_std.res");
+            spr.PalettePresenter = new ColorPalettePresenter();
+            spr.PalettePresenter.Load(this.dataDir + "pal_std.res", null);
             spr.Load(dataDir + "ballista.spr");
 
             ProjectManager.OpenSprites.Add(spr);
 
             if (spr.Frames.Count > 0)
             {
-                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewTab();
+                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewImageEditorContainerTab();
 
                 if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
                     SetActiveSprite(spr);
                 else
                 {
-                    OpenNewTab();           //open a new document tab
+                    OpenNewImageEditorContainerTab();           //open a new document tab
                     SetActiveSprite(spr);
                 }
             }
@@ -103,25 +106,24 @@ namespace SkaaEditorUI.Forms
             this._gameSetViewerContainer.GameSetPresenter = gsp;
 
             ResIdxMultiBmpPresenter spr = new ResIdxMultiBmpPresenter();
-            spr.LoadPalette(dataDir + "pal_std.res");
+            spr.PalettePresenter = new ColorPalettePresenter();
+            spr.PalettePresenter.Load(this.dataDir + "pal_std.res", null);
             spr.Load(dataDir + "i_button.res", this._gameSetViewerContainer.GameSetPresenter);
 
             ProjectManager.OpenSprites.Add(spr);
 
             if (spr.Frames.Count > 0)
             {
-                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewTab();
+                var doc = (this._dockPanel.ActiveDocument as ImageEditorContainer) ?? OpenNewImageEditorContainerTab();
 
                 if (doc?.ActiveSprite == null) //no sprite is being viewed in the UI
                     SetActiveSprite(spr);
                 else
                 {
-                    OpenNewTab();           //open a new document tab
+                    OpenNewImageEditorContainerTab();           //open a new document tab
                     SetActiveSprite(spr);
                 }
             }
-
-
 
             SetSpriteDataViews(this._gameSetViewerContainer.GameSetPresenter);
         }
