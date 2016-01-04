@@ -219,7 +219,7 @@ namespace SkaaGameDataLib
         {
             List<byte[]> frames = new List<byte[]>();
             foreach (SkaaFrame f in this.Frames)
-                frames.Add(f.ToSprFile());
+                frames.Add(f.GetSprBytes());
             return frames;
         }
         /// <summary>
