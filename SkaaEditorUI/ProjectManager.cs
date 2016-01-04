@@ -226,7 +226,9 @@ namespace SkaaEditorUI
         /// <returns></returns>
         public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
-            //param[0] is the currently-active GameSetPresenter for ResIdxMultiBmpPresenter, when merging
+            //param[0] is different based on the type being loaded:
+            //ResIdxMultiBmpPresenter: (if merging) the currently-active GameSetPresenter
+            //FramePresenter: ColorPalette
 
             //This method signature is really verbose, which is a pain for the caller, but it allows this one single method
             //to open SpritePresenters, ResIdxMultiBmpPresenters and GameSetPresenters. T1 is necessary to specify either

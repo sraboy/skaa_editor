@@ -24,6 +24,8 @@
 #endregion
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib;
@@ -68,7 +70,7 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._guid, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Guid)));
             }
         }
-       
+
         public long BitmapOffset
         {
             get
@@ -109,7 +111,17 @@ namespace SkaaEditorUI.Presenters
 
         public override SkaaFrame Load(string filePath, params object[] param)
         {
-            throw new NotImplementedException();
+            var pal = (ColorPalette)param[0];
+
+            SkaaFrame frame = new SkaaFrame();
+            frame.IndexedBitmap = new IndexedBitmap(pal);
+
+            using (FileStream fs = new FileStream(filePath, FileMode.Open))
+            {
+                frame.IndexedBitmap.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
+            }
+
+            return frame;
         }
 
         public override bool Save(string filePath, params object[] param)
