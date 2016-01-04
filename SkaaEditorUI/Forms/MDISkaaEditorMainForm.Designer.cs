@@ -28,21 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            WeifenLuo.WinFormsUI.Docking.DockPanelSkin dockPanelSkin1 = new WeifenLuo.WinFormsUI.Docking.DockPanelSkin();
-            WeifenLuo.WinFormsUI.Docking.AutoHideStripSkin autoHideStripSkin1 = new WeifenLuo.WinFormsUI.Docking.AutoHideStripSkin();
-            WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient1 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
-            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient1 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            WeifenLuo.WinFormsUI.Docking.DockPaneStripSkin dockPaneStripSkin1 = new WeifenLuo.WinFormsUI.Docking.DockPaneStripSkin();
-            WeifenLuo.WinFormsUI.Docking.DockPaneStripGradient dockPaneStripGradient1 = new WeifenLuo.WinFormsUI.Docking.DockPaneStripGradient();
-            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient2 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient2 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
-            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient3 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            WeifenLuo.WinFormsUI.Docking.DockPaneStripToolWindowGradient dockPaneStripToolWindowGradient1 = new WeifenLuo.WinFormsUI.Docking.DockPaneStripToolWindowGradient();
-            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient4 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient5 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient3 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
-            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            WeifenLuo.WinFormsUI.Docking.DockPanelSkin dockPanelSkin5 = new WeifenLuo.WinFormsUI.Docking.DockPanelSkin();
+            WeifenLuo.WinFormsUI.Docking.AutoHideStripSkin autoHideStripSkin5 = new WeifenLuo.WinFormsUI.Docking.AutoHideStripSkin();
+            WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient13 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
+            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient29 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            WeifenLuo.WinFormsUI.Docking.DockPaneStripSkin dockPaneStripSkin5 = new WeifenLuo.WinFormsUI.Docking.DockPaneStripSkin();
+            WeifenLuo.WinFormsUI.Docking.DockPaneStripGradient dockPaneStripGradient5 = new WeifenLuo.WinFormsUI.Docking.DockPaneStripGradient();
+            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient30 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient14 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
+            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient31 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            WeifenLuo.WinFormsUI.Docking.DockPaneStripToolWindowGradient dockPaneStripToolWindowGradient5 = new WeifenLuo.WinFormsUI.Docking.DockPaneStripToolWindowGradient();
+            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient32 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient33 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient15 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
+            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient34 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
+            WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient35 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
             this._dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripBtnNewProject = new System.Windows.Forms.ToolStripButton();
@@ -59,14 +59,12 @@
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openSpriteSprToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openSpriteResIdxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSpriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSpriteFrameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,6 +72,8 @@
             this.currentFrameTobmp32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exportAllFramesTo32bppBmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportSpriteFrameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,52 +93,52 @@
             this._dockPanel.Location = new System.Drawing.Point(0, 52);
             this._dockPanel.Name = "_dockPanel";
             this._dockPanel.Size = new System.Drawing.Size(944, 647);
-            dockPanelGradient1.EndColor = System.Drawing.SystemColors.ControlLight;
-            dockPanelGradient1.StartColor = System.Drawing.SystemColors.ControlLight;
-            autoHideStripSkin1.DockStripGradient = dockPanelGradient1;
-            tabGradient1.EndColor = System.Drawing.SystemColors.Control;
-            tabGradient1.StartColor = System.Drawing.SystemColors.Control;
-            tabGradient1.TextColor = System.Drawing.SystemColors.ControlDarkDark;
-            autoHideStripSkin1.TabGradient = tabGradient1;
-            autoHideStripSkin1.TextFont = new System.Drawing.Font("Segoe UI", 9F);
-            dockPanelSkin1.AutoHideStripSkin = autoHideStripSkin1;
-            tabGradient2.EndColor = System.Drawing.SystemColors.ControlLightLight;
-            tabGradient2.StartColor = System.Drawing.SystemColors.ControlLightLight;
-            tabGradient2.TextColor = System.Drawing.SystemColors.ControlText;
-            dockPaneStripGradient1.ActiveTabGradient = tabGradient2;
-            dockPanelGradient2.EndColor = System.Drawing.SystemColors.Control;
-            dockPanelGradient2.StartColor = System.Drawing.SystemColors.Control;
-            dockPaneStripGradient1.DockStripGradient = dockPanelGradient2;
-            tabGradient3.EndColor = System.Drawing.SystemColors.ControlLight;
-            tabGradient3.StartColor = System.Drawing.SystemColors.ControlLight;
-            tabGradient3.TextColor = System.Drawing.SystemColors.ControlText;
-            dockPaneStripGradient1.InactiveTabGradient = tabGradient3;
-            dockPaneStripSkin1.DocumentGradient = dockPaneStripGradient1;
-            dockPaneStripSkin1.TextFont = new System.Drawing.Font("Segoe UI", 9F);
-            tabGradient4.EndColor = System.Drawing.SystemColors.ActiveCaption;
-            tabGradient4.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
-            tabGradient4.StartColor = System.Drawing.SystemColors.GradientActiveCaption;
-            tabGradient4.TextColor = System.Drawing.SystemColors.ActiveCaptionText;
-            dockPaneStripToolWindowGradient1.ActiveCaptionGradient = tabGradient4;
-            tabGradient5.EndColor = System.Drawing.SystemColors.Control;
-            tabGradient5.StartColor = System.Drawing.SystemColors.Control;
-            tabGradient5.TextColor = System.Drawing.SystemColors.ControlText;
-            dockPaneStripToolWindowGradient1.ActiveTabGradient = tabGradient5;
-            dockPanelGradient3.EndColor = System.Drawing.SystemColors.ControlLight;
-            dockPanelGradient3.StartColor = System.Drawing.SystemColors.ControlLight;
-            dockPaneStripToolWindowGradient1.DockStripGradient = dockPanelGradient3;
-            tabGradient6.EndColor = System.Drawing.SystemColors.InactiveCaption;
-            tabGradient6.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
-            tabGradient6.StartColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            tabGradient6.TextColor = System.Drawing.SystemColors.InactiveCaptionText;
-            dockPaneStripToolWindowGradient1.InactiveCaptionGradient = tabGradient6;
-            tabGradient7.EndColor = System.Drawing.Color.Transparent;
-            tabGradient7.StartColor = System.Drawing.Color.Transparent;
-            tabGradient7.TextColor = System.Drawing.SystemColors.ControlDarkDark;
-            dockPaneStripToolWindowGradient1.InactiveTabGradient = tabGradient7;
-            dockPaneStripSkin1.ToolWindowGradient = dockPaneStripToolWindowGradient1;
-            dockPanelSkin1.DockPaneStripSkin = dockPaneStripSkin1;
-            this._dockPanel.Skin = dockPanelSkin1;
+            dockPanelGradient13.EndColor = System.Drawing.SystemColors.ControlLight;
+            dockPanelGradient13.StartColor = System.Drawing.SystemColors.ControlLight;
+            autoHideStripSkin5.DockStripGradient = dockPanelGradient13;
+            tabGradient29.EndColor = System.Drawing.SystemColors.Control;
+            tabGradient29.StartColor = System.Drawing.SystemColors.Control;
+            tabGradient29.TextColor = System.Drawing.SystemColors.ControlDarkDark;
+            autoHideStripSkin5.TabGradient = tabGradient29;
+            autoHideStripSkin5.TextFont = new System.Drawing.Font("Segoe UI", 9F);
+            dockPanelSkin5.AutoHideStripSkin = autoHideStripSkin5;
+            tabGradient30.EndColor = System.Drawing.SystemColors.ControlLightLight;
+            tabGradient30.StartColor = System.Drawing.SystemColors.ControlLightLight;
+            tabGradient30.TextColor = System.Drawing.SystemColors.ControlText;
+            dockPaneStripGradient5.ActiveTabGradient = tabGradient30;
+            dockPanelGradient14.EndColor = System.Drawing.SystemColors.Control;
+            dockPanelGradient14.StartColor = System.Drawing.SystemColors.Control;
+            dockPaneStripGradient5.DockStripGradient = dockPanelGradient14;
+            tabGradient31.EndColor = System.Drawing.SystemColors.ControlLight;
+            tabGradient31.StartColor = System.Drawing.SystemColors.ControlLight;
+            tabGradient31.TextColor = System.Drawing.SystemColors.ControlText;
+            dockPaneStripGradient5.InactiveTabGradient = tabGradient31;
+            dockPaneStripSkin5.DocumentGradient = dockPaneStripGradient5;
+            dockPaneStripSkin5.TextFont = new System.Drawing.Font("Segoe UI", 9F);
+            tabGradient32.EndColor = System.Drawing.SystemColors.ActiveCaption;
+            tabGradient32.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+            tabGradient32.StartColor = System.Drawing.SystemColors.GradientActiveCaption;
+            tabGradient32.TextColor = System.Drawing.SystemColors.ActiveCaptionText;
+            dockPaneStripToolWindowGradient5.ActiveCaptionGradient = tabGradient32;
+            tabGradient33.EndColor = System.Drawing.SystemColors.Control;
+            tabGradient33.StartColor = System.Drawing.SystemColors.Control;
+            tabGradient33.TextColor = System.Drawing.SystemColors.ControlText;
+            dockPaneStripToolWindowGradient5.ActiveTabGradient = tabGradient33;
+            dockPanelGradient15.EndColor = System.Drawing.SystemColors.ControlLight;
+            dockPanelGradient15.StartColor = System.Drawing.SystemColors.ControlLight;
+            dockPaneStripToolWindowGradient5.DockStripGradient = dockPanelGradient15;
+            tabGradient34.EndColor = System.Drawing.SystemColors.InactiveCaption;
+            tabGradient34.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+            tabGradient34.StartColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            tabGradient34.TextColor = System.Drawing.SystemColors.InactiveCaptionText;
+            dockPaneStripToolWindowGradient5.InactiveCaptionGradient = tabGradient34;
+            tabGradient35.EndColor = System.Drawing.Color.Transparent;
+            tabGradient35.StartColor = System.Drawing.Color.Transparent;
+            tabGradient35.TextColor = System.Drawing.SystemColors.ControlDarkDark;
+            dockPaneStripToolWindowGradient5.InactiveTabGradient = tabGradient35;
+            dockPaneStripSkin5.ToolWindowGradient = dockPaneStripToolWindowGradient5;
+            dockPanelSkin5.DockPaneStripSkin = dockPaneStripSkin5;
+            this._dockPanel.Skin = dockPanelSkin5;
             this._dockPanel.TabIndex = 0;
             // 
             // toolStrip1
@@ -185,6 +185,7 @@
             this.toolStripBtnSaveProject.Size = new System.Drawing.Size(23, 22);
             this.toolStripBtnSaveProject.Text = "toolStripButton3";
             this.toolStripBtnSaveProject.ToolTipText = "Save Project";
+            this.toolStripBtnSaveProject.Click += new System.EventHandler(this.toolStripBtnSaveProject_Click);
             // 
             // toolStripBtnCloseProject
             // 
@@ -195,12 +196,14 @@
             this.toolStripBtnCloseProject.Size = new System.Drawing.Size(23, 22);
             this.toolStripBtnCloseProject.Text = "toolStripButton4";
             this.toolStripBtnCloseProject.ToolTipText = "Close Project";
+            this.toolStripBtnCloseProject.Click += new System.EventHandler(this.toolStripBtnCloseProject_Click);
             // 
             // mainMenuStrip
             // 
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.exportToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
@@ -215,7 +218,8 @@
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
             this.saveProjectToolStripMenuItem,
-            this.saveToolStripMenuItem,
+            this.saveGameSetToolStripMenuItem,
+            this.saveSpriteToolStripMenuItem,
             this.closeProjectToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -234,8 +238,9 @@
             // newProjectToolStripMenuItem
             // 
             this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newProjectToolStripMenuItem.Text = "Project";
+            this.newProjectToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
             // spriteToolStripMenuItem
             // 
@@ -251,9 +256,9 @@
             this.openFileToolStripMenuItem,
             this.toolStripSeparator3,
             this.openSpriteSprToolStripMenuItem,
-            this.spriteResToolStripMenuItem,
+            this.openSpriteResIdxToolStripMenuItem,
             this.openGameSetToolStripMenuItem,
-            this.loadPaletteToolStripMenuItem});
+            this.openPaletteToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.openToolStripMenuItem.Text = "Open";
@@ -281,28 +286,34 @@
             this.openSpriteSprToolStripMenuItem.Name = "openSpriteSprToolStripMenuItem";
             this.openSpriteSprToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.openSpriteSprToolStripMenuItem.Text = "Sprite (Spr)";
+            this.openSpriteSprToolStripMenuItem.ToolTipText = "A *.spr file with frame data stored in 7KAA\'s custom RLE encoding";
             this.openSpriteSprToolStripMenuItem.Click += new System.EventHandler(this.openSpriteSprToolStripMenuItem_Click);
             // 
-            // spriteResToolStripMenuItem
+            // openSpriteResIdxToolStripMenuItem
             // 
-            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
-            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
-            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.openSpriteResToolStripMenuItem_Click);
+            this.openSpriteResIdxToolStripMenuItem.Name = "openSpriteResIdxToolStripMenuItem";
+            this.openSpriteResIdxToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.openSpriteResIdxToolStripMenuItem.Text = "Sprite (ResIdx)";
+            this.openSpriteResIdxToolStripMenuItem.ToolTipText = "A *.res file with a ResIdx header";
+            this.openSpriteResIdxToolStripMenuItem.Click += new System.EventHandler(this.openSpriteResIdxToolStripMenuItem_Click);
             // 
             // openGameSetToolStripMenuItem
             // 
             this.openGameSetToolStripMenuItem.Name = "openGameSetToolStripMenuItem";
             this.openGameSetToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.openGameSetToolStripMenuItem.Text = "Game Set";
+            this.openGameSetToolStripMenuItem.ToolTipText = "A *.set file with a ResIdx header and dBaseIII tables as the records (std.set is " +
+    "the standard game set)";
             this.openGameSetToolStripMenuItem.Click += new System.EventHandler(this.openGameSetToolStripMenuItem_Click);
             // 
-            // loadPaletteToolStripMenuItem
+            // openPaletteToolStripMenuItem
             // 
-            this.loadPaletteToolStripMenuItem.Name = "loadPaletteToolStripMenuItem";
-            this.loadPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.loadPaletteToolStripMenuItem.Text = "Palette";
-            this.loadPaletteToolStripMenuItem.Click += new System.EventHandler(this.loadPaletteToolStripMenuItem_Click);
+            this.openPaletteToolStripMenuItem.Name = "openPaletteToolStripMenuItem";
+            this.openPaletteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.openPaletteToolStripMenuItem.Text = "Palette";
+            this.openPaletteToolStripMenuItem.ToolTipText = "A 7KAA-formatted palette file, *.res or *.col\\npal_std.res is the default palette" +
+    " used for *.spr and *.res files.";
+            this.openPaletteToolStripMenuItem.Click += new System.EventHandler(this.openPaletteToolStripMenuItem_Click);
             // 
             // saveProjectToolStripMenuItem
             // 
@@ -310,22 +321,13 @@
             this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.saveProjectToolStripMenuItem.Text = "Save &Project";
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveGameSetToolStripMenuItem,
-            this.saveSpriteToolStripMenuItem,
-            this.saveSpriteFrameToolStripMenuItem});
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.saveToolStripMenuItem.Text = "Save &File";
+            this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
             // saveGameSetToolStripMenuItem
             // 
             this.saveGameSetToolStripMenuItem.Name = "saveGameSetToolStripMenuItem";
-            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveGameSetToolStripMenuItem.Text = "Game Set (std)";
+            this.saveGameSetToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.saveGameSetToolStripMenuItem.Text = "Save Game Set";
             this.saveGameSetToolStripMenuItem.ToolTipText = "Saves the standard game set with any current edits. This file is \"std.set\" in 7KA" +
     "A an includes 36 specific data tables for use in the game.";
             this.saveGameSetToolStripMenuItem.Click += new System.EventHandler(this.saveGameSetToolStripMenuItem_Click);
@@ -333,27 +335,23 @@
             // saveSpriteToolStripMenuItem
             // 
             this.saveSpriteToolStripMenuItem.Name = "saveSpriteToolStripMenuItem";
-            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveSpriteToolStripMenuItem.Text = "Sprite";
+            this.saveSpriteToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.saveSpriteToolStripMenuItem.Text = "Save Sprite";
             this.saveSpriteToolStripMenuItem.Click += new System.EventHandler(this.saveSpriteToolStripMenuItem_Click);
-            // 
-            // saveSpriteFrameToolStripMenuItem
-            // 
-            this.saveSpriteFrameToolStripMenuItem.Name = "saveSpriteFrameToolStripMenuItem";
-            this.saveSpriteFrameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveSpriteFrameToolStripMenuItem.Text = "Sprite Frame";
             // 
             // closeProjectToolStripMenuItem
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
             this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.closeProjectToolStripMenuItem.Text = "Close Project";
+            this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -389,6 +387,21 @@
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Name = "exportAllFramesTo32bppBmpToolStripMenuItem";
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.exportAllFramesTo32bppBmpToolStripMenuItem.Text = "All Frames";
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportSpriteFrameToolStripMenuItem});
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.exportToolStripMenuItem.Text = "Export";
+            // 
+            // exportSpriteFrameToolStripMenuItem
+            // 
+            this.exportSpriteFrameToolStripMenuItem.Name = "exportSpriteFrameToolStripMenuItem";
+            this.exportSpriteFrameToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.exportSpriteFrameToolStripMenuItem.Text = "Export Frame (Spr)";
+            this.exportSpriteFrameToolStripMenuItem.Click += new System.EventHandler(this.exportSpriteFrameToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -479,10 +492,6 @@
         private System.Windows.Forms.ToolStripMenuItem openSpriteSprToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openGameSetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveSpriteFrameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
@@ -496,7 +505,11 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblFileType;
-        private System.Windows.Forms.ToolStripMenuItem loadPaletteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem spriteResToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openPaletteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openSpriteResIdxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGameSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportSpriteFrameToolStripMenuItem;
     }
 }

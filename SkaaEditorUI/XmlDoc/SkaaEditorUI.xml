@@ -4,23 +4,33 @@
         <name>SkaaEditorUI</name>
     </assembly>
     <members>
-        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.TrySaveCloseProject">
-            <summary>
-            Closes the current project and saves any changes, if needed.
-            </summary>
-            <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenNewTab">
-            <summary>
-            Opens a new document tab, which is automatically set as the <see cref="P:WeifenLuo.WinFormsUI.Docking.DockPanel.ActiveDocument"/>
-            </summary>
-        </member>
         <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenSprite``1">
             <summary>
             Opens a <see cref="T:SkaaGameDataLib.SkaaSprite"/> or <see cref="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp"/>
             </summary>
             <typeparam name="T">A presenter class that implements <see cref="T:SkaaEditorUI.Presenters.MultiImagePresenterBase"/></typeparam>
             <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ToggleUISaveOptions">
+            <summary>
+            Enables or disables various file saving-related UI options based on the current status of the application
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ToggleUIProjectOptions">
+            <summary>
+            Enables or disables various project-related UI options based on the current status of the application
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.TrySaveCloseProject">
+            <summary>
+            Closes the current project and saves any changes, if needed.
+            </summary>
+            <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenNewImageEditorContainerTab">
+            <summary>
+            Opens a new document tab, which is automatically set as the <see cref="P:WeifenLuo.WinFormsUI.Docking.DockPanel.ActiveDocument"/>
+            </summary>
         </member>
         <member name="F:SkaaEditorUI.Forms.MDISkaaEditorMainForm.components">
             <summary>
@@ -147,6 +157,14 @@
             The results from a FileDialog like OpenFileDialog or SaveFileDialog
             </summary>
         </member>
+        <member name="M:SkaaEditorUI.Presenters.MultiImagePresenterBase.BuildFramePresenters">
+            <summary>
+            Creates a <see cref="T:SkaaEditorUI.Presenters.FramePresenter"/> for every <see cref="T:SkaaGameDataLib.SkaaFrame"/> in the <see cref="T:SkaaGameDataLib.SkaaSprite"/>
+            referenced by <see cref="P:SkaaEditorUI.Presenters.PresenterBase`1.GameObject"/>. Calling this more than once on the same object
+            will result in new <see cref="T:SkaaEditorUI.Presenters.FramePresenter"/> objects being generated, which come with new <see cref="T:System.Guid"/>
+            values.
+            </summary>
+        </member>
         <member name="M:SkaaEditorUI.Presenters.PresenterBase`1.SetField``1(``0@,``0,System.Action)">
             <summary>
             Uses the default comparer to compare <paramref name="field"/> and <paramref name="value"/> and,
@@ -170,6 +188,14 @@
             <param name="filePath">The path to the file</param>
             <param name="loadParam"></param>
             <returns>A new <see cref="T:System.Data.DataSet"/> containing all the tables and records of the specified file</returns>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.GetSpriteStream">
+            <summary>
+            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.SkaaFrame"/> data for 
+            all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The first four bytes are ignored
+            as they are the file's size, which is not used in ResIdx files.
+            The <see cref="P:System.IO.MemoryStream.Position"/> is reset to 0 before returning.
+            </summary>
         </member>
         <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.ReadFrames(System.String,System.Drawing.Imaging.ColorPalette)">
             <summary>
@@ -200,6 +226,13 @@
             </summary>
             <param name="filePath">The absolute path to the SPR file to open</param>
             <returns>The newly-created <see cref="T:SkaaGameDataLib.SkaaSprite"/></returns>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.SpritePresenter.GetSpriteStream">
+            <summary>
+            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.SkaaFrame"/> data for 
+            all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The <see cref="P:System.IO.MemoryStream.Position"/>
+            is reset to 0 before returning.
+            </summary>
         </member>
         <member name="T:SkaaEditorUI.oldProject">
             <summary>
