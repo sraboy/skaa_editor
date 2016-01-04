@@ -85,6 +85,24 @@ namespace SkaaEditorUI.Presenters
             this.GameObject.SetSpriteDataView(dv);
         }
 
+        /// <summary>
+        /// Creates and returns a <see cref="MemoryStream"/> containing <see cref="SkaaFrame"/> data for 
+        /// all <see cref="IFrame"/> objects in <see cref="Frames"/>. The <see cref="MemoryStream.Position"/>
+        /// is reset to 0 before returning.
+        /// </summary>
+        protected override MemoryStream GetSpriteStream()
+        {
+            var str = new MemoryStream();
+            var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
+
+            foreach (byte[] ba in sprBytes)
+                str.Write(ba, 0, ba.Length);
+
+            str.Position = 0;
+
+            return str;
+        }
+
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".spr";
