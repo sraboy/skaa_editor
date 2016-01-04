@@ -32,10 +32,6 @@ namespace SkaaEditorUI.Presenters
 {
     public class SpritePresenter : MultiImagePresenterBase
     {
-        #region Private Members
-        private string _spriteId;
-        #endregion
-
         #region Constructors
         public SpritePresenter() { }
         [Obsolete("This is for the old project class and should no longer be used.")]
