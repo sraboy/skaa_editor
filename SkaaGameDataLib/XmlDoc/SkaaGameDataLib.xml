@@ -305,6 +305,28 @@
             </summary>
             <seealso cref="T:SkaaGameDataLib.DbfFile"/>
         </member>
+        <member name="M:SkaaGameDataLib.FileTypeChecks.CheckFileType(System.String)">
+            <summary>
+            Verifies the file's type by extension. *.res files are passed to <see cref="M:SkaaGameDataLib.FileTypeChecks.CheckResFileType(System.String)"/> for 
+            separate tests.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SkaaGameDataLib.FileTypeChecks.CheckResFileType(System.String)">
+            <summary>
+            First checks for a filename prefix identifying the file as a palette, font or audio. If it
+            doesn't match, the file is passed to more in-depth file type checks that attempt to read the
+            file and identify its type by assuming it is a particular type and attempting to use it.
+            The failure to identify a type is identified through the generation of exceptions in the 
+            various methods.
+            </summary>
+            <param name="path"></param>
+            <returns>
+            <see cref="F:SkaaGameDataLib.FileFormats._Unknown"/> if the file can't be identified. Otherwise,
+            the identified file type.
+            </returns>
+        </member>
         <member name="M:SkaaGameDataLib.DataTableExtensions.WriteResDefinition(System.Data.DataTable,System.IO.Stream,System.UInt32,System.Boolean)">
             <summary>
             Writes a <see cref="T:SkaaGameDataLib.ResourceDefinitionReader"/> header for this <see cref="T:System.Data.DataTable"/> to the <see cref="T:System.IO.Stream"/>

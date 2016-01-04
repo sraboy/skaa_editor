@@ -142,6 +142,12 @@ namespace SkaaGameDataLib
     {
         public static readonly TraceSource Logger = new TraceSource("SkaaGameDataLib.FileTypeChecks", SourceLevels.All);
 
+        /// <summary>
+        /// Verifies the file's type by extension. *.res files are passed to <see cref="CheckResFileType(string)"/> for 
+        /// separate tests.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static FileFormats CheckFileType(string path)
         {
             string file_ext = Path.GetExtension(path);
@@ -169,6 +175,18 @@ namespace SkaaGameDataLib
         }
 
         /*********************Individual File Type Checkers*********************/
+        /// <summary>
+        /// First checks for a filename prefix identifying the file as a palette, font or audio. If it
+        /// doesn't match, the file is passed to more in-depth file type checks that attempt to read the
+        /// file and identify its type by assuming it is a particular type and attempting to use it.
+        /// The failure to identify a type is identified through the generation of exceptions in the 
+        /// various methods.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>
+        /// <see cref="FileFormats._Unknown"/> if the file can't be identified. Otherwise,
+        /// the identified file type.
+        /// </returns>
         private static FileFormats CheckResFileType(string path)
         {
             string filename = Path.GetFileNameWithoutExtension(path);
