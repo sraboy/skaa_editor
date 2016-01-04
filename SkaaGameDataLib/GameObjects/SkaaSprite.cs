@@ -133,15 +133,8 @@ namespace SkaaGameDataLib
                 string frameOffsetColName;
                 string frameNameColName;
 
-                if (dv.Table.Columns.Contains("BITMAPPTR"))
-                    frameNameColName = "BITMAPPTR";
-                else
-                    frameNameColName = "FrameOffset";
-
-                if (dv.Table.Columns.Contains("FILENAME"))
-                    frameOffsetColName = "FILENAME";
-                else
-                    frameOffsetColName = "FrameName";
+                frameNameColName = dv.Table.Columns.Contains(DataRowExtensions.SprFrameNameColumn) ? DataRowExtensions.SprFrameNameColumn : DataRowExtensions.ResIdxFrameNameColumn;
+                frameOffsetColName = dv.Table.Columns.Contains(DataRowExtensions.SprFrameOffsetColumn) ? DataRowExtensions.SprFrameOffsetColumn : DataRowExtensions.ResIdxFrameOffsetColumn;
 
                 return this.MatchFramesToDataView(frameNameColName, frameOffsetColName);
             }
@@ -191,8 +184,8 @@ namespace SkaaGameDataLib
         {
             foreach (DataRowView drv in this.DataView)
             {
-                int offset = Convert.ToInt32(drv.Row[frameNameColName]);
-                string name = (string)drv.Row[frameOffsetColName];
+                int offset = Convert.ToInt32(drv.Row[frameOffsetColName]);
+                string name = (string)drv.Row[frameNameColName];
                 SkaaFrame sf = this.Frames.Find(f => f.BitmapOffset == offset) ?? this.Frames.Find(f => f.Name == name);
                 sf.Name = name;
                 sf.BitmapOffset = offset;

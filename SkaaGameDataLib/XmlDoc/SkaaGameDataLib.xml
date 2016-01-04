@@ -4,6 +4,26 @@
         <name>SkaaGameDataLib</name>
     </assembly>
     <members>
+        <member name="F:SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn">
+            <summary>
+            Used in a <see cref="T:System.Data.DataTable"/> since <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/> does not have column names
+            </summary>
+        </member>
+        <member name="F:SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn">
+            <summary>
+            Used in a <see cref="T:System.Data.DataTable"/> since <see cref="F:SkaaGameDataLib.FileFormats._ResIdxFile"/> does not have column names
+            </summary>
+        </member>
+        <member name="F:SkaaGameDataLib.DataRowExtensions.SprFrameNameColumn">
+            <summary>
+            Used in a <see cref="T:System.Data.DataTable"/> by the standard game set in its <see cref="T:SkaaGameDataLib.DbfFile"/> tables
+            </summary>
+        </member>
+        <member name="F:SkaaGameDataLib.DataRowExtensions.SprFrameOffsetColumn">
+            <summary>
+            Used in a <see cref="T:System.Data.DataTable"/> by the standard game set in its <see cref="T:SkaaGameDataLib.DbfFile"/> tables
+            </summary>
+        </member>
         <member name="M:SkaaGameDataLib.DbfFileWriter.Save(System.Data.DataTable,System.IO.Stream)">
             <summary>
             Saves this <see cref="T:System.Data.DataTable"/> to the specified stream in the DBF/dBaseIII format

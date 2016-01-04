@@ -31,8 +31,22 @@ namespace SkaaGameDataLib
 {
     public static class DataRowExtensions
     {
-        public static readonly string FrameNameColumn = "FrameName";
-        public static readonly string FrameOffsetColumn = "FrameOffset";
+        /// <summary>
+        /// Used in a <see cref="DataTable"/> since <see cref="FileFormats._ResIdxFile"/> does not have column names
+        /// </summary>
+        public static readonly string ResIdxFrameNameColumn = "FrameName";
+        /// <summary>
+        /// Used in a <see cref="DataTable"/> since <see cref="FileFormats._ResIdxFile"/> does not have column names
+        /// </summary>
+        public static readonly string ResIdxFrameOffsetColumn = "FrameOffset";
+        /// <summary>
+        /// Used in a <see cref="DataTable"/> by the standard game set in its <see cref="DbfFile"/> tables
+        /// </summary>
+        public static readonly string SprFrameNameColumn = "FILENAME";
+        /// <summary>
+        /// Used in a <see cref="DataTable"/> by the standard game set in its <see cref="DbfFile"/> tables
+        /// </summary>
+        public static readonly string SprFrameOffsetColumn = "BITMAPPTR";
 
         public static void WriteResDefinition(this DataRow dr, Stream str, uint offset, bool isIdx)
         {
@@ -49,13 +63,13 @@ namespace SkaaGameDataLib
                 definitionSize = ResourceDefinitionReader.ResDefinitionSize;
             }
 
-            string recordName = dr[FrameNameColumn].ToString().PadRight(nameSize, (char) 0x0);
+            string recordName = dr[ResIdxFrameNameColumn].ToString().PadRight(nameSize, (char)0x0);
             byte[] record_name = new byte[nameSize];
             record_name = Encoding.GetEncoding(1252).GetBytes(recordName);
             str.Write(record_name, 0, nameSize);
 
             byte[] record_size = new byte[ResourceDefinitionReader.OffsetSize];
-            record_size = BitConverter.GetBytes((uint)dr[FrameOffsetColumn]);
+            record_size = BitConverter.GetBytes((uint)dr[ResIdxFrameOffsetColumn]);
             str.Write(record_size, 0, ResourceDefinitionReader.OffsetSize);
         }
     }
