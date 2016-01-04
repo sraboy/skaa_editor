@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
@@ -34,6 +35,8 @@ namespace SkaaEditorUI.Presenters
 {
     public class ResIdxMultiBmpPresenter : MultiImagePresenterBase
     {
+        public static readonly TraceSource Logger = new TraceSource($"{typeof(ResIdxMultiBmpPresenter)}", SourceLevels.All);
+
         private string _dataTableName;
 
         public override SkaaSprite Load(string filePath, params object[] param)
@@ -48,12 +51,25 @@ namespace SkaaEditorUI.Presenters
             }
             catch (Exception e)
             {
+                string errorMsg;
+
                 if (e is IndexOutOfRangeException)      //param wasn't passed at all
-                    throw new IndexOutOfRangeException($"You must pass a non-null {typeof(GameSetPresenter)} so the ResIdx's {typeof(DataSet)} can be set.");
+                {
+                    errorMsg = $"You must pass a non-null {typeof(GameSetPresenter)} so the ResIdx's {typeof(DataSet)} can be set.";
+                    Logger.TraceEvent(TraceEventType.Error, 0, errorMsg);
+                    throw new IndexOutOfRangeException(errorMsg);
+                }
                 else if (e is ArgumentNullException)     //thrown above
-                    throw new ArgumentNullException($"You must pass a non-null {typeof(GameSetPresenter)} so the ResIdx's {typeof(DataSet)} can be set.");
+                {
+                    errorMsg = $"You must pass a non-null {typeof(GameSetPresenter)} so the ResIdx's {typeof(DataSet)} can be set.";
+                    Logger.TraceEvent(TraceEventType.Error, 0, errorMsg);
+                    throw new ArgumentNullException(errorMsg);
+                }
                 else
+                {
+                    Logger.TraceEvent(TraceEventType.Error, 0, e.Message);
                     throw e;
+                }
             }
 
             Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject);
@@ -70,7 +86,41 @@ namespace SkaaEditorUI.Presenters
 
         public override bool Save(string filePath, params object[] param)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (FileStream fs = File.Open(filePath, FileMode.Create))
+                {
+                    var table = this.DataView.ToTable();
+                    var imageData = this.GetSpriteStream();
+
+                    //write the record count
+                    byte[] recordcount = BitConverter.GetBytes((short)table.Rows.Count);
+                    fs.Write(recordcount, 0, recordcount.Length);
+
+                    //write the ResIdx header
+                    table.WriteAllRowsAsResDefinitions(fs, true);
+
+                    //write an empty record to signify the file's size follows
+                    for (int i = 0; i < ResourceDefinitionReader.ResIdxNameSize; i++)
+                        fs.WriteByte(0x0);
+
+                    //write the file's size
+                    uint fileSize = (uint)(fs.Position + imageData.Length);
+                    fileSize += 4; //we haven't written the four bytes of the file size yet, so fs.Position doesn't include it
+                    byte[] fileSizeBytes = BitConverter.GetBytes(fileSize);
+                    fs.Write(fileSizeBytes, 0, fileSizeBytes.Length);
+
+                    //write the frame data
+                    imageData.CopyTo(fs);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.TraceEvent(TraceEventType.Error, 0, e.Message);
+                return false;
+            }
+
+            return true;
         }
 
         public override void SetSpriteDataView(GameSetPresenter gsp)
@@ -80,8 +130,26 @@ namespace SkaaEditorUI.Presenters
             dv = new DataView(gsp.GameObject?.Tables?[_dataTableName]);
             this.DataView = dv;
 
-            if (this.DataView.Table != null)
-                this.GameObject.SetSpriteDataView(dv);
+            this.GameObject.SetSpriteDataView(dv);
+        }
+
+        /// <summary>
+        /// Creates and returns a <see cref="MemoryStream"/> containing <see cref="SkaaFrame"/> data for 
+        /// all <see cref="IFrame"/> objects in <see cref="Frames"/>. The first four bytes are ignored
+        /// as they are the file's size, which is not used in ResIdx files.
+        /// The <see cref="MemoryStream.Position"/> is reset to 0 before returning.
+        /// </summary>
+        protected override MemoryStream GetSpriteStream()
+        {
+            var str = new MemoryStream();
+            var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
+
+            foreach (byte[] ba in sprBytes)
+                str.Write(ba, 4, ba.Length - 4);
+
+            str.Position = 0;
+
+            return str;
         }
 
         /// <summary>
