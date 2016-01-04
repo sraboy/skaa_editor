@@ -210,73 +210,7 @@ namespace SkaaGameDataLib
 
             return true;
         }
-        /// <summary>
-        /// Builds a <see cref="Bitmap"/> sprite sheet containing all the frames of the specified <see cref="SkaaSprite"/>
-        /// with no padding between frames. The number of rows/columns of frames is the square root of the number of frames
-        /// with an additional row added when the number of frames is not a perfect square.
-        /// </summary>
-        /// <returns>The newly-generated <see cref="Bitmap"/></returns>
-        public Bitmap ToBitmap()
-        {
-            int totalFrames = this.Frames.Count;
-            int spriteWidth = 0, spriteHeight = 0, columns = 0, rows = 0;
 
-            double sqrt = Math.Sqrt(totalFrames);
-
-            //figure out how many rows we need
-            if (totalFrames % 1 != 0) //totalFrames is a perfect square
-            {
-                rows = (int)sqrt;
-                columns = (int)sqrt;
-            }
-            else
-            {
-                rows = (int)Math.Floor(sqrt) + 1; //adds an additional row
-                columns = (int)Math.Ceiling(sqrt);
-            }
-
-            //need the largest tile (by height and width) to set the row/column heights
-            foreach (SkaaSpriteFrame sf in this.Frames)
-            {
-                if (sf.IndexedBitmap.Bitmap.Width > spriteWidth)
-                    spriteWidth = sf.IndexedBitmap.Bitmap.Width;
-                if (sf.IndexedBitmap.Bitmap.Height > spriteHeight)
-                    spriteHeight = sf.IndexedBitmap.Bitmap.Height;
-            }
-
-            //the total height/width of the image to be created
-            int exportWidth = columns * spriteWidth,
-                exportHeight = rows * spriteHeight;
-
-            Bitmap bitmap = new Bitmap(exportWidth, exportHeight);
-
-            try
-            {
-                using (Graphics g = Graphics.FromImage(bitmap))
-                {
-                    int frameIndex = 0;
-
-                    for (int y = 0; y < exportHeight; y += spriteHeight)
-                    {
-                        //once we hit the max frames, just break
-                        for (int x = 0; x < exportWidth && frameIndex < this.Frames.Count; x += spriteWidth)
-                        {
-                            g.DrawImage(this.Frames[frameIndex].IndexedBitmap.Bitmap, new Point(x, y));
-                            frameIndex++;
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                bitmap = null;
-            }
-
-            if (bitmap == null)
-                Logger.TraceInformation($"Failed to create sprite sheet bitmap for {this.SpriteId}");
-
-            return bitmap;
-        }
         /// <summary>
         /// Builds a <see cref="List{T}"/> of byte arrays, one array for each <see cref="SkaaFrame"/> in <see cref="SkaaSprite.Frames"/>
         /// </summary>
