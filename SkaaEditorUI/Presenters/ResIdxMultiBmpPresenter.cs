@@ -37,8 +37,6 @@ namespace SkaaEditorUI.Presenters
     {
         public static readonly TraceSource Logger = new TraceSource($"{typeof(ResIdxMultiBmpPresenter)}", SourceLevels.All);
 
-        private string _dataTableName;
-
         public override SkaaSprite Load(string filePath, params object[] param)
         {
             GameSetPresenter gsp = null;
@@ -76,10 +74,19 @@ namespace SkaaEditorUI.Presenters
 
             gsp.GameObject = gsp.GameObject ?? new DataSet();
             DataSet ds = gsp.GameObject;
+
+            if (ds.Tables.Contains(tup.Item2.TableName))
+            {
+                var newName = tup.Item2.TableName + "_2";
+                tup.Item1.SpriteId = newName;
+                tup.Item2.TableName = newName;
+            }
+
             ds.Tables.Add(tup.Item2);
             ds.AddDataSource(Path.GetFileName(filePath));
             this.GameObject = tup.Item1;
-            this._dataTableName = tup.Item2.TableName;
+            this.SpriteId = this.GameObject.SpriteId;
+
             BuildFramePresenters();
             return this.GameObject;
         }
@@ -127,7 +134,7 @@ namespace SkaaEditorUI.Presenters
         {
             DataView dv;
 
-            dv = new DataView(gsp.GameObject?.Tables?[_dataTableName]);
+            dv = new DataView(gsp.GameObject?.Tables?[this.SpriteId]);
             this.DataView = dv;
 
             this.GameObject.SetSpriteDataView(dv);
