@@ -146,7 +146,12 @@ namespace SkaaEditorUI.Presenters
 
             this.ActiveFrame = this.Frames[0];
         }
-        protected Stream GetSpriteStream()
+        /// <summary>
+        /// Creates and returns a <see cref="MemoryStream"/> containing <see cref="SkaaFrame"/> data for 
+        /// all <see cref="IFrame"/> objects in <see cref="Frames"/>. The <see cref="MemoryStream.Position"/>
+        /// is reset to 0 before returning.
+        /// </summary>
+        protected MemoryStream GetSpriteStream()
         {
             var str = new MemoryStream();
             var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
