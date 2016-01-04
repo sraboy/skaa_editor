@@ -119,6 +119,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
         public void SetSprite(MultiImagePresenterBase spr)
         {
             this.ActiveSprite = spr;
+            this.TabText = this.ActiveSprite?.SpriteId ?? "New Sprite";
             this._imageEditorBox.Image = spr?.ActiveFrame?.Bitmap;
             this._imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
         }

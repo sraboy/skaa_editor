@@ -60,12 +60,14 @@ namespace SkaaEditorUI.Forms.DockContentControls
 
         private void SetDataSource(DataSet ds)
         {
+            var dataMember = "SFRAME";
+            this.dataListView1.DataMember = dataMember;
+            this.TabText = dataMember;
+
             this.dataListView1.DataSource = ds;
             this.dataListView1.AutoSizeColumns();
-            //this.dataListView1.CheckBoxes = true;
             this.dataListView1.ShowGroups = true;
-            this.dataListView1.DataMember = "SFRAME";
-            //this.dataListView1.CheckedAspectName = "Save";
+
             foreach (OLVColumn c in this.dataListView1.Columns)
                 c.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
