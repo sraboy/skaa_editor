@@ -4,7 +4,7 @@
         <name>SkaaEditorUI</name>
     </assembly>
     <members>
-        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenSprite``1">
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenSprite``1(System.String)">
             <summary>
             Opens a <see cref="T:SkaaGameDataLib.SkaaSprite"/> or <see cref="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp"/>
             </summary>
@@ -112,6 +112,14 @@
             will result in new <see cref="T:SkaaEditorUI.Presenters.FramePresenter"/> objects being generated, which come with new <see cref="T:System.Guid"/>
             values.
             </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.MultiImagePresenterBase.GetSpriteSheet">
+            <summary>
+            Builds a <see cref="T:System.Drawing.Bitmap"/> sprite sheet containing all of this object's frames. There is 
+            no padding between frames. The number of rows/columns of frames is the square root of the number of frames
+            with an additional row added when the number of frames is not a perfect square.
+            </summary>
+            <returns>The newly-generated <see cref="T:System.Drawing.Bitmap"/></returns>
         </member>
         <member name="M:SkaaEditorUI.Presenters.PresenterBase`1.SetField``1(``0@,``0,System.Action)">
             <summary>

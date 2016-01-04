@@ -227,7 +227,7 @@ namespace SkaaEditorUI
         public IPresenterBase<T> Open<T, T1>(params object[] param) where T : class where T1 : IPresenterBase<T>, new()
         {
             //param[0] is different based on the type being loaded:
-            //ResIdxMultiBmpPresenter: (if merging) the currently-active GameSetPresenter
+            //ResIdxMultiBmpPresenter: The relevant GameSetPresenter (if merging)
             //FramePresenter: ColorPalette
 
             //This method signature is really verbose, which is a pain for the caller, but it allows this one single method
@@ -245,7 +245,20 @@ namespace SkaaEditorUI
             presenter.Open<T>(param);
             return presenter;
         }
+        public PresenterBase<T> Open<T, T1>(string filePath, params object[] param) where T : class where T1 : PresenterBase<T>, new()
+        {
+            T1 presenter = new T1();
 
+            if (presenter is MultiImagePresenterBase)
+            {
+                (presenter as MultiImagePresenterBase).PalettePresenter = new ColorPalettePresenter(this._mainForm.ActivePalette);
+                this.OpenSprites.Add(presenter as MultiImagePresenterBase);
+            }
+
+            presenter.Load(filePath, param);
+            
+            return presenter;
+        }
         public void Save<T>(IPresenterBase<T> pres) where T : class
         {
             var result = pres.Save<T>(null);

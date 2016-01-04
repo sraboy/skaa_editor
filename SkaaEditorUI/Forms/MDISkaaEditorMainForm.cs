@@ -76,7 +76,7 @@ namespace SkaaEditorUI.Forms
         {
             //todo: implement this. Just copy/pasted from old form
 
-            List<KeyValuePair<string, string>> filesAndFormats = new List<KeyValuePair<string, string>>();
+            List<KeyValuePair<string, FileFormats>> filesAndFormats = new List<KeyValuePair<string, FileFormats>>();
             List<string> files = new List<string>();
 
             //enumerate all files in multiple directories
@@ -89,7 +89,40 @@ namespace SkaaEditorUI.Forms
             }
 
             foreach (string filename in files)
-                filesAndFormats.Add(new KeyValuePair<string, string>(filename, FileTypeChecks.CheckFileType(filename).ToString()));
+                filesAndFormats.Add(new KeyValuePair<string, FileFormats>(filename, FileTypeChecks.CheckFileType(filename)));
+
+            //open the palette first so the user is presented with an OpenFileDialog
+            //if a SpritePresenter is first
+
+            if (filesAndFormats.Exists(kvp => kvp.Value == FileFormats.Palette))
+            {
+                var pal = filesAndFormats.Find(kvp => kvp.Value == FileFormats.Palette);
+                if (OpenPalette(pal.Key) == false)
+                    MessageBox.Show($"Failed to load palette: {pal.Key}");
+                filesAndFormats.Remove(pal);
+            }
+
+            //ProjectManager.Open() functions off assuming the user needs to navigate to a file
+            //and will use the FileDialogs. We need to bypass those.
+            foreach (var kvp in filesAndFormats)
+            {
+                switch (kvp.Value)
+                {
+                    case FileFormats.ResIdxDbf:
+                        if (OpenGameSet(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load game set: {kvp.Key}");
+                        break;
+                    case FileFormats.SpriteSpr:
+                        if (OpenSprite<SpritePresenter>(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load sprite ({typeof(SpritePresenter)}): {kvp.Key}");
+                        break;
+                    case FileFormats.ResIdxMultiBmp:
+                        if (OpenSprite<ResIdxMultiBmpPresenter>(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)}): {kvp.Key}");
+                        break;
+
+                }
+            }
         }
 
         private void SetUpDockPanel()
@@ -187,12 +220,12 @@ namespace SkaaEditorUI.Forms
         private void openSpriteSprToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenSprite<SpritePresenter>() == false)
-                MessageBox.Show("Failed to load sprite!");
+                MessageBox.Show($"Failed to load sprite ({typeof(SpritePresenter)})!");
         }
         private void openSpriteResIdxToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenSprite<ResIdxMultiBmpPresenter>() == false)
-                MessageBox.Show("Failed to load sprite!");
+                MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)})!");
         }
         private void openPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -201,7 +234,7 @@ namespace SkaaEditorUI.Forms
         }
         private void openGameSetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (OpenGameSet(true) == false)
+            if (OpenGameSet() == false)
                 MessageBox.Show("Failed to load game set!");
         }
         #endregion
@@ -240,15 +273,19 @@ namespace SkaaEditorUI.Forms
         /// </summary>
         /// <typeparam name="T">A presenter class that implements <see cref="MultiImagePresenterBase"/></typeparam>
         /// <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
-        internal bool OpenSprite<T>() where T : MultiImagePresenterBase, new()
+        internal bool OpenSprite<T>(string filePath = null) where T : MultiImagePresenterBase, new()
         {
             //check for a palette first
             //if not loaded, set it
             if (this._toolBoxContainer.ActivePalette == null)
                 if (OpenPalette() == false)
                     return false;
+            T spr;
 
-            T spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter);
+            if (filePath == null)
+                spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter);
+            else
+                spr = (T)ProjectManager.Open<SkaaSprite, T>(filePath, this._gameSetViewerContainer.GameSetPresenter);
 
             if (spr == null) //user canceled or loading failed
                 return false;
@@ -271,9 +308,15 @@ namespace SkaaEditorUI.Forms
             spr.ActiveFrameChanged += MultiImagePresenterBase_ActiveFrameChanged;
             return true;
         }
-        internal bool OpenPalette()
+        internal bool OpenPalette(string filePath = null)
         {
-            var pal = (ColorPalettePresenter)ProjectManager.Open<System.Drawing.Imaging.ColorPalette, ColorPalettePresenter>(FileFormats.Palette);
+            ColorPalettePresenter pal;
+
+            if (filePath == null)
+                pal = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>();
+            else
+                pal = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>(filePath);
+
             if (pal?.GameObject == null)
                 return false;
             else
@@ -285,9 +328,14 @@ namespace SkaaEditorUI.Forms
         {
             throw new NotImplementedException();
         }
-        internal bool OpenGameSet(bool mergeDataSets)
+        internal bool OpenGameSet(string filePath = null, bool mergeDataSets = true)
         {
-            GameSetPresenter gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>();
+            GameSetPresenter gsp;
+
+            if (filePath == null)
+                gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>();
+            else
+                gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(filePath);
 
             if (gsp.GameObject == null)
                 return false;
@@ -406,7 +454,5 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
             ToggleUISaveOptions();
         }
-
-
     }
 }
