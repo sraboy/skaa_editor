@@ -184,7 +184,7 @@ namespace SkaaEditorUI.Presenters
             }
 
             //need the largest tile (by height and width) to set the row/column heights
-            foreach (SkaaSpriteFrame sf in this.Frames)
+            foreach (SkaaFrame sf in this.GameObject.Frames)
             {
                 if (sf.IndexedBitmap.Bitmap.Width > spriteWidth)
                     spriteWidth = sf.IndexedBitmap.Bitmap.Width;

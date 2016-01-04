@@ -80,6 +80,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
+            this.exportSpriteSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -391,7 +392,8 @@
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportSpriteFrameToolStripMenuItem});
+            this.exportSpriteFrameToolStripMenuItem,
+            this.exportSpriteSheetToolStripMenuItem});
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.exportToolStripMenuItem.Text = "Export";
@@ -448,6 +450,13 @@
             this.tsStatusLblFileType.Spring = true;
             this.tsStatusLblFileType.Text = "No File Loaded";
             this.tsStatusLblFileType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // exportSpriteSheetToolStripMenuItem
+            // 
+            this.exportSpriteSheetToolStripMenuItem.Name = "exportSpriteSheetToolStripMenuItem";
+            this.exportSpriteSheetToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.exportSpriteSheetToolStripMenuItem.Text = "Sprite Sheet";
+            this.exportSpriteSheetToolStripMenuItem.Click += new System.EventHandler(this.exportSpriteSheetToolStripMenuItem_Click);
             // 
             // MDISkaaEditorMainForm
             // 
@@ -512,5 +521,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveSpriteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSpriteFrameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportSpriteSheetToolStripMenuItem;
     }
 }

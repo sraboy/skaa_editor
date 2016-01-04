@@ -373,22 +373,17 @@ namespace SkaaEditorUI.Forms
 
                 var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
 
-                if (iec.ActiveSprite is SpritePresenter)                      //image is from an SPR sprite
+                if (iec.ActiveSprite is SpritePresenter || iec.ActiveSprite is ResIdxMultiBmpPresenter)
                 {
                     this.saveSpriteToolStripMenuItem.Enabled = true;
-                    //this.saveSpriteResIdxToolStripMenuItem.Enabled = false;
-                }
-                else if (iec.ActiveSprite is ResIdxMultiBmpPresenter)         //image is from a ResIdx "sprite"
-                {
-                    //this.saveSpriteResIdxToolStripMenuItem.Enabled = true;
-                    this.saveSpriteToolStripMenuItem.Enabled = true;
+                    this.exportSpriteSheetToolStripMenuItem.Enabled = true;
                 }
             }
             else if (this._dockPanel.ActiveDocument is GameSetViewerContainer) //user is viewing the game set
             {
                 this.saveSpriteToolStripMenuItem.Enabled = false;
                 this.exportSpriteFrameToolStripMenuItem.Enabled = false;
-                //this.saveSpriteResIdxToolStripMenuItem.Enabled = false;
+                this.exportSpriteSheetToolStripMenuItem.Enabled = false;
             }
         }
         /// <summary>
@@ -453,6 +448,19 @@ namespace SkaaEditorUI.Forms
             this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
             ToggleUISaveOptions();
+        }
+
+        private void exportSpriteSheetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                var doc = this._dockPanel.ActiveDocument as ImageEditorContainer;
+
+                if (dlg.ShowDialog() == DialogResult.OK && doc != null)
+                {
+                    doc.ActiveSprite.GetSpriteSheet().Save(dlg.FileName);
+                }
+            }
         }
     }
 }
