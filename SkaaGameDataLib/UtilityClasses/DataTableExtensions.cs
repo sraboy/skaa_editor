@@ -65,5 +65,15 @@ namespace SkaaGameDataLib
             record_size = BitConverter.GetBytes(Convert.ToUInt32(offset));
             str.Write(record_size, 0, ResourceDefinitionReader.OffsetSize);
         }
+        /// <summary>
+        /// Calls <see cref="DataRowExtensions.WriteResDefinition(DataRow, Stream, uint, bool)"/> for each row in the table
+        /// </summary>
+        public static void WriteAllRowsAsResDefinitions(this DataTable dt, Stream str, bool isIdx)
+        {
+            foreach (DataRow dr in dt.Rows)
+            {
+                dr.WriteResDefinition(str, (uint)str.Position, isIdx);
+            }
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace SkaaGameDataLib
             str.Write(record_name, 0, nameSize);
 
             byte[] record_size = new byte[ResourceDefinitionReader.OffsetSize];
-            record_size = BitConverter.GetBytes(Convert.ToUInt32(offset));
+            record_size = BitConverter.GetBytes((uint)dr[FrameOffsetColumn]);
             str.Write(record_size, 0, ResourceDefinitionReader.OffsetSize);
         }
     }

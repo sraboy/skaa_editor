@@ -313,6 +313,11 @@
             <param name="offset">The offset in the <see cref="T:System.IO.Stream"/> at which to begin writing</param>
             <param name="isIdx">Whether or not to use settings for <see cref="F:SkaaGameDataLib.ResourceDefinitionReader.ResIdxDefinitionSize"/> or <see cref="F:SkaaGameDataLib.ResourceDefinitionReader.ResDefinitionSize"/></param>
         </member>
+        <member name="M:SkaaGameDataLib.DataTableExtensions.WriteAllRowsAsResDefinitions(System.Data.DataTable,System.IO.Stream,System.Boolean)">
+            <summary>
+            Calls <see cref="M:SkaaGameDataLib.DataRowExtensions.WriteResDefinition(System.Data.DataRow,System.IO.Stream,System.UInt32,System.Boolean)"/> for each row in the table
+            </summary>
+        </member>
         <member name="M:SkaaGameDataLib.SkaaSprite.MatchFramesToDataView(System.String,System.String)">
             <summary>
             Iterates through all the rows in <see cref="P:SkaaGameDataLib.SkaaSprite.DataView"/> and sets each of this
