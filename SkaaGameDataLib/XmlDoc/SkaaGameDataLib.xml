@@ -351,14 +351,6 @@
             since there are no actual files for these frames; this is from the original developers.
             </remarks>
         </member>
-        <member name="M:SkaaGameDataLib.SkaaSprite.ToBitmap">
-            <summary>
-            Builds a <see cref="T:System.Drawing.Bitmap"/> sprite sheet containing all the frames of the specified <see cref="T:SkaaGameDataLib.SkaaSprite"/>
-            with no padding between frames. The number of rows/columns of frames is the square root of the number of frames
-            with an additional row added when the number of frames is not a perfect square.
-            </summary>
-            <returns>The newly-generated <see cref="T:System.Drawing.Bitmap"/></returns>
-        </member>
         <member name="M:SkaaGameDataLib.SkaaSprite.GetSpriteFrameByteArrays">
             <summary>
             Builds a <see cref="T:System.Collections.Generic.List`1"/> of byte arrays, one array for each <see cref="T:SkaaGameDataLib.SkaaFrame"/> in <see cref="P:SkaaGameDataLib.SkaaSprite.Frames"/>

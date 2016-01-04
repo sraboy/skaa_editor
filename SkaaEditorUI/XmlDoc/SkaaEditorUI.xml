@@ -83,58 +83,6 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.ConfigSettings">
-            <summary>
-            Provides for initial application settings like default directories, debug logging, etc.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.SetUpColorGrid">
-            <summary>
-            Loads <see cref="P:SkaaEditorUI.oldProject.ActivePalette"/>, if specified, and enables/disables the form's <see cref="!:SkaaColorChooser"/> object based on whether or not a palette is loaded.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.SetupUI">
-            <summary>
-            Sets/Resets various UI settings like menu options, etc.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.TrySaveCloseProject(System.Object,System.EventArgs)">
-            <summary>
-            Closes the current project and saves changes, if needed.
-            </summary>
-            <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
-        </member>
-        <member name="F:SkaaEditorUI.Forms.SkaaEditorMainForm.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.AddDebugArg(System.String,System.Object)">
-            <summary>
-            When debugging, creates and adds a new <see cref="T:SkaaEditorUI.Forms.SkaaEditorMainForm.DebugArgs"/> object 
-            to the <see cref="F:SkaaEditorUI.Forms.SkaaEditorMainForm._debugArgs"/> List. This is 
-            essentially a dirty hack for easy debugging with a global variable.
-            </summary>
-            <param name="methodName"></param>
-            <param name="arg"></param>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.SkaaEditorMainForm.ConfigSettingsDebug">
-            <summary>
-            Configures settings for debugging/development.
-            </summary>
-        </member>
         <member name="F:SkaaEditorUI.Forms.SkaaSAVEditorTest.components">
             <summary>
             Required designer variable.
@@ -233,39 +181,6 @@
             all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The <see cref="P:System.IO.MemoryStream.Position"/>
             is reset to 0 before returning.
             </summary>
-        </member>
-        <member name="T:SkaaEditorUI.oldProject">
-            <summary>
-            Represents a set of open files and settings.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.oldProject.OpenGameSet(System.String)">
-            <summary>
-            This function will open the specified 7KAA SET file.
-            </summary>
-            <param name="filepath">The complete path to the SET file.</param>
-            <remarks>
-             A SET file, like 7KAA's std.set, simply contains multiple dBase III databases stitched together.
-            </remarks>
-        </member>
-        <member name="M:SkaaEditorUI.oldProject.OpenPalette(System.String)">
-            <summary>
-            Loads a palette file.
-            </summary>
-            <param name="filepath">The specific palette file to load.</param>
-            <returns>A ColorPalette built from the palette file</returns>
-        </member>
-        <member name="M:SkaaEditorUI.oldProject.LoadSprite(System.String,System.Drawing.Imaging.ColorPalette)">
-            <summary>
-            Opens an SPR file and creates a <see cref="T:SkaaGameDataLib.SkaaSprite"/> object for it
-            </summary>
-            <param name="filepath">The absolute path to the SPR file to open</param>
-            <returns>The newly-created <see cref="T:SkaaGameDataLib.SkaaSprite"/></returns>
-            <remarks>
-            The original game code for reading SPR files can be found <code>ResourceDb::init_imported()</code> 
-            in src/ORESDB.cpp around line 72. The <code>resName</code> will be "sprite\\NAME.SPR". SPR files are 
-            are considered <code>FLAT</code> by 7KAA. 
-            </remarks>
         </member>
         <member name="T:SkaaEditorUI.ProjectManager">
             <summary>

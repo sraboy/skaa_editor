@@ -161,7 +161,6 @@
     <Compile Include="Presenters\IPresenterBase.cs" />
     <Compile Include="Presenters\MultiImagePresenterBase.cs" />
     <Compile Include="Presenters\PresenterBase.cs" />
-    <Compile Include="oldProject.cs" />
     <Compile Include="Presenters\GameSetPresenter.cs" />
     <Compile Include="Misc\PresenterFileDialogEventArgs.cs" />
     <Compile Include="Presenters\ResIdxMultiBmpPresenter.cs" />
@@ -171,18 +170,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SkaaEditorMainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SkaaEditorMainForm.Designer.cs">
-      <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\SkaaEditorMainForm_Debug.cs">
-      <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Presenters\FramePresenter.cs" />
     <Compile Include="Forms\SkaaSAVEditorTest.cs">
       <SubType>Form</SubType>
@@ -202,9 +191,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DockContentControls\GameSetViewerContainer.resx">
       <DependentUpon>GameSetViewerContainer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SkaaEditorMainForm.resx">
-      <DependentUpon>SkaaEditorMainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
