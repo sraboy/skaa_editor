@@ -189,9 +189,19 @@ namespace SkaaGameDataLib
             //transparent bytes at the very end (bottom-right of image)
             if (transparentByteFound && transparentByteCount > 0)
             {
-                indexedData[realOffset] = 0xf8;
-                realOffset++;
-                indexedData[realOffset] = (byte)transparentByteCount;
+                if (transparentByteCount <= 7)
+                    indexedData[realOffset] = (byte)(256 - transparentByteCount);
+                else
+                {
+                    indexedData[realOffset] = 0xf8;
+                    realOffset++;
+                    indexedData[realOffset] = (byte)transparentByteCount;
+                }
+
+                //reset our count
+                transparentByteCount = 0;
+                transparentByteFound = false;
+                //go forward one for the transparentByteCount or 0xf9-0xff pixel
                 realOffset++;
             }
             //subtract four because the int32 size in the header is exclusive of those bytes used for the int32 size
