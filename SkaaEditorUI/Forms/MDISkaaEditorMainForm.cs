@@ -23,9 +23,11 @@
 ***************************************************************************/
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 using SkaaEditorUI.Forms.DockContentControls;
 using SkaaEditorUI.Presenters;
@@ -57,7 +59,37 @@ namespace SkaaEditorUI.Forms
             this.showGridToolStripMenuItem.Checked = true;
             this._toolBoxContainer.ColorChanged += ToolboxContainer_ColorChanged;
             this._toolBoxContainer.SelectedToolChanged += ToolboxContainer_SelectedToolChanged;
+
             this.Shown += MDISkaaEditorMainForm_Shown;
+            this.DragEnter += MDISkaaEditorMainForm_DragEnter;
+            this.DragDrop += MDISkaaEditorMainForm_DragDrop;
+        }
+
+        private void MDISkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            bool isFile = e.Data.GetDataPresent(DataFormats.FileDrop);
+            if (isFile)
+                e.Effect = DragDropEffects.Copy;
+        }
+
+        private void MDISkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            //todo: implement this. Just copy/pasted from old form
+
+            List<KeyValuePair<string, string>> filesAndFormats = new List<KeyValuePair<string, string>>();
+            List<string> files = new List<string>();
+
+            //enumerate all files in multiple directories
+            foreach (string filename in (string[])e.Data.GetData(DataFormats.FileDrop))
+            {
+                if (Directory.Exists(filename))
+                    files.AddRange(Directory.EnumerateFiles(filename, "*.*", SearchOption.AllDirectories));
+                else if (File.Exists(filename))
+                    files.Add(filename);
+            }
+
+            foreach (string filename in files)
+                filesAndFormats.Add(new KeyValuePair<string, string>(filename, FileTypeChecks.CheckFileType(filename).ToString()));
         }
 
         private void SetUpDockPanel()
@@ -276,7 +308,7 @@ namespace SkaaEditorUI.Forms
 
             ProjectManager.SetSpriteDataViews(gsp);
         }
-  
+
         /// <summary>
         /// Enables or disables various file saving-related UI options based on the current status of the application
         /// </summary>
@@ -375,6 +407,6 @@ namespace SkaaEditorUI.Forms
             ToggleUISaveOptions();
         }
 
-    
+
     }
 }
