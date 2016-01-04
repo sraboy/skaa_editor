@@ -60,7 +60,7 @@ namespace SkaaEditorUI.Presenters
             this.GameObject = spr;
             this.SpriteId = spr.SpriteId;
 
-            SetIFrames();
+            BuildFramePresenters();
             return this.GameObject;
         }
 
@@ -83,8 +83,6 @@ namespace SkaaEditorUI.Presenters
 
             this.DataView = dv;
             this.GameObject.SetSpriteDataView(dv);
-
-            SetIFrames();
         }
 
         protected override void SetupFileDialog(FileDialog dlg)
@@ -93,7 +91,5 @@ namespace SkaaEditorUI.Presenters
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.SpriteId ?? null;
         }
-
-
     }
 }

@@ -64,7 +64,7 @@ namespace SkaaEditorUI.Presenters
             ds.AddDataSource(Path.GetFileName(filePath));
             this.GameObject = tup.Item1;
             this._dataTableName = tup.Item2.TableName;
-            SetIFrames();
+            BuildFramePresenters();
             return this.GameObject;
         }
 

@@ -134,7 +134,13 @@ namespace SkaaEditorUI.Presenters
         }
         #endregion
 
-        protected void SetIFrames()
+        /// <summary>
+        /// Creates a <see cref="FramePresenter"/> for every <see cref="SkaaFrame"/> in the <see cref="SkaaSprite"/>
+        /// referenced by <see cref="PresenterBase{T}.GameObject"/>. Calling this more than once on the same object
+        /// will result in new <see cref="FramePresenter"/> objects being generated, which come with new <see cref="Guid"/>
+        /// values.
+        /// </summary>
+        protected void BuildFramePresenters()
         {
             this.Frames = new TrulyObservableCollection<IFrame>();
 
@@ -155,6 +161,7 @@ namespace SkaaEditorUI.Presenters
         {
             var str = new MemoryStream();
             var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
+
             foreach (byte[] ba in sprBytes)
                 str.Write(ba, 0, ba.Length);
 
