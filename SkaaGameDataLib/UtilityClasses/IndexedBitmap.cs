@@ -143,6 +143,15 @@ namespace SkaaGameDataLib
                     //we found a normal pixel after a bunch of transparent ones
                     if (pixARGB != 0x00 && transparentByteFound && transparentByteCount > 0)
                     {
+                        while (transparentByteCount >= 255)
+                        {
+                            indexedData[realOffset] = 0xf8;
+                            realOffset++;
+                            indexedData[realOffset] = 255;
+                            realOffset++;
+                            transparentByteCount -= 255;
+                        }
+
                         if (transparentByteCount <= 7)
                             indexedData[realOffset] = (byte)(256 - transparentByteCount);
                         else
@@ -189,6 +198,15 @@ namespace SkaaGameDataLib
             //transparent bytes at the very end (bottom-right of image)
             if (transparentByteFound && transparentByteCount > 0)
             {
+                while (transparentByteCount >= 255)
+                {
+                    indexedData[realOffset] = 0xf8;
+                    realOffset++;
+                    indexedData[realOffset] = 255;
+                    realOffset++;
+                    transparentByteCount -= 255;
+                }
+
                 if (transparentByteCount <= 7)
                     indexedData[realOffset] = (byte)(256 - transparentByteCount);
                 else
