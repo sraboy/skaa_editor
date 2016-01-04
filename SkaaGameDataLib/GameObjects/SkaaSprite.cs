@@ -126,7 +126,7 @@ namespace SkaaGameDataLib
 
         public bool SetSpriteDataView(DataView dv)
         {
-            if (dv != null)
+            if (dv?.Table != null)
             {
                 this.DataView = dv;
 
