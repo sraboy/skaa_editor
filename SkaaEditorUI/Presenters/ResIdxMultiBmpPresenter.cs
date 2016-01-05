@@ -37,6 +37,61 @@ namespace SkaaEditorUI.Presenters
     {
         public static readonly TraceSource Logger = new TraceSource($"{typeof(ResIdxMultiBmpPresenter)}", SourceLevels.All);
 
+        /// <summary>
+        /// Reads all the frame data from the specified file, of type <see cref="FileFormats.ResIdxMultiBmp"/>
+        /// </summary>
+        /// <param name="filepath">The path to the file</param>
+        /// <param name="pal">The <see cref="ColorPalette"/> to use in building the frame's image</param>
+        /// <returns>
+        /// A <see cref="Tuple{T1, T2}"/> where <c>T1</c> is the new <see cref="SkaaSprite"/> and <c>T2</c> is
+        /// the <see cref="DataTable"/> read from the ResIdx header.
+        /// </returns>
+        /// <remarks>
+        /// This differs from loading an SPR file in that the file contains the <see cref="SkaaFrame"/> data
+        /// directly in its header rather than in the standard game set (see <see cref="GameSetFile"/>. The 
+        /// <see cref="DataTable"/> only has fields for FrameName and FrameOffset; any other data is stored 
+        /// elsewhere, generally in DBF (dBaseIII) files that may or may not be in the standard game set.
+        /// </remarks>
+        private static Tuple<SkaaSprite, DataTable> ReadFrames(string filepath, ColorPalette pal)
+        {
+            SkaaSprite spr = new SkaaSprite();
+            DataTable dt = new DataTable();
+            dt.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, filepath);
+            dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn });
+            dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn });
+
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            {
+                //Read the file definitions from the ResIdx header.
+                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs, true);
+                spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
+                dt.TableName = spr.SpriteId;
+
+                foreach (string key in dic.Keys)
+                {
+                    SkaaSpriteFrame sf = new SkaaSpriteFrame(null);
+                    sf.BitmapOffset = dic[key];
+                    fs.Position = sf.BitmapOffset;
+                    sf.Name = key;
+                    IndexedBitmap iBmp = new IndexedBitmap(pal);
+                    sf.IndexedBitmap = iBmp;
+                    iBmp.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
+
+                    spr.Frames.Add(sf);
+
+                    DataRow row = dt.NewRow();
+                    dt.Rows.Add(row);
+                    row.BeginEdit();
+                    row[SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn] = key;
+                    row[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = dic[key];
+                    row.AcceptChanges();
+                }
+            }
+
+            return new Tuple<SkaaSprite, DataTable>(spr, dt);
+        }
+
+        #region Overridden Public Methods
         public override SkaaSprite Load(string filePath, params object[] param)
         {
             GameSetPresenter gsp = null;
@@ -90,7 +145,6 @@ namespace SkaaEditorUI.Presenters
             BuildFramePresenters();
             return this.GameObject;
         }
-
         public override bool Save(string filePath, params object[] param)
         {
             try
@@ -129,7 +183,6 @@ namespace SkaaEditorUI.Presenters
 
             return true;
         }
-
         public override void SetSpriteDataView(GameSetPresenter gsp)
         {
             DataView dv;
@@ -139,7 +192,9 @@ namespace SkaaEditorUI.Presenters
 
             this.GameObject.SetSpriteDataView(dv);
         }
+        #endregion
 
+        #region Overridden Protected Methods
         /// <summary>
         /// Creates and returns a <see cref="MemoryStream"/> containing <see cref="SkaaFrame"/> data for 
         /// all <see cref="IFrame"/> objects in <see cref="Frames"/>. The first four bytes are ignored
@@ -158,66 +213,38 @@ namespace SkaaEditorUI.Presenters
 
             return str;
         }
-
-        /// <summary>
-        /// Reads all the frame data from the specified file, of type <see cref="FileFormats.ResIdxMultiBmp"/>
-        /// </summary>
-        /// <param name="filepath">The path to the file</param>
-        /// <param name="pal">The <see cref="ColorPalette"/> to use in building the frame's image</param>
-        /// <returns>
-        /// A <see cref="Tuple{T1, T2}"/> where <c>T1</c> is the new <see cref="SkaaSprite"/> and <c>T2</c> is
-        /// the <see cref="DataTable"/> read from the ResIdx header.
-        /// </returns>
-        /// <remarks>
-        /// This differs from loading an SPR file in that the file contains the <see cref="SkaaFrame"/> data
-        /// directly in its header rather than in the standard game set (see <see cref="GameSetFile"/>. The 
-        /// <see cref="DataTable"/> only has fields for FrameName and FrameOffset; any other data is stored 
-        /// elsewhere, generally in DBF (dBaseIII) files that may or may not be in the standard game set.
-        /// </remarks>
-        private static Tuple<SkaaSprite, DataTable> ReadFrames(string filepath, ColorPalette pal)
+        protected override void RecalculateFrameOffsets()
         {
-            SkaaSprite spr = new SkaaSprite();
-            DataTable dt = new DataTable();
-            dt.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, filepath);
-            dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = SkaaGameDataLib.DataRowExtensions.FrameNameColumn });
-            dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = SkaaGameDataLib.DataRowExtensions.FrameOffsetColumn });
+            if (this.DataView == null)
+                return;
 
-            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            //calculate offset after file header
+            long offset = 0;
+            int definitionsSize = (this.DataView.Count + 1) * ResourceDefinitionReader.ResIdxDefinitionSize; //we add one for the empty record containing the file's size
+            offset += 2; //the record count at the beginning of the file
+            offset += definitionsSize;
+
+            foreach (FramePresenter fp in this.Frames)
             {
-                //Read the file definitions from the ResIdx header.
-                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs, true);
-                spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
-                dt.TableName = spr.SpriteId;
+                //recalculate offset
+                var bytes = fp.GameObject.GetSprBytes();
+                fp.BitmapOffset = offset;
 
-                foreach (string key in dic.Keys)
-                {
-                    SkaaSpriteFrame sf = new SkaaSpriteFrame(null);
-                    sf.BitmapOffset = dic[key];
-                    fs.Position = sf.BitmapOffset;
-                    sf.Name = key;
-                    IndexedBitmap iBmp = new IndexedBitmap(pal);
-                    sf.IndexedBitmap = iBmp;
-                    iBmp.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
+                //update the DataView
+                this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn;
+                var dr = this.DataView[this.DataView.Find(fp.Name)];
+                dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = fp.BitmapOffset;
 
-                    spr.Frames.Add(sf);
-
-                    DataRow row = dt.NewRow();
-                    dt.Rows.Add(row);
-                    row.BeginEdit();
-                    row[SkaaGameDataLib.DataRowExtensions.FrameNameColumn] = key;
-                    row[SkaaGameDataLib.DataRowExtensions.FrameOffsetColumn] = dic[key];
-                    row.AcceptChanges();
-                }
+                //ResIdxMultiBmp doesn't include the four-byte size header that IndexedBitmap.GetRleBytesFromBitmap() includes for SPR files
+                offset += bytes.Length - 4;
             }
-
-            return new Tuple<SkaaSprite, DataTable>(spr, dt);
         }
-
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".res";
             dlg.Filter = $"7KAA Resource Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.SpriteId ?? null;
         }
+        #endregion
     }
 }

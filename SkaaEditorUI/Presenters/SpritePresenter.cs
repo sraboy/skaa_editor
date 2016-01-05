@@ -41,6 +41,7 @@ namespace SkaaEditorUI.Presenters
         }
         #endregion
 
+        #region Overridden Public Methods
         /// <summary>
         /// Creates a <see cref="SkaaSprite"/> object from an SPR-formatted file
         /// </summary>
@@ -59,7 +60,6 @@ namespace SkaaEditorUI.Presenters
             BuildFramePresenters();
             return this.GameObject;
         }
-
         public override bool Save(string filePath, params object[] param)
         {
             using (FileStream fs = File.Open(filePath, FileMode.Create))
@@ -69,7 +69,6 @@ namespace SkaaEditorUI.Presenters
 
             return true;
         }
-
         public override void SetSpriteDataView(GameSetPresenter gsp)
         {
             DataView dv;
@@ -80,7 +79,9 @@ namespace SkaaEditorUI.Presenters
             this.DataView = dv;
             this.GameObject.SetSpriteDataView(dv);
         }
+        #endregion
 
+        #region Overridden Protected Methods
         /// <summary>
         /// Creates and returns a <see cref="MemoryStream"/> containing <see cref="SkaaFrame"/> data for 
         /// all <see cref="IFrame"/> objects in <see cref="Frames"/>. The <see cref="MemoryStream.Position"/>
@@ -98,12 +99,31 @@ namespace SkaaEditorUI.Presenters
 
             return str;
         }
+        protected override void RecalculateFrameOffsets()
+        {
+            if (this.DataView == null)
+                return;
 
+            long offset = 0;
+
+            foreach (FramePresenter fp in this.Frames)
+            {
+                //recalculate offset
+                var bytes = fp.GameObject.GetSprBytes();
+                fp.BitmapOffset = offset;
+
+                //update the DataView
+                this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn;
+                var dr = this.DataView[this.DataView.Find(fp.Name)];
+                dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = fp.BitmapOffset;
+            }
+        }
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".spr";
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.SpriteId ?? null;
         }
+        #endregion
     }
 }

@@ -53,6 +53,7 @@ namespace SkaaEditorUI.Presenters
             set
             {
                 this._bitmap = value;
+                this.GameObject.IndexedBitmap.Bitmap = this._bitmap;
                 OnPropertyChanged();
                 //We can't use SetField unless we implement a custom comparer for Bitmaps.
                 //More often than not, it is likely the case that the image has indeed changed.
@@ -70,7 +71,6 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._guid, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Guid)));
             }
         }
-
         public long BitmapOffset
         {
             get
@@ -79,18 +79,20 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                SetField(ref this._bitmapOffset, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.BitmapOffset)));
+                SetField(ref this._bitmapOffset, value, () => OnPropertyChanged());
+                this.GameObject.BitmapOffset = this._bitmapOffset;
             }
         }
         public string Name
         {
             get
             {
-                return this.GameObject.Name;
+                return this._name;
             }
             set
             {
-                SetField(ref this._name, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.Name)));
+                SetField(ref this._name, value, () => OnPropertyChanged());
+                this.GameObject.Name = this._name;
             }
         }
 

@@ -102,10 +102,10 @@ namespace SkaaEditorUI.Presenters
             }
             set
             {
-                //SetField(ref this._activeFrame, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.ActiveFrame)));
                 if (this._activeFrame != value)
                 {
                     this._activeFrame = value;
+                    RecalculateFrameOffsets();
                     OnActiveFrameChanged(EventArgs.Empty);
                 }
             }
@@ -119,7 +119,8 @@ namespace SkaaEditorUI.Presenters
 
             set
             {
-                SetField(ref this._spriteId, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.SpriteId)));
+                SetField(ref this._spriteId, value, () => OnPropertyChanged());
+                this.GameObject.SpriteId = this._spriteId;
             }
         }
         public DataView DataView
@@ -130,7 +131,7 @@ namespace SkaaEditorUI.Presenters
             }
             internal set
             {
-                SetField(ref this._dataView, value, () => OnPropertyChanged());//GetDesignModeValue(() => this.DataView)));
+                SetField(ref this._dataView, value, () => OnPropertyChanged());
             }
         }
         #endregion
@@ -153,8 +154,9 @@ namespace SkaaEditorUI.Presenters
 
             this.ActiveFrame = this.Frames[0];
         }
-    
+
         protected abstract MemoryStream GetSpriteStream();
+        protected abstract void RecalculateFrameOffsets();
 
         public abstract void SetSpriteDataView(GameSetPresenter gsp);
 

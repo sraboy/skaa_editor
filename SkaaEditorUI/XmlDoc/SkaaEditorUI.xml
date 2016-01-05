@@ -145,14 +145,6 @@
             <param name="loadParam"></param>
             <returns>A new <see cref="T:System.Data.DataSet"/> containing all the tables and records of the specified file</returns>
         </member>
-        <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.GetSpriteStream">
-            <summary>
-            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.SkaaFrame"/> data for 
-            all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The first four bytes are ignored
-            as they are the file's size, which is not used in ResIdx files.
-            The <see cref="P:System.IO.MemoryStream.Position"/> is reset to 0 before returning.
-            </summary>
-        </member>
         <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.ReadFrames(System.String,System.Drawing.Imaging.ColorPalette)">
             <summary>
             Reads all the frame data from the specified file, of type <see cref="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp"/>
@@ -169,6 +161,14 @@
             <see cref="T:System.Data.DataTable"/> only has fields for FrameName and FrameOffset; any other data is stored 
             elsewhere, generally in DBF (dBaseIII) files that may or may not be in the standard game set.
             </remarks>
+        </member>
+        <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.GetSpriteStream">
+            <summary>
+            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.SkaaFrame"/> data for 
+            all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The first four bytes are ignored
+            as they are the file's size, which is not used in ResIdx files.
+            The <see cref="P:System.IO.MemoryStream.Position"/> is reset to 0 before returning.
+            </summary>
         </member>
         <member name="P:SkaaEditorUI.Presenters.FramePresenter.Bitmap">
             <summary>
