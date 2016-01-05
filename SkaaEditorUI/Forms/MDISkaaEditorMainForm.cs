@@ -74,8 +74,6 @@ namespace SkaaEditorUI.Forms
 
         private void MDISkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
         {
-            //todo: implement this. Just copy/pasted from old form
-
             List<KeyValuePair<string, FileFormats>> filesAndFormats = new List<KeyValuePair<string, FileFormats>>();
             List<string> files = new List<string>();
 

@@ -256,7 +256,7 @@ namespace SkaaEditorUI
             }
 
             presenter.Load(filePath, param);
-            
+
             return presenter;
         }
         public void Save<T>(IPresenterBase<T> pres) where T : class
