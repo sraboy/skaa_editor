@@ -72,7 +72,7 @@ namespace SkaaGameDataLib
         }
 
         /// <summary>
-        /// Opens the specified <see cref="GameSetFile"/>, adds all of its tables and records to the <see cref="DataSet"/> and adds the file's name, 
+        /// Opens the specified <see cref="FileFormats.ResIdxDbf"/>, adds all of its tables and records to the <see cref="DataSet"/> and adds the file's name, 
         /// from <see cref="Path.GetFileName(string)"/>, as a new data source
         /// </summary>
         /// <param name="filePath"></param>
@@ -118,13 +118,13 @@ namespace SkaaGameDataLib
         }
 
         /// <summary>
-        /// Saves this <see cref="DataSet"/> to the specified file in the format of <see cref="GameSetFile"/>, only including a 
+        /// Saves this <see cref="DataSet"/> to the specified file in the format of <see cref="FileFormats.ResIdxDbf"/>, only including a 
         /// <see cref="DataTable"/> if its <see cref="SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName"/> is <see cref="StandardGameSetDefaultName"/>
         /// </summary>
         /// <param name="filepath">The path and file to save this <see cref="DataSet"/> to</param>
         public static void SaveStandardGameSet(this DataSet ds, string filepath) => SaveGameSet(ds, filepath, StandardGameSetDefaultName);
         /// <summary>
-        /// Saves a portion of this <see cref="DataSet"/> to the specified file in the format of <see cref="GameSetFile"/>
+        /// Saves a portion of this <see cref="DataSet"/> to the specified file in the format of <see cref="FileFormats.ResIdxDbf"/>
         /// </summary>
         /// <param name="setName">Specifies the <see cref="DataTableSourcePropertyName"/> to consider part of the standard game set</param>
         /// <param name="filepath">The path and file to save this <see cref="DataSet"/> to</param>
@@ -158,6 +158,9 @@ namespace SkaaGameDataLib
         /// <returns>A <see cref="MemoryStream"/> in the format of std.set</returns>
         public static Stream GetGameSetStream(this DataSet ds, string set)
         {
+            if (set == null)
+                return null;
+
             Dictionary<string, int> dic = new Dictionary<string, int>();
 
             MemoryStream setStream = new MemoryStream();
@@ -166,16 +169,22 @@ namespace SkaaGameDataLib
             {
                 using (MemoryStream dbfStream = new MemoryStream())
                 {
-                    //write SET header's record_count
-                    short record_count = (short)ds.Tables.Count;
+                    //get the record count for (number of tables in) the specified set
+                    short record_count = 0;// = (short)ds.Tables.Count;
+                    foreach (DataTable dt in ds.Tables)
+                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName]) == set)
+                            record_count++;
+                    //write the record_count
                     headerStream.Write(BitConverter.GetBytes(record_count), 0, sizeof(short));
+
+                    //we'll need this to calculate each table's offset in the file
                     uint header_size = (uint)((record_count + 1) * ResourceDefinitionReader.ResIdxDefinitionSize) + sizeof(short);
 
                     foreach (DataTable dt in ds.Tables)
                     {
-                        if (set != null) //ignore DataTables not part of the Standard Game Set
-                            if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName]) != set)
-                                continue;
+                        //ignore DataTables not part of the Standard Game Set
+                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName]) != set)
+                            continue;
 
                         //write SET header's record definitions
                         //---------------------

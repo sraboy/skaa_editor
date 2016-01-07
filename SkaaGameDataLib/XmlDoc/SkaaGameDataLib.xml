@@ -59,7 +59,7 @@
         </member>
         <member name="M:SkaaGameDataLib.DataSetExtensions.OpenStandardGameSet(System.Data.DataSet,System.String)">
             <summary>
-            Opens the specified <see cref="!:GameSetFile"/>, adds all of its tables and records to the <see cref="T:System.Data.DataSet"/> and adds the file's name, 
+            Opens the specified <see cref="F:SkaaGameDataLib.FileFormats.ResIdxDbf"/>, adds all of its tables and records to the <see cref="T:System.Data.DataSet"/> and adds the file's name, 
             from <see cref="M:System.IO.Path.GetFileName(System.String)"/>, as a new data source
             </summary>
             <param name="filePath"></param>
@@ -67,14 +67,14 @@
         </member>
         <member name="M:SkaaGameDataLib.DataSetExtensions.SaveStandardGameSet(System.Data.DataSet,System.String)">
             <summary>
-            Saves this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="!:GameSetFile"/>, only including a 
+            Saves this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="F:SkaaGameDataLib.FileFormats.ResIdxDbf"/>, only including a 
             <see cref="T:System.Data.DataTable"/> if its <see cref="F:SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName"/> is <see cref="F:SkaaGameDataLib.DataSetExtensions.StandardGameSetDefaultName"/>
             </summary>
             <param name="filepath">The path and file to save this <see cref="T:System.Data.DataSet"/> to</param>
         </member>
         <member name="M:SkaaGameDataLib.DataSetExtensions.SaveGameSet(System.Data.DataSet,System.String,System.String)">
             <summary>
-            Saves a portion of this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="!:GameSetFile"/>
+            Saves a portion of this <see cref="T:System.Data.DataSet"/> to the specified file in the format of <see cref="F:SkaaGameDataLib.FileFormats.ResIdxDbf"/>
             </summary>
             <param name="setName">Specifies the <see cref="!:DataTableSourcePropertyName"/> to consider part of the standard game set</param>
             <param name="filepath">The path and file to save this <see cref="T:System.Data.DataSet"/> to</param>

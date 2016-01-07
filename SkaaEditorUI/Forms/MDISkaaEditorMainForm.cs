@@ -121,6 +121,8 @@ namespace SkaaEditorUI.Forms
 
                 }
             }
+
+            ToggleUISaveOptions();
         }
 
         private void SetUpDockPanel()
@@ -137,8 +139,9 @@ namespace SkaaEditorUI.Forms
             this._spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
             OpenNewImageEditorContainerTab();
 
+            //hiding for alphaV4 release
             //we don't want this as the ActiveDocument, so show it after OpenNewTab()
-            this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
+            //this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
         }
 
 
@@ -234,6 +237,8 @@ namespace SkaaEditorUI.Forms
         {
             if (OpenGameSet() == false)
                 MessageBox.Show("Failed to load game set!");
+            else
+                ToggleUISaveOptions(); //hack: while we don't have a gamesetviewercontainer.gamesetchanged event
         }
         #endregion
 
@@ -264,7 +269,24 @@ namespace SkaaEditorUI.Forms
             var fr = iec.ActiveSprite.ActiveFrame as FramePresenter;
             ProjectManager.Save(fr);
         }
+        private void exportSpriteSheetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                var doc = this._dockPanel.ActiveDocument as ImageEditorContainer;
+
+                if (dlg.ShowDialog() == DialogResult.OK && doc != null)
+                {
+                    doc.ActiveSprite.GetSpriteSheet().Save(dlg.FileName);
+                }
+            }
+        }
         #endregion
+
+        private void addFrameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
 
         /// <summary>
         /// Opens a <see cref="SkaaSprite"/> or <see cref="FileFormats.ResIdxMultiBmp"/>
@@ -362,7 +384,7 @@ namespace SkaaEditorUI.Forms
         {
             //todo: if GameSetPresenter.GameObject doesn't contain std.set files, disable this
             //user has loaded the game set or a ResIdx file has made a DataSet for its header data
-            this.saveGameSetToolStripMenuItem.Enabled = this._gameSetViewerContainer?.GameSetPresenter?.GameObject == null;
+            this.saveGameSetToolStripMenuItem.Enabled = this._gameSetViewerContainer?.GameSetPresenter?.GameObject != null;
 
             if (this._dockPanel.ActiveDocument is ImageEditorContainer)       //user is viewing an image
             {
@@ -446,19 +468,6 @@ namespace SkaaEditorUI.Forms
             this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
             ToggleUISaveOptions();
-        }
-
-        private void exportSpriteSheetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                var doc = this._dockPanel.ActiveDocument as ImageEditorContainer;
-
-                if (dlg.ShowDialog() == DialogResult.OK && doc != null)
-                {
-                    doc.ActiveSprite.GetSpriteSheet().Save(dlg.FileName);
-                }
-            }
         }
     }
 }
