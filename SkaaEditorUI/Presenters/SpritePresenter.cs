@@ -113,9 +113,9 @@ namespace SkaaEditorUI.Presenters
                 fp.BitmapOffset = offset;
 
                 //update the DataView
-                this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn;
+                this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.SprFrameNameColumn;
                 var dr = this.DataView[this.DataView.Find(fp.Name)];
-                dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = fp.BitmapOffset;
+                dr[SkaaGameDataLib.DataRowExtensions.SprFrameOffsetColumn] = fp.BitmapOffset;
             }
         }
         protected override void SetupFileDialog(FileDialog dlg)
