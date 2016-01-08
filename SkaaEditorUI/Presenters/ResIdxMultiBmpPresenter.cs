@@ -192,30 +192,9 @@ namespace SkaaEditorUI.Presenters
 
             this.GameObject.SetSpriteDataView(dv);
         }
-        #endregion
-
-        #region Overridden Protected Methods
-        /// <summary>
-        /// Creates and returns a <see cref="MemoryStream"/> containing <see cref="SkaaFrame"/> data for 
-        /// all <see cref="IFrame"/> objects in <see cref="Frames"/>. The first four bytes are ignored
-        /// as they are the file's size, which is not used in ResIdx files.
-        /// The <see cref="MemoryStream.Position"/> is reset to 0 before returning.
-        /// </summary>
-        protected override MemoryStream GetSpriteStream()
+        public override void RecalculateFrameOffsets()
         {
-            var str = new MemoryStream();
-            var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
-
-            foreach (byte[] ba in sprBytes)
-                str.Write(ba, 4, ba.Length - 4);
-
-            str.Position = 0;
-
-            return str;
-        }
-        protected override void RecalculateFrameOffsets()
-        {
-            if (this.DataView == null)
+            if (this.DataView == null || !this.BitmapHasChanges)
                 return;
 
             //calculate offset after file header
@@ -238,6 +217,29 @@ namespace SkaaEditorUI.Presenters
                 //ResIdxMultiBmp doesn't include the four-byte size header that IndexedBitmap.GetRleBytesFromBitmap() includes for SPR files
                 offset += bytes.Length - 4;
             }
+
+            this.BitmapHasChanges = false;
+        }
+        #endregion
+
+        #region Overridden Protected Methods
+        /// <summary>
+        /// Creates and returns a <see cref="MemoryStream"/> containing <see cref="SkaaFrame"/> data for 
+        /// all <see cref="IFrame"/> objects in <see cref="Frames"/>. The first four bytes are ignored
+        /// as they are the file's size, which is not used in ResIdx files.
+        /// The <see cref="MemoryStream.Position"/> is reset to 0 before returning.
+        /// </summary>
+        protected override MemoryStream GetSpriteStream()
+        {
+            var str = new MemoryStream();
+            var sprBytes = this.GameObject.GetSpriteFrameByteArrays();
+
+            foreach (byte[] ba in sprBytes)
+                str.Write(ba, 4, ba.Length - 4);
+
+            str.Position = 0;
+
+            return str;
         }
         protected override void SetupFileDialog(FileDialog dlg)
         {

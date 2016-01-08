@@ -41,6 +41,7 @@ namespace SkaaEditorUI.Presenters
         private IFrame _activeFrame;
         private string _spriteId;
         private DataView _dataView;
+        private bool _bitmapHasChanges = false;
         #endregion
 
         #region ActiveFrameChanged Event
@@ -133,6 +134,18 @@ namespace SkaaEditorUI.Presenters
                 SetField(ref this._dataView, value, () => OnPropertyChanged());
             }
         }
+        public bool BitmapHasChanges
+        {
+            get
+            {
+                return _bitmapHasChanges;
+            }
+
+            set
+            {
+                this._bitmapHasChanges = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -158,13 +171,11 @@ namespace SkaaEditorUI.Presenters
         private void FramePresenter_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Bitmap")
-            {
-                RecalculateFrameOffsets();
-            }
+                this._bitmapHasChanges = true;
         }
 
         protected abstract MemoryStream GetSpriteStream();
-        protected abstract void RecalculateFrameOffsets();
+        public abstract void RecalculateFrameOffsets();
 
         public abstract void SetSpriteDataView(GameSetPresenter gsp);
 

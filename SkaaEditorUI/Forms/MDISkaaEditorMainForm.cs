@@ -42,6 +42,7 @@ namespace SkaaEditorUI.Forms
         private SpriteViewerContainer _spriteViewerContainer;
         private GameSetViewerContainer _gameSetViewerContainer;
         private ProjectManager ProjectManager = new ProjectManager();
+        private Timer _recalculateFrameOffsetsTimer = new Timer();
 
         internal ColorPalette ActivePalette
         {
@@ -64,67 +65,6 @@ namespace SkaaEditorUI.Forms
             this.DragEnter += MDISkaaEditorMainForm_DragEnter;
             this.DragDrop += MDISkaaEditorMainForm_DragDrop;
         }
-
-        private void MDISkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)
-        {
-            bool isFile = e.Data.GetDataPresent(DataFormats.FileDrop);
-            if (isFile)
-                e.Effect = DragDropEffects.Copy;
-        }
-
-        private void MDISkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
-        {
-            List<KeyValuePair<string, FileFormats>> filesAndFormats = new List<KeyValuePair<string, FileFormats>>();
-            List<string> files = new List<string>();
-
-            //enumerate all files in multiple directories
-            foreach (string filename in (string[])e.Data.GetData(DataFormats.FileDrop))
-            {
-                if (Directory.Exists(filename))
-                    files.AddRange(Directory.EnumerateFiles(filename, "*.*", SearchOption.AllDirectories));
-                else if (File.Exists(filename))
-                    files.Add(filename);
-            }
-
-            foreach (string filename in files)
-                filesAndFormats.Add(new KeyValuePair<string, FileFormats>(filename, FileTypeChecks.CheckFileType(filename)));
-
-            //open the palette first so the user is presented with an OpenFileDialog
-            //if a SpritePresenter is first
-
-            if (filesAndFormats.Exists(kvp => kvp.Value == FileFormats.Palette))
-            {
-                var pal = filesAndFormats.Find(kvp => kvp.Value == FileFormats.Palette);
-                if (OpenPalette(pal.Key) == false)
-                    MessageBox.Show($"Failed to load palette: {pal.Key}");
-                filesAndFormats.Remove(pal);
-            }
-
-            //ProjectManager.Open() functions off assuming the user needs to navigate to a file
-            //and will use the FileDialogs. We need to bypass those.
-            foreach (var kvp in filesAndFormats)
-            {
-                switch (kvp.Value)
-                {
-                    case FileFormats.ResIdxDbf:
-                        if (OpenGameSet(kvp.Key) == false)
-                            MessageBox.Show($"Failed to load game set: {kvp.Key}");
-                        break;
-                    case FileFormats.SpriteSpr:
-                        if (OpenSprite<SpritePresenter>(kvp.Key) == false)
-                            MessageBox.Show($"Failed to load sprite ({typeof(SpritePresenter)}): {kvp.Key}");
-                        break;
-                    case FileFormats.ResIdxMultiBmp:
-                        if (OpenSprite<ResIdxMultiBmpPresenter>(kvp.Key) == false)
-                            MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)}): {kvp.Key}");
-                        break;
-
-                }
-            }
-
-            ToggleUISaveOptions();
-        }
-
         private void SetUpDockPanel()
         {
             this._toolBoxContainer = new ToolboxContainer();
@@ -143,7 +83,6 @@ namespace SkaaEditorUI.Forms
             //we don't want this as the ActiveDocument, so show it after OpenNewTab()
             //this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
         }
-
 
         #region Project-Related Menu Item Clicks
         private void toolStripBtnNewProject_Click(object sender, EventArgs e)
@@ -178,43 +117,6 @@ namespace SkaaEditorUI.Forms
         {
 
         }
-        #endregion
-
-        #region Other Events
-        private void MDISkaaEditorMainForm_Shown(object sender, EventArgs e)
-        {
-            //dbgOpenBallistaSprite();
-            //dbgOpenIButtonResIdxMultiBmp();
-            //dbgOpenIButtonResIdxMultiBmpAndStandardGameSet();
-            //dbgOpenBallistaSpriteAndStandardGameSet();
-            ToggleUIProjectOptions();
-            ToggleUISaveOptions();
-        }
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
-        {
-            var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
-            SetActiveSprite(iec?.ActiveSprite);
-
-            ToggleUISaveOptions();
-        }
-        private void ToolboxContainer_SelectedToolChanged(object sender, EventArgs e)
-        {
-            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
-            iec.ChangeToolMode(sender, e);
-        }
-        private void ToolboxContainer_ColorChanged(object sender, EventArgs e)
-        {
-            //todo: create a ColorChangedEventArgs so we can just pass sender/e like SelectedToolChanged
-            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
-            iec.SetActiveColors((sender as Cyotek.Windows.Forms.ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
-        }
-        private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e) { }
-        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e) { }
-        private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e) { }
         #endregion
 
         #region Open File Menu Item Clicks
@@ -283,10 +185,121 @@ namespace SkaaEditorUI.Forms
         }
         #endregion
 
+        #region Other Click Events
         private void addFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+        #endregion
+
+        #region Other Events
+        private void MDISkaaEditorMainForm_Shown(object sender, EventArgs e)
+        {
+            //dbgOpenBallistaSprite();
+            //dbgOpenIButtonResIdxMultiBmp();
+            //dbgOpenIButtonResIdxMultiBmpAndStandardGameSet();
+            //dbgOpenBallistaSpriteAndStandardGameSet();
+
+            //We use a 30s timer to recalculate the offsets from image changes
+            //because it's a relatively hefty operation. Doing it on every edit
+            //make the UI slow and clunky.
+            this._recalculateFrameOffsetsTimer.Enabled = true;
+            this._recalculateFrameOffsetsTimer.Interval = 30000;
+            this._recalculateFrameOffsetsTimer.Tick += RecalculateFrameOffsetsTimer_Tick;
+            this._recalculateFrameOffsetsTimer.Start();
+
+            ToggleUIProjectOptions();
+            ToggleUISaveOptions();
+        }
+        private void MDISkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            bool isFile = e.Data.GetDataPresent(DataFormats.FileDrop);
+            if (isFile)
+                e.Effect = DragDropEffects.Copy;
+        }
+        private void MDISkaaEditorMainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            List<KeyValuePair<string, FileFormats>> filesAndFormats = new List<KeyValuePair<string, FileFormats>>();
+            List<string> files = new List<string>();
+
+            //enumerate all files in multiple directories
+            foreach (string filename in (string[])e.Data.GetData(DataFormats.FileDrop))
+            {
+                if (Directory.Exists(filename))
+                    files.AddRange(Directory.EnumerateFiles(filename, "*.*", SearchOption.AllDirectories));
+                else if (File.Exists(filename))
+                    files.Add(filename);
+            }
+
+            foreach (string filename in files)
+                filesAndFormats.Add(new KeyValuePair<string, FileFormats>(filename, FileTypeChecks.CheckFileType(filename)));
+
+            //open the palette first so the user is presented with an OpenFileDialog
+            //if a SpritePresenter is first
+
+            if (filesAndFormats.Exists(kvp => kvp.Value == FileFormats.Palette))
+            {
+                var pal = filesAndFormats.Find(kvp => kvp.Value == FileFormats.Palette);
+                if (OpenPalette(pal.Key) == false)
+                    MessageBox.Show($"Failed to load palette: {pal.Key}");
+                filesAndFormats.Remove(pal);
+            }
+
+            //ProjectManager.Open() functions off assuming the user needs to navigate to a file
+            //and will use the FileDialogs. We need to bypass those.
+            foreach (var kvp in filesAndFormats)
+            {
+                switch (kvp.Value)
+                {
+                    case FileFormats.ResIdxDbf:
+                        if (OpenGameSet(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load game set: {kvp.Key}");
+                        break;
+                    case FileFormats.SpriteSpr:
+                        if (OpenSprite<SpritePresenter>(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load sprite ({typeof(SpritePresenter)}): {kvp.Key}");
+                        break;
+                    case FileFormats.ResIdxMultiBmp:
+                        if (OpenSprite<ResIdxMultiBmpPresenter>(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)}): {kvp.Key}");
+                        break;
+
+                }
+            }
+
+            ToggleUISaveOptions();
+        }
+        private void RecalculateFrameOffsetsTimer_Tick(object sender, EventArgs e)
+        {
+            foreach (ImageEditorContainer iec in this._dockPanel.Documents)
+                iec.ActiveSprite?.RecalculateFrameOffsets();
+        }
+        private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
+        {
+            var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
+            SetActiveSprite(iec?.ActiveSprite);
+
+            ToggleUISaveOptions();
+        }
+        private void ToolboxContainer_SelectedToolChanged(object sender, EventArgs e)
+        {
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
+            iec.ChangeToolMode(sender, e);
+        }
+        private void ToolboxContainer_ColorChanged(object sender, EventArgs e)
+        {
+            //todo: create a ColorChangedEventArgs so we can just pass sender/e like SelectedToolChanged
+            var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
+            iec.SetActiveColors((sender as Cyotek.Windows.Forms.ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
+        }
+        private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e) { }
+        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e) { }
+        private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e) { }
+        #endregion
 
         /// <summary>
         /// Opens a <see cref="SkaaSprite"/> or <see cref="FileFormats.ResIdxMultiBmp"/>
@@ -344,10 +357,6 @@ namespace SkaaEditorUI.Forms
 
             return true;
         }
-        internal bool OpenProject()
-        {
-            throw new NotImplementedException();
-        }
         internal bool OpenGameSet(string filePath = null, bool mergeDataSets = true)
         {
             GameSetPresenter gsp;
@@ -369,18 +378,16 @@ namespace SkaaEditorUI.Forms
 
             return true;
         }
-        private void SetSpriteDataViews(GameSetPresenter gsp)
+        internal bool OpenProject()
         {
-            if (gsp == null)
-                return;
-
-            ProjectManager.SetSpriteDataViews(gsp);
+            throw new NotImplementedException();
         }
 
+        internal void SetSpriteDataViews(GameSetPresenter gsp) => ProjectManager.SetSpriteDataViews(gsp);
         /// <summary>
         /// Enables or disables various file saving-related UI options based on the current status of the application
         /// </summary>
-        private void ToggleUISaveOptions()
+        internal void ToggleUISaveOptions()
         {
             //todo: if GameSetPresenter.GameObject doesn't contain std.set files, disable this
             //user has loaded the game set or a ResIdx file has made a DataSet for its header data
@@ -409,7 +416,7 @@ namespace SkaaEditorUI.Forms
         /// <summary>
         /// Enables or disables various project-related UI options based on the current status of the application
         /// </summary>
-        private void ToggleUIProjectOptions()
+        internal void ToggleUIProjectOptions()
         {
             toolStripBtnNewProject.Enabled = false;
             toolStripBtnOpenProject.Enabled = false;
@@ -425,29 +432,29 @@ namespace SkaaEditorUI.Forms
         /// <returns>True if the project was closed (whether or not saved). False otherwise.</returns>
         internal bool TrySaveCloseProject()
         {
-            DialogResult saveChanges = UserShouldSaveChanges();
+            bool saveChanges = UserShouldSaveChanges();
 
-            if (saveChanges == DialogResult.Yes)
+            if (saveChanges == true)
             {
-                //ProjectManager.CloseProject();
+                //todo: save project
+                ProjectManager.CloseProject();
                 return true;
             }
-            else if (saveChanges == DialogResult.No)
+            else
             {
                 ProjectManager.CloseProject();
                 return true;
             }
-            else // (DialogResult.Cancel)
-                return false;
         }
-        internal DialogResult UserShouldSaveChanges()
+        internal bool UserShouldSaveChanges()
         {
-            bool spriteHasChanges = false;//CheckSpriteForPendingChanges(this.ActiveProject?.ActiveSprite);
+            foreach (ImageEditorContainer iec in this._dockPanel.Documents)
+            {
+                if (iec.ActiveSprite?.BitmapHasChanges == true)
+                    return true;
+            }
 
-            if (!spriteHasChanges)// && this.ActiveProject?.UnsavedSprites?.Count == 0)
-                return DialogResult.No;
-            else
-                return MessageBox.Show("You have unsaved changes. Do you want to save these changes?", "Save?", MessageBoxButtons.YesNoCancel);
+            return false;
         }
         /// <summary>
         /// Opens a new document tab, which is automatically set as the <see cref="DockPanel.ActiveDocument"/>
