@@ -214,7 +214,7 @@ namespace SkaaEditorUI.Forms
             iec.ActiveSprite.DataView.Table.Rows.Add(dr);
 
             //re-set it so the UI sees the new frame (e.g., ObjectListView's GetObjects is called)
-            SetActiveSprite(iec.ActiveSprite); 
+            SetActiveSprite(iec.ActiveSprite);
             iec.ActiveSprite.ActiveFrame = fp;
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -325,7 +325,10 @@ namespace SkaaEditorUI.Forms
         }
         private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e) { }
         private void ImageEditorContainer_ImageChanged(object sender, EventArgs e) { }
-        private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e) { }
+        private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e)
+        {
+            SetStatusStrip(sender as MultiImagePresenterBase);
+        }
         #endregion
 
         /// <summary>
@@ -366,6 +369,7 @@ namespace SkaaEditorUI.Forms
 
             SetSpriteDataViews(this._gameSetViewerContainer.GameSetPresenter);
             spr.ActiveFrameChanged += MultiImagePresenterBase_ActiveFrameChanged;
+
             return true;
         }
         internal bool OpenPalette(string filePath = null)
@@ -501,7 +505,26 @@ namespace SkaaEditorUI.Forms
             iec?.SetSprite(spr);
             this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
+
+            SetStatusStrip(iec?.ActiveSprite);
             ToggleUISaveOptions();
+        }
+
+        internal void SetStatusStrip(MultiImagePresenterBase spr)
+        {
+            if (spr != null)
+            {
+                this.tsStatusLblFileType.Text = $"{spr.GetType().Name}: {spr.SpriteId}";
+            }
+            else
+                this.tsStatusLblFileType.Text = "No File Loaded";
+
+            string bmpSize = string.Empty;
+
+            if (spr?.ActiveFrame?.Bitmap != null)
+                bmpSize = $"{spr.ActiveFrame.Name}: {spr.ActiveFrame.Bitmap.Height} x {spr.ActiveFrame.Bitmap.Width}";
+
+            this.tsStatusLblImageStats.Text = bmpSize;
         }
     }
 }
