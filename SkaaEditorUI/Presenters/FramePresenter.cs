@@ -101,10 +101,7 @@ namespace SkaaEditorUI.Presenters
         public FramePresenter(SkaaFrame sgf)
         {
             this.Guid = Guid.NewGuid();
-            this.GameObject = this.GameObject ?? new SkaaFrame();
-            this.GameObject.Name = sgf.Name;
-            this.GameObject.BitmapOffset = sgf.BitmapOffset;
-            this.GameObject.IndexedBitmap = sgf.IndexedBitmap;
+            this.GameObject = sgf;
 
             this.Bitmap = this.GameObject.IndexedBitmap.Bitmap;
             this.Name = this.GameObject.Name;
