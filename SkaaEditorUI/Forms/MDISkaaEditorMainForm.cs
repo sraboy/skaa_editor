@@ -184,7 +184,7 @@ namespace SkaaEditorUI.Forms
         private void MDISkaaEditorMainForm_Shown(object sender, EventArgs e)
         {
             //dbgOpenBallistaSprite();
-            dbgOpenIButtonResIdxMultiBmp();
+            //dbgOpenIButtonResIdxMultiBmp();
             //dbgOpenIButtonResIdxMultiBmpAndStandardGameSet();
             //dbgOpenBallistaSpriteAndStandardGameSet();
             ToggleUIProjectOptions();

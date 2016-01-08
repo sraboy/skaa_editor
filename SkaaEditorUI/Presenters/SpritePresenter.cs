@@ -22,7 +22,6 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
@@ -34,11 +33,6 @@ namespace SkaaEditorUI.Presenters
     {
         #region Constructors
         public SpritePresenter() { }
-        [Obsolete("This is for the old project class and should no longer be used.")]
-        public SpritePresenter(SkaaSprite spr)
-        {
-            throw new NotImplementedException();
-        }
         #endregion
 
         #region Overridden Public Methods
@@ -113,13 +107,23 @@ namespace SkaaEditorUI.Presenters
                 //recalculate offset
                 var bytes = fp.GameObject.GetSprBytes();
                 fp.BitmapOffset = offset;
+                offset += bytes.LongLength;
 
                 //update the DataView
                 this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.SprFrameNameColumn;
-                var dr = this.DataView[this.DataView.Find(fp.Name)];
-                dr[SkaaGameDataLib.DataRowExtensions.SprFrameOffsetColumn] = fp.BitmapOffset;
+
+                var drv = this.DataView.FindRows(fp.Name);
+
+                for (int i = 0; i < drv.Length; i++)
+                {
+                    drv[i].BeginEdit();
+                    drv[i][SkaaGameDataLib.DataRowExtensions.SprFrameOffsetColumn] = fp.BitmapOffset;
+                    drv[i].EndEdit();
+                }
+
             }
         }
+
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".spr";

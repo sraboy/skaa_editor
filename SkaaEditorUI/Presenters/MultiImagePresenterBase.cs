@@ -105,7 +105,6 @@ namespace SkaaEditorUI.Presenters
                 if (this._activeFrame != value)
                 {
                     this._activeFrame = value;
-                    RecalculateFrameOffsets();
                     OnActiveFrameChanged(EventArgs.Empty);
                 }
             }
@@ -150,9 +149,18 @@ namespace SkaaEditorUI.Presenters
             {
                 var fp = new FramePresenter(f);
                 this.Frames.Add(fp);
+                fp.PropertyChanged += FramePresenter_PropertyChanged;
             }
 
             this.ActiveFrame = this.Frames[0];
+        }
+
+        private void FramePresenter_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Bitmap")
+            {
+                RecalculateFrameOffsets();
+            }
         }
 
         protected abstract MemoryStream GetSpriteStream();
