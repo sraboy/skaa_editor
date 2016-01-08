@@ -190,6 +190,12 @@
             is reset to 0 before returning.
             </summary>
         </member>
+        <member name="M:SkaaEditorUI.Presenters.SpritePresenter.UpdateFrameNamesAndOffsets">
+            <summary>
+            The underlying <see cref="T:SkaaGameDataLib.SkaaSprite"/> updates its <see cref="F:SkaaGameDataLib.SkaaFrame.Name"/> and <see cref="F:SkaaGameDataLib.SkaaFrame.BitmapOffset"/>
+            values based on the information in the <see cref="P:SkaaEditorUI.Presenters.MultiImagePresenterBase.DataView"/> so we need to update ours as well.
+            </summary>
+        </member>
         <member name="T:SkaaEditorUI.ProjectManager">
             <summary>
             A singleton class that will manage a <see cref="!:Project"/>'s file operations

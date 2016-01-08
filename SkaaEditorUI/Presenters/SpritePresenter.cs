@@ -78,6 +78,8 @@ namespace SkaaEditorUI.Presenters
 
             this.DataView = dv;
             this.GameObject.SetSpriteDataView(dv);
+
+            UpdateFrameNamesAndOffsets();
         }
         #endregion
 
@@ -125,5 +127,18 @@ namespace SkaaEditorUI.Presenters
             dlg.FileName = this.SpriteId ?? null;
         }
         #endregion
+
+        /// <summary>
+        /// The underlying <see cref="SkaaSprite"/> updates its <see cref="SkaaFrame.Name"/> and <see cref="SkaaFrame.BitmapOffset"/>
+        /// values based on the information in the <see cref="MultiImagePresenterBase.DataView"/> so we need to update ours as well.
+        /// </summary>
+        private void UpdateFrameNamesAndOffsets()
+        {
+            foreach (FramePresenter fp in this.Frames)
+            {
+                fp.Name = fp.GameObject.Name;
+                fp.BitmapOffset = fp.GameObject.BitmapOffset;
+            }
+        }
     }
 }
