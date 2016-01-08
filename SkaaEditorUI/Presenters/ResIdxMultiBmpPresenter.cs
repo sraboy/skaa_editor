@@ -147,6 +147,9 @@ namespace SkaaEditorUI.Presenters
         }
         public override bool Save(string filePath, params object[] param)
         {
+            //7KAA expects the definitions to be sorted low-to-high by offset
+            this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn;
+
             try
             {
                 using (FileStream fs = File.Open(filePath, FileMode.Create))
