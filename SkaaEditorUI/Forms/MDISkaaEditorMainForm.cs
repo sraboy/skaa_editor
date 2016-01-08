@@ -188,7 +188,34 @@ namespace SkaaEditorUI.Forms
         #region Other Click Events
         private void addFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
+            if (iec == null)
+                return;
 
+            //so we can calculate an offset, placing this new frame last
+            var lastFrame = iec.ActiveSprite.Frames[iec.ActiveSprite.Frames.Count - 1];
+
+            SkaaFrame fr = new SkaaFrame();
+            fr.IndexedBitmap = new IndexedBitmap(this.ActivePalette);
+            fr.IndexedBitmap.Bitmap = new Bitmap(35, 35);
+            fr.Name = "STABLCAR";
+            fr.BitmapOffset = lastFrame.BitmapOffset + (lastFrame.Bitmap.Height * lastFrame.Bitmap.Width);
+
+            FramePresenter fp = new FramePresenter(fr);
+
+            iec.ActiveSprite.Frames.Add(fp);
+
+            var dr = iec.ActiveSprite.DataView.Table.NewRow();
+            dr.BeginEdit();
+            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn] = fr.Name;
+            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = fr.BitmapOffset;
+            dr.EndEdit();
+
+            iec.ActiveSprite.DataView.Table.Rows.Add(dr);
+
+            //re-set it so the UI sees the new frame (e.g., ObjectListView's GetObjects is called)
+            SetActiveSprite(iec.ActiveSprite); 
+            iec.ActiveSprite.ActiveFrame = fp;
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
