@@ -192,17 +192,23 @@ namespace SkaaEditorUI.Forms
             if (iec == null)
                 return;
 
-            var frame = iec.ActiveSprite.AddNewFrame("STBLCARA", 29, 42);
+            using (AddNewFrame dlg = new AddNewFrame())
+            {
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    var frame = iec.ActiveSprite.AddNewFrame(dlg.FrameName, dlg.FrameHeight, dlg.FrameWidth);
 
-            //Reset the ActiveSprite so the UI is aware of the new frame. This has to happen 
-            //before setting the ActiveFrame (below) because the various controls don't yet
-            //know about this new frame. For example, TimelineView's trackbar operates based
-            //on a minimum of 0 and maximum of the number of frames. The number of frames isn't
-            //updated until it is passed the "new version" of the sprite here.
-            SetActiveSprite(iec.ActiveSprite);
+                    //Reset the ActiveSprite so the UI is aware of the new frame. This has to happen 
+                    //before setting the ActiveFrame (below) because the various controls don't yet
+                    //know about this new frame. For example, TimelineView's trackbar operates based
+                    //on a minimum of 0 and maximum of the number of frames. The number of frames isn't
+                    //updated until it is passed the "new version" of the sprite here.
+                    SetActiveSprite(iec.ActiveSprite);
 
-            //Make the new frame the ActiveFrame so the user can begin editing it immediately
-            iec.ActiveSprite.ActiveFrame = frame;
+                    //Make the new frame the ActiveFrame so the user can begin editing it immediately
+                    iec.ActiveSprite.ActiveFrame = frame;
+                }
+            }
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
