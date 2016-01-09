@@ -40,6 +40,7 @@ namespace SkaaGameDataLib.Util
     public static class ResourceDefinitionReader
     {
         public static readonly TraceSource Logger = new TraceSource($"{typeof(ResourceDefinitionReader)}", SourceLevels.All);
+        private static readonly int _maxAcceptableRecordCount = 150;
 
         /// <summary>
         /// The number of characters, including a null terminator, that is used as the unique name of a piece of data
@@ -64,7 +65,6 @@ namespace SkaaGameDataLib.Util
         /// arbitrary files, for example, when attempting to identify a file's type.
         /// </summary>
         [Obsolete("This value is only used for file identification purposes.")]
-        private const int _maxAcceptableRecordCount = 150;
 
         /// <summary>
         /// Reads the header of a stream containing definitions of a piece of data's name and its offset in a file.
