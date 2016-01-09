@@ -19,11 +19,6 @@ namespace Capslock.Windows.Forms.ImageEditor
             InitializeComponent();
         }
 
-        private void constrainCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         private void btnOK_Click(object sender, EventArgs e)
         {
             if (this.pixelWidthUpDown.Value > 0 && this.pixelHeightUpDown.Value > 0)
@@ -35,13 +30,14 @@ namespace Capslock.Windows.Forms.ImageEditor
 
             this.Close();
         }
-
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-
+        private void cbMaintainAspectRatio_CheckedChanged(object sender, EventArgs e)
+        {
+        }
         private void OnRadioButtonCheckedChanged(object sender, EventArgs e)
         {
             if (this.rbAbsoluteSize.Checked)
@@ -59,24 +55,14 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.percentUpDown.Enabled = true;
             }
         }
-
         private void precentUpDown_ValueChanged(object sender, EventArgs e)
         {
             int val = (int)this.percentUpDown.Value;
             double scale = val / 100.0;
 
-            if (val >= this.percentUpDown.Minimum &&
-                val <= this.percentUpDown.Maximum)
-            {
-                this.pixelWidthUpDown.Value *= (decimal)scale;
-                this.pixelHeightUpDown.Value *= (decimal)scale;
-            }
-            else
-            {
-                this.constrainer.SetByPercent((double)this.percentUpDown.Value / 100.0);
-            }
+            this.pixelWidthUpDown.Value *= (decimal)scale;
+            this.pixelHeightUpDown.Value *= (decimal)scale;
         }
-
         private void OnUpDownKeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Up)
@@ -84,20 +70,13 @@ namespace Capslock.Windows.Forms.ImageEditor
             else if (e.KeyCode == Keys.Down)
                 (sender as NumericUpDown).Value -= 1;
         }
-
         private void OnUpDownEnter(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
-
         private void OnUpDownLeave(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void ResizeImageDialog_Load(object sender, EventArgs e)
-        {
-
+            //throw new NotImplementedException();
         }
     }
 }

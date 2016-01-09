@@ -56,7 +56,8 @@ namespace Capslock.Windows.Forms.ImageEditor
 
         [DefaultValue("false")]
         [Category("Behavior")]
-        private bool IsDrawing { get; set; }
+        private bool IsDrawing
+        { get; set; }
 
         #region Public Accessors
         [Category("Behavior")]
@@ -398,7 +399,7 @@ namespace Capslock.Windows.Forms.ImageEditor
             {
                 using (ResizeImageDialog dlg = new ResizeImageDialog(this.Image.Width, this.Image.Height))
                 {
-                    if (dlg.DialogResult == DialogResult.OK)
+                    if (dlg.ShowDialog() == DialogResult.OK)
                     {
                         if (dlg.MaintainAspectRatio)
                             ResizeAndScale(dlg.NewWidth);
@@ -542,24 +543,33 @@ namespace Capslock.Windows.Forms.ImageEditor
                 }
             }
         }
-        protected virtual Bitmap ResizeAndCrop(int width, int height)
+        protected virtual void ResizeAndCrop(int width, int height)
         {
-            Bitmap bmp = new Bitmap(width, height);
-            using (Graphics g = Graphics.FromImage(bmp))
-                g.DrawImage(this.Image, new Rectangle(0, 0, bmp.Width, bmp.Height), new Rectangle(0, 0, this.Image.Width, this.Image.Height), GraphicsUnit.Pixel);
-            return bmp;
+            Bitmap cropped = new Bitmap(width, height, this.Image.PixelFormat);
+            cropped.Palette = this.Image.Palette;
+
+            using (Graphics g = Graphics.FromImage(cropped))
+                g.DrawImage(this.Image,
+                            new Rectangle(0, 0, cropped.Width, cropped.Height),
+                            new Rectangle(0, 0, this.Image.Width, this.Image.Height),
+                            GraphicsUnit.Pixel);
+
+            this.Image = cropped;
         }
-        protected virtual Bitmap ResizeAndScale(int width)
+        protected virtual void ResizeAndScale(int width)
         {
             double targetHeight = Convert.ToDouble(width) / (this.Image.Width / this.Image.Height);
 
-            Bitmap bmp = new Bitmap(width, (int)targetHeight);
+            Bitmap scaled = new Bitmap(width, (int)targetHeight, this.Image.PixelFormat);
+            scaled.Palette = this.Image.Palette;
 
-            using (Graphics g = Graphics.FromImage(bmp))
-                g.DrawImage(this.Image, new Rectangle(0, 0, bmp.Width, bmp.Height), new Rectangle(0, 0, this.Image.Width, this.Image.Height), GraphicsUnit.Pixel);
+            using (Graphics g = Graphics.FromImage(scaled))
+                g.DrawImage(this.Image,
+                            new Rectangle(0, 0, scaled.Width, scaled.Height),
+                            new Rectangle(0, 0, this.Image.Width, this.Image.Height),
+                            GraphicsUnit.Pixel);
 
-            return bmp;
-
+            this.Image = scaled;
         }
         private void PutSelectionToClipboard()
         {

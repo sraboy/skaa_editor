@@ -78,9 +78,31 @@
             Select a rectangular area of the image, given two points defining two diagonally-opposing corners
             </summary>
         </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingTools.ResizeImage">
+            <summary>
+            Resizes the image
+            </summary>
+        </member>
         <member name="T:Capslock.Windows.Forms.ImageEditor.DrawingToolSelectedEventArgs">
             <summary>
             Used to pass a specified <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/> selection
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
             </summary>
         </member>
         <member name="P:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.IsPanning">
@@ -189,6 +211,11 @@
             </summary>
         </member>
         <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.RectangleSelectToolIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.ImageEditor.Properties.Resources.ResizeIcon">
             <summary>
               Looks up a localized resource of type System.Drawing.Bitmap.
             </summary>

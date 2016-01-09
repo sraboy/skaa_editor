@@ -54,7 +54,7 @@
             this.cbMaintainAspectRatio.Size = new System.Drawing.Size(122, 15);
             this.cbMaintainAspectRatio.TabIndex = 25;
             this.cbMaintainAspectRatio.Text = "Maintain aspect ratio";
-            this.cbMaintainAspectRatio.CheckedChanged += new System.EventHandler(this.constrainCheckBox_CheckedChanged);
+            this.cbMaintainAspectRatio.CheckedChanged += new System.EventHandler(this.cbMaintainAspectRatio_CheckedChanged);
             // 
             // newWidthLabel1
             // 
@@ -251,13 +251,11 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "ResizeImage";
-            this.Load += new System.EventHandler(this.ResizeImageDialog_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pixelWidthUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pixelHeightUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.percentUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
 
