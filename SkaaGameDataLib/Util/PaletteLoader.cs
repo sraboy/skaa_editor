@@ -26,16 +26,24 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 
 namespace SkaaGameDataLib.Util
 {
+    /// <summary>
+    /// Through <see cref="FromResFile(string)"/>, loads a 7KAA formatted color palette (see <see cref="FileFormats.Palette"/>)
+    /// </summary>
     public static class PaletteLoader
     {
         private static readonly TraceSource Logger = new TraceSource($"{typeof(PaletteLoader)}", SourceLevels.All);
 
-        public const int MaxColors = 256;
+        private static readonly int MaxColors = 256;
+        private static readonly int DefaultOpacity = 255;
 
+        /// <summary>
+        /// Reads a file in the format of a <see cref="FileFormats.Palette"/>
+        /// </summary>
+        /// <param name="filepath">The file to open</param>
+        /// <returns>A new <see cref="ColorPalette"/> consisting of the colors in the specified file</returns>
         public static ColorPalette FromResFile(string filepath)
         {
             ColorPalette pal;
@@ -47,16 +55,16 @@ namespace SkaaGameDataLib.Util
             {
                 fs.Seek(8, SeekOrigin.Begin);
 
-                for (int i = 0; i < 256; i++)
+                for (int i = 0; i < MaxColors; i++)
                 {
                     int r = fs.ReadByte();
                     int g = fs.ReadByte();
                     int b = fs.ReadByte();
 
                     if (i < 0xf9) //0xf9 is the lowest transparent color byte
-                        pal.Entries[i] = Color.FromArgb(255, r, g, b);
+                        pal.Entries[i] = Color.FromArgb(DefaultOpacity, r, g, b);
                     else          //0xf9 - 0xff
-                        pal.Entries[i] = Color.FromArgb(0, r, g, b);
+                        pal.Entries[i] = Color.FromArgb(DefaultOpacity, r, g, b);
                 }
             }
 
