@@ -40,39 +40,25 @@ namespace SkaaGameDataLib.Util
         /// </summary>
         /// <param name="str">The <see cref="Stream"/> to write the header to</param>
         /// <param name="offset">The offset in the <see cref="Stream"/> at which to begin writing</param>
-        /// <param name="isIdx">Whether or not to use settings for <see cref="ResourceDefinitionReader.ResIdxDefinitionSize"/> or <see cref="ResourceDefinitionReader.ResDefinitionSize"/></param>
-        public static void WriteResDefinition(this DataTable dt, Stream str, uint offset, bool isIdx)
+        public static void WriteResDefinition(this DataTable dt, Stream str, uint offset)
         {
-            int nameSize, definitionSize;
-
-            if (isIdx)
-            {
-                nameSize = ResourceDefinitionReader.ResIdxNameSize;
-                definitionSize = ResourceDefinitionReader.ResIdxDefinitionSize;
-            }
-            else
-            {
-                nameSize = ResourceDefinitionReader.ResNameSize;
-                definitionSize = ResourceDefinitionReader.ResDefinitionSize;
-            }
-
-            string recordName = dt.TableName.PadRight(nameSize, (char)0x0);
-            byte[] record_name = new byte[nameSize];
+            string recordName = dt.TableName.PadRight(ResourceDefinitionReader.ResIdxNameSize, (char)0x0);
+            byte[] record_name = new byte[ResourceDefinitionReader.ResIdxNameSize];
             record_name = Encoding.GetEncoding(1252).GetBytes(recordName);
-            str.Write(record_name, 0, nameSize);
+            str.Write(record_name, 0, ResourceDefinitionReader.ResIdxNameSize);
 
-            byte[] record_size = new byte[ResourceDefinitionReader.OffsetSize];
+            byte[] record_size = new byte[ResourceDefinitionReader.ResIdxOffsetSize];
             record_size = BitConverter.GetBytes(Convert.ToUInt32(offset));
-            str.Write(record_size, 0, ResourceDefinitionReader.OffsetSize);
+            str.Write(record_size, 0, ResourceDefinitionReader.ResIdxOffsetSize);
         }
         /// <summary>
-        /// Calls <see cref="DataRowExtensions.WriteResDefinition(DataRow, Stream, uint, bool)"/> for each row in the table
+        /// Calls <see cref="DataRowExtensions.WriteResDefinition(DataRow, Stream, uint)"/> for each row in the table
         /// </summary>
-        public static void WriteAllRowsAsResDefinitions(this DataTable dt, Stream str, bool isIdx)
+        public static void WriteAllRowsAsResDefinitions(this DataTable dt, Stream str)
         {
             foreach (DataRow dr in dt.Rows)
             {
-                dr.WriteResDefinition(str, (uint)str.Position, isIdx);
+                dr.WriteResDefinition(str, (uint)str.Position);
             }
         }
     }

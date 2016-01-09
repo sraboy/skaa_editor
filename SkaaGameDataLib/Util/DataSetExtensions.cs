@@ -81,7 +81,7 @@ namespace SkaaGameDataLib.Util
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Open))
             {
-                var defs = ResourceDefinitionReader.ReadDefinitions(fs, true);
+                var defs = ResourceDefinitionReader.ReadDefinitions(fs);
 
                 // Create a backup copy in the event Tables.Add() succeeds for one or more tables before 
                 // failing. This will allow us to just return false without mucking up the DataSet with 
@@ -191,7 +191,7 @@ namespace SkaaGameDataLib.Util
                         //char[9] record_names
                         //uint32 record_offsets
                         //---------------------
-                        dt.WriteResDefinition(headerStream, (uint)dbfStream.Position + header_size, true);
+                        dt.WriteResDefinition(headerStream, (uint)dbfStream.Position + header_size);
 
                         //writes out the DBF file
                         dt.Save(dbfStream);

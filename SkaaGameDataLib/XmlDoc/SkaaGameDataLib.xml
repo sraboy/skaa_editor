@@ -217,13 +217,7 @@
             in a record within a <see cref="F:SkaaGameDataLib.Util.FileFormats._ResIdxFile"/>. Shorter names are right-padded with spaces (0x20).
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResNameSize">
-            <summary>
-            The number of characters, including a null terminator, that is used as the unique name of a piece of data
-            in a record within a <see cref="F:SkaaGameDataLib.Util.FileFormats._ResFile"/>. Shorter names are right-padded with spaces (0x20).
-            </summary>
-        </member>
-        <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader.OffsetSize">
+        <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResIdxOffsetSize">
             <summary>
             The number of bytes used to represent the offset of the record in a <see cref="F:SkaaGameDataLib.Util.FileFormats._ResIdxFile"/>
             or <see cref="F:SkaaGameDataLib.Util.FileFormats._ResFile"/>. Values using less than this number of bytes are simply left-padded 
@@ -235,11 +229,6 @@
             The total size of a record definition in a <see cref="F:SkaaGameDataLib.Util.FileFormats._ResIdxFile"/>
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResDefinitionSize">
-            <summary>
-            The total size of a Res definition.
-            </summary>
-        </member>
         <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader._maxAcceptableRecordCount">
             <summary>
             Arbitrary number that isn't necessary for the game but, since the record count
@@ -249,17 +238,13 @@
             arbitrary files, for example, when attempting to identify a file's type.
             </summary>
         </member>
-        <member name="M:SkaaGameDataLib.Util.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)">
+        <member name="M:SkaaGameDataLib.Util.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream)">
             <summary>
             Reads the header of a stream containing definitions of a piece of data's name and its offset in a file.
             </summary>
             <param name="str">
             The stream from which to read. The first two bytes at <see cref="P:System.IO.Stream.Position"/>
             must be a uint16 containing the number of definitions to be read.
-            </param>
-            <param name="isIdx">
-            Whether or not the definitions to be read are in the ResIdx format or not. 
-            See <see cref="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResIdxNameSize"/> and <see cref="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResIdxDefinitionSize"/>.
             </param>
             <returns>
             A <see cref="T:System.Collections.Generic.Dictionary`2"/> of Name-Offset pairs, with  
@@ -347,17 +332,16 @@
             the identified file type.
             </returns>
         </member>
-        <member name="M:SkaaGameDataLib.Util.DataTableExtensions.WriteResDefinition(System.Data.DataTable,System.IO.Stream,System.UInt32,System.Boolean)">
+        <member name="M:SkaaGameDataLib.Util.DataTableExtensions.WriteResDefinition(System.Data.DataTable,System.IO.Stream,System.UInt32)">
             <summary>
             Writes a <see cref="T:SkaaGameDataLib.Util.ResourceDefinitionReader"/> header for this <see cref="T:System.Data.DataTable"/> to the <see cref="T:System.IO.Stream"/>
             </summary>
             <param name="str">The <see cref="T:System.IO.Stream"/> to write the header to</param>
             <param name="offset">The offset in the <see cref="T:System.IO.Stream"/> at which to begin writing</param>
-            <param name="isIdx">Whether or not to use settings for <see cref="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResIdxDefinitionSize"/> or <see cref="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResDefinitionSize"/></param>
         </member>
-        <member name="M:SkaaGameDataLib.Util.DataTableExtensions.WriteAllRowsAsResDefinitions(System.Data.DataTable,System.IO.Stream,System.Boolean)">
+        <member name="M:SkaaGameDataLib.Util.DataTableExtensions.WriteAllRowsAsResDefinitions(System.Data.DataTable,System.IO.Stream)">
             <summary>
-            Calls <see cref="M:SkaaGameDataLib.Util.DataRowExtensions.WriteResDefinition(System.Data.DataRow,System.IO.Stream,System.UInt32,System.Boolean)"/> for each row in the table
+            Calls <see cref="M:SkaaGameDataLib.Util.DataRowExtensions.WriteResDefinition(System.Data.DataRow,System.IO.Stream,System.UInt32)"/> for each row in the table
             </summary>
         </member>
         <member name="M:SkaaGameDataLib.GameObjects.SkaaSprite.MatchFramesToDataView(System.String,System.String)">

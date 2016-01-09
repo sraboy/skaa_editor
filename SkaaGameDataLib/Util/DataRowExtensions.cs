@@ -48,29 +48,16 @@ namespace SkaaGameDataLib.Util
         /// </summary>
         public static readonly string SprFrameOffsetColumn = "BITMAPPTR";
 
-        public static void WriteResDefinition(this DataRow dr, Stream str, uint offset, bool isIdx)
+        public static void WriteResDefinition(this DataRow dr, Stream str, uint offset)
         {
-            int nameSize, definitionSize;
-
-            if (isIdx)
-            {
-                nameSize = ResourceDefinitionReader.ResIdxNameSize;
-                definitionSize = ResourceDefinitionReader.ResIdxDefinitionSize;
-            }
-            else
-            {
-                nameSize = ResourceDefinitionReader.ResNameSize;
-                definitionSize = ResourceDefinitionReader.ResDefinitionSize;
-            }
-
-            string recordName = dr[ResIdxFrameNameColumn].ToString().PadRight(nameSize, (char)0x0);
-            byte[] record_name = new byte[nameSize];
+            string recordName = dr[ResIdxFrameNameColumn].ToString().PadRight(ResourceDefinitionReader.ResIdxNameSize, (char)0x0);
+            byte[] record_name = new byte[ResourceDefinitionReader.ResIdxNameSize];
             record_name = Encoding.GetEncoding(1252).GetBytes(recordName);
-            str.Write(record_name, 0, nameSize);
+            str.Write(record_name, 0, ResourceDefinitionReader.ResIdxNameSize);
 
-            byte[] record_size = new byte[ResourceDefinitionReader.OffsetSize];
+            byte[] record_size = new byte[ResourceDefinitionReader.ResIdxOffsetSize];
             record_size = BitConverter.GetBytes((uint)dr[ResIdxFrameOffsetColumn]);
-            str.Write(record_size, 0, ResourceDefinitionReader.OffsetSize);
+            str.Write(record_size, 0, ResourceDefinitionReader.ResIdxOffsetSize);
         }
     }
 }

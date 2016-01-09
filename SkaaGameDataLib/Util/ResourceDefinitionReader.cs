@@ -47,24 +47,15 @@ namespace SkaaGameDataLib.Util
         /// </summary>
         public static readonly int ResIdxNameSize = 9;   //8 chars + null
         /// <summary>
-        /// The number of characters, including a null terminator, that is used as the unique name of a piece of data
-        /// in a record within a <see cref="FileFormats._ResFile"/>. Shorter names are right-padded with spaces (0x20).
-        /// </summary>
-        public static readonly int ResNameSize = 8;      //8 chars
-        /// <summary>
         /// The number of bytes used to represent the offset of the record in a <see cref="FileFormats._ResIdxFile"/>
-        /// or <see cref="FileFormats._ResFile"/>. Values using less than this number of bytes are simply left-padded 
-        /// with nulls (0x0) in order to maintain alignment of the definitions.
+        /// Values using less than this number of bytes are simply left-padded with nulls (0x0) in order to maintain
+        /// alignment of the definitions. (Always left-padded, meaning little-endian.)
         /// </summary>
-        public static readonly int OffsetSize = 4;       //uint32
+        public static readonly int ResIdxOffsetSize = sizeof(UInt32);
         /// <summary>
         /// The total size of a record definition in a <see cref="FileFormats._ResIdxFile"/>
         /// </summary>
-        public static readonly int ResIdxDefinitionSize = 13;   //add the above two
-        /// <summary>
-        /// The total size of a Res definition.
-        /// </summary>
-        public static readonly int ResDefinitionSize = 12;      //add the above two
+        public static readonly int ResIdxDefinitionSize = ResIdxNameSize + ResIdxOffsetSize;
         /// <summary>
         /// Arbitrary number that isn't necessary for the game but, since the record count
         /// is read from the file, it could be any 16-bit value. Since *.res files have no
@@ -82,30 +73,13 @@ namespace SkaaGameDataLib.Util
         /// The stream from which to read. The first two bytes at <see cref="Stream.Position"/>
         /// must be a uint16 containing the number of definitions to be read.
         /// </param>
-        /// <param name="isIdx">
-        /// Whether or not the definitions to be read are in the ResIdx format or not. 
-        /// See <see cref="ResIdxNameSize"/> and <see cref="ResIdxDefinitionSize"/>.
-        /// </param>
         /// <returns>
         /// A <see cref="Dictionary{TKey, TValue}"/> of Name-Offset pairs, with  
         /// <see cref="KeyValuePair{TKey, TValue}.Key"/> set to the ASCII name of the record and 
         /// <see cref="KeyValuePair{TKey, TValue}.Value"/> set to that record's offset in a file.
         /// </returns>
-        public static Dictionary<string, uint> ReadDefinitions(Stream str, bool isIdx)
+        public static Dictionary<string, uint> ReadDefinitions(Stream str)
         {
-            int nameSize, definitionSize;
-
-            if (isIdx)
-            {
-                nameSize = ResIdxNameSize;
-                definitionSize = ResIdxDefinitionSize;
-            }
-            else
-            {
-                nameSize = ResNameSize;
-                definitionSize = ResDefinitionSize;
-            }
-
             byte[] recCount = new byte[2];
             str.Read(recCount, 0, 2);
             ushort recordCount = BitConverter.ToUInt16(recCount, 0);
@@ -117,15 +91,15 @@ namespace SkaaGameDataLib.Util
 
             Dictionary<string, uint> nameOffsetPairs = new Dictionary<string, uint>(recordCount);
 
-            while (str.Position < (recordCount) * definitionSize)
+            while (str.Position < (recordCount) * ResIdxDefinitionSize)
             {
-                byte[] b_name = new byte[nameSize];
-                byte[] b_offset = new byte[OffsetSize];
+                byte[] b_name = new byte[ResIdxNameSize];
+                byte[] b_offset = new byte[ResIdxOffsetSize];
                 string name = string.Empty;
                 uint offset;
 
-                str.Read(b_name, 0, nameSize); //offset is 0 from ms.Position
-                str.Read(b_offset, 0, OffsetSize);
+                str.Read(b_name, 0, ResIdxNameSize); //offset is 0 from ms.Position
+                str.Read(b_offset, 0, ResIdxOffsetSize);
 
                 name = Encoding.GetEncoding(1252).GetString(b_name).Trim('\0');
                 offset = BitConverter.ToUInt32(b_offset, 0);

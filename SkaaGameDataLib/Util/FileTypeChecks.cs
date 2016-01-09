@@ -124,7 +124,7 @@ namespace SkaaGameDataLib.Util
             FileFormats format;
             long oldPos = str.Position;
 
-            var dic = ResourceDefinitionReader.ReadDefinitions(str, true);
+            var dic = ResourceDefinitionReader.ReadDefinitions(str);
             if (dic == null)
                 format = FileFormats._Unknown;
             else
@@ -160,14 +160,14 @@ namespace SkaaGameDataLib.Util
             FileFormats format;
             long oldPos = str.Position;
 
-            var dic = ResourceDefinitionReader.ReadDefinitions(str, false);
-            if (dic == null)
-                format = FileFormats._Unknown;
-            else
-                format = FileFormats._ResFile;
+            //var dic = ResourceDefinitionReader.ReadDefinitions(str, false);
+            //if (dic == null)
+            //    format = FileFormats._Unknown;
+            //else
+            //    format = FileFormats._ResFile;
 
             str.Position = oldPos;
-            return format;
+            return FileFormats._Unknown;
         }
         private static FileFormats CheckSprFormats(Stream str)
         {

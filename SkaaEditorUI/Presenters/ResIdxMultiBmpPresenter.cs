@@ -64,7 +64,7 @@ namespace SkaaEditorUI.Presenters
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
                 //Read the file definitions from the ResIdx header.
-                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs, true);
+                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs);
                 spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
                 dt.TableName = spr.SpriteId;
 
@@ -163,7 +163,7 @@ namespace SkaaEditorUI.Presenters
                     fs.Write(recordcount, 0, recordcount.Length);
 
                     //write the ResIdx header
-                    table.WriteAllRowsAsResDefinitions(fs, true);
+                    table.WriteAllRowsAsResDefinitions(fs);
 
                     //write an empty record to signify the file's size follows
                     for (int i = 0; i < ResourceDefinitionReader.ResIdxNameSize; i++)
