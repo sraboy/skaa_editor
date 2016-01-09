@@ -105,11 +105,8 @@ namespace SkaaEditorUI.Forms.DockContentControls
                 OnActiveSpriteChanged(EventArgs.Empty);
             }
         }
-
-        private void _activeSprite_ActiveFrameChanged(object sender, EventArgs e)
         public Image Image //todo: Image should be immutable since edits are always done in ImageEditBox. Either return a clone, return a new IImage interface or separately expose the properties.
         {
-            this._imageEditorBox.Image = this.ActiveSprite.ActiveFrame.Bitmap;
             get
             {
                 return this._imageEditorBox.Image;
@@ -140,6 +137,12 @@ namespace SkaaEditorUI.Forms.DockContentControls
             SetActiveColors(Color.Black, Color.FromArgb(0, 0, 0, 0));
         }
 
+        #region Public Methods
+        public void SetActiveColors(Color primary, Color secondary)
+        {
+            this._imageEditorBox.ActivePrimaryColor = primary;
+            this._imageEditorBox.ActiveSecondaryColor = secondary;
+        }
         public void SetSprite(MultiImagePresenterBase spr)
         {
             this.ActiveSprite = spr;
@@ -147,12 +150,13 @@ namespace SkaaEditorUI.Forms.DockContentControls
             this._imageEditorBox.Image = spr?.ActiveFrame?.Bitmap;
             this._imageEditorBox.ImageChanged += imageEditorBox_ImageChanged;
         }
-
         public void ChangeToolMode(object sender, EventArgs e)
         {
             this._imageEditorBox.ChangeToolMode(sender, e);
         }
+        #endregion
 
+        #region Event Handlers
         private void imageEditorBox_ImageChanged(object sender, EventArgs e)
         {
             if (this._imageEditorBox.SelectedTool != DrawingTools.Pan &&
@@ -162,12 +166,11 @@ namespace SkaaEditorUI.Forms.DockContentControls
                 OnImagedChanged(EventArgs.Empty);
             }
         }
-
-        public void SetActiveColors(Color primary, Color secondary)
+        private void _activeSprite_ActiveFrameChanged(object sender, EventArgs e)
         {
-            this._imageEditorBox.ActivePrimaryColor = primary;
-            this._imageEditorBox.ActiveSecondaryColor = secondary;
+            this._imageEditorBox.Image = this.ActiveSprite.ActiveFrame.Bitmap;
         }
+        #endregion
 
         private void InitializeComponent()
         {

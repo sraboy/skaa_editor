@@ -85,13 +85,25 @@ namespace SkaaEditorUI.Forms.DockContentControls
             }
         }
 
+        #region Constructor
         public ToolboxContainer()
         {
-            Initialize();
+            InitializeComponent();
             SetPalette(null);
         }
+        #endregion
 
-        private void Initialize(System.Drawing.Imaging.ColorPalette pal = null)
+        /// <summary>
+        /// The original <see cref="Image"/> that will be resized by <see cref="DrawingToolbox.ResizeImageDelegate"/>.
+        /// Its properties are used, for example, to populate the <see cref="ResizeImageDialog"/> with default values.
+        /// </summary>
+        /// <param name="ImageToEdit">The image from which to gather properties to expose in various UI elements</param>
+        public void SetImageToEdit(Image ImageToEdit)
+        {
+            DrawingToolbox.ImageToEdit = ImageToEdit;
+        }
+
+        private void InitializeComponent(System.Drawing.Imaging.ColorPalette pal = null)
         {
             this._drawingToolbox = new DrawingToolbox();
             this._colorGridChooser = new SkaaColorChooser();

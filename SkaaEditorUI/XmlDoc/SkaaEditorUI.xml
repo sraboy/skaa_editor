@@ -21,6 +21,18 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ImageEditorContainer_ImageChanged(System.Object,System.EventArgs)">
+            <summary>
+            Updates various UI elements when <see cref="P:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.Image"/> is edited.
+            </summary>
+            <remarks>
+            While there are methods here to update the UI when the image is changed by virtue
+            of changing the <see cref="P:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.ActiveSprite"/> or navigating its
+            frames, this method is necessary to update the UI when <see cref="T:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer"/>
+            alters the image internally. For example, image resizing is handled entirely internal to
+            the class.
+            </remarks>
+        </member>
         <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenSprite``1(System.String)">
             <summary>
             Opens a <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/> or <see cref="F:SkaaGameDataLib.Util.FileFormats.ResIdxMultiBmp"/>
@@ -48,6 +60,13 @@
             <summary>
             Opens a new document tab, which is automatically set as the <see cref="P:WeifenLuo.WinFormsUI.Docking.DockPanel.ActiveDocument"/>
             </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.SetActiveSprite(SkaaEditorUI.Presenters.MultiImagePresenterBase)">
+            <summary>
+            Updates the UI to display the information for the specified sprite, or 
+            clears/disables various UI items if <paramref name="spr"/> is null.
+            </summary>
+            <param name="spr">A <see cref="T:SkaaEditorUI.Presenters.MultiImagePresenterBase"/> or null</param>
         </member>
         <member name="F:SkaaEditorUI.Forms.MDISkaaEditorMainForm.components">
             <summary>
@@ -83,6 +102,12 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="P:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.ResizeImageMethod">
+            <summary>
+            The method <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingToolbox"/> will call when resizing an image 
+            with the options set in <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
+            </summary>
+        </member>
         <member name="F:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.components">
             <summary>
             Required designer variable.
@@ -99,6 +124,19 @@
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.ResizeImageDelegate">
+            <summary>
+            The method <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingToolbox"/> will call when resizing an image 
+            with the options set in <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.SetImageToEdit(System.Drawing.Image)">
+            <summary>
+            The original <see cref="T:System.Drawing.Image"/> that will be resized by <see cref="F:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.ResizeImageDelegate"/>.
+            Its properties are used, for example, to populate the <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/> with default values.
+            </summary>
+            <param name="ImageToEdit">The image from which to gather properties to expose in various UI elements</param>
         </member>
         <member name="F:SkaaEditorUI.Forms.SkaaSAVEditorTest.components">
             <summary>

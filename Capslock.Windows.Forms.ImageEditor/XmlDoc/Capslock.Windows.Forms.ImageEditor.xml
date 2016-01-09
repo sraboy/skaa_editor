@@ -10,6 +10,18 @@
             multiple subscriptions from the same subscriber by checking its invocation list.
             </summary>
         </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.ResizeImageDelegate">
+            <summary>
+            The method <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingToolbox"/> will call when resizing an image 
+            with the options set in <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
+            </summary>
+            <remarks>
+            I chose to use a delegate here rather than put the call to <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
+            inside the <see cref="T:Capslock.Windows.Forms.ImageEditor.ImageEditorBox"/> to maintain a separation of responsibilities. The
+            <see cref="T:Capslock.Windows.Forms.ImageEditor.ImageEditorBox"/> should handle image manipulation, not the UI elements dictating
+            how to manipulate it.
+            </remarks>
+        </member>
         <member name="P:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.SelectedTool">
             <summary>
             Gets or sets the currently-selected tool from <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/>. It will toggle off
@@ -86,6 +98,14 @@
         <member name="T:Capslock.Windows.Forms.ImageEditor.DrawingToolSelectedEventArgs">
             <summary>
             Used to pass a specified <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingTools"/> selection
+            </summary>
+        </member>
+        <member name="F:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog._processValueChangedEvent">
+            <summary>
+            Set to false in <see cref="M:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog.pixelHeightUpDown_ValueChanged(System.Object,System.EventArgs)"/> and
+            <see cref="M:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog.pixelWidthUpDown_ValueChanged(System.Object,System.EventArgs)"/> so the two methods
+            don't enter an infinite loop that causes either a stack overflow or goes beyond the 
+            maximum and minimum values allowed.
             </summary>
         </member>
         <member name="F:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog.components">

@@ -495,7 +495,7 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.Invalidate(this.ViewPortRectangle);
             }
         }
-        private void Fill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
+        protected virtual void Fill(Bitmap bmp, Point pt, Color targetColor, Color replacementColor)
         {
             Func<Color, Color, bool> ColorMatch = (a, b) => { return (a.ToArgb() & 0xffffffff) == (b.ToArgb() & 0xffffffff); };
 
