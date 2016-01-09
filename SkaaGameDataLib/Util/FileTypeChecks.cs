@@ -104,10 +104,7 @@ namespace SkaaGameDataLib.Util
             {
                 using (FileStream fs = new FileStream(path, FileMode.Open))
                 {
-                    format = CheckResIdxFormats(fs); //check ResIdx (code_len = 9)
-
-                    if (format == FileFormats._Unknown)
-                        format = CheckResFormats(fs); //check Res (code_len = 8)
+                    format = CheckResIdxFormats(fs);
 
                     if (format == FileFormats._Unknown)
                         format = CheckSprFormats(fs); //check SpriteSpr/SpriteFrameSpr
@@ -154,20 +151,6 @@ namespace SkaaGameDataLib.Util
 
             str.Position = oldPos;
             return FileFormats.ResIdxMultiBmp;
-        }
-        private static FileFormats CheckResFormats(Stream str)
-        {
-            FileFormats format;
-            long oldPos = str.Position;
-
-            //var dic = ResourceDefinitionReader.ReadDefinitions(str, false);
-            //if (dic == null)
-            //    format = FileFormats._Unknown;
-            //else
-            //    format = FileFormats._ResFile;
-
-            str.Position = oldPos;
-            return FileFormats._Unknown;
         }
         private static FileFormats CheckSprFormats(Stream str)
         {
