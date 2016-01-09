@@ -26,7 +26,8 @@ using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
-using SkaaGameDataLib;
+using SkaaGameDataLib.Util;
+using SkaaGameDataLib.GameObjects;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -91,14 +92,14 @@ namespace SkaaEditorUI.Presenters
                 offset += bytes.LongLength;
 
                 //update the DataView
-                this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.SprFrameNameColumn;
+                this.DataView.Sort = SkaaGameDataLib.Util.DataRowExtensions.SprFrameNameColumn;
 
                 var drv = this.DataView.FindRows(fp.Name);
 
                 for (int i = 0; i < drv.Length; i++)
                 {
                     drv[i].BeginEdit();
-                    drv[i][SkaaGameDataLib.DataRowExtensions.SprFrameOffsetColumn] = fp.BitmapOffset;
+                    drv[i][SkaaGameDataLib.Util.DataRowExtensions.SprFrameOffsetColumn] = fp.BitmapOffset;
                     drv[i].EndEdit();
                 }
 
@@ -140,8 +141,8 @@ namespace SkaaEditorUI.Presenters
             //Create a new DataRow for the new frame
             var dr = this.DataView.Table.NewRow();
             dr.BeginEdit();
-            dr[SkaaGameDataLib.DataRowExtensions.SprFrameNameColumn] = fr.Name;
-            dr[SkaaGameDataLib.DataRowExtensions.SprFrameOffsetColumn] = fr.BitmapOffset;
+            dr[SkaaGameDataLib.Util.DataRowExtensions.SprFrameNameColumn] = fr.Name;
+            dr[SkaaGameDataLib.Util.DataRowExtensions.SprFrameOffsetColumn] = fr.BitmapOffset;
             dr.EndEdit();
             this.DataView.Table.Rows.Add(dr);
         }

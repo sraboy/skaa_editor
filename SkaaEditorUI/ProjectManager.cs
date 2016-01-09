@@ -27,7 +27,7 @@ using System.Diagnostics;
 using System.IO;
 using SkaaEditorUI.Forms;
 using SkaaEditorUI.Presenters;
-using SkaaGameDataLib;
+using SkaaGameDataLib.Util;
 using TrulyObservableCollection;
 
 namespace SkaaEditorUI

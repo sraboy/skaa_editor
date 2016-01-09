@@ -23,7 +23,7 @@
         </member>
         <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.OpenSprite``1(System.String)">
             <summary>
-            Opens a <see cref="T:SkaaGameDataLib.SkaaSprite"/> or <see cref="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp"/>
+            Opens a <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/> or <see cref="F:SkaaGameDataLib.Util.FileFormats.ResIdxMultiBmp"/>
             </summary>
             <typeparam name="T">A presenter class that implements <see cref="T:SkaaEditorUI.Presenters.MultiImagePresenterBase"/></typeparam>
             <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
@@ -124,7 +124,7 @@
         </member>
         <member name="M:SkaaEditorUI.Presenters.MultiImagePresenterBase.BuildFramePresenters">
             <summary>
-            Creates a <see cref="T:SkaaEditorUI.Presenters.FramePresenter"/> for every <see cref="T:SkaaGameDataLib.SkaaFrame"/> in the <see cref="T:SkaaGameDataLib.SkaaSprite"/>
+            Creates a <see cref="T:SkaaEditorUI.Presenters.FramePresenter"/> for every <see cref="T:SkaaGameDataLib.GameObjects.SkaaFrame"/> in the <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/>
             referenced by <see cref="P:SkaaEditorUI.Presenters.PresenterBase`1.GameObject"/>. Calling this more than once on the same object
             will result in new <see cref="T:SkaaEditorUI.Presenters.FramePresenter"/> objects being generated, which come with new <see cref="T:System.Guid"/>
             values.
@@ -164,16 +164,16 @@
         </member>
         <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.ReadFrames(System.String,System.Drawing.Imaging.ColorPalette)">
             <summary>
-            Reads all the frame data from the specified file, of type <see cref="F:SkaaGameDataLib.FileFormats.ResIdxMultiBmp"/>
+            Reads all the frame data from the specified file, of type <see cref="F:SkaaGameDataLib.Util.FileFormats.ResIdxMultiBmp"/>
             </summary>
             <param name="filepath">The path to the file</param>
             <param name="pal">The <see cref="T:System.Drawing.Imaging.ColorPalette"/> to use in building the frame's image</param>
             <returns>
-            A <see cref="T:System.Tuple`2"/> where <c>T1</c> is the new <see cref="T:SkaaGameDataLib.SkaaSprite"/> and <c>T2</c> is
+            A <see cref="T:System.Tuple`2"/> where <c>T1</c> is the new <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/> and <c>T2</c> is
             the <see cref="T:System.Data.DataTable"/> read from the ResIdx header.
             </returns>
             <remarks>
-            This differs from loading an SPR file in that the file contains the <see cref="T:SkaaGameDataLib.SkaaFrame"/> data
+            This differs from loading an SPR file in that the file contains the <see cref="T:SkaaGameDataLib.GameObjects.SkaaFrame"/> data
             directly in its header rather than in the standard game set (see <see cref="!:GameSetFile"/>. The 
             <see cref="T:System.Data.DataTable"/> only has fields for FrameName and FrameOffset; any other data is stored 
             elsewhere, generally in DBF (dBaseIII) files that may or may not be in the standard game set.
@@ -181,7 +181,7 @@
         </member>
         <member name="M:SkaaEditorUI.Presenters.ResIdxMultiBmpPresenter.GetSpriteStream">
             <summary>
-            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.SkaaFrame"/> data for 
+            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.GameObjects.SkaaFrame"/> data for 
             all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The first four bytes are ignored
             as they are the file's size, which is not used in ResIdx files.
             The <see cref="P:System.IO.MemoryStream.Position"/> is reset to 0 before returning.
@@ -195,21 +195,21 @@
         </member>
         <member name="M:SkaaEditorUI.Presenters.SpritePresenter.Load(System.String,System.Object[])">
             <summary>
-            Creates a <see cref="T:SkaaGameDataLib.SkaaSprite"/> object from an SPR-formatted file
+            Creates a <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/> object from an SPR-formatted file
             </summary>
             <param name="filePath">The absolute path to the SPR file to open</param>
-            <returns>The newly-created <see cref="T:SkaaGameDataLib.SkaaSprite"/></returns>
+            <returns>The newly-created <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/></returns>
         </member>
         <member name="M:SkaaEditorUI.Presenters.SpritePresenter.GetSpriteStream">
             <summary>
-            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.SkaaFrame"/> data for 
+            Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.GameObjects.SkaaFrame"/> data for 
             all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The <see cref="P:System.IO.MemoryStream.Position"/>
             is reset to 0 before returning.
             </summary>
         </member>
         <member name="M:SkaaEditorUI.Presenters.SpritePresenter.UpdateFrameNamesAndOffsets">
             <summary>
-            The underlying <see cref="T:SkaaGameDataLib.SkaaSprite"/> updates its <see cref="F:SkaaGameDataLib.SkaaFrame.Name"/> and <see cref="F:SkaaGameDataLib.SkaaFrame.BitmapOffset"/>
+            The underlying <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/> updates its <see cref="F:SkaaGameDataLib.GameObjects.SkaaFrame.Name"/> and <see cref="F:SkaaGameDataLib.GameObjects.SkaaFrame.BitmapOffset"/>
             values based on the information in the <see cref="P:SkaaEditorUI.Presenters.MultiImagePresenterBase.DataView"/> so we need to update ours as well.
             </summary>
         </member>
@@ -223,7 +223,7 @@
             Creates a new <see cref="P:SkaaEditorUI.ProjectManager.TempDirectory"/> in <see cref="M:System.IO.Path.GetTempPath"/>
             </summary>
         </member>
-        <member name="M:SkaaEditorUI.ProjectManager.IsFileFormatUnknown(SkaaGameDataLib.FileFormats)">
+        <member name="M:SkaaEditorUI.ProjectManager.IsFileFormatUnknown(SkaaGameDataLib.Util.FileFormats)">
             <summary>
             Checks whether the specified format is any kind of unknown format
             </summary>

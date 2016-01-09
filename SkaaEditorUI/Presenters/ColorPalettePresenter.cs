@@ -26,7 +26,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using SkaaGameDataLib;
+using SkaaGameDataLib.Util;
 
 namespace SkaaEditorUI.Presenters
 {

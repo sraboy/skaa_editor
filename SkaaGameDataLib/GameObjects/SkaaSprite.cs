@@ -30,8 +30,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using SkaaGameDataLib.Util;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.GameObjects
 {
     [Serializable]
     public class SkaaSprite
@@ -133,8 +134,8 @@ namespace SkaaGameDataLib
                 string frameOffsetColName;
                 string frameNameColName;
 
-                frameNameColName = dv.Table.Columns.Contains(DataRowExtensions.SprFrameNameColumn) ? DataRowExtensions.SprFrameNameColumn : DataRowExtensions.ResIdxFrameNameColumn;
-                frameOffsetColName = dv.Table.Columns.Contains(DataRowExtensions.SprFrameOffsetColumn) ? DataRowExtensions.SprFrameOffsetColumn : DataRowExtensions.ResIdxFrameOffsetColumn;
+                frameNameColName = dv.Table.Columns.Contains(SkaaGameDataLib.Util.DataRowExtensions.SprFrameNameColumn) ? SkaaGameDataLib.Util.DataRowExtensions.SprFrameNameColumn : SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn;
+                frameOffsetColName = dv.Table.Columns.Contains(SkaaGameDataLib.Util.DataRowExtensions.SprFrameOffsetColumn) ? SkaaGameDataLib.Util.DataRowExtensions.SprFrameOffsetColumn : SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn;
 
                 return this.MatchFramesToDataView(frameNameColName, frameOffsetColName);
             }

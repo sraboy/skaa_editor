@@ -28,7 +28,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using Capslock.Windows.Forms.SpriteViewer;
-using SkaaGameDataLib;
+using SkaaGameDataLib.GameObjects;
+using SkaaGameDataLib.Util;
 
 namespace SkaaEditorUI.Presenters
 {

@@ -24,7 +24,7 @@
 #endregion
 using System.Data;
 using System.Windows.Forms;
-using SkaaGameDataLib;
+using SkaaGameDataLib.Util;
 
 namespace SkaaEditorUI.Presenters
 {

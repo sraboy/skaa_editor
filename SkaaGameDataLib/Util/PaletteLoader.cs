@@ -28,7 +28,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.Util
 {
     public static class PaletteLoader
     {

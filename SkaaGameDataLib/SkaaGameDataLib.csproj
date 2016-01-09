@@ -54,23 +54,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UtilityClasses\DataRowExtensions.cs" />
-    <Compile Include="UtilityClasses\DbfFileWriter.cs" />
-    <Compile Include="UtilityClasses\DataSetExtensions.cs" />
+    <Compile Include="Util\DataRowExtensions.cs" />
+    <Compile Include="Util\DbfFileWriter.cs" />
+    <Compile Include="Util\DataSetExtensions.cs" />
     <Compile Include="GameObjects\SkaaFrame.cs" />
-    <Compile Include="UtilityClasses\ResourceDefinitionReader.cs" />
-    <Compile Include="UtilityClasses\IndexedBitmap.cs" />
-    <Compile Include="UtilityClasses\PaletteLoader.cs" />
-    <Compile Include="UtilityClasses\DataColumnExtensions.cs" />
-    <Compile Include="UtilityClasses\DbfFile.cs" />
-    <Compile Include="UtilityClasses\FileTyping.cs" />
+    <Compile Include="Util\FileFormats.cs" />
+    <Compile Include="Util\ResourceDefinitionReader.cs" />
+    <Compile Include="Util\IndexedBitmap.cs" />
+    <Compile Include="Util\PaletteLoader.cs" />
+    <Compile Include="Util\DataColumnExtensions.cs" />
+    <Compile Include="Util\DbfFile.cs" />
+    <Compile Include="Util\FileTypeChecks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="UtilityClasses\DataTableExtensions.cs" />
+    <Compile Include="Util\DataTableExtensions.cs" />
     <Compile Include="GameObjects\SkaaSprite.cs" />
     <Compile Include="GameObjects\SkaaSpriteFrame.cs" />
   </ItemGroup>

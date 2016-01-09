@@ -31,7 +31,8 @@ using System.IO;
 using System.Windows.Forms;
 using SkaaEditorUI.Forms.DockContentControls;
 using SkaaEditorUI.Presenters;
-using SkaaGameDataLib;
+using SkaaGameDataLib.GameObjects;
+using SkaaGameDataLib.Util;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkaaEditorUI.Forms

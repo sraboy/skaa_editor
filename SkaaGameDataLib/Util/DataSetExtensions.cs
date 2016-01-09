@@ -28,7 +28,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.Util
 {
     public static class DataSetExtensions
     {
@@ -97,7 +97,7 @@ namespace SkaaGameDataLib
                         if (file.ReadStream(fs) != true)
                             return false;
                         file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);
-                        file.DataTable.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, Path.GetFileName((fs as FileStream)?.Name));
+                        file.DataTable.ExtendedProperties.Add(SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName, Path.GetFileName((fs as FileStream)?.Name));
 
                         if (ds.Tables.Contains(file.DataTable.TableName))
                         {
@@ -119,14 +119,14 @@ namespace SkaaGameDataLib
 
         /// <summary>
         /// Saves this <see cref="DataSet"/> to the specified file in the format of <see cref="FileFormats.ResIdxDbf"/>, only including a 
-        /// <see cref="DataTable"/> if its <see cref="SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName"/> is <see cref="StandardGameSetDefaultName"/>
+        /// <see cref="DataTable"/> if its <see cref="SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName"/> is <see cref="StandardGameSetDefaultName"/>
         /// </summary>
         /// <param name="filepath">The path and file to save this <see cref="DataSet"/> to</param>
         public static void SaveStandardGameSet(this DataSet ds, string filepath) => SaveGameSet(ds, filepath, StandardGameSetDefaultName);
         /// <summary>
         /// Saves a portion of this <see cref="DataSet"/> to the specified file in the format of <see cref="FileFormats.ResIdxDbf"/>
         /// </summary>
-        /// <param name="setName">Specifies the <see cref="DataTableSourcePropertyName"/> to consider part of the standard game set</param>
+        /// <param name="setName">Specifies the <see cref="SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName"/> to consider part of the standard game set</param>
         /// <param name="filepath">The path and file to save this <see cref="DataSet"/> to</param>
         public static void SaveGameSet(this DataSet ds, string filepath, string setName)
         {
@@ -172,7 +172,7 @@ namespace SkaaGameDataLib
                     //get the record count for (number of tables in) the specified set
                     short record_count = 0;// = (short)ds.Tables.Count;
                     foreach (DataTable dt in ds.Tables)
-                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName]) == set)
+                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName]) == set)
                             record_count++;
                     //write the record_count
                     headerStream.Write(BitConverter.GetBytes(record_count), 0, sizeof(short));
@@ -183,7 +183,7 @@ namespace SkaaGameDataLib
                     foreach (DataTable dt in ds.Tables)
                     {
                         //ignore DataTables not part of the Standard Game Set
-                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName]) != set)
+                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName]) != set)
                             continue;
 
                         //write SET header's record definitions

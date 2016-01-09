@@ -26,7 +26,7 @@ using System;
 using System.Data;
 using System.Linq;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.Util
 {
     public static class DataColumnExtensions
     {

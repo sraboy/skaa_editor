@@ -25,7 +25,7 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.GameObjects
 {
     public class SkaaSpriteFrame : SkaaFrame
     {

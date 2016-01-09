@@ -29,7 +29,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.Util
 {
     /// <summary>
     /// Represents a dBaseIII table (not to be confused with dBaseIII+ or FoxPro) in a DBF file and makes it manipulable via a DataTable. 

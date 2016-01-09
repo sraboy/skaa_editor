@@ -28,7 +28,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.Util
 {
     /// <summary>
     /// Allows for the reading of record definitions within a file's stream. A record definition

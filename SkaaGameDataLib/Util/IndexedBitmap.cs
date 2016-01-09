@@ -31,7 +31,7 @@ using System.IO;
 using System.Linq;
 using BitmapProcessing;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.Util
 {
     [Serializable]
     public class IndexedBitmap

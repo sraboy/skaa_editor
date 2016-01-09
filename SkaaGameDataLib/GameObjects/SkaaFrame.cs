@@ -22,13 +22,9 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SkaaGameDataLib.Util;
 
-namespace SkaaGameDataLib
+namespace SkaaGameDataLib.GameObjects
 {
     public class SkaaFrame
     {

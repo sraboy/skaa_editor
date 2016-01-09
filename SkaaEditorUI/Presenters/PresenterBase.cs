@@ -29,7 +29,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using SkaaEditorUI.Misc;
-using SkaaGameDataLib;
+using SkaaGameDataLib.Util;
 
 namespace SkaaEditorUI.Presenters
 {

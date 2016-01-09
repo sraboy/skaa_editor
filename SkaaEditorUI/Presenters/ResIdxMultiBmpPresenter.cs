@@ -29,7 +29,8 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using SkaaGameDataLib;
+using SkaaGameDataLib.GameObjects;
+using SkaaGameDataLib.Util;
 
 namespace SkaaEditorUI.Presenters
 {
@@ -56,9 +57,9 @@ namespace SkaaEditorUI.Presenters
         {
             SkaaSprite spr = new SkaaSprite();
             DataTable dt = new DataTable();
-            dt.ExtendedProperties.Add(SkaaGameDataLib.DataTableExtensions.DataSourcePropertyName, filepath);
-            dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn });
-            dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn });
+            dt.ExtendedProperties.Add(SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName, filepath);
+            dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn });
+            dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn });
 
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
@@ -82,8 +83,8 @@ namespace SkaaEditorUI.Presenters
                     DataRow row = dt.NewRow();
                     dt.Rows.Add(row);
                     row.BeginEdit();
-                    row[SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn] = key;
-                    row[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = dic[key];
+                    row[SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn] = key;
+                    row[SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn] = dic[key];
                     row.AcceptChanges();
                 }
             }
@@ -148,7 +149,7 @@ namespace SkaaEditorUI.Presenters
         public override bool Save(string filePath, params object[] param)
         {
             //7KAA expects the definitions to be sorted low-to-high by offset
-            this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn;
+            this.DataView.Sort = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn;
 
             try
             {
@@ -213,9 +214,9 @@ namespace SkaaEditorUI.Presenters
                 fp.BitmapOffset = offset;
 
                 //update the DataView
-                this.DataView.Sort = SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn;
+                this.DataView.Sort = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn;
                 var dr = this.DataView[this.DataView.Find(fp.Name)];
-                dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = fp.BitmapOffset;
+                dr[SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn] = fp.BitmapOffset;
 
                 //ResIdxMultiBmp doesn't include the four-byte size header that IndexedBitmap.GetRleBytesFromBitmap() includes for SPR files
                 offset += bytes.Length - 4;
@@ -255,8 +256,8 @@ namespace SkaaEditorUI.Presenters
             //Create a new DataRow for the new frame
             var dr = this.DataView.Table.NewRow();
             dr.BeginEdit();
-            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn] = fr.Name;
-            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = fr.BitmapOffset;
+            dr[SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn] = fr.Name;
+            dr[SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn] = fr.BitmapOffset;
             dr.EndEdit();
             this.DataView.Table.Rows.Add(dr);
         }
