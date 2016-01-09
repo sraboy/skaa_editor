@@ -208,7 +208,6 @@ namespace Capslock.Windows.Forms.ImageEditor
             this._linePoints = new Queue<Point>();          //for drawing a line
             this.AutoPan = false;                           //the base constructor sets this to true but we have a tool for panning
             this.SnapSelectionToGrid = true;                //dragging to select rectangles will snap to the pixel grid, which helps in capturing specific areas while zoomed in
-
             this.KeyDown += ImageEditorBox_KeyDown;
         }
 
@@ -279,8 +278,8 @@ namespace Capslock.Windows.Forms.ImageEditor
                                 this.SelectionRegion = new RectangleF(
                                     (int)oldRegion.X,
                                     (int)oldRegion.Y,
-                                    (int)oldRegion.Width,
-                                    (int)oldRegion.Height);
+                                    (int)oldRegion.Width + 1,
+                                    (int)oldRegion.Height + 1);
                             }
                         }
                         break;
