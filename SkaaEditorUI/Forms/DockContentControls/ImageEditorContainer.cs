@@ -35,6 +35,8 @@ namespace SkaaEditorUI.Forms.DockContentControls
     {
         private ImageEditorBox _imageEditorBox;
         private MultiImagePresenterBase _activeSprite;
+        private static Action<int, int, bool> _resizeImageMethod;
+
 
         #region Events
         private EventHandler _activeSpriteChanged;
@@ -105,13 +107,35 @@ namespace SkaaEditorUI.Forms.DockContentControls
         }
 
         private void _activeSprite_ActiveFrameChanged(object sender, EventArgs e)
+        public Image Image //todo: Image should be immutable since edits are always done in ImageEditBox. Either return a clone, return a new IImage interface or separately expose the properties.
         {
             this._imageEditorBox.Image = this.ActiveSprite.ActiveFrame.Bitmap;
+            get
+            {
+                return this._imageEditorBox.Image;
+            }
+        }
+        /// <summary>
+        /// The method <see cref="DrawingToolbox"/> will call when resizing an image 
+        /// with the options set in <see cref="ResizeImageDialog"/>
+        /// </summary>
+        public static Action<int, int, bool> ResizeImageMethod
+        {
+            get
+            {
+                return _resizeImageMethod;
+            }
+
+            private set
+            {
+                _resizeImageMethod = value;
+            }
         }
 
         public ImageEditorContainer()
         {
             InitializeComponent();
+            ResizeImageMethod = this._imageEditorBox.Resize;
             this._imageEditorBox.ShowPixelGrid = true;
             SetActiveColors(Color.Black, Color.FromArgb(0, 0, 0, 0));
         }

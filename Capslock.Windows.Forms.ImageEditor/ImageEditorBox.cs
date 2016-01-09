@@ -389,27 +389,17 @@ namespace Capslock.Windows.Forms.ImageEditor
         public virtual void ChangeToolMode(object sender, EventArgs e)
         {
             this.Focus();
-
-            var oldTool = this.SelectedTool;
             var newTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
             this.SelectedTool = newTool;
             this.ChangeDrawingToolCursor(this.SelectedTool);
+        }
+        public virtual void Resize(int NewWidth, int NewHeight, bool MaintainAspectRatio)
+        {
+            if (MaintainAspectRatio)
+                this.Image = ResizeAndScale(this.Image, NewWidth);
+            else
+                this.Image = ResizeAndCrop(this.Image, NewWidth, NewHeight);
 
-            if (this.SelectedTool == DrawingTools.ResizeImage)
-            {
-                using (ResizeImageDialog dlg = new ResizeImageDialog(this.Image.Width, this.Image.Height))
-                {
-                    if (dlg.ShowDialog() == DialogResult.OK)
-                    {
-                        if (dlg.MaintainAspectRatio)
-                            ResizeAndScale(dlg.NewWidth);
-                        else
-                            ResizeAndCrop(dlg.NewWidth, dlg.NewHeight);
-                    }
-                }
-            }
-
-            this.SelectedTool = oldTool;
         }
         #endregion
 
@@ -543,34 +533,42 @@ namespace Capslock.Windows.Forms.ImageEditor
                 }
             }
         }
-        protected virtual void ResizeAndCrop(int width, int height)
+        protected static Image ResizeAndCrop(Image original, int width, int height)
         {
-            Bitmap cropped = new Bitmap(width, height, this.Image.PixelFormat);
-            cropped.Palette = this.Image.Palette;
+            Bitmap cropped = new Bitmap(width, height, original.PixelFormat);
+            cropped.Palette = original.Palette;
 
             using (Graphics g = Graphics.FromImage(cropped))
-                g.DrawImage(this.Image,
+            {
+                g.DrawImage(original,
                             new Rectangle(0, 0, cropped.Width, cropped.Height),
-                            new Rectangle(0, 0, this.Image.Width, this.Image.Height),
+                            new Rectangle(0, 0, cropped.Width, cropped.Height),
                             GraphicsUnit.Pixel);
+            }
 
-            this.Image = cropped;
+            return cropped;
         }
-        protected virtual void ResizeAndScale(int width)
+        protected static Image ResizeAndScale(Image original, int width)
         {
-            double targetHeight = Convert.ToDouble(width) / (this.Image.Width / this.Image.Height);
+            double div = ((double)original.Width / (double)original.Height);
+            double targetHeight = Convert.ToDouble(width) / div;
 
-            Bitmap scaled = new Bitmap(width, (int)targetHeight, this.Image.PixelFormat);
-            scaled.Palette = this.Image.Palette;
+            Bitmap scaled = new Bitmap(width, (int)targetHeight, original.PixelFormat);
+            scaled.Palette = original.Palette;
 
             using (Graphics g = Graphics.FromImage(scaled))
-                g.DrawImage(this.Image,
-                            new Rectangle(0, 0, scaled.Width, scaled.Height),
-                            new Rectangle(0, 0, this.Image.Width, this.Image.Height),
-                            GraphicsUnit.Pixel);
+            {
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
-            this.Image = scaled;
+                g.DrawImage(original,
+                            new Rectangle(0, 0, scaled.Width, scaled.Height),
+                            new Rectangle(0, 0, original.Width, original.Height),
+                            GraphicsUnit.Pixel);
+            }
+
+            return scaled;
         }
+
         private void PutSelectionToClipboard()
         {
             Clipboard.SetImage(GetSelectedImage());

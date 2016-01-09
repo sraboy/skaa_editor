@@ -303,7 +303,7 @@ namespace SkaaEditorUI.Forms
         {
             var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
             SetActiveSprite(iec?.ActiveSprite);
-
+            this._toolBoxContainer.SetImageToEdit(iec?.Image);
             ToggleUISaveEditOptions();
         }
         private void ToolboxContainer_SelectedToolChanged(object sender, EventArgs e)
@@ -318,7 +318,27 @@ namespace SkaaEditorUI.Forms
             iec.SetActiveColors((sender as Cyotek.Windows.Forms.ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
         }
         private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e) { }
-        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e) { }
+        /// <summary>
+        /// Updates various UI elements when <see cref="ImageEditorContainer.Image"/> is edited.
+        /// </summary>
+        /// <remarks>
+        /// While there are methods here to update the UI when the image is changed by virtue
+        /// of changing the <see cref="ImageEditorContainer.ActiveSprite"/> or navigating its
+        /// frames, this method is necessary to update the UI when <see cref="ImageEditorContainer"/>
+        /// alters the image internally. For example, image resizing is handled entirely internal to
+        /// the class.
+        /// </remarks>
+        private void ImageEditorContainer_ImageChanged(object sender, EventArgs e)
+        {
+            var iec = (sender as ImageEditorContainer);
+
+            //If the image was resized, ToolBoxContainer needs its new dimensions
+            //in order to display them if it is resized again.
+            this._toolBoxContainer.SetImageToEdit(iec?.Image);
+
+            //We also need to display those new dimensions.
+            SetStatusStrip(iec?.ActiveSprite);
+        }
         private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e)
         {
             SetStatusStrip(sender as MultiImagePresenterBase);
@@ -492,15 +512,25 @@ namespace SkaaEditorUI.Forms
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
             iec.ImageChanged += ImageEditorContainer_ImageChanged;
+
+            //Because ImageEditorContainer.ResizeImageMethod refers to an instance method
+            //set in it's non-static constructor, we can't set this until an ImageEditorContainer
+            //has been created.
+            this._toolBoxContainer.ResizeImageDelegate = ImageEditorContainer.ResizeImageMethod;
             return iec;
         }
-
+        /// <summary>
+        /// Updates the UI to display the information for the specified sprite, or 
+        /// clears/disables various UI items if <paramref name="spr"/> is null.
+        /// </summary>
+        /// <param name="spr">A <see cref="MultiImagePresenterBase"/> or null</param>
         internal void SetActiveSprite(MultiImagePresenterBase spr)
         {
             var iec = (this._dockPanel.ActiveDocument as ImageEditorContainer);
             iec?.SetSprite(spr);
             this._spriteViewerContainer.SetSprite(iec?.ActiveSprite);
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
+            this._toolBoxContainer.SetImageToEdit(iec?.Image);
 
             SetStatusStrip(iec?.ActiveSprite);
             ToggleUISaveEditOptions();

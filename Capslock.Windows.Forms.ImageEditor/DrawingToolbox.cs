@@ -24,6 +24,7 @@
 ***************************************************************************/
 #endregion
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -65,6 +66,19 @@ namespace Capslock.Windows.Forms.ImageEditor
 
         private DrawingTools _selectedTool = DrawingTools.None;
         /// <summary>
+        /// The method <see cref="DrawingToolbox"/> will call when resizing an image 
+        /// with the options set in <see cref="ResizeImageDialog"/>
+        /// </summary>
+        /// <remarks>
+        /// I chose to use a delegate here rather than put the call to <see cref="ResizeImageDialog"/>
+        /// inside the <see cref="ImageEditorBox"/> to maintain a separation of responsibilities. The
+        /// <see cref="ImageEditorBox"/> should handle image manipulation, not the UI elements dictating
+        /// how to manipulate it.
+        /// </remarks>
+        public Action<int, int, bool> ResizeImageDelegate;
+        public static Image ImageToEdit;
+
+        /// <summary>
         /// Gets or sets the currently-selected tool from <see cref="DrawingTools"/>. It will toggle off
         /// if set to the same tool again by setting itself to <see cref="DrawingTools.None"/>
         /// </summary>
@@ -81,7 +95,7 @@ namespace Capslock.Windows.Forms.ImageEditor
                     this._selectedTool = value;
                     OnSelectedToolChanged(new DrawingToolSelectedEventArgs(this._selectedTool));
                 }
-                else
+                else if (this._selectedTool != DrawingTools.ResizeImage)
                     CloseSelectedTool();
             }
         }
@@ -94,10 +108,9 @@ namespace Capslock.Windows.Forms.ImageEditor
             this._selectedTool = DrawingTools.None;
         }
 
-
         private void btnTool_Click(object sender, EventArgs e)
         {
-            CheckBox cb = (sender as CheckBox);
+            Control cb = sender as Control;
 
             switch (cb.Name)
             {
@@ -117,13 +130,19 @@ namespace Capslock.Windows.Forms.ImageEditor
                     this.SelectedTool = DrawingTools.SelectRectangle;
                     break;
                 case "btnResizeImageTool":
-                    this.SelectedTool = DrawingTools.ResizeImage;
-                    int newHeight = 20;
-                    int newWidth = 20;
-                    bool scale = false;
-                    //show resize dialog
-                    //get scale vs crop
-                    //call method
+                    if (ImageToEdit != null && this.ResizeImageDelegate != null)
+                    {
+                        var oldTool = this.SelectedTool;
+                        this.SelectedTool = DrawingTools.ResizeImage;
+
+                        using (ResizeImageDialog dlg = new ResizeImageDialog(ImageToEdit.Width, ImageToEdit.Height))
+                        {
+                            if (dlg.ShowDialog() == DialogResult.OK)
+                            {
+                                ResizeImageDelegate(dlg.NewWidth, dlg.NewHeight, dlg.MaintainAspectRatio);
+                            }
+                        }
+                    }
                     break;
                 default:
                     this.SelectedTool = DrawingTools.None;
@@ -132,11 +151,15 @@ namespace Capslock.Windows.Forms.ImageEditor
 
             ToggleCheckBoxes(sender);
         }
-        private void ToggleCheckBoxes(object sender)
+
+        internal void ToggleCheckBoxes(object sender)
         {
+            //If this is null, then everything will be disabled. This
+            //happens for DrawingTools.None and if sender isn't a 
+            //Checkbox (like the Button used for Resize)
             string senderCheckBoxName = (sender as CheckBox)?.Name;
 
-            foreach (CheckBox c in this.Controls)
+            foreach (CheckBox c in this.Controls.OfType<CheckBox>())
             {
                 c.Checked = (c.Name == senderCheckBoxName)
                             ? c.Checked  //don't change the sender

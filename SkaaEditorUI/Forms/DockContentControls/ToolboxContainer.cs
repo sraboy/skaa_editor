@@ -22,14 +22,14 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Capslock.Windows.Forms.ImageEditor;
+using Cyotek.Windows.Forms;
 using SkaaEditorControls;
 using WeifenLuo.WinFormsUI.Docking;
-using Cyotek.Windows.Forms;
-using System;
 
 namespace SkaaEditorUI.Forms.DockContentControls
 {
@@ -44,6 +44,22 @@ namespace SkaaEditorUI.Forms.DockContentControls
             get
             {
                 return this._activePalette;
+            }
+        }
+        /// <summary>
+        /// The method <see cref="DrawingToolbox"/> will call when resizing an image 
+        /// with the options set in <see cref="ResizeImageDialog"/>
+        /// </summary>
+        public Action<int, int, bool> ResizeImageDelegate
+        {
+            get
+            {
+                return this._drawingToolbox.ResizeImageDelegate;
+            }
+
+            set
+            {
+                this._drawingToolbox.ResizeImageDelegate = value;
             }
         }
         public event EventHandler SelectedToolChanged

@@ -102,15 +102,15 @@
             // 
             this.pixelWidthUpDown.Location = new System.Drawing.Point(120, 84);
             this.pixelWidthUpDown.Maximum = new decimal(new int[] {
-            2147483647,
+            2000,
             0,
             0,
             0});
             this.pixelWidthUpDown.Minimum = new decimal(new int[] {
-            2147483647,
+            1,
             0,
             0,
-            -2147483648});
+            0});
             this.pixelWidthUpDown.Name = "pixelWidthUpDown";
             this.pixelWidthUpDown.Size = new System.Drawing.Size(72, 20);
             this.pixelWidthUpDown.TabIndex = 1;
@@ -120,7 +120,7 @@
             0,
             0,
             0});
-            this.pixelWidthUpDown.ValueChanged += new System.EventHandler(this.precentUpDown_ValueChanged);
+            this.pixelWidthUpDown.ValueChanged += new System.EventHandler(this.pixelWidthUpDown_ValueChanged);
             this.pixelWidthUpDown.Enter += new System.EventHandler(this.OnUpDownEnter);
             this.pixelWidthUpDown.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnUpDownKeyUp);
             this.pixelWidthUpDown.Leave += new System.EventHandler(this.OnUpDownLeave);
@@ -129,15 +129,15 @@
             // 
             this.pixelHeightUpDown.Location = new System.Drawing.Point(120, 108);
             this.pixelHeightUpDown.Maximum = new decimal(new int[] {
-            2147483647,
+            2000,
             0,
             0,
             0});
             this.pixelHeightUpDown.Minimum = new decimal(new int[] {
-            2147483647,
+            1,
             0,
             0,
-            -2147483648});
+            0});
             this.pixelHeightUpDown.Name = "pixelHeightUpDown";
             this.pixelHeightUpDown.Size = new System.Drawing.Size(72, 20);
             this.pixelHeightUpDown.TabIndex = 4;
@@ -147,7 +147,7 @@
             0,
             0,
             0});
-            this.pixelHeightUpDown.ValueChanged += new System.EventHandler(this.precentUpDown_ValueChanged);
+            this.pixelHeightUpDown.ValueChanged += new System.EventHandler(this.pixelHeightUpDown_ValueChanged);
             this.pixelHeightUpDown.Enter += new System.EventHandler(this.OnUpDownEnter);
             this.pixelHeightUpDown.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnUpDownKeyUp);
             this.pixelHeightUpDown.Leave += new System.EventHandler(this.OnUpDownLeave);
@@ -176,9 +176,15 @@
             // 
             // percentUpDown
             // 
+            this.percentUpDown.Enabled = false;
             this.percentUpDown.Location = new System.Drawing.Point(124, 15);
             this.percentUpDown.Maximum = new decimal(new int[] {
             2000,
+            0,
+            0,
+            0});
+            this.percentUpDown.Minimum = new decimal(new int[] {
+            1,
             0,
             0,
             0});
@@ -191,7 +197,7 @@
             0,
             0,
             0});
-            this.percentUpDown.ValueChanged += new System.EventHandler(this.precentUpDown_ValueChanged);
+            this.percentUpDown.ValueChanged += new System.EventHandler(this.percentUpDown_ValueChanged);
             this.percentUpDown.Enter += new System.EventHandler(this.OnUpDownEnter);
             this.percentUpDown.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnUpDownKeyUp);
             // 
@@ -256,8 +262,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.percentUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-        }
 
+        }
 
 
         #endregion

@@ -34,7 +34,7 @@
             this.btnPaintBucketTool = new System.Windows.Forms.CheckBox();
             this.btnPencilTool = new System.Windows.Forms.CheckBox();
             this.btnPanTool = new System.Windows.Forms.CheckBox();
-            this.btnResizeImageTool = new System.Windows.Forms.CheckBox();
+            this.btnResizeImageTool = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSelectRectangleTool
@@ -94,14 +94,13 @@
             // 
             // btnResizeImageTool
             // 
-            this.btnResizeImageTool.Appearance = System.Windows.Forms.Appearance.Button;
             this.btnResizeImageTool.Image = global::Capslock.Windows.Forms.ImageEditor.Properties.Resources.ResizeIcon;
             this.btnResizeImageTool.Location = new System.Drawing.Point(29, 34);
             this.btnResizeImageTool.Name = "btnResizeImageTool";
             this.btnResizeImageTool.Size = new System.Drawing.Size(25, 25);
-            this.btnResizeImageTool.TabIndex = 5;
+            this.btnResizeImageTool.TabIndex = 6;
             this.btnResizeImageTool.UseVisualStyleBackColor = true;
-            this.btnResizeImageTool.CheckedChanged += new System.EventHandler(this.btnTool_Click);
+            this.btnResizeImageTool.Click += new System.EventHandler(this.btnTool_Click);
             // 
             // DrawingToolbox
             // 
@@ -127,6 +126,6 @@
         private System.Windows.Forms.CheckBox btnLineTool;
         private System.Windows.Forms.CheckBox btnPaintBucketTool;
         private System.Windows.Forms.CheckBox btnSelectRectangleTool;
-        private System.Windows.Forms.CheckBox btnResizeImageTool;
+        private System.Windows.Forms.Button btnResizeImageTool;
     }
 }
