@@ -56,6 +56,10 @@ namespace Capslock.Windows.Forms.ImageEditor
         /// <summary>
         /// Select a rectangular area of the image, given two points defining two diagonally-opposing corners
         /// </summary>
-        SelectRectangle
+        SelectRectangle,
+        /// <summary>
+        /// Resizes the image
+        /// </summary>
+        ResizeImage
     };
 }

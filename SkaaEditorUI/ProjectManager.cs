@@ -32,9 +32,6 @@ using TrulyObservableCollection;
 
 namespace SkaaEditorUI
 {
-    /// <summary>
-    /// A singleton class that will manage a <see cref="Project"/>'s file operations
-    /// </summary>
     public class ProjectManager
     {
         private static readonly TraceSource Logger = new TraceSource($"{typeof(ProjectManager)}", SourceLevels.All);
@@ -43,11 +40,8 @@ namespace SkaaEditorUI
         #region Private Members
         private MDISkaaEditorMainForm _mainForm;
         private TrulyObservableCollection<MultiImagePresenterBase> _openSprites;
-        //private GameSetPresenter _gameSetPresenter = new GameSetPresenter();
-
         private bool _hasUnsavedChanges = false; //todo: track image changes so we know if items are unsaved
         private bool _isInTempDirectory = false;
-
         private List<string> _tempFiles = new List<string>();
         private string _tempDirectory = GetTemporaryDirectory();
         private string _saveDirectory;

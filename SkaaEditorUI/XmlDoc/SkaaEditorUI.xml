@@ -213,11 +213,6 @@
             values based on the information in the <see cref="P:SkaaEditorUI.Presenters.MultiImagePresenterBase.DataView"/> so we need to update ours as well.
             </summary>
         </member>
-        <member name="T:SkaaEditorUI.ProjectManager">
-            <summary>
-            A singleton class that will manage a <see cref="!:Project"/>'s file operations
-            </summary>
-        </member>
         <member name="M:SkaaEditorUI.ProjectManager.GetTemporaryDirectory">
             <summary>
             Creates a new <see cref="P:SkaaEditorUI.ProjectManager.TempDirectory"/> in <see cref="M:System.IO.Path.GetTempPath"/>

@@ -39,7 +39,6 @@ namespace Capslock.Windows.Forms.ImageEditor
     [ToolboxItem(true)]
     public partial class ImageEditorBox : ImageBox
     {
-        //todo: with a _bitmap var, expose Image as a Bitmap to eliminate the casting that goes on with all the drawing
         #region Private Fields
         private bool _isPanning;
         private Color _activePrimaryColor;
@@ -57,7 +56,7 @@ namespace Capslock.Windows.Forms.ImageEditor
 
         [DefaultValue("false")]
         [Category("Behavior")]
-        protected virtual bool IsDrawing { get; set; }
+        private bool IsDrawing { get; set; }
 
         #region Public Accessors
         [Category("Behavior")]
@@ -210,8 +209,6 @@ namespace Capslock.Windows.Forms.ImageEditor
             this.SnapSelectionToGrid = true;                //dragging to select rectangles will snap to the pixel grid, which helps in capturing specific areas while zoomed in
             this.KeyDown += ImageEditorBox_KeyDown;
         }
-
-
         #endregion
 
         #region Mouse & Keyboard Events
@@ -391,12 +388,31 @@ namespace Capslock.Windows.Forms.ImageEditor
         public virtual void ChangeToolMode(object sender, EventArgs e)
         {
             this.Focus();
-            this.SelectedTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
+
+            var oldTool = this.SelectedTool;
+            var newTool = (e as DrawingToolSelectedEventArgs).SelectedTool;
+            this.SelectedTool = newTool;
             this.ChangeDrawingToolCursor(this.SelectedTool);
+
+            if (this.SelectedTool == DrawingTools.ResizeImage)
+            {
+                using (ResizeImageDialog dlg = new ResizeImageDialog(this.Image.Width, this.Image.Height))
+                {
+                    if (dlg.DialogResult == DialogResult.OK)
+                    {
+                        if (dlg.MaintainAspectRatio)
+                            ResizeAndScale(dlg.NewWidth);
+                        else
+                            ResizeAndCrop(dlg.NewWidth, dlg.NewHeight);
+                    }
+                }
+            }
+
+            this.SelectedTool = oldTool;
         }
         #endregion
 
-        #region Tool Methods
+        #region Editing Methods
         protected virtual void LineDraw(MouseEventArgs e)
         {
             this.IsDrawing = true;
@@ -525,6 +541,25 @@ namespace Capslock.Windows.Forms.ImageEditor
                     e.X++;
                 }
             }
+        }
+        protected virtual Bitmap ResizeAndCrop(int width, int height)
+        {
+            Bitmap bmp = new Bitmap(width, height);
+            using (Graphics g = Graphics.FromImage(bmp))
+                g.DrawImage(this.Image, new Rectangle(0, 0, bmp.Width, bmp.Height), new Rectangle(0, 0, this.Image.Width, this.Image.Height), GraphicsUnit.Pixel);
+            return bmp;
+        }
+        protected virtual Bitmap ResizeAndScale(int width)
+        {
+            double targetHeight = Convert.ToDouble(width) / (this.Image.Width / this.Image.Height);
+
+            Bitmap bmp = new Bitmap(width, (int)targetHeight);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+                g.DrawImage(this.Image, new Rectangle(0, 0, bmp.Width, bmp.Height), new Rectangle(0, 0, this.Image.Width, this.Image.Height), GraphicsUnit.Pixel);
+
+            return bmp;
+
         }
         private void PutSelectionToClipboard()
         {

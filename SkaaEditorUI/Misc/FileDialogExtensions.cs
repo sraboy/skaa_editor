@@ -37,8 +37,6 @@ namespace SkaaEditorUI.Misc
                 return null;
         }
 
-        //todo: Create a FileDialogResults class and return that so it can always be parsed
-
         public static bool CustomShowDialog(this SaveFileDialog dlg, Func<bool> saveFileDelegate)// where T : class
         {
             if (dlg.ShowDialog() == DialogResult.OK)

@@ -202,6 +202,11 @@
             </summary>
             <seealso cref="T:SkaaGameDataLib.Util.DbfFile"/>
         </member>
+        <member name="F:SkaaGameDataLib.Util.FileFormats.Palette">
+            <summary>
+            A 7KAA-formatted palette file
+            </summary>
+        </member>
         <member name="T:SkaaGameDataLib.Util.ResourceDefinitionReader">
             <summary>
             Allows for the reading of record definitions within a file's stream. A record definition
@@ -220,8 +225,8 @@
         <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResIdxOffsetSize">
             <summary>
             The number of bytes used to represent the offset of the record in a <see cref="F:SkaaGameDataLib.Util.FileFormats._ResIdxFile"/>
-            or <see cref="F:SkaaGameDataLib.Util.FileFormats._ResFile"/>. Values using less than this number of bytes are simply left-padded 
-            with nulls (0x0) in order to maintain alignment of the definitions.
+            Values using less than this number of bytes are simply left-padded with nulls (0x0) in order to maintain
+            alignment of the definitions. (Always left-padded, meaning little-endian.)
             </summary>
         </member>
         <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResIdxDefinitionSize">
@@ -229,7 +234,7 @@
             The total size of a record definition in a <see cref="F:SkaaGameDataLib.Util.FileFormats._ResIdxFile"/>
             </summary>
         </member>
-        <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader._maxAcceptableRecordCount">
+        <member name="M:SkaaGameDataLib.Util.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream)">
             <summary>
             Arbitrary number that isn't necessary for the game but, since the record count
             is read from the file, it could be any 16-bit value. Since *.res files have no
@@ -237,20 +242,6 @@
             records is not a valid resource file. This is only relevant when trying to read
             arbitrary files, for example, when attempting to identify a file's type.
             </summary>
-        </member>
-        <member name="M:SkaaGameDataLib.Util.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream)">
-            <summary>
-            Reads the header of a stream containing definitions of a piece of data's name and its offset in a file.
-            </summary>
-            <param name="str">
-            The stream from which to read. The first two bytes at <see cref="P:System.IO.Stream.Position"/>
-            must be a uint16 containing the number of definitions to be read.
-            </param>
-            <returns>
-            A <see cref="T:System.Collections.Generic.Dictionary`2"/> of Name-Offset pairs, with  
-            <see cref="P:System.Collections.Generic.KeyValuePair`2.Key"/> set to the ASCII name of the record and 
-            <see cref="P:System.Collections.Generic.KeyValuePair`2.Value"/> set to that record's offset in a file.
-            </returns>
         </member>
         <member name="F:SkaaGameDataLib.Util.IndexedBitmap._skaaTransparentColor">
             <summary>
@@ -274,6 +265,18 @@
             Reads a Run Length Encoded stream, where only transparent bytes are RLE, and builds a <see cref="T:System.Drawing.Bitmap"/>
             </summary>
             <param name="stream">A stream with its <see cref="P:System.IO.Stream.Position"/> set to the first byte of the header, which is two int16 values for width and height.</param>
+        </member>
+        <member name="T:SkaaGameDataLib.Util.PaletteLoader">
+            <summary>
+            Through <see cref="M:SkaaGameDataLib.Util.PaletteLoader.FromResFile(System.String)"/>, loads a 7KAA formatted color palette (see <see cref="F:SkaaGameDataLib.Util.FileFormats.Palette"/>)
+            </summary>
+        </member>
+        <member name="M:SkaaGameDataLib.Util.PaletteLoader.FromResFile(System.String)">
+            <summary>
+            Reads a file in the format of a <see cref="F:SkaaGameDataLib.Util.FileFormats.Palette"/>
+            </summary>
+            <param name="filepath">The file to open</param>
+            <returns>A new <see cref="T:System.Drawing.Imaging.ColorPalette"/> consisting of the colors in the specified file</returns>
         </member>
         <member name="F:SkaaGameDataLib.Util.DataColumnExtensions.ByteLengthPropertyName">
             <summary>
@@ -315,8 +318,11 @@
             Verifies the file's type by extension. *.res files are passed to <see cref="M:SkaaGameDataLib.Util.FileTypeChecks.CheckResFileType(System.String)"/> for 
             separate tests.
             </summary>
-            <param name="path"></param>
-            <returns></returns>
+            <param name="filePath">The full path of the file to check</param>
+            <returns>
+            The recognized <see cref="T:SkaaGameDataLib.Util.FileFormats"/> format or 
+            <see cref="F:SkaaGameDataLib.Util.FileFormats._Unknown"/> if the file could not be recognized
+            </returns>
         </member>
         <member name="M:SkaaGameDataLib.Util.FileTypeChecks.CheckResFileType(System.String)">
             <summary>

@@ -101,7 +101,6 @@ namespace SkaaGameDataLib.Util
             byte[] indexedData = new byte[(bmp.Size.Height * bmp.Size.Width) + 8]; //frame data + frame header
             bool transparentByteFound = false;
 
-            // todo: will have to recalculate height/width if bitmap size changes
             byte[] width = BitConverter.GetBytes((short)bmp.Width);
             byte[] height = BitConverter.GetBytes((short)bmp.Height);
 

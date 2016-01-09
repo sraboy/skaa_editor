@@ -116,6 +116,15 @@ namespace Capslock.Windows.Forms.ImageEditor
                 case "btnSelectRectangleTool":
                     this.SelectedTool = DrawingTools.SelectRectangle;
                     break;
+                case "btnResizeImageTool":
+                    this.SelectedTool = DrawingTools.ResizeImage;
+                    int newHeight = 20;
+                    int newWidth = 20;
+                    bool scale = false;
+                    //show resize dialog
+                    //get scale vs crop
+                    //call method
+                    break;
                 default:
                     this.SelectedTool = DrawingTools.None;
                     break;
