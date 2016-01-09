@@ -128,8 +128,12 @@ namespace SkaaGameDataLib.Util
         DbaseIII,
         SaveGame,
         Font,
+        /// <summary>
+        /// A 7KAA-formatted palette file
+        /// </summary>
         Palette,
-        FramePNG,
-        SpritePNG,
+        WindowsBitmap,
+        WindowsText,
+        WindowsWaveAudio
     }
 }

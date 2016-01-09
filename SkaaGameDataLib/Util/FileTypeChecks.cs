@@ -39,17 +39,20 @@ namespace SkaaGameDataLib.Util
         /// Verifies the file's type by extension. *.res files are passed to <see cref="CheckResFileType(string)"/> for 
         /// separate tests.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static FileFormats CheckFileType(string path)
+        /// <param name="filePath">The full path of the file to check</param>
+        /// <returns>
+        /// The recognized <see cref="FileFormats"/> format or 
+        /// <see cref="FileFormats._Unknown"/> if the file could not be recognized
+        /// </returns>
+        public static FileFormats CheckFileType(string filePath)
         {
-            string file_ext = Path.GetExtension(path);
+            string file_ext = Path.GetExtension(filePath);
             //string filename = Path.GetFileNameWithoutExtension(path);
 
             switch (file_ext)
             {
                 case ".res":
-                    return CheckResFileType(path);
+                    return CheckResFileType(filePath);
                 case ".icn":
                     return FileFormats.SpriteFrameSpr;
                 case ".spr":
@@ -61,9 +64,13 @@ namespace SkaaGameDataLib.Util
                 case ".bin":
                     return FileFormats._Unknown;
                 case ".bmp":
-                    return FileFormats._Unknown;
+                    return FileFormats.WindowsBitmap;
+                case ".txt":
+                    return FileFormats.WindowsText;
+                case ".wav":
+                    return FileFormats.WindowsWaveAudio;
                 default:
-                    return CheckResFileType(path);
+                    return CheckResFileType(filePath);
             }
         }
 
@@ -205,6 +212,5 @@ namespace SkaaGameDataLib.Util
             str.Position = oldPos;
             return format;
         }
-
     }
 }
