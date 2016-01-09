@@ -175,6 +175,7 @@ namespace SkaaEditorUI.Presenters
         }
 
         protected abstract MemoryStream GetSpriteStream();
+        protected abstract void AddNewFrameDataRow(FramePresenter fr);
         public abstract void RecalculateFrameOffsets();
 
         public abstract void SetSpriteDataView(GameSetPresenter gsp);
@@ -246,5 +247,36 @@ namespace SkaaEditorUI.Presenters
 
             return bitmap;
         }
+        public FramePresenter AddNewFrame(string name, int height, int width)
+        {
+            //We want to place the new frame last, so we need to use the currently-last 
+            //frame's properties to set the new one's BitmapOffset
+            var lastFrame = this.Frames[this.Frames.Count - 1];
+
+            //Build the new frame.
+            SkaaFrame sf = new SkaaFrame();
+            sf.IndexedBitmap = new IndexedBitmap(new Bitmap(width, height) { Palette = this.PalettePresenter.GameObject });
+            sf.Name = name;
+
+            //Note: We just use the bitmap's height & width, which essentially assumes there are no transparent pixels.
+            //This is just a quick cheat, rather than calling GetSprBytes() to get the real offset based on RLE data.
+            sf.BitmapOffset = lastFrame.BitmapOffset + (lastFrame.Bitmap.Height * lastFrame.Bitmap.Width);
+
+            //Build the new FramePresenter. This takes care of setting up fp's properties for us.
+            FramePresenter fp = new FramePresenter(sf);
+
+            AddNewFrameDataRow(fp);
+
+
+            //Update this and SkaaSprite's Frames
+            this.Frames.Add(fp);
+            this.GameObject.Frames.Add(sf);
+
+            //Ensures RecalculateFrameOffsets will get the real offset for us later
+            this.BitmapHasChanges = true;
+
+            return fp;
+        }
+
     }
 }

@@ -250,6 +250,16 @@ namespace SkaaEditorUI.Presenters
             dlg.Filter = $"7KAA Resource Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.SpriteId ?? null;
         }
+        protected override void AddNewFrameDataRow(FramePresenter fr)
+        {
+            //Create a new DataRow for the new frame
+            var dr = this.DataView.Table.NewRow();
+            dr.BeginEdit();
+            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn] = fr.Name;
+            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = fr.BitmapOffset;
+            dr.EndEdit();
+            this.DataView.Table.Rows.Add(dr);
+        }
         #endregion
     }
 }

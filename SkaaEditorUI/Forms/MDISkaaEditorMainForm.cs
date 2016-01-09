@@ -188,39 +188,11 @@ namespace SkaaEditorUI.Forms
         #region Other Click Events
         private void addFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //todo: most of this will be moved into MultiImagePresenterBase
-
             var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
             if (iec == null)
                 return;
 
-            //We want to place the new frame last, so we need to use the currently-last 
-            //frame's properties to set the new one's BitmapOffset
-            var lastFrame = iec.ActiveSprite.Frames[iec.ActiveSprite.Frames.Count - 1];
-
-            //Build the new frame.
-            SkaaFrame sf = new SkaaFrame();
-            sf.IndexedBitmap = new IndexedBitmap(new Bitmap(42, 29) { Palette = this.ActivePalette }); //todo: prompt the user for the height & width (and/or implement frame re-sizing)
-            sf.Name = "STABLCAR";                         //todo: prompt the user for the frame's name
-            //Note: We just use the bitmap's height & width, which essentially assumes there are no transparent pixels.
-            //This is just a quick cheat, rather than calling GetSprBytes() to get the real offset based on RLE data.
-            sf.BitmapOffset = lastFrame.BitmapOffset + (lastFrame.Bitmap.Height * lastFrame.Bitmap.Width);
-
-            //Build the new FramePresenter. This takes care of setting up fp's properties for us.
-            FramePresenter fp = new FramePresenter(sf);
-
-            //Create a new DataRow for the new frame
-            var dr = iec.ActiveSprite.DataView.Table.NewRow();
-            dr.BeginEdit();
-            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameNameColumn] = sf.Name;
-            dr[SkaaGameDataLib.DataRowExtensions.ResIdxFrameOffsetColumn] = sf.BitmapOffset;
-            dr.EndEdit();
-            iec.ActiveSprite.DataView.Table.Rows.Add(dr);
-
-            //Update the MultiImagePresenterBase and SkaaSprite
-            iec.ActiveSprite.Frames.Add(fp);
-            iec.ActiveSprite.GameObject.Frames.Add(sf);
-            iec.ActiveSprite.BitmapHasChanges = true;
+            var frame = iec.ActiveSprite.AddNewFrame("STBLCARA", 29, 42);
 
             //Reset the ActiveSprite so the UI is aware of the new frame. This has to happen 
             //before setting the ActiveFrame (below) because the various controls don't yet
@@ -230,7 +202,7 @@ namespace SkaaEditorUI.Forms
             SetActiveSprite(iec.ActiveSprite);
 
             //Make the new frame the ActiveFrame so the user can begin editing it immediately
-            iec.ActiveSprite.ActiveFrame = fp;
+            iec.ActiveSprite.ActiveFrame = frame;
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {

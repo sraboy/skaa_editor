@@ -22,6 +22,7 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
@@ -130,6 +131,19 @@ namespace SkaaEditorUI.Presenters
             dlg.DefaultExt = ".spr";
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.SpriteId ?? null;
+        }
+        protected override void AddNewFrameDataRow(FramePresenter fr)
+        {
+            //todo: Need data for the other SFRAME columns
+            throw new NotImplementedException();
+
+            //Create a new DataRow for the new frame
+            var dr = this.DataView.Table.NewRow();
+            dr.BeginEdit();
+            dr[SkaaGameDataLib.DataRowExtensions.SprFrameNameColumn] = fr.Name;
+            dr[SkaaGameDataLib.DataRowExtensions.SprFrameOffsetColumn] = fr.BitmapOffset;
+            dr.EndEdit();
+            this.DataView.Table.Rows.Add(dr);
         }
         #endregion
 
