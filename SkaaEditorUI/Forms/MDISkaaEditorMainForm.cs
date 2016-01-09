@@ -77,7 +77,7 @@ namespace SkaaEditorUI.Forms
             this._dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
             this._toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
             this._spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
-            OpenNewImageEditorContainerTab();
+            //OpenNewImageEditorContainerTab();
 
             //hiding for alphaV4 release
             //we don't want this as the ActiveDocument, so show it after OpenNewTab()
@@ -140,7 +140,7 @@ namespace SkaaEditorUI.Forms
             if (OpenGameSet() == false)
                 MessageBox.Show("Failed to load game set!");
             else
-                ToggleUISaveOptions(); //hack: while we don't have a gamesetviewercontainer.gamesetchanged event
+                ToggleUISaveEditOptions(); //hack: while we don't have a gamesetviewercontainer.gamesetchanged event
         }
         #endregion
 
@@ -233,7 +233,7 @@ namespace SkaaEditorUI.Forms
             this._recalculateFrameOffsetsTimer.Start();
 
             ToggleUIProjectOptions();
-            ToggleUISaveOptions();
+            ToggleUISaveEditOptions();
         }
         private void MDISkaaEditorMainForm_DragEnter(object sender, DragEventArgs e)
         {
@@ -291,7 +291,7 @@ namespace SkaaEditorUI.Forms
                 }
             }
 
-            ToggleUISaveOptions();
+            ToggleUISaveEditOptions();
         }
         private void RecalculateFrameOffsetsTimer_Tick(object sender, EventArgs e)
         {
@@ -303,7 +303,7 @@ namespace SkaaEditorUI.Forms
             var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
             SetActiveSprite(iec?.ActiveSprite);
 
-            ToggleUISaveOptions();
+            ToggleUISaveEditOptions();
         }
         private void ToolboxContainer_SelectedToolChanged(object sender, EventArgs e)
         {
@@ -411,7 +411,7 @@ namespace SkaaEditorUI.Forms
         /// <summary>
         /// Enables or disables various file saving-related UI options based on the current status of the application
         /// </summary>
-        internal void ToggleUISaveOptions()
+        internal void ToggleUISaveEditOptions()
         {
             //todo: if GameSetPresenter.GameObject doesn't contain std.set files, disable this
             //user has loaded the game set or a ResIdx file has made a DataSet for its header data
@@ -426,12 +426,14 @@ namespace SkaaEditorUI.Forms
 
                 if (iec.ActiveSprite is SpritePresenter || iec.ActiveSprite is ResIdxMultiBmpPresenter)
                 {
+                    this.addFrameToolStripMenuItem.Enabled = true;
                     this.saveSpriteToolStripMenuItem.Enabled = true;
                     this.exportSpriteSheetToolStripMenuItem.Enabled = true;
                 }
             }
-            else if (this._dockPanel.ActiveDocument is GameSetViewerContainer) //user is viewing the game set
+            else //if (this._dockPanel.ActiveDocument is GameSetViewerContainer) //user is viewing the game set
             {
+                this.addFrameToolStripMenuItem.Enabled = false;
                 this.saveSpriteToolStripMenuItem.Enabled = false;
                 this.exportSpriteFrameToolStripMenuItem.Enabled = false;
                 this.exportSpriteSheetToolStripMenuItem.Enabled = false;
@@ -500,7 +502,7 @@ namespace SkaaEditorUI.Forms
             this._toolBoxContainer.SetPalette(iec?.ActiveSprite?.PalettePresenter?.GameObject);
 
             SetStatusStrip(iec?.ActiveSprite);
-            ToggleUISaveOptions();
+            ToggleUISaveEditOptions();
         }
 
         internal void SetStatusStrip(MultiImagePresenterBase spr)

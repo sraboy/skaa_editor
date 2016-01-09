@@ -28,7 +28,7 @@
             <typeparam name="T">A presenter class that implements <see cref="T:SkaaEditorUI.Presenters.MultiImagePresenterBase"/></typeparam>
             <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
         </member>
-        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ToggleUISaveOptions">
+        <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ToggleUISaveEditOptions">
             <summary>
             Enables or disables various file saving-related UI options based on the current status of the application
             </summary>
