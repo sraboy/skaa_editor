@@ -36,6 +36,7 @@ namespace SkaaGameDataLib
     [Serializable]
     public class IndexedBitmap
     {
+        //todo: Inherit from Image and/or implement the methods as Extension Methods to Bitmap
         public static readonly TraceSource Logger = new TraceSource("IndexedBitmap", SourceLevels.All);
         public static readonly int MaxByteSize = 6000000;
         public static readonly int MaxPixelHeight = 2000;
@@ -81,6 +82,10 @@ namespace SkaaGameDataLib
         #endregion
 
         #region Constructors
+        public IndexedBitmap(Bitmap bmp)
+        {
+            this.Bitmap = bmp;
+        }
         public IndexedBitmap(ColorPalette pal)
         {
             this.Bitmap = new Bitmap(1, 1, PixelFormat.Format8bppIndexed);
