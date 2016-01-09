@@ -4,11 +4,11 @@ SkaaEditor seeks to provide non-technical users (e.g., non-programmers) the abil
 ![screenshot](other/screenshot.png)
 
 ## getting started
-You may download the current alphaV4 release [here](https://github.com/sraboy/skaa_editor/blob/master/other/SkaaEditor_x86_alphav4.zip). Please report bugs here by submitting an issue or by emailing me at steven.lavoiejr@gmail.com.
+You may download the current alphaV4 release [here](https://github.com/sraboy/skaa_editor/blob/master/other/SkaaEditor_x86_alphav4.zip). Please report bugs here by submitting an issue or by emailing me at [steven[dot]lavoiejr[at]gmail.com](<a href='&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#116;&#101;&#118;&#101;&#110;&#46;&#108;&#97;&#118;&#111;&#105;&#101;&#106;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;'>&lt;&#111;&#98;&#115;&#99;&#117;&#114;&#101;&#100;&#32;&#039;&#109;&#97;&#105;&#108;&#116;&#111;&#039;&#32;&#108;&#105;&#110;&#107;&gt;</a>).
 
 Please note that SkaaEditor is still in ALPHA, meaning there are plenty of unknown or simply unfixed bugs and not everything may work properly. In addition, there are several UI quirks that have yet to be worked out.
 
-You can open and edit all unit-type sprites (SPR files: ballista.spr, caravan.spr, etc) as well as all *.res files that are essentially sprites, known as ResIdxMultiBmp within SkaaEditor. See (this page)[https://www.7kfans.com/wiki/index.php/ResourceFormats#File_Listing] on 7kfans.com's wiki, or [file_types.csv](https://github.com/sraboy/skaa_editor/blob/master/other/) in the repo. Please submit an issue here on Github if you encounter an SPR file that does not open properly. 
+You can open and edit all unit-type sprites (SPR files: ballista.spr, caravan.spr, etc) as well as all *.res files that are essentially sprites, known as ResIdxMultiBmp within SkaaEditor. See [this page](https://www.7kfans.com/wiki/index.php/ResourceFormats#File_Listing) on 7kfans.com's wiki, or [file_types.csv](https://github.com/sraboy/skaa_editor/blob/master/other/working/file_types.csv) in the repo. Please submit an issue here on Github if you encounter an SPR file that does not open properly. 
 
 If you attempt to open any file, *.spr or *.res, before you've opened a palette (pal_std.res), you'll be shown an "Open File" window to select a palette first.
 
