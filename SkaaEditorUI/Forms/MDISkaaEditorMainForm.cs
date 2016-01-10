@@ -66,6 +66,7 @@ namespace SkaaEditorUI.Forms
             this.DragEnter += MDISkaaEditorMainForm_DragEnter;
             this.DragDrop += MDISkaaEditorMainForm_DragDrop;
         }
+
         private void SetUpDockPanel()
         {
             this._toolBoxContainer = new ToolboxContainer();
@@ -542,7 +543,6 @@ namespace SkaaEditorUI.Forms
             SetStatusStrip(iec?.ActiveSprite);
             ToggleUISaveEditOptions();
         }
-
         internal void SetStatusStrip(MultiImagePresenterBase spr)
         {
             if (spr != null)

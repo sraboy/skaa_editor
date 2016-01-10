@@ -206,11 +206,6 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="P:SkaaEditorUI.Misc.PresenterFileDialogEventArgs`1.FileDialogResults">
-            <summary>
-            The results from a FileDialog like OpenFileDialog or SaveFileDialog
-            </summary>
-        </member>
         <member name="M:SkaaEditorUI.Presenters.MultiImagePresenterBase.BuildFramePresenters">
             <summary>
             Creates a <see cref="T:SkaaEditorUI.Presenters.FramePresenter"/> for every <see cref="T:SkaaGameDataLib.GameObjects.SkaaFrame"/> in the <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/>
