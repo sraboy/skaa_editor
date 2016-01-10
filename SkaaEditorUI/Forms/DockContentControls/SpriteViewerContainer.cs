@@ -24,7 +24,6 @@
 #endregion
 using System;
 using System.Linq;
-using Capslock.Windows.Forms.SpriteViewer;
 using SkaaEditorUI.Presenters;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -32,9 +31,6 @@ namespace SkaaEditorUI.Forms.DockContentControls
 {
     public partial class SpriteViewerContainer : DockContent
     {
-        private SpriteViewer _spriteViewer;
-        private MultiImagePresenterBase _activeSprite;
-
         #region Events
         private EventHandler _activeSpriteChanged;
         public event EventHandler ActiveSpriteChanged
@@ -86,31 +82,30 @@ namespace SkaaEditorUI.Forms.DockContentControls
         }
         #endregion
 
+        #region Public Properties
         public MultiImagePresenterBase ActiveSprite
         {
             get
             {
                 return _activeSprite;
             }
-
             set
             {
                 this._activeSprite = value;
                 OnActiveSpriteChanged(EventArgs.Empty);
             }
         }
+        #endregion
 
+        #region Constructor
         public SpriteViewerContainer()
         {
             InitializeComponent();
             this.Enabled = false;
         }
+        #endregion
 
-        private void SpriteViewer_ActiveFrameChanged(object sender, EventArgs e)
-        {
-            OnActiveFrameChanged(e);
-        }
-
+        #region Public Methods
         public void SetSprite(MultiImagePresenterBase spr)
         {
             this._spriteViewer.SetActiveSprite(spr);
@@ -122,34 +117,13 @@ namespace SkaaEditorUI.Forms.DockContentControls
 
             this.ActiveSprite = spr;
         }
+        #endregion
 
-        private void InitializeComponent()
+        #region Private Methods
+        private void SpriteViewer_ActiveFrameChanged(object sender, EventArgs e)
         {
-            this._spriteViewer = new Capslock.Windows.Forms.SpriteViewer.SpriteViewer();
-            this.SuspendLayout();
-            // 
-            // spriteViewer
-            // 
-            this._spriteViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._spriteViewer.Location = new System.Drawing.Point(-5, 0);
-            this._spriteViewer.Name = "spriteViewer";
-            this._spriteViewer.Size = new System.Drawing.Size(286, 675);
-            this._spriteViewer.TabIndex = 20;
-            // 
-            // SpriteViewerContainer
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(277, 674);
-            this.Controls.Add(this._spriteViewer);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "SpriteViewerContainer";
-            this.Text = "SpriteViewerContainer";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            OnActiveFrameChanged(e);
         }
+        #endregion
     }
 }

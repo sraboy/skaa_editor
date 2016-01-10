@@ -21,6 +21,93 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="P:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.ResizeImageMethod">
+            <summary>
+            The method <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingToolbox"/> will call when resizing an image 
+            with the options set in <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
+            </summary>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.DockContentControls.SpriteViewerContainer.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.SpriteViewerContainer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.SpriteViewerContainer.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.ResizeImageDelegate">
+            <summary>
+            The method <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingToolbox"/> will call when resizing an image 
+            with the options set in <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.SetImageToEdit(System.Drawing.Image)">
+            <summary>
+            The original <see cref="T:System.Drawing.Image"/> that will be resized by <see cref="F:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.ResizeImageDelegate"/>.
+            Its properties are used, for example, to populate the <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/> with default values.
+            </summary>
+            <param name="ImageToEdit">The image from which to gather properties to expose in various UI elements</param>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="M:SkaaEditorUI.Forms.MDISkaaEditorMainForm.ImageEditorContainer_ImageChanged(System.Object,System.EventArgs)">
             <summary>
             Updates various UI elements when <see cref="P:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.Image"/> is edited.
@@ -101,42 +188,6 @@
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
-        </member>
-        <member name="P:SkaaEditorUI.Forms.DockContentControls.ImageEditorContainer.ResizeImageMethod">
-            <summary>
-            The method <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingToolbox"/> will call when resizing an image 
-            with the options set in <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
-            </summary>
-        </member>
-        <member name="F:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.DockContentControls.GameSetViewerContainer.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="P:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.ResizeImageDelegate">
-            <summary>
-            The method <see cref="T:Capslock.Windows.Forms.ImageEditor.DrawingToolbox"/> will call when resizing an image 
-            with the options set in <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/>
-            </summary>
-        </member>
-        <member name="M:SkaaEditorUI.Forms.DockContentControls.ToolboxContainer.SetImageToEdit(System.Drawing.Image)">
-            <summary>
-            The original <see cref="T:System.Drawing.Image"/> that will be resized by <see cref="F:Capslock.Windows.Forms.ImageEditor.DrawingToolbox.ResizeImageDelegate"/>.
-            Its properties are used, for example, to populate the <see cref="T:Capslock.Windows.Forms.ImageEditor.ResizeImageDialog"/> with default values.
-            </summary>
-            <param name="ImageToEdit">The image from which to gather properties to expose in various UI elements</param>
         </member>
         <member name="F:SkaaEditorUI.Forms.SkaaSAVEditorTest.components">
             <summary>
