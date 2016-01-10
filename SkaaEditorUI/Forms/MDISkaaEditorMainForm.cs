@@ -215,6 +215,13 @@ namespace SkaaEditorUI.Forms
         {
             this.Close();
         }
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (AboutForm dlg = new AboutForm())
+            {
+                dlg.ShowDialog();
+            }
+        }
         #endregion
 
         #region Other Events

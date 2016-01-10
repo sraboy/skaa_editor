@@ -23,13 +23,7 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SkaaEditorUI.Forms
@@ -41,9 +35,37 @@ namespace SkaaEditorUI.Forms
             InitializeComponent();
         }
 
+        private void AboutForm_Load(object sender, EventArgs e)
+        {
+            this.txtReadme.Text = File.ReadAllText("licenses\\_license_readme.md");
+        }
+
+        private void pbDonate_Click(object sender, EventArgs e)
+        {
+            string business = "GXRVTB4QJZVSC";
+            string description = "Donation";
+            string country = "US";
+            string currency = "USD";
+
+            string url =
+                "https://www.paypal.com/cgi-bin/webscr" +
+                "?cmd=" + "_donations" +
+                "&business=" + business +
+                "&lc=" + country +
+                "&item_name=" + description +
+                "&currency_code=" + currency +
+                "&bn=" + "PP-DonationsBF%3Abtn_donate_SM.gif%3ANonHosted";
+
+            System.Diagnostics.Process.Start(url);
+        }
+
         private void lklblAuthor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("mailto:steven.lavoiejr@gmail.com");
+        }
+        private void lklblSKFans_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(lklblAuthor.Text);
         }
     }
 }

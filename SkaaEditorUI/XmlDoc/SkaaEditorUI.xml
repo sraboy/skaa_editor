@@ -372,6 +372,11 @@
               Looks up a localized resource of type System.Drawing.Bitmap.
             </summary>
         </member>
+        <member name="P:SkaaEditorUI.Properties.Resources.paypal_donate">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
         <member name="M:SkaaEditorUI.Program.Main">
             <summary>
             The main entry point for the application.

@@ -82,7 +82,7 @@
     <ManifestKeyFile>SkaaEditorUI_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
@@ -280,6 +280,7 @@
   <ItemGroup>
     <Content Include="Resources\Kazuya-Hartless.ico" />
     <Content Include="Resources\Kazuya-Hartless.png" />
+    <None Include="Resources\paypal_donate.gif" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -297,8 +298,7 @@
     <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /y "$(ProjectDir)..\other\test_projects\*.*" "$(ProjectDir)$(OutDir)data\projects\"
-copy "$(ProjectDir)..\other\working\*" "$(ProjectDir)$(OutDir)data\"
-</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /y "$(ProjectDir)..\other\working\test_files\*.*" "$(ProjectDir)$(OutDir)data\"
+xcopy /E /y "$(ProjectDir)..\other\licenses\*.*" "$(ProjectDir)$(OutDir)licenses\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

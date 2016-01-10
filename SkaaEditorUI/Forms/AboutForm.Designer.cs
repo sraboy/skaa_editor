@@ -57,89 +57,126 @@ namespace SkaaEditorUI.Forms
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.lnklblSKFans = new System.Windows.Forms.LinkLabel();
+            this.lklblAuthor = new System.Windows.Forms.LinkLabel();
+            this.txtReadme = new System.Windows.Forms.TextBox();
             this.pbLogo = new System.Windows.Forms.PictureBox();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.pbDonate = new System.Windows.Forms.PictureBox();
+            this.lklblSKFans = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbDonate)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(88, 12);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(103, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(111, 18);
+            this.label1.Size = new System.Drawing.Size(92, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "SkaaEditor  v0.4a";
+            this.label1.Text = "SkaaEditor  v0.5a";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(88, 28);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(105, 26);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(141, 18);
+            this.label2.Size = new System.Drawing.Size(142, 13);
             this.label2.TabIndex = 1;
-            this.label2.Text = "© 2015 Steven Lavoie";
+            this.label2.Text = "© 2015-2016 Steven Lavoie";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(88, 43);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(105, 39);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(145, 18);
+            this.label3.Size = new System.Drawing.Size(162, 13);
             this.label3.TabIndex = 2;
-            this.label3.Text = "Released under GLPv3";
+            this.label3.Text = "Released under the MIT License";
             // 
-            // lnklblSKFans
+            // lklblAuthor
             // 
-            this.lnklblSKFans.AutoSize = true;
-            this.lnklblSKFans.Location = new System.Drawing.Point(88, 75);
-            this.lnklblSKFans.Name = "lnklblSKFans";
-            this.lnklblSKFans.Size = new System.Drawing.Size(120, 13);
-            this.lnklblSKFans.TabIndex = 4;
-            this.lnklblSKFans.TabStop = true;
-            this.lnklblSKFans.Text = "http://www.7kfans.com";
+            this.lklblAuthor.AutoSize = true;
+            this.lklblAuthor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lklblAuthor.Location = new System.Drawing.Point(105, 52);
+            this.lklblAuthor.Name = "lklblAuthor";
+            this.lklblAuthor.Size = new System.Drawing.Size(131, 13);
+            this.lklblAuthor.TabIndex = 6;
+            this.lklblAuthor.TabStop = true;
+            this.lklblAuthor.Text = "https://github.com/sraboy";
+            this.lklblAuthor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lklblAuthor_LinkClicked);
+            // 
+            // txtReadme
+            // 
+            this.txtReadme.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtReadme.BackColor = System.Drawing.Color.White;
+            this.txtReadme.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtReadme.Location = new System.Drawing.Point(14, 110);
+            this.txtReadme.Multiline = true;
+            this.txtReadme.Name = "txtReadme";
+            this.txtReadme.ReadOnly = true;
+            this.txtReadme.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtReadme.Size = new System.Drawing.Size(709, 335);
+            this.txtReadme.TabIndex = 7;
             // 
             // pbLogo
             // 
             this.pbLogo.Image = global::SkaaEditorUI.Properties.Resources.Kazuya_Hartless;
-            this.pbLogo.Location = new System.Drawing.Point(12, 12);
+            this.pbLogo.Location = new System.Drawing.Point(14, 13);
             this.pbLogo.Name = "pbLogo";
-            this.pbLogo.Size = new System.Drawing.Size(73, 83);
+            this.pbLogo.Size = new System.Drawing.Size(85, 89);
             this.pbLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbLogo.TabIndex = 5;
             this.pbLogo.TabStop = false;
             // 
-            // linkLabel1
+            // pbDonate
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(88, 60);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(131, 13);
-            this.linkLabel1.TabIndex = 6;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "https://github.com/sraboy";
+            this.pbDonate.Image = global::SkaaEditorUI.Properties.Resources.paypal_donate;
+            this.pbDonate.Location = new System.Drawing.Point(109, 81);
+            this.pbDonate.Name = "pbDonate";
+            this.pbDonate.Size = new System.Drawing.Size(72, 23);
+            this.pbDonate.TabIndex = 9;
+            this.pbDonate.TabStop = false;
+            this.pbDonate.Click += new System.EventHandler(this.pbDonate_Click);
+            // 
+            // lklblSKFans
+            // 
+            this.lklblSKFans.AutoSize = true;
+            this.lklblSKFans.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lklblSKFans.Location = new System.Drawing.Point(106, 65);
+            this.lklblSKFans.Name = "lklblSKFans";
+            this.lklblSKFans.Size = new System.Drawing.Size(89, 13);
+            this.lklblSKFans.TabIndex = 10;
+            this.lklblSKFans.TabStop = true;
+            this.lklblSKFans.Text = "www.7kfans.com";
+            this.lklblSKFans.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lklblSKFans_LinkClicked);
             // 
             // AboutForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(276, 127);
-            this.Controls.Add(this.linkLabel1);
+            this.ClientSize = new System.Drawing.Size(737, 458);
+            this.Controls.Add(this.lklblSKFans);
+            this.Controls.Add(this.pbDonate);
+            this.Controls.Add(this.txtReadme);
+            this.Controls.Add(this.lklblAuthor);
             this.Controls.Add(this.pbLogo);
-            this.Controls.Add(this.lnklblSKFans);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AboutForm";
             this.Text = "About";
+            this.Load += new System.EventHandler(this.AboutForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbDonate)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -150,8 +187,10 @@ namespace SkaaEditorUI.Forms
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.LinkLabel lnklblSKFans;
         private System.Windows.Forms.PictureBox pbLogo;
-        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.LinkLabel lklblAuthor;
+        private System.Windows.Forms.TextBox txtReadme;
+        private System.Windows.Forms.PictureBox pbDonate;
+        private System.Windows.Forms.LinkLabel lklblSKFans;
     }
 }
