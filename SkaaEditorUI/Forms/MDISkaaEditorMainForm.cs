@@ -155,7 +155,14 @@ namespace SkaaEditorUI.Forms
             if (iec.ActiveSprite is SpritePresenter)
             {
                 ProjectManager.Save(spr);
-                //todo: prompt to also save GameSet since offsets may have changed
+
+                if (this.saveGameSetToolStripMenuItem.Enabled == true) //cheap shortcut, assuming it's been set properly
+                {
+                    string warning = "This sprite will become disassociated with its game set if you do not save it. Would you like to save the game set?";
+
+                    if (MessageBox.Show(warning, "Save Game Set", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        ProjectManager.Save(this._gameSetViewerContainer.GameSetPresenter);
+                }
             }
             else if (iec.ActiveSprite is ResIdxMultiBmpPresenter)
             {
@@ -442,9 +449,10 @@ namespace SkaaEditorUI.Forms
         /// </summary>
         internal void ToggleUISaveEditOptions()
         {
-            //todo: if GameSetPresenter.GameObject doesn't contain std.set files, disable this
             //user has loaded the game set or a ResIdx file has made a DataSet for its header data
-            this.saveGameSetToolStripMenuItem.Enabled = this._gameSetViewerContainer?.GameSetPresenter?.GameObject != null;
+            this.saveGameSetToolStripMenuItem.Enabled =
+                this._gameSetViewerContainer?.GameSetPresenter?.GameObject != null &&
+                this._gameSetViewerContainer.GameSetPresenter.GameObject.GetDataSources().Contains("std.set");
 
             if (this._dockPanel.ActiveDocument is ImageEditorContainer)       //user is viewing an image
             {
