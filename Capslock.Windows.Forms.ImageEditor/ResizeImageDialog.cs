@@ -30,11 +30,11 @@ namespace Capslock.Windows.Forms.ImageEditor
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (this.pixelWidthUpDown.Value > 0 && this.pixelHeightUpDown.Value > 0)
+            if (this.pixelWidthUpDown.Value > 0 &&
+                this.pixelHeightUpDown.Value > 0)
             {
                 this.NewWidth = (int)this.pixelWidthUpDown.Value;
                 this.NewHeight = (int)this.pixelHeightUpDown.Value;
-                this.MaintainAspectRatio = cbMaintainAspectRatio.Checked;
             }
 
             this.Close();
@@ -56,6 +56,10 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.pixelHeightUpDown.Enabled = true;
                 this.cbMaintainAspectRatio.Enabled = true;
                 this.percentUpDown.Enabled = false;
+
+                //If the user chose rbPercentage first then changed his/her mind,
+                //we need to reset this value.
+                this.MaintainAspectRatio = cbMaintainAspectRatio.Checked;
             }
             else if (this.rbPercentage.Checked)
             {
@@ -63,6 +67,9 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this.pixelHeightUpDown.Enabled = false;
                 this.cbMaintainAspectRatio.Enabled = false;
                 this.percentUpDown.Enabled = true;
+
+                //If we're bothering with proportions for resizing then we want scaling
+                this.MaintainAspectRatio = true;
             }
         }
         private void percentUpDown_ValueChanged(object sender, EventArgs e)
@@ -79,7 +86,7 @@ namespace Capslock.Windows.Forms.ImageEditor
             {
                 var diff = this.pixelHeightUpDown.Value - this.OriginalHeight;
 
-                if (this.pixelWidthUpDown.Value + diff >= this.pixelWidthUpDown.Minimum && 
+                if (this.pixelWidthUpDown.Value + diff >= this.pixelWidthUpDown.Minimum &&
                     this.pixelWidthUpDown.Value + diff <= this.pixelWidthUpDown.Maximum)
                 {
                     this.pixelWidthUpDown.Enabled = true;
