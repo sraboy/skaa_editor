@@ -1,5 +1,3 @@
-Everything within SkaaEditor is done within a Project. A Project is simply a directory created to hold all the files being edited.
-
 In keeping with the 7KAA project's goals of not changing working code, the game's file formats must remain constant. This requires several workarounds which may make SkaaEditor seem a bit unintuitive.
 
 A basic understanding of a couple of the file formats and how they interact is required to successfully edit the resources in any meaningful way.
