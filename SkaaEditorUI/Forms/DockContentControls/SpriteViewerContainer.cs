@@ -108,7 +108,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
         #region Public Methods
         public void SetSprite(MultiImagePresenterBase spr)
         {
-            this._spriteViewer.SetActiveSprite(spr);
+            this.spriteViewer.SetActiveSprite(spr);
 
             if (spr != null)
                 this.Enabled = true;

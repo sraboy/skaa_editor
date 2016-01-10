@@ -4,6 +4,22 @@
         <name>Capslock.Windows.Forms.SpriteViewer</name>
     </assembly>
     <members>
+        <member name="T:Capslock.Windows.Forms.SpriteViewer.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.SpriteViewer.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Capslock.Windows.Forms.SpriteViewer.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
         <member name="M:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.ResizeImage(System.Drawing.Image,System.Int32,System.Int32)">
             <summary>
             Resize the image to the specified width and height.
@@ -26,40 +42,6 @@
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
         <member name="M:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.InitializeComponent">
-            <summary> 
-            Required method for Designer support - do not modify 
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:Capslock.Windows.Forms.SpriteViewer.ListView.components">
-            <summary> 
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:Capslock.Windows.Forms.SpriteViewer.ListView.Dispose(System.Boolean)">
-            <summary> 
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:Capslock.Windows.Forms.SpriteViewer.ListView.InitializeComponent">
-            <summary> 
-            Required method for Designer support - do not modify 
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:Capslock.Windows.Forms.SpriteViewer.TimelineView.components">
-            <summary> 
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:Capslock.Windows.Forms.SpriteViewer.TimelineView.Dispose(System.Boolean)">
-            <summary> 
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:Capslock.Windows.Forms.SpriteViewer.TimelineView.InitializeComponent">
             <summary> 
             Required method for Designer support - do not modify 
             the contents of this method with the code editor.

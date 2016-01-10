@@ -31,25 +31,24 @@ namespace SkaaEditorUI.Forms.DockContentControls
         /// </summary>
         private void InitializeComponent()
         {
-            this._spriteViewer = new Capslock.Windows.Forms.SpriteViewer.SpriteViewer();
+            this.spriteViewer = new Capslock.Windows.Forms.SpriteViewer.SpriteViewer();
             this.SuspendLayout();
             // 
-            // _spriteViewer
+            // userControl11
             // 
-            this._spriteViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._spriteViewer.Location = new System.Drawing.Point(3, 2);
-            this._spriteViewer.Name = "_spriteViewer";
-            this._spriteViewer.Size = new System.Drawing.Size(294, 683);
-            this._spriteViewer.TabIndex = 20;
+            this.spriteViewer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.spriteViewer.Location = new System.Drawing.Point(0, 0);
+            this.spriteViewer.Margin = new System.Windows.Forms.Padding(0);
+            this.spriteViewer.Name = "spriteViewer";
+            this.spriteViewer.Size = new System.Drawing.Size(272, 686);
+            this.spriteViewer.TabIndex = 0;
             // 
             // SpriteViewerContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(295, 674);
-            this.Controls.Add(this._spriteViewer);
+            this.ClientSize = new System.Drawing.Size(272, 686);
+            this.Controls.Add(this.spriteViewer);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "SpriteViewerContainer";
@@ -59,8 +58,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
         }
 
         #endregion
-
-        private SpriteViewer _spriteViewer;
         private MultiImagePresenterBase _activeSprite;
+        private SpriteViewer spriteViewer;
     }
 }
