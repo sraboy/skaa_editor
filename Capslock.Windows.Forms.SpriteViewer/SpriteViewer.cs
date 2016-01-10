@@ -89,7 +89,13 @@ namespace Capslock.Windows.Forms.SpriteViewer
         private void SetTrackBarActiveFrame(int? value = null)
         {
             if (value == null)
-                this.trackBar.Value = this.ActiveSprite?.Frames?.IndexOf(this.ActiveSprite.ActiveFrame) ?? 0;
+            {
+                int idx = this.ActiveSprite?.Frames?.IndexOf(this.ActiveSprite.ActiveFrame) ?? 0;
+                if (idx == -1)
+                    idx = 0;
+
+                this.trackBar.Value = idx;
+            }
             else
                 this.trackBar.Value = (int)value;
         }

@@ -66,8 +66,8 @@
             this.objectListView.AllColumns.Add(this.colName);
             this.objectListView.AllColumns.Add(this.colOffset);
             this.objectListView.AllColumns.Add(this.colImage);
-            this.objectListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.objectListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.objectListView.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
             this.objectListView.CellEditEnterChangesRows = true;
@@ -94,6 +94,7 @@
             this.colName.AspectName = "Name";
             this.colName.Name = "colName";
             this.colName.Text = "Name";
+            this.colName.UseInitialLetterForGroup = true;
             this.colName.Width = 70;
             // 
             // colOffset

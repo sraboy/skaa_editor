@@ -153,7 +153,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
         }
         private void ActiveSprite_ActiveFrameChanged(object sender, EventArgs e)
         {
-            this._imageEditorBox.Image = this.ActiveSprite.ActiveFrame.Bitmap;
+            this._imageEditorBox.Image = this.ActiveSprite.ActiveFrame?.Bitmap;
         }
         #endregion
 
