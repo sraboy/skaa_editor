@@ -198,7 +198,7 @@ namespace SkaaEditorUI.Presenters
         }
         public override void RecalculateFrameOffsets()
         {
-            if (this.DataView == null || !this.BitmapHasChanges)
+            if (this.DataView?.Table == null || !this.BitmapHasChanges)
                 return;
 
             //calculate offset after file header

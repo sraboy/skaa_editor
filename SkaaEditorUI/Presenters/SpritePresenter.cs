@@ -26,7 +26,6 @@ using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
-using SkaaGameDataLib.Util;
 using SkaaGameDataLib.GameObjects;
 
 namespace SkaaEditorUI.Presenters
@@ -79,7 +78,7 @@ namespace SkaaEditorUI.Presenters
         }
         public override void RecalculateFrameOffsets()
         {
-            if (this.DataView == null || !this.BitmapHasChanges)
+            if (this.DataView?.Table == null || !this.BitmapHasChanges)
                 return;
 
             long offset = 0;
