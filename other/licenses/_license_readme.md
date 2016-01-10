@@ -2,19 +2,19 @@
 
 This project mixes and matches many licenses. Obviously, everything is "open source"; however, many items are under the GPLv3 while others are under the MIT license, or something else entirely. See each license for specific information but here's the simple take (see details for asterisks):
 
-| Component			|	License			|
-| ------------------|-------------------|
-| Capslock			|	[MIT](https://opensource.org/licenses/MIT)								|
-| Cyotek			|	[MIT](https://opensource.org/licenses/MIT)								|
-| 7KAA (game)		|	[GPLv3](http://www.gnu.org/licenses/gpl-3.0.en.html)					|
-| FastBitmap		|	[VCSKicks](http://www.vcskicks.com/license.php)							|
-| Paint.NET*		|	[CC-by-NC-ND 2.5](http://creativecommons.org/licenses/by-nc-nd/2.5/)	|
-| FloodFill			|	[GNU FDL](http://www.gnu.org/licenses/fdl-1.3.en.html)					|
-| SkaaEditor Icon*	|	GPL-compatible															|
-| DockPanelSuite	|	[MIT](https://opensource.org/licenses/MIT)								|
-| StackOverflow*	|	[CC-by-SA 2.5](http://creativecommons.org/licenses/by-sa/2.5/)			|
-| SkaaEditor		|	[MIT](https://opensource.org/licenses/MIT)								|
-| CodeReview*		|   [CC-by-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/)			|
+| Component         |   License                                                                 |
+| ------------------|---------------------------------------------------------------------------|
+| Capslock          |   [MIT](https://opensource.org/licenses/MIT)                              |
+| Cyotek            |   [MIT](https://opensource.org/licenses/MIT)                              |
+| 7KAA (game)       |   [GPLv3](http://www.gnu.org/licenses/gpl-3.0.en.html)                    |
+| FastBitmap        |   [VCSKicks](http://www.vcskicks.com/license.php)                         |
+| Paint.NET*        |   [CC-by-NC-ND 2.5](http://creativecommons.org/licenses/by-nc-nd/2.5/)    |
+| FloodFill         |   [GNU FDL](http://www.gnu.org/licenses/fdl-1.3.en.html)                  |
+| SkaaEditor Icon*  |   GPL-compatible                                                          |
+| DockPanelSuite    |   [MIT](https://opensource.org/licenses/MIT)                              |
+| StackOverflow*    |   [CC-by-SA 2.5](http://creativecommons.org/licenses/by-sa/2.5/)          |
+| SkaaEditor        |   [MIT](https://opensource.org/licenses/MIT)                              |
+| CodeReview*       |   [CC-by-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/)          |
 
 ## Details
 Below is an explanation of what the above "Components" refer to and their use in this project. Again, I am not a lawyer; consult one if you have questions and *please, please* contact me if you notice anything wrong with the explanations below.
@@ -42,7 +42,7 @@ My email is provided in multiple locations below; it is obscured to keep from ge
 - **Paint.NET** (http://www.getpaint.net) refers to the fantastic image editor. In SkaaEditor, we've used some of the open source project's graphics for buttons/icons. The code itself is MIT but the content is CC-by-NC-ND 2.5. The Paint.NET open source project can be found here: https://code.google.com/p/openpdn/. Note that the present version of Paint.NET is not open source so you must refer to the open source version, openpdn, if looking for the originals. The files below are known to fall under this license. It's possible I've forgotten some so, if you identify files not listed, or known to fall under a different license or copyright, please notify the author: Steven Lavoie (<a href='&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#116;&#101;&#118;&#101;&#110;&#46;&#108;&#97;&#118;&#111;&#105;&#101;&#106;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;'>&lt;&#111;&#98;&#115;&#99;&#117;&#114;&#101;&#100;&#32;&#039;&#109;&#97;&#105;&#108;&#116;&#111;&#039;&#32;&#108;&#105;&#110;&#107;&gt;</a>) or post an issue on the Github page: https://www.github.com/sraboy/skaa_editor.
 
 
-|Icons 				  |
+|Icons                |
 |---------------------|
 |MenuFileCloseIcon.png|
 |MenuFileNewIcon.png  | 
@@ -51,9 +51,9 @@ My email is provided in multiple locations below; it is obscured to keep from ge
 
 --
 
-|Cursors			 |
+|Cursors             |
 |--------------------|
-|PanToolCursor.cur	 |
+|PanToolCursor.cur   |
 |PencilToolCursor.cur|
 |PencilToolCursor.cur|
 
