@@ -76,9 +76,14 @@ namespace SkaaEditorUI.Forms
             this._gameSetViewerContainer = new GameSetViewerContainer();
             this._gameSetViewerContainer.HideOnClose = true;
 
+            //These properties are percentages, the proportion of the entire window to take up
+            this._dockPanel.DockRightPortion = (double)this._spriteViewerContainer.Size.Width / (double)this.Width;
+            this._dockPanel.DockLeftPortion = (double)this._toolBoxContainer.Size.Width / (double)this.Width;
+
             this._dockPanel.ActiveDocumentChanged += DockPanel_ActiveDocumentChanged;
             this._toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
             this._spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
+
             //OpenNewImageEditorContainerTab();
 
             //hiding for alphaV4 release

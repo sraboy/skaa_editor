@@ -89,6 +89,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
             this.objectListView1.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
             this.objectListView1.CellEditEnterChangesRows = true;
             this.objectListView1.CellEditTabChangesRows = true;
+            this.objectListView1.CellEditUseWholeCell = false;
             this.objectListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName,
             this.colOffset,
@@ -108,7 +109,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.objectListView1);
             this.Name = "ListView";

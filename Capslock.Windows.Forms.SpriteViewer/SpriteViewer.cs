@@ -58,7 +58,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
 
         #region Public Methods
         public void SetImageGetter(ImageGetterDelegate imageGetter) => this.listView1.SetImageGetter(imageGetter);
-
         public void SetActiveSprite(IMultiImagePresenter spr)
         {
             this.ActiveSprite = spr;
@@ -68,7 +67,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
             if (spr != null)
                 spr.ActiveFrameChanged += IMultiImagePresenter_ActiveFrameChanged;
         }
-
         #endregion
 
         #region Private Methods
@@ -122,7 +120,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
             var fe = (e as FrameChangedEventArgs);
             this.ActiveSprite.ActiveFrame = fe.SelectedFrame;
         }
-
         private void IMultiImagePresenter_ActiveFrameChanged(object sender, EventArgs e)
         {
             this.timelineView1.ActiveFrame = this.ActiveSprite?.ActiveFrame;

@@ -200,6 +200,12 @@
     <EmbeddedResource Include="Forms\AddNewFrame.resx">
       <DependentUpon>AddNewFrame.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DockContentControls\SpriteViewerContainer.resx">
+      <DependentUpon>SpriteViewerContainer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DockContentControls\ToolboxContainer.resx">
+      <DependentUpon>ToolboxContainer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDISkaaEditorMainForm.resx">
       <DependentUpon>MDISkaaEditorMainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -241,10 +247,6 @@
     <ProjectReference Include="..\Cyotek.Windows.Forms.ImageBox\Cyotek.Windows.Forms.ImageBox.csproj">
       <Project>{4159c8d3-c18d-4bed-8be6-9bad1b0ca4f6}</Project>
       <Name>Cyotek.Windows.Forms.ImageBox</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SkaaEditorControls\SkaaEditorControls.csproj">
-      <Project>{a6836ea4-c3ca-4179-bc90-c6768fcead6f}</Project>
-      <Name>SkaaEditorControls</Name>
     </ProjectReference>
     <ProjectReference Include="..\SkaaGameDataLib\SkaaGameDataLib.csproj">
       <Project>{da473696-b41a-4c5e-879d-77ae1e12b01d}</Project>
