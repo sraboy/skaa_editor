@@ -129,13 +129,18 @@ namespace SkaaEditorUI.Forms
         #region Open File Menu Item Clicks
         private void openSpriteSprToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (OpenSprite<SpritePresenter>() == false)
-                MessageBox.Show($"Failed to load sprite ({typeof(SpritePresenter)})!");
+            if (OpenSprite<SpriteSprPresenter>() == false)
+                MessageBox.Show($"Failed to load sprite ({typeof(SpriteSprPresenter)})!");
         }
         private void openSpriteResIdxToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenSprite<ResIdxMultiBmpPresenter>() == false)
                 MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)})!");
+        }
+        private void spriteResToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (OpenSprite<ResSpritePresenter>() == false)
+                MessageBox.Show($"Failed to load sprite ({typeof(ResSpritePresenter)})!");
         }
         private void openPaletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -157,7 +162,7 @@ namespace SkaaEditorUI.Forms
             var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
             var spr = iec.ActiveSprite;
 
-            if (iec.ActiveSprite is SpritePresenter)
+            if (iec.ActiveSprite is SpriteSprPresenter)
             {
                 ProjectManager.Save(spr);
 
@@ -301,14 +306,17 @@ namespace SkaaEditorUI.Forms
                             MessageBox.Show($"Failed to load game set: {kvp.Key}");
                         break;
                     case FileFormats.SpriteSpr:
-                        if (OpenSprite<SpritePresenter>(kvp.Key) == false)
-                            MessageBox.Show($"Failed to load sprite ({typeof(SpritePresenter)}): {kvp.Key}");
+                        if (OpenSprite<SpriteSprPresenter>(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load sprite ({typeof(SpriteSprPresenter)}): {kvp.Key}");
                         break;
                     case FileFormats.ResIdxMultiBmp:
                         if (OpenSprite<ResIdxMultiBmpPresenter>(kvp.Key) == false)
                             MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)}): {kvp.Key}");
                         break;
-
+                    case FileFormats.ResSpriteSpr:
+                        if (OpenSprite<ResSpritePresenter>(kvp.Key) == false)
+                            MessageBox.Show($"Failed to load sprite ({typeof(ResSpritePresenter)}): {kvp.Key}");
+                        break;
                 }
             }
 
@@ -400,7 +408,6 @@ namespace SkaaEditorUI.Forms
                 }
             }
 
-
             SetSpriteDataViews(this._gameSetViewerContainer.GameSetPresenter);
             spr.ActiveFrameChanged += MultiImagePresenterBase_ActiveFrameChanged;
 
@@ -466,7 +473,7 @@ namespace SkaaEditorUI.Forms
 
                 var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
 
-                if (iec.ActiveSprite is SpritePresenter || iec.ActiveSprite is ResIdxMultiBmpPresenter)
+                if (iec.ActiveSprite is SpriteSprPresenter || iec.ActiveSprite is ResIdxMultiBmpPresenter)
                 {
                     this.addFrameToolStripMenuItem.Enabled = true;
                     this.saveSpriteToolStripMenuItem.Enabled = true;

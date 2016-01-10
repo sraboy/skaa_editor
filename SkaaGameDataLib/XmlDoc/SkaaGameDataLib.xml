@@ -180,6 +180,15 @@
             <see cref="!:SkaaFrame"/>
             <see cref="T:SkaaGameDataLib.Util.IndexedBitmap"/>
         </member>
+        <member name="F:SkaaGameDataLib.Util.FileFormats.ResSpriteSpr">
+            <summary>
+            A file which has a format matching that off <see cref="F:SkaaGameDataLib.Util.FileFormats.SpriteFrameSpr"/> but which
+            references a different table in std.set.
+            </summary>
+            <remarks>
+            For example, i_town.res references the TOWNLAY table.
+            </remarks>
+        </member>
         <member name="F:SkaaGameDataLib.Util.FileFormats.ResIdxDbf">
             <summary>
             This format is only used for 7KAA's game set files, of which there is only one

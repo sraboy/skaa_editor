@@ -277,21 +277,21 @@
             <see cref="E:SkaaEditorUI.Presenters.PresenterBase`1.PropertyChanged"/> event without doing a comparison.
             </summary>
         </member>
-        <member name="M:SkaaEditorUI.Presenters.SpritePresenter.Load(System.String,System.Object[])">
+        <member name="M:SkaaEditorUI.Presenters.SpriteSprPresenter.Load(System.String,System.Object[])">
             <summary>
             Creates a <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/> object from an SPR-formatted file
             </summary>
             <param name="filePath">The absolute path to the SPR file to open</param>
             <returns>The newly-created <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/></returns>
         </member>
-        <member name="M:SkaaEditorUI.Presenters.SpritePresenter.GetSpriteStream">
+        <member name="M:SkaaEditorUI.Presenters.SpriteSprPresenter.GetSpriteStream">
             <summary>
             Creates and returns a <see cref="T:System.IO.MemoryStream"/> containing <see cref="T:SkaaGameDataLib.GameObjects.SkaaFrame"/> data for 
             all <see cref="!:IFrame"/> objects in <see cref="!:Frames"/>. The <see cref="P:System.IO.MemoryStream.Position"/>
             is reset to 0 before returning.
             </summary>
         </member>
-        <member name="M:SkaaEditorUI.Presenters.SpritePresenter.UpdateFrameNamesAndOffsets">
+        <member name="M:SkaaEditorUI.Presenters.SpriteSprPresenter.UpdateFrameNamesAndOffsets">
             <summary>
             The underlying <see cref="T:SkaaGameDataLib.GameObjects.SkaaSprite"/> updates its <see cref="F:SkaaGameDataLib.GameObjects.SkaaFrame.Name"/> and <see cref="F:SkaaGameDataLib.GameObjects.SkaaFrame.BitmapOffset"/>
             values based on the information in the <see cref="P:SkaaEditorUI.Presenters.MultiImagePresenterBase.DataView"/> so we need to update ours as well.

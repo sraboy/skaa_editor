@@ -114,7 +114,8 @@ namespace SkaaGameDataLib.Util
                     format = CheckResIdxFormats(fs);
 
                     if (format == FileFormats._Unknown)
-                        format = CheckSprFormats(fs); //check SpriteSpr/SpriteFrameSpr
+                        if (CheckSprFormats(fs) == FileFormats.SpriteSpr) //check SpriteSpr/SpriteFrameSpr
+                            format = FileFormats.ResSpriteSpr;
 
                     if (format == FileFormats._Unknown) //check dBaseIII DBF
                         format = CheckDbfFormat(fs);

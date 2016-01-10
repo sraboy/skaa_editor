@@ -30,10 +30,10 @@ using SkaaGameDataLib.GameObjects;
 
 namespace SkaaEditorUI.Presenters
 {
-    public class SpritePresenter : MultiImagePresenterBase
+    public class SpriteSprPresenter : MultiImagePresenterBase
     {
         #region Constructors
-        public SpritePresenter() { }
+        public SpriteSprPresenter() { }
         #endregion
 
         #region Overridden Public Methods
@@ -151,7 +151,7 @@ namespace SkaaEditorUI.Presenters
         /// The underlying <see cref="SkaaSprite"/> updates its <see cref="SkaaFrame.Name"/> and <see cref="SkaaFrame.BitmapOffset"/>
         /// values based on the information in the <see cref="MultiImagePresenterBase.DataView"/> so we need to update ours as well.
         /// </summary>
-        private void UpdateFrameNamesAndOffsets()
+        protected void UpdateFrameNamesAndOffsets()
         {
             foreach (FramePresenter fp in this.Frames)
             {

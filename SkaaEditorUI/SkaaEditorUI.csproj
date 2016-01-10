@@ -178,6 +178,7 @@
     <Compile Include="Presenters\PresenterBase.cs" />
     <Compile Include="Presenters\GameSetPresenter.cs" />
     <Compile Include="Presenters\ResIdxMultiBmpPresenter.cs" />
+    <Compile Include="Presenters\ResSpritePresenter.cs" />
     <Compile Include="ProjectManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -193,7 +194,7 @@
     <Compile Include="Forms\SkaaSAVEditorTest.Designer.cs">
       <DependentUpon>SkaaSAVEditorTest.cs</DependentUpon>
     </Compile>
-    <Compile Include="Presenters\SpritePresenter.cs" />
+    <Compile Include="Presenters\SpriteSprPresenter.cs" />
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>

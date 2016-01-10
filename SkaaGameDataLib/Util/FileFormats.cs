@@ -106,6 +106,14 @@ namespace SkaaGameDataLib.Util
         /// <see cref="IndexedBitmap"/>
         SpriteFrameSpr,
         /// <summary>
+        /// A file which has a format matching that off <see cref="FileFormats.SpriteFrameSpr"/> but which
+        /// references a different table in std.set.
+        /// </summary>
+        /// <remarks>
+        /// For example, i_town.res references the TOWNLAY table.
+        /// </remarks>
+        ResSpriteSpr,
+        /// <summary>
         /// This format is only used for 7KAA's game set files, of which there is only one
         /// distributed with the game (as of release 2.14): std.set.
         /// </summary>

@@ -83,6 +83,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsStatusLblImageStats = new System.Windows.Forms.ToolStripStatusLabel();
+            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -259,6 +260,7 @@
             this.openFileToolStripMenuItem,
             this.toolStripSeparator3,
             this.openSpriteSprToolStripMenuItem,
+            this.spriteResToolStripMenuItem,
             this.openSpriteResIdxToolStripMenuItem,
             this.openGameSetToolStripMenuItem,
             this.openPaletteToolStripMenuItem});
@@ -477,6 +479,13 @@
             this.tsStatusLblImageStats.Size = new System.Drawing.Size(122, 17);
             this.tsStatusLblImageStats.Text = "Image Height x Width";
             // 
+            // spriteResToolStripMenuItem
+            // 
+            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
+            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
+            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.spriteResToolStripMenuItem_Click);
+            // 
             // MDISkaaEditorMainForm
             // 
             this.AllowDrop = true;
@@ -543,5 +552,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportSpriteSheetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addFrameToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblImageStats;
+        private System.Windows.Forms.ToolStripMenuItem spriteResToolStripMenuItem;
     }
 }

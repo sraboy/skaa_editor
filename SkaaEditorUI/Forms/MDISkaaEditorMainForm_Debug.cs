@@ -65,7 +65,7 @@ namespace SkaaEditorUI.Forms
         {
             string dataDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data\\projects\\_test\\basic\\";
 
-            SpritePresenter spr = new SpritePresenter();
+            SpriteSprPresenter spr = new SpriteSprPresenter();
             spr.PalettePresenter = new ColorPalettePresenter();
             spr.PalettePresenter.Load(this.dataDir + "pal_std.res", null);
             spr.Load(dataDir + "ballista.spr");
@@ -93,7 +93,7 @@ namespace SkaaEditorUI.Forms
         {
             string dataDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data\\projects\\_test\\basic\\";
 
-            SpritePresenter spr = new SpritePresenter();
+            SpriteSprPresenter spr = new SpriteSprPresenter();
             spr.PalettePresenter = new ColorPalettePresenter();
             spr.PalettePresenter.Load(this.dataDir + "pal_std.res", null);
             spr.Load(dataDir + "ballista.spr");
