@@ -50,11 +50,11 @@ namespace SkaaEditorUI.Forms.DockContentControls
         {
             add
             {
-                this._colorGridChooser.ColorChanged += value;
+                this._colorGrid.ColorChanged += value;
             }
             remove
             {
-                this._colorGridChooser.ColorChanged -= value;
+                this._colorGrid.ColorChanged -= value;
             }
         }
         #endregion
@@ -92,6 +92,15 @@ namespace SkaaEditorUI.Forms.DockContentControls
         public ToolboxContainer()
         {
             InitializeComponent();
+
+            //Turns off the empty boxes at the bottom of the grid
+            this._colorGrid.ShowCustomColors = false;
+
+            //The palette is set to "Standard256" for the sake of designer showing 
+            //256 colors. At runtime, we want it set to None so the user doesn't 
+            //see a palette we may not support.
+            this._colorGrid.Palette = ColorPalette.None;
+
             this.Enabled = false;
             SetPalette(null);
         }
@@ -115,13 +124,13 @@ namespace SkaaEditorUI.Forms.DockContentControls
             if (pal != null)
             {
                 IEnumerable<Color> distinct = pal.Entries.Distinct();
-                this._colorGridChooser.Colors = new ColorCollection(distinct);
-                this._colorGridChooser.Colors.Sort(ColorCollectionSortOrder.Value);
+                this._colorGrid.Colors = new ColorCollection(distinct);
+                this._colorGrid.Colors.Sort(ColorCollectionSortOrder.Value);
             }
             else
             {
-                this._colorGridChooser.Colors.Clear();
-                this._colorGridChooser.Palette = ColorPalette.None;
+                this._colorGrid.Colors.Clear();
+                this._colorGrid.Palette = ColorPalette.None;
             }
 
             ToggleEnable();
@@ -138,7 +147,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
                 false :
                 true;
 
-            this._colorGridChooser.Enabled = this.Enabled;
+            this._colorGrid.Enabled = this.Enabled;
             this._drawingToolbox.Enabled = this.Enabled;
         }
         #endregion

@@ -1,5 +1,5 @@
 ﻿using Capslock.Windows.Forms.ImageEditor;
-using SkaaEditorControls;
+using Cyotek.Windows.Forms;
 
 namespace SkaaEditorUI.Forms.DockContentControls
 {
@@ -31,46 +31,56 @@ namespace SkaaEditorUI.Forms.DockContentControls
         /// </summary>
         private void InitializeComponent()
         {
-            this._drawingToolbox = new DrawingToolbox();
-            this._colorGridChooser = new SkaaColorChooser();
+            this._colorGrid = new Cyotek.Windows.Forms.ColorGrid();
+            this._drawingToolbox = new Capslock.Windows.Forms.ImageEditor.DrawingToolbox();
             this.SuspendLayout();
             // 
-            // drawingToolbox
+            // _colorGrid
             // 
-            this._drawingToolbox.Location = new System.Drawing.Point(1, 1);
-            this._drawingToolbox.Margin = new System.Windows.Forms.Padding(2);
-            this._drawingToolbox.Name = "drawingToolbox";
-            this._drawingToolbox.Size = new System.Drawing.Size(175, 69);
+            this._colorGrid.AutoAddColors = false;
+            this._colorGrid.AutoSize = false;
+            this._colorGrid.CellSize = new System.Drawing.Size(16, 16);
+            this._colorGrid.Columns = 10;
+            this._colorGrid.EditMode = Cyotek.Windows.Forms.ColorEditingMode.None;
+            this._colorGrid.Location = new System.Drawing.Point(0, 26);
+            this._colorGrid.Margin = new System.Windows.Forms.Padding(1);
+            this._colorGrid.Name = "_colorGrid";
+            this._colorGrid.Padding = new System.Windows.Forms.Padding(2, 0, 0, 0);
+            this._colorGrid.Palette = Cyotek.Windows.Forms.ColorPalette.Standard256;
+            this._colorGrid.ShowCustomColors = false;
+            this._colorGrid.Size = new System.Drawing.Size(163, 470);
+            this._colorGrid.Spacing = new System.Drawing.Size(2, 2);
+            this._colorGrid.TabIndex = 17;
+            // 
+            // _drawingToolbox
+            // 
+            this._drawingToolbox.AutoSize = true;
+            this._drawingToolbox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._drawingToolbox.Location = new System.Drawing.Point(0, 0);
+            this._drawingToolbox.Margin = new System.Windows.Forms.Padding(0);
+            this._drawingToolbox.Name = "_drawingToolbox";
+            this._drawingToolbox.Size = new System.Drawing.Size(161, 25);
             this._drawingToolbox.TabIndex = 18;
-            // 
-            // colorGridChooser
-            // 
-            this._colorGridChooser.AutoAddColors = false;
-            this._colorGridChooser.CellSize = new System.Drawing.Size(18, 18);
-            this._colorGridChooser.Columns = 8;
-            this._colorGridChooser.EditMode = Cyotek.Windows.Forms.ColorEditingMode.None;
-            this._colorGridChooser.Location = new System.Drawing.Point(0, 76);
-            this._colorGridChooser.Name = "colorGridChooser";
-            this._colorGridChooser.Palette = Cyotek.Windows.Forms.ColorPalette.Standard256;
-            this._colorGridChooser.ShowCustomColors = false;
-            this._colorGridChooser.Size = new System.Drawing.Size(175, 679);
-            this._colorGridChooser.TabIndex = 17;
             // 
             // ToolboxContainer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(177, 756);
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(169, 497);
             this.Controls.Add(this._drawingToolbox);
-            this.Controls.Add(this._colorGridChooser);
+            this.Controls.Add(this._colorGrid);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "ToolboxContainer";
             this.Text = "ToolboxContainer";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         #endregion
 
         private DrawingToolbox _drawingToolbox;
-        private SkaaColorChooser _colorGridChooser;
+        private ColorGrid _colorGrid;
     }
 }

@@ -81,10 +81,11 @@ namespace Capslock.Windows.Forms.SpriteViewer
             this._sliderBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this._sliderBar.AutoSize = false;
             this._sliderBar.LargeChange = 4;
             this._sliderBar.Location = new System.Drawing.Point(0, 190);
             this._sliderBar.Name = "_sliderBar";
-            this._sliderBar.Size = new System.Drawing.Size(235, 45);
+            this._sliderBar.Size = new System.Drawing.Size(235, 35);
             this._sliderBar.TabIndex = 5;
             this._sliderBar.ValueChanged += new System.EventHandler(this.frameSlider_ValueChanged);
             // 
@@ -100,7 +101,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
             ((System.ComponentModel.ISupportInitialize)(this._picBoxFrame)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._sliderBar)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
