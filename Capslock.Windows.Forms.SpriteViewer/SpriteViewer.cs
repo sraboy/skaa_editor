@@ -141,8 +141,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
         private object ImageGetter(object rowObject)
         {
             IFrame f = (IFrame)rowObject;
-            if (this.objectListView.RowHeight < f?.Bitmap?.Height)
-                this.objectListView.RowHeight = (int)f?.Bitmap?.Height;
+            this.objectListView.RowHeight = 40;
             return ResizeImage(f.Bitmap, 40, 40);
         }
         #endregion
