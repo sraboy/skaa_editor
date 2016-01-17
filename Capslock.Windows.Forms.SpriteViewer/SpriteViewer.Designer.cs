@@ -37,6 +37,7 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.trackBar = new System.Windows.Forms.TrackBar();
             this.animationTimer = new System.Windows.Forms.Timer(this.components);
+            this._updateTimer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.objectListView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
@@ -165,5 +166,6 @@
         private BrightIdeasSoftware.OLVColumn colOffset;
         private BrightIdeasSoftware.OLVColumn colImage;
         private System.Windows.Forms.Timer animationTimer;
+        private System.Windows.Forms.Timer _updateTimer;
     }
 }

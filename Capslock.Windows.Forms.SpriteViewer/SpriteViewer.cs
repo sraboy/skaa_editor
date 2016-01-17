@@ -38,6 +38,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
         private IMultiImagePresenter _activeSprite;
         private int _currentAnimationFrameIndex;
         private int _thumbnailSize = 40;
+        private bool _updateRequired;
         #endregion
 
         #region Public Properties
@@ -84,6 +85,10 @@ namespace Capslock.Windows.Forms.SpriteViewer
             this.animationTimer.Tick += animationTimer_Tick;
             this.animationTimer.Interval = 150;
 
+            this._updateTimer.Enabled = true;
+            this._updateTimer.Tick += updateTimer_Tick;
+            this._updateTimer.Interval = 1000;
+
             this.trackBar.Maximum = this.ActiveSprite?.Frames?.Count - 1 ?? 0;
             this.trackBar.Minimum = 0;
 
@@ -96,6 +101,16 @@ namespace Capslock.Windows.Forms.SpriteViewer
             SetTrackBarActiveFrame();
             SetPictureBoxActiveFrame();
         }
+
+        private void updateTimer_Tick(object sender, EventArgs e)
+        {
+            if (this._updateRequired)
+            {
+                this._updateRequired = false;
+                this.objectListView.RebuildColumns();
+            }
+        }
+
         private void ResetUI()
         {
             this.trackBar.Maximum = this.ActiveSprite?.Frames?.Count - 1 ?? 0;
@@ -104,6 +119,10 @@ namespace Capslock.Windows.Forms.SpriteViewer
             SetTrackBarActiveFrame();
             SetPictureBoxActiveFrame();
         }
+        /// <summary>
+        /// Sets the <see cref="ObjectListView.SelectedItem"/> to the object that
+        /// corresponds to <see cref="IMultiImagePresenter.ActiveFrame"/>
+        /// </summary>
         private void SetObjectListViewActiveFrame()
         {
             this.objectListView.SelectedItem = null;
@@ -146,7 +165,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
             if (this.ActiveSprite?.Frames?.Count > 0)
             {
                 foreach (IFrame f in this.ActiveSprite.Frames)
-                    f.PropertyChanged += iframe_PropertyChanged;
+                    f.PropertyChanged += IFrame_PropertyChanged;
 
                 this.animationTimer.Enabled = false;
             }
@@ -254,9 +273,13 @@ namespace Capslock.Windows.Forms.SpriteViewer
                 SetTrackBarActiveFrame(this._currentAnimationFrameIndex);
             }
         }
-        private void iframe_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void IFrame_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            this.objectListView.RebuildColumns();
+            //Calling RebuildColumns() for every property change takes forever
+            //and is unnecessary. If a bitmap is update, then all the offsets
+            //in the sprite get updated. We'd be rebuilding all the columns
+            //every time each of them fires the event.
+            this._updateRequired = true;
         }
         #endregion
     }

@@ -20,6 +20,12 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
+        <member name="M:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.SetObjectListViewActiveFrame">
+            <summary>
+            Sets the <see cref="P:BrightIdeasSoftware.ObjectListView.SelectedItem"/> to the object that
+            corresponds to <see cref="P:Capslock.Windows.Forms.SpriteViewer.IMultiImagePresenter.ActiveFrame"/>
+            </summary>
+        </member>
         <member name="F:Capslock.Windows.Forms.SpriteViewer.SpriteViewer.components">
             <summary> 
             Required designer variable.
