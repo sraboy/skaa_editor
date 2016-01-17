@@ -170,6 +170,9 @@
     <Compile Include="Forms\DockContentControls\GameSetViewerContainer.Designer.cs">
       <DependentUpon>GameSetViewerContainer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Misc\ColorGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Misc\FileDialogExtensions.cs" />
     <Compile Include="Presenters\ColorPalettePresenter.cs" />
     <Compile Include="Presenters\DbfFilePresenter.cs" />

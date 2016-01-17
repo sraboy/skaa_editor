@@ -30,6 +30,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using SkaaEditorUI.Forms.DockContentControls;
+using SkaaEditorUI.Misc;
 using SkaaEditorUI.Presenters;
 using SkaaGameDataLib.GameObjects;
 using SkaaGameDataLib.Util;
@@ -343,7 +344,9 @@ namespace SkaaEditorUI.Forms
         {
             //todo: create a ColorChangedEventArgs so we can just pass sender/e like SelectedToolChanged
             var iec = (ImageEditorContainer)this._dockPanel.ActiveDocument;
-            iec.SetActiveColors((sender as Cyotek.Windows.Forms.ColorGrid).Color, Color.FromArgb(0, 0, 0, 0));
+            var grid = sender as ColorGrid;
+            if(grid != null)
+                iec.SetActiveColors(grid.ActivePrimaryColor, grid.ActiveSecondaryColor);
         }
         private void ImageEditorContainer_ActiveSpriteChanged(object sender, EventArgs e) { }
         /// <summary>

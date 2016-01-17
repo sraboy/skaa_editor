@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Capslock.Windows.Forms.ImageEditor;
-using Cyotek.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkaaEditorUI.Forms.DockContentControls
@@ -86,6 +85,14 @@ namespace SkaaEditorUI.Forms.DockContentControls
                 this._drawingToolbox.ResizeImageDelegate = value;
             }
         }
+        public Color ActiveSecondaryColor
+        {
+            get { return this._colorGrid.ActiveSecondaryColor; }
+        }
+        public Color ActivePrimaryColor
+        {
+            get { return this._colorGrid.ActivePrimaryColor; }
+        }
         #endregion
 
         #region Constructor
@@ -99,7 +106,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
             //The palette is set to "Standard256" for the sake of designer showing 
             //256 colors. At runtime, we want it set to None so the user doesn't 
             //see a palette we may not support.
-            this._colorGrid.Palette = ColorPalette.None;
+            this._colorGrid.Palette = Cyotek.Windows.Forms.ColorPalette.None;
 
             this.Enabled = false;
             SetPalette(null);
@@ -124,17 +131,16 @@ namespace SkaaEditorUI.Forms.DockContentControls
             if (pal != null)
             {
                 IEnumerable<Color> distinct = pal.Entries.Distinct();
-                this._colorGrid.Colors = new ColorCollection(distinct);
-                this._colorGrid.Colors.Sort(ColorCollectionSortOrder.Value);
+                this._colorGrid.Colors = new Cyotek.Windows.Forms.ColorCollection(distinct);
+                this._colorGrid.Colors.Sort(Cyotek.Windows.Forms.ColorCollectionSortOrder.Value);
             }
             else
             {
                 this._colorGrid.Colors.Clear();
-                this._colorGrid.Palette = ColorPalette.None;
+                this._colorGrid.Palette = Cyotek.Windows.Forms.ColorPalette.None;
             }
 
             ToggleEnable();
-            //this._colorGridChooser.Refresh();
         }
         #endregion
 

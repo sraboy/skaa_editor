@@ -1,5 +1,4 @@
 ﻿using Capslock.Windows.Forms.ImageEditor;
-using Cyotek.Windows.Forms;
 
 namespace SkaaEditorUI.Forms.DockContentControls
 {
@@ -32,11 +31,12 @@ namespace SkaaEditorUI.Forms.DockContentControls
         private void InitializeComponent()
         {
             this._drawingToolbox = new Capslock.Windows.Forms.ImageEditor.DrawingToolbox();
-            this._colorGrid = new Cyotek.Windows.Forms.ColorGrid();
+            this._colorGrid = new SkaaEditorUI.Misc.ColorGrid();
             this.SuspendLayout();
             // 
             // _drawingToolbox
             // 
+            this._drawingToolbox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this._drawingToolbox.Location = new System.Drawing.Point(-1, 1);
             this._drawingToolbox.Margin = new System.Windows.Forms.Padding(2);
             this._drawingToolbox.Name = "_drawingToolbox";
@@ -69,10 +69,11 @@ namespace SkaaEditorUI.Forms.DockContentControls
             this.Text = "ToolboxContainer";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         #endregion
 
         private DrawingToolbox _drawingToolbox;
-        private ColorGrid _colorGrid;
+        private SkaaEditorUI.Misc.ColorGrid _colorGrid;
     }
 }
