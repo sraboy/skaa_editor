@@ -23,7 +23,6 @@
 ***************************************************************************/
 #endregion
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
@@ -37,7 +36,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
         #region Private Fields
         private IMultiImagePresenter _activeSprite;
         private int _currentAnimationFrameIndex;
-        private int _thumbnailSize = 40;
         private bool _updateRequired;
         #endregion
 
@@ -51,21 +49,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
             private set
             {
                 this._activeSprite = value;
-            }
-        }
-        [Category("Appearance"),
-        Description("The height/width to resize images to when displaying thumbnails. Also defines the ObjectListView.RowHeight value."),
-        DefaultValue(typeof(int), "40")]
-        public int ThumbnailSize
-        {
-            get
-            {
-                return _thumbnailSize;
-            }
-
-            set
-            {
-                this._thumbnailSize = value;
             }
         }
         #endregion
@@ -92,7 +75,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
             this.trackBar.Maximum = this.ActiveSprite?.Frames?.Count - 1 ?? 0;
             this.trackBar.Minimum = 0;
 
-            this.objectListView.RowHeight = this.ThumbnailSize;
+            this.objectListView.RowHeight = 40;
             this.objectListView.ShowImagesOnSubItems = true;
             this.colImage.IsEditable = false; //otherwise, the user can "edit" by typing text, which just looks odd and is usless
             this.colImage.ImageGetter = ImageGetter;
@@ -114,7 +97,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
         private void ResetUI()
         {
             this.trackBar.Maximum = this.ActiveSprite?.Frames?.Count - 1 ?? 0;
-
             SetObjectListViewActiveFrame();
             SetTrackBarActiveFrame();
             SetPictureBoxActiveFrame();
