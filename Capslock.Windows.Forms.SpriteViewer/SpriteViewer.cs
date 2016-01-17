@@ -262,6 +262,10 @@ namespace Capslock.Windows.Forms.SpriteViewer
             //in the sprite get updated. We'd be rebuilding all the columns
             //every time each of them fires the event.
             this._updateRequired = true;
+
+            //This is quick so we can update it immediately
+            if (e.PropertyName == "Bitmap")
+                this.pictureBox.Image = (sender as IFrame).Bitmap;
         }
         #endregion
     }
