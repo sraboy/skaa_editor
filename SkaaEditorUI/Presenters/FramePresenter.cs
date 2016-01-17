@@ -76,7 +76,11 @@ namespace SkaaEditorUI.Presenters
 
             set
             {
-                this._thumbnail = value;
+                if (this._thumbnail != value)
+                {
+                    this._thumbnail = value;
+                    OnPropertyChanged();
+                }
             }
         }
         public Guid Guid
@@ -158,7 +162,8 @@ namespace SkaaEditorUI.Presenters
 
         private async void BuildThumbnail()
         {
-            Task<Bitmap> resize = new Task<Bitmap>(t => ResizeImage(this.Bitmap, 40, 40), 1000);
+            Bitmap clone = this.Bitmap.Clone(new Rectangle(0, 0, this.Bitmap.Width, this.Bitmap.Height), this.Bitmap.PixelFormat);
+            Task<Bitmap> resize = new Task<Bitmap>(t => ResizeImage(clone, 40, 40), 1000);
             resize.Start();
             await resize;
             this.Thumbnail = resize.Result;
