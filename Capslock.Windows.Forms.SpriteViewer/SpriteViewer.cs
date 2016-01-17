@@ -84,16 +84,6 @@ namespace Capslock.Windows.Forms.SpriteViewer
             SetTrackBarActiveFrame();
             SetPictureBoxActiveFrame();
         }
-
-        private void updateTimer_Tick(object sender, EventArgs e)
-        {
-            if (this._updateRequired)
-            {
-                this._updateRequired = false;
-                this.objectListView.RebuildColumns();
-            }
-        }
-
         private void ResetUI()
         {
             this.trackBar.Maximum = this.ActiveSprite?.Frames?.Count - 1 ?? 0;
@@ -157,6 +147,14 @@ namespace Capslock.Windows.Forms.SpriteViewer
         #endregion
 
         #region Event Handlers
+        private void updateTimer_Tick(object sender, EventArgs e)
+        {
+            if (this._updateRequired)
+            {
+                this._updateRequired = false;
+                this.objectListView.RebuildColumns();
+            }
+        }
         private void trackBar_ValueChanged(object sender, System.EventArgs e)
         {
             this.ActiveSprite.ActiveFrame = this.ActiveSprite.Frames[this.trackBar.Value];
