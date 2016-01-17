@@ -24,8 +24,10 @@
 #endregion
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Capslock.Windows.Forms.SpriteViewer;
 using SkaaGameDataLib.GameObjects;
@@ -38,6 +40,7 @@ namespace SkaaEditorUI.Presenters
         #region Private Members
         private Guid _guid;
         private Bitmap _bitmap;
+        private Bitmap _thumbnail;
         private long _bitmapOffset;
         private string _name;
         #endregion
@@ -55,6 +58,7 @@ namespace SkaaEditorUI.Presenters
             {
                 this._bitmap = value;
                 this.GameObject.IndexedBitmap.Bitmap = this._bitmap;
+                BuildThumbnail();
                 OnPropertyChanged();
                 //We can't use SetField unless we implement a custom comparer for Bitmaps.
                 //More often than not, it is likely the case that the image has indeed changed.
@@ -96,6 +100,18 @@ namespace SkaaEditorUI.Presenters
                 this.GameObject.Name = this._name;
             }
         }
+        public Bitmap Thumbnail
+        {
+            get
+            {
+                return this._thumbnail;
+            }
+
+            set
+            {
+                this._thumbnail = value;
+            }
+        }
 
         public FramePresenter() { }
 
@@ -134,6 +150,38 @@ namespace SkaaEditorUI.Presenters
             dlg.DefaultExt = ".spr";
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.Name ?? null;
+        }
+
+        private async void BuildThumbnail()
+        {
+            Task<Bitmap> resize = new Task<Bitmap>(t => ResizeImage(this.Bitmap, 40, 40), 1000);
+            resize.Start();
+            await resize;
+            this.Thumbnail = resize.Result;
+        }
+        private static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
     }
 }

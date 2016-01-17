@@ -33,6 +33,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
         long BitmapOffset { get; set; }
         string Name { get; set; }
         Bitmap Bitmap { get; set; }
+        Bitmap Thumbnail { get; set; }
         Guid Guid { get; set; }
     }
 }
