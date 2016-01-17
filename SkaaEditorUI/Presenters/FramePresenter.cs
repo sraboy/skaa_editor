@@ -44,6 +44,8 @@ namespace SkaaEditorUI.Presenters
         private long _bitmapOffset;
         private string _name;
         #endregion
+
+        #region Public Properties
         /// <summary>
         /// Sets the <see cref="Bitmap"/> property to the specified value and raises the
         /// <see cref="PresenterBase{T}.PropertyChanged"/> event without doing a comparison.
@@ -63,6 +65,18 @@ namespace SkaaEditorUI.Presenters
                 //We can't use SetField unless we implement a custom comparer for Bitmaps.
                 //More often than not, it is likely the case that the image has indeed changed.
                 //SetField(ref this._bitmap, value, () => OnPropertyChanged());// GetDesignModeValue(() => this.Bitmap)));
+            }
+        }
+        public Bitmap Thumbnail
+        {
+            get
+            {
+                return this._thumbnail;
+            }
+
+            set
+            {
+                this._thumbnail = value;
             }
         }
         public Guid Guid
@@ -100,21 +114,10 @@ namespace SkaaEditorUI.Presenters
                 this.GameObject.Name = this._name;
             }
         }
-        public Bitmap Thumbnail
-        {
-            get
-            {
-                return this._thumbnail;
-            }
+        #endregion
 
-            set
-            {
-                this._thumbnail = value;
-            }
-        }
-
+        #region Constructors
         public FramePresenter() { }
-
         public FramePresenter(SkaaFrame sgf)
         {
             this.Guid = Guid.NewGuid();
@@ -124,7 +127,9 @@ namespace SkaaEditorUI.Presenters
             this.Name = this.GameObject.Name;
             this.BitmapOffset = this.GameObject.BitmapOffset;
         }
+        #endregion
 
+        #region Overridden Methods
         public override SkaaFrame Load(string filePath, params object[] param)
         {
             var pal = (ColorPalette)param[0];
@@ -139,18 +144,17 @@ namespace SkaaEditorUI.Presenters
 
             return frame;
         }
-
         public override bool Save(string filePath, params object[] param)
         {
             throw new NotImplementedException();
         }
-
         protected override void SetupFileDialog(FileDialog dlg)
         {
             dlg.DefaultExt = ".spr";
             dlg.Filter = $"7KAA Sprite Files (*{dlg.DefaultExt})|*{dlg.DefaultExt}|All Files (*.*)|*.*";
             dlg.FileName = this.Name ?? null;
         }
+        #endregion
 
         private async void BuildThumbnail()
         {
