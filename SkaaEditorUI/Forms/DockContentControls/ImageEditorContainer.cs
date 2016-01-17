@@ -137,7 +137,6 @@ namespace SkaaEditorUI.Forms.DockContentControls
             InitializeComponent();
             ResizeImageMethod = this._imageEditorBox.Resize;
             this._imageEditorBox.ShowPixelGrid = true;
-            SetActiveColors(Color.Black, Color.FromArgb(0, 0, 0, 0));
         }
         #endregion
 
