@@ -52,14 +52,10 @@ namespace Capslock.Windows.Forms.ImageEditor
         private Point _startScrollPosition;
         private Queue<Point> _linePoints;
         private bool _snapSelectionToGrid;
+        private bool _isDrawing;
         #endregion
 
-        [DefaultValue("false")]
-        [Category("Behavior")]
-        private bool IsDrawing
-        { get; set; }
-
-        #region Public Accessors
+        #region Public Properties
         [Category("Behavior")]
         public Color ActivePrimaryColor
         {
@@ -238,7 +234,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (!this.IsDrawing)
+            if (!this._isDrawing)
                 base.OnMouseDown(e);
 
             this._startMousePosition = e.Location; //used for panning and for a location to paste an image
@@ -312,9 +308,9 @@ namespace Capslock.Windows.Forms.ImageEditor
             // cleaner than worrying about where it's set within which methods. Also, Draw() can handle
             // calling Invalidate(). The drawing methods should simply manipulate the image; though LineDraw
             // will still need to Invalidate the control once the real-time line is drawn.
-            if (this.IsDrawing)
+            if (this._isDrawing)
             {
-                this.IsDrawing = false;
+                this._isDrawing = false;
                 OnImageChanged(EventArgs.Empty);
             }
         }
@@ -406,7 +402,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         #region Editing Methods
         protected virtual void LineDraw(MouseEventArgs e)
         {
-            this.IsDrawing = true;
+            this._isDrawing = true;
 
             Color col;
 
@@ -443,13 +439,13 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected virtual void PencilDraw(MouseEventArgs e)
         {
-            this.IsDrawing = true;
+            this._isDrawing = true;
 
             Point currentPixel = this.PointToImage(e.X, e.Y);
 
             if ((currentPixel.X < Image.Width && currentPixel.Y < Image.Height) && (currentPixel.X >= 0 && currentPixel.Y >= 0))
             {
-                this.IsDrawing = true;
+                this._isDrawing = true;
                 this.IsSelecting = false;
                 this.IsPanning = false;
 
@@ -476,7 +472,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected virtual void PaintBucketFill(MouseEventArgs e)
         {
-            this.IsDrawing = true;
+            this._isDrawing = true;
             this.IsSelecting = false;
             this.IsPanning = false;
 
