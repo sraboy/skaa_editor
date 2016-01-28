@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace SkaaGameDataLib.Util
 {
@@ -138,6 +139,42 @@ namespace SkaaGameDataLib.Util
             }
 
             Logger.TraceInformation($"Saved game set: {setName} to {filepath}");
+        }
+
+        public static void ExportGameSetToCSV(this DataSet ds)
+        {
+            //todo: Move to GameSetPresenter w/ OpenFileDialog
+
+            StreamWriter sw = null;
+            StringBuilder sb = new StringBuilder();
+            foreach (DataTable dataTable in ds.Tables)
+            {
+                sw = new StreamWriter($"{dataTable.TableName}.csv");
+                sb.Clear();
+                //write column headers
+                for (int j = 0; j < dataTable.Columns.Count; j++)
+                {
+                    sb.Append(dataTable.Columns[j].ColumnName);
+                    if (j != (dataTable.Columns.Count - 1))
+                        sb.Append(",");
+                }
+
+                sw.WriteLine(sb);
+                //write data
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    sb.Clear();
+
+                    for (int j = 0; j < dataTable.Columns.Count; j++)
+                    {
+                        sb.Append(dataTable.Rows[i][j]);
+                        if (j != (dataTable.Columns.Count - 1))
+                            sb.Append(",");
+                    }
+                    sw.WriteLine(sb.ToString());
+                }
+                sw.Close();
+            }
         }
 
         /// <summary>

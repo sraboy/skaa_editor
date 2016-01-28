@@ -54,6 +54,8 @@ namespace SkaaEditorUI.Presenters
             return true;
         }
 
+        public void ExportToCSV() => this.GameObject.ExportGameSetToCSV();
+
         public void Merge(GameSetPresenter gsp)
         {
             this.GameObject = this.GameObject ?? new DataSet();

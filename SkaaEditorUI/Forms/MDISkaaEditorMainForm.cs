@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using SkaaEditorUI.Forms.DockContentControls;
 using SkaaEditorUI.Misc;
@@ -188,7 +187,7 @@ namespace SkaaEditorUI.Forms
 
         private void exportGameSetToCSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GenerateCSVfiles(this._gameSetViewerContainer.GameSetPresenter.GameObject);
+            this._gameSetViewerContainer.GameSetPresenter.ExportToCSV();
         }
         private void exportSpriteFrameToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -473,41 +472,7 @@ namespace SkaaEditorUI.Forms
         {
             throw new NotImplementedException();
         }
-        public void GenerateCSVfiles(DataSet dataSets)
-        {
-            //todo: Move to GameSetPresenter w/ OpenFileDialog
 
-            StreamWriter sw = null;
-            StringBuilder sb = new StringBuilder();
-            foreach (DataTable dataTable in dataSets.Tables)
-            {
-                sw = new StreamWriter($"{dataTable.TableName}.csv");
-                sb.Clear();
-                //write column headers
-                for (int j = 0; j < dataTable.Columns.Count; j++)
-                {
-                    sb.Append(dataTable.Columns[j].ColumnName);
-                    if (j != (dataTable.Columns.Count - 1))
-                        sb.Append(",");
-                }
-
-                sw.WriteLine(sb);
-                //write data
-                for (int i = 0; i < dataTable.Rows.Count; i++)
-                {
-                    sb.Clear();
-
-                    for (int j = 0; j < dataTable.Columns.Count; j++)
-                    {
-                        sb.Append(dataTable.Rows[i][j]);
-                        if (j != (dataTable.Columns.Count - 1))
-                            sb.Append(",");
-                    }
-                    sw.WriteLine(sb.ToString());
-                }
-                sw.Close();
-            }
-        }
         internal void SetSpriteDataViews(GameSetPresenter gsp) => ProjectManager.SetSpriteDataViews(gsp);
         /// <summary>
         /// Enables or disables various file saving-related UI options based on the current status of the application
