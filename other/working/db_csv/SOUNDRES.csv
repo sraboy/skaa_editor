@@ -1,0 +1,230 @@
+SUBJ_TYPE,SUBJ_CODE,SUBJ_ID,ACTION,OBJ_TYPE,OBJ_ID,OUT_FRAME,FILENAME
+R,NORMAN      , 1 ,DIE , ,   ,1,DEATH1  
+R,MAYA        , 2 ,DIE , ,   ,1,DEATH2  
+R,GREEK       , 3 ,DIE , ,   ,1,DEATH1  
+R,VIKING      , 4 ,DIE , ,   ,1,DEATH1  
+R,PERSIAN     , 5 ,DIE , ,   ,1,DEATH1  
+R,CHINESE     , 6 ,DIE , ,   ,1,DEATH2  
+R,JAPANESE    , 7 ,DIE , ,   ,1,DEATH2  
+R,EGYPTIAN    , 8 ,DIE , ,   ,1,DEATH1  
+R,INDIAN      , 9 ,DIE , ,   ,1,DEATH2  
+R,ZULU        ,10 ,DIE , ,   ,1,DEATH2  
+S,NORMAN      , 1 ,ACK , ,   ,1,NO_V2   
+S,NORMAN      , 1 ,ACK , ,   ,1,NO_V3   
+S,NORMAN      , 1 ,RDY , ,   ,1,READY   
+S,NORMAN      , 1 ,SEL , ,   ,1,NO_V1   
+S,NORMAN      , 1 ,SEL , ,   ,1,NO_V1   
+S,NORMAN      , 1 ,A1  ,*,*  ,4,NO_A1   
+S,NORMAN      , 1 ,A2  ,*,*  ,3,NO_A2   
+S,NORMAN      , 1 ,DIE , ,   ,1,DEATH1  
+S,NORMAN      , 1 ,FINS,*,*  ,1,BUILT   
+S,MAYA        , 2 ,ACK , ,   ,1,MA_V4   
+S,MAYA        , 2 ,ACK , ,   ,1,MA_V5   
+S,MAYA        , 2 ,RDY , ,   ,1,READY   
+S,MAYA        , 2 ,SEL , ,   ,1,MA_V1   
+S,MAYA        , 2 ,SEL , ,   ,1,MA_V2   
+S,MAYA        , 2 ,SEL , ,   ,1,MA_V3   
+S,MAYA        , 2 ,A1  ,*,*  ,4,MA_A1   
+S,MAYA        , 2 ,DIE , ,   ,1,DEATH2  
+S,MAYA        , 2 ,FINS,*,*  ,1,BUILT   
+S,GREEK       , 3 ,ACK , ,   ,1,GR_V3   
+S,GREEK       , 3 ,RDY , ,   ,1,READY   
+S,GREEK       , 3 ,SEL , ,   ,1,GR_V1   
+S,GREEK       , 3 ,SEL , ,   ,1,GR_V2   
+S,GREEK       , 3 ,A1  ,*,*  ,4,GR_A1   
+S,GREEK       , 3 ,A2  ,*,*  ,2,GR_A1   
+S,GREEK       , 3 ,A3  ,*,*  ,2,GR_A1   
+S,GREEK       , 3 ,DIE , ,   ,1,DEATH1  
+S,GREEK       , 3 ,FINS,*,*  ,1,BUILT   
+S,VIKING      , 4 ,ACK , ,   ,1,VI_V2   
+S,VIKING      , 4 ,RDY , ,   ,1,READY   
+S,VIKING      , 4 ,SEL , ,   ,1,VI_V1   
+S,VIKING      , 4 ,A1  ,*,*  ,4,VI_A1   
+S,VIKING      , 4 ,A2  ,*,*  ,3,VI_A2   
+S,VIKING      , 4 ,DIE , ,   ,1,DEATH1  
+S,VIKING      , 4 ,FINS,*,*  ,1,BUILT   
+S,PERSIAN     , 5 ,ACK , ,   ,1,PE_V3   
+S,PERSIAN     , 5 ,ACK , ,   ,1,PE_V4   
+S,PERSIAN     , 5 ,RDY , ,   ,1,READY   
+S,PERSIAN     , 5 ,SEL , ,   ,1,PE_V1   
+S,PERSIAN     , 5 ,SEL , ,   ,1,PE_V2   
+S,PERSIAN     , 5 ,A1  ,*,*  ,3,PE_A1   
+S,PERSIAN     , 5 ,A2  ,*,*  ,5,PE_A2   
+S,PERSIAN     , 5 ,A3  ,*,*  ,5,PE_A3   
+S,PERSIAN     , 5 ,DIE , ,   ,1,DEATH1  
+S,PERSIAN     , 5 ,FINS,*,*  ,1,BUILT   
+S,CHINESE     , 6 ,ACK , ,   ,1,CH_V3   
+S,CHINESE     , 6 ,ACK , ,   ,1,CH_V4   
+S,CHINESE     , 6 ,ACK , ,   ,1,CH_V5   
+S,CHINESE     , 6 ,RDY , ,   ,1,READY   
+S,CHINESE     , 6 ,SEL , ,   ,1,CH_V1   
+S,CHINESE     , 6 ,SEL , ,   ,1,CH_V2   
+S,CHINESE     , 6 ,A1  ,*,*  ,4,CH_A1   
+S,CHINESE     , 6 ,A2  ,*,*  ,4,CH_A2   
+S,CHINESE     , 6 ,DIE , ,   ,1,DEATH2  
+S,CHINESE     , 6 ,FINS,*,*  ,1,BUILT   
+S,JAPANESE    , 7 ,ACK , ,   ,1,JA_V4   
+S,JAPANESE    , 7 ,ACK , ,   ,1,JA_V5   
+S,JAPANESE    , 7 ,RDY , ,   ,1,READY   
+S,JAPANESE    , 7 ,SEL , ,   ,1,JA_V1   
+S,JAPANESE    , 7 ,SEL , ,   ,1,JA_V2   
+S,JAPANESE    , 7 ,SEL , ,   ,1,JA_V3   
+S,JAPANESE    , 7 ,A1  ,*,*  ,3,JA_A1   
+S,JAPANESE    , 7 ,A2  ,*,*  ,6,JA_A2   
+S,JAPANESE    , 7 ,DIE , ,   ,1,DEATH2  
+S,JAPANESE    , 7 ,FINS,*,*  ,1,BUILT   
+S,EGYPTIAN    ,75 ,ACK , ,   ,1,EG_V1   
+S,EGYPTIAN    ,75 ,ACK , ,   ,1,EG_V2   
+S,EGYPTIAN    ,75 ,ACK , ,   ,1,EG_V4   
+S,EGYPTIAN    ,75 ,RDY , ,   ,1,READY   
+S,EGYPTIAN    ,75 ,SEL , ,   ,1,EG_V3   
+S,EGYPTIAN    ,75 ,A1  ,*,*  ,5,NO_A1   
+S,EGYPTIAN    ,75 ,A2  ,*,*  ,5,PE_A2   
+S,EGYPTIAN    ,75 ,A3  ,*,*  ,5,PE_A3   
+S,EGYPTIAN    ,75 ,DIE , ,   ,1,DEATH1  
+S,EGYPTIAN    ,75 ,FINS,*,*  ,1,BUILT   
+S,INDIAN      ,76 ,ACK , ,   ,1,IN_V2   
+S,INDIAN      ,76 ,ACK , ,   ,1,IN_V3   
+S,INDIAN      ,76 ,ACK , ,   ,1,IN_V4   
+S,INDIAN      ,76 ,RDY , ,   ,1,READY   
+S,INDIAN      ,76 ,SEL , ,   ,1,IN_V1   
+S,INDIAN      ,76 ,A1  ,*,*  ,4,GR_A1   
+S,INDIAN      ,76 ,A2  ,*,*  ,2,GR_A1   
+S,INDIAN      ,76 ,A3  ,*,*  ,2,PE_A2   
+S,INDIAN      ,76 ,DIE , ,   ,1,DEATH2  
+S,INDIAN      ,76 ,FINS,*,*  ,1,BUILT   
+S,ZULU        ,77 ,ACK , ,   ,1,ZU_V5   
+S,ZULU        ,77 ,ACK , ,   ,1,ZU_V7   
+S,ZULU        ,77 ,ACK , ,   ,1,ZU_V8   
+S,ZULU        ,77 ,RDY , ,   ,1,READY   
+S,ZULU        ,77 ,SEL , ,   ,1,ZU_V2   
+S,ZULU        ,77 ,SEL , ,   ,1,ZU_V3   
+S,ZULU        ,77 ,A1  ,*,*  ,5,PE_A1   
+S,ZULU        ,77 ,A2  ,*,*  ,5,RM_A1   
+S,ZULU        ,77 ,DIE , ,   ,1,DEATH2  
+S,ZULU        ,77 ,FINS,*,*  ,1,BUILT   
+S,NO_ARROW    , 8 ,DIE , ,   ,1,ARR_HIT 
+S,PE_ARROW    , 9 ,DIE , ,   ,1,ARR_HIT 
+S,CH_ARROW    ,10 ,DIE , ,   ,1,ARR_HIT 
+S,EG_ARROW    ,82 ,DIE , ,   ,1,ARR_HIT 
+S,EG_POWAR    ,83 ,DIE , ,   ,1,ARR_HIT 
+S,ZU_ARROW    ,81 ,DIE , ,   ,1,ARR_HIT 
+S,CARAVAN     ,11 ,SEL , ,   ,1,CM_SEL  
+S,CARAVAN     ,11 ,DIE , ,   ,1,CM_DIE  
+S,CANNON      ,13 ,A1  ,*,*  ,3,CANNON  
+S,CANNON      ,13 ,DIE , ,   ,1,W__DIE  
+S,CATAPULT    ,14 ,A1  ,*,*  ,3,WP_A1   
+S,CATAPULT    ,14 ,DIE , ,   ,1,W__DIE  
+S,CANBALL     ,17 ,DIE , ,   ,1,SH_EXPL 
+S,GALLEON     ,20 ,SEL , ,   ,1,SEL-SHIP
+S,GALLEON     ,20 ,A1  ,*,*  ,3,CANNON  
+S,GALLEON     ,20 ,DIE , ,   ,1,SINK    
+S,VESSEL      ,22 ,SEL , ,   ,1,SEL-SHIP
+S,VESSEL      ,22 ,A1  ,*,*  ,3,CANNON  
+S,VESSEL      ,22 ,DIE , ,   ,1,SINK    
+S,CARAVEL     ,15 ,SEL , ,   ,1,SEL-SHIP
+S,CARAVEL     ,15 ,A1  ,*,*  ,3,CANNON  
+S,CARAVEL     ,15 ,DIE , ,   ,1,SINK    
+S,TRANSPOR    ,24 ,SEL , ,   ,1,SEL-SHIP
+S,TRANSPOR    ,24 ,A1  ,*,*  ,3,CANNON  
+S,TRANSPOR    ,24 ,DIE , ,   ,1,SINK    
+S,EXPCART     ,26 ,DIE , ,   ,1,EXPLODE 
+S,BALLISTA    ,27 ,A1  ,*,*  ,3,WB_A1   
+S,BALLISTA    ,27 ,A2  ,*,*  ,3,WB_A1   
+S,BALLISTA    ,27 ,DIE , ,   ,1,W__DIE  
+S,FLAMETHR    ,40 ,A1  ,*,*  ,2,WF_A1   
+S,FLAMETHR    ,40 ,DIE , ,   ,1,W__DIE  
+S,F_BALLIS    ,84 ,A1  ,*,*  ,4,WB_A1   
+S,F_BALLIS    ,84 ,A2  ,*,*  ,5,WB_A1   
+S,DRAGON      ,49 ,A1  ,*,*  ,3,DR_A1   
+S,DRAGON      ,49 ,DIE , ,   ,1,DR_DIE  
+S,DR_ARROW    ,50 ,DIE , ,   ,1,BIG_EXPL
+S,CHDRAGON    ,51 ,A1  ,*,*  ,5,GC_A1   
+S,CHDRAGON    ,51 ,A2  ,*,*  ,2,GC_A1   
+S,CHDRAGON    ,51 ,A3  ,*,*  ,2,GC_A1   
+S,CHDRAGON    ,51 ,DIE , ,   ,1,GC_DIE  
+S,GC_ARROW    ,52 ,DIE , ,   ,1,SH_EXPL 
+S,PEHEALER    ,53 ,A1  ,*,*  ,5,GP_CAST 
+S,PEHEALER    ,53 ,DIE , ,   ,1,GP_DIE  
+S,VI_GOD      ,55 ,A1  , ,   ,5,GV_CAST 
+S,VI_GOD      ,55 ,DIE , ,   ,1,GV_DIE  
+S,PHEONIX     ,56 ,DIE , ,   ,1,GG_DIE  
+S,KUKULCAN    ,57 ,A1  , ,   ,1,GM_CAST 
+S,KUKULCAN    ,57 ,DIE , ,   ,1,GM_DIE  
+S,JA_GOD      ,58 ,A1  , ,   ,5,GJ_CAST 
+S,JA_GOD      ,58 ,DIE , ,   ,1,GJ_DIE  
+S,EG_GOD      ,78 ,A1  , ,   ,5,GE_CAST 
+S,EG_GOD      ,78 ,DIE , ,   ,1,GG_DIE  
+S,IN_GOD      ,79 ,A1  , ,   ,5,GI_CAST 
+S,IN_GOD      ,79 ,DIE , ,   ,1,GV_DIE  
+S,ZU_GOD      ,80 ,A1  , ,   ,5,GZ_CAST 
+S,ZU_GOD      ,80 ,DIE , ,   ,1,GV_DIE  
+S,SKELETON    ,48 ,A1  ,*,*  ,4,SK_A1   
+S,SKELETON    ,48 ,DIE ,*,*  ,1,DEATH_M1
+S,CATSTONE    ,28 ,DIE , ,   ,1,WP_A_DIE
+S,CATFIRE     ,45 ,DIE , ,   ,1,WP_B_DIE
+S,TC_ARR00    ,31 ,DIE , ,   ,1,ARR_HIT 
+S,TC_ARR01    ,34 ,DIE , ,   ,1,ARR_HIT 
+S,TC_ARR02    ,37 ,DIE , ,   ,1,ARR_HIT 
+S,FB_ARROW    ,88 ,DIE , ,   ,1,WP_A_DIE
+S,LYW         ,60 ,A1  ,*,*  ,3,LY_A1   
+S,LYW         ,60 ,DIE , ,   ,1,DEATH_M1
+S,HOBGLOB     ,61 ,A1  ,*,*  ,3,HO_A1   
+S,HOBGLOB     ,61 ,DIE , ,   ,1,DEATH_M2
+S,GIANTET     ,64 ,A1  ,*,*  ,3,ET_A1   
+S,GIANTET     ,64 ,A2  ,*,*  ,2,ET_A1   
+S,GIANTET     ,64 ,DIE , ,   ,1,DEATH_M2
+S,GITH        ,65 ,A1  ,*,*  ,3,GI_A1   
+S,GITH        ,65 ,DIE , ,   ,1,DEATH_M1
+S,ROCKMAN     ,66 ,A1  ,*,*  ,1,RO_A1   
+S,ROCKMAN     ,66 ,A2  ,*,*  ,2,RO_A2   
+S,ROCKMAN     ,66 ,DIE , ,   ,1,DEATH_M2
+S,GREMJERM    ,67 ,A1  ,*,*  ,4,RM_A1   
+S,GREMJERM    ,67 ,DIE , ,   ,1,DEATH_M1
+S,FIREKIN     ,69 ,A1  ,*,*  ,4,GI_A1   
+S,FIREKIN     ,69 ,A2  ,*,*  ,7,HO_A1   
+S,FIREKIN     ,69 ,DIE , ,   ,1,DEATH_M1
+S,GNOLL       ,70 ,A1  ,*,*  ,6,VI_A1   
+S,GNOLL       ,70 ,A2  ,*,*  ,6,VI_A1   
+S,GNOLL       ,70 ,DIE , ,   ,1,DEATH_M2
+S,GOBLIN      ,71 ,A1  ,*,*  ,4,LY_A1   
+S,GOBLIN      ,71 ,A2  ,*,*  ,5,LY_A1   
+S,GOBLIN      ,71 ,DIE , ,   ,1,DEATH_M1
+S,LIZARD      ,72 ,A1  ,*,*  ,5,VI_A1   
+S,LIZARD      ,72 ,DIE , ,   ,1,DEATH_M2
+S,MAN         ,73 ,A1  ,*,*  ,6,ET_A1   
+S,MAN         ,73 ,DIE , ,   ,1,DEATH_M1
+S,HEADLESS    ,74 ,A1  ,*,*  ,4,VI_A1   
+S,HEADLESS    ,74 ,A2  ,*,*  ,6,VI_A1   
+S,HEADLESS    ,74 ,DIE , ,   ,1,DEATH_M1
+F,BASE        , 1 ,SEL , ,   ,1,BASE_SEL
+F,BASE        , 1 ,SELU, ,   ,1,BUILD   
+F,BASE        , 1 ,DIE , ,   ,1,FIRM_DIE
+F,FACTORY     , 2 ,SEL , ,   ,1,FACT_SEL
+F,FACTORY     , 2 ,SELU, ,   ,1,BUILD   
+F,FACTORY     , 2 ,DIE , ,   ,1,FIRM_DIE
+F,INN         , 3 ,SEL , ,   ,1,INN__SEL
+F,INN         , 3 ,SELU, ,   ,1,BUILD   
+F,INN         , 3 ,DIE , ,   ,1,FIRM_DIE
+F,MARKET      , 4 ,SEL , ,   ,1,MARK_SEL
+F,MARKET      , 4 ,SELU, ,   ,1,BUILD   
+F,MARKET      , 4 ,DIE , ,   ,1,FIRM_DIE
+F,CAMP        , 5 ,SEL , ,   ,1,CAMP_SEL
+F,CAMP        , 5 ,SELU, ,   ,1,BUILD   
+F,CAMP        , 5 ,DIE , ,   ,1,FIRM_DIE
+F,MINE        , 6 ,SEL , ,   ,1,MINE_SEL
+F,MINE        , 6 ,SELU, ,   ,1,BUILD   
+F,MINE        , 6 ,DIE , ,   ,1,FIRM_DIE
+F,RESEARCH    , 7 ,SEL , ,   ,1,RESE_SEL
+F,RESEARCH    , 7 ,SELU, ,   ,1,BUILD   
+F,RESEARCH    , 7 ,DIE , ,   ,1,FIRM_DIE
+F,RESEARCH    , 7 ,FINS,*,*  ,1,RESE_FIN
+F,WAR         , 8 ,SEL , ,   ,1,WARF_SEL
+F,WAR         , 8 ,SELU, ,   ,1,BUILD   
+F,WAR         , 8 ,DIE , ,   ,1,FIRM_DIE
+F,WAR         , 8 ,FINS,*,*  ,1,READY   
+F,HARBOR      , 9 ,SEL , ,   ,1,HARB_SEL
+F,HARBOR      , 9 ,SELU, ,   ,1,BUILD   
+F,HARBOR      , 9 ,DIE , ,   ,1,FIRM_DIE
+F,HARBOR      , 9 ,FINS,*,*  ,1,NEWSHIP 
+T,            ,   ,SEL , ,   ,1,VILLAGE 

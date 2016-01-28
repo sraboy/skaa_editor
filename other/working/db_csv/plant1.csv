@@ -1,0 +1,15 @@
+PLANT,ZONE,TERRAIN_1,TERRAIN_2,TERRAIN_3,FIRSTBMP,BMPCOUNT
+BLUESPRS,2,G ,F ,  ,1,3
+BUSH    ,3,G ,F ,  ,5,3
+CTUS-L  ,3,G ,F ,  ,9,3
+CTUS-S  ,3,G ,F ,  ,13,2
+DECID-1 ,2,G ,F ,  ,16,1
+DECID-2 ,2,G ,F ,  ,18,1
+FIRS    ,2,G ,F ,  ,20,3
+FLOWERS ,3,G ,F ,  ,24,3
+MAPLES  ,3,G ,F ,  ,28,3
+OAKS    ,1,G ,F ,  ,32,3
+PALMS   ,1,G ,F ,  ,36,3
+REDWOODS,2,G ,F ,  ,40,3
+TOWNTREE,2,G ,  ,  ,44,3
+TREE    ,3,T ,  ,  ,48,3

@@ -1,0 +1,8 @@
+FILENAME,OFFSET_X,OFFSET_Y,NEXTFILE1,NEXTFILE2,NEXTFILE3,NEXTFILE4,PREVFILE1,PREVFILE2,BITMAPPTR,NEXT1_REC,NEXT2_REC,NEXT3_REC,NEXT4_REC,PREV1_REC,PREV2_REC
+S0      ,-32,-32,S1      ,S2      ,        ,        ,        ,        ,0,2,3,0,0,0,0
+S1      ,-32,-32,S11     ,S12     ,        ,        ,S0      ,        ,62,4,5,0,0,1,0
+S2      ,-32,-32,S21     ,S22     ,        ,        ,S0      ,        ,205,6,7,0,0,1,0
+S11     ,-32,-32,        ,        ,        ,        ,S1      ,        ,345,0,0,0,0,2,0
+S12     ,-32,-32,        ,        ,        ,        ,S1      ,S2      ,717,0,0,0,0,2,3
+S21     ,-32,-32,        ,        ,        ,        ,S2      ,S1      ,1586,0,0,0,0,3,2
+S22     ,-32,-32,        ,        ,        ,        ,S2      ,        ,1100,0,0,0,0,3,0

@@ -1,0 +1,11 @@
+CODE,NAME,ADJECTIVE,ICONNAME,ICONPTR
+NORMAN  ,Norman      ,Norman      ,S_NORMAN,1952
+MAYA    ,Maya        ,Mayan       ,S_MAYA  ,1464
+GREEK   ,Greek       ,Greek       ,S_GREEK ,488
+VIKING  ,Viking      ,Viking      ,S_VIKING,0
+PERSIAN ,Persian     ,Persian     ,S_PERSIA,2440
+CHINESE ,Chinese     ,Chinese     ,S_CHINES,2928
+JAPANESE,Japanese    ,Japanese    ,S_JAPANE,976
+EGYPTIAN,Egyptian    ,Egyptian    ,S_EGYPTI,3904
+INDIAN  ,Mughul      ,Mughul      ,S_INDIAN,3416
+ZULU    ,Zulu        ,Zulu        ,S_ZULU  ,4392

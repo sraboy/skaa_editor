@@ -1,0 +1,85 @@
+FIRM,RACE,FRAME,DELAY,FIRSTBMP,BMPCOUNT
+BASE    ,NORMAN  ,1,0,4,1
+BASE    ,MAYA    ,1,0,9,1
+BASE    ,GREEK   ,1,0,14,1
+BASE    ,VIKING  ,1,0,19,1
+BASE    ,PERSIAN ,1,0,24,1
+BASE    ,CHINESE ,1,0,29,1
+BASE    ,JAPANESE,1,0,34,1
+BASE    ,EGYPTIAN,1,0,39,1
+BASE    ,INDIAN  ,1,0,44,1
+BASE    ,ZULU    ,1,0,49,1
+CAMP    ,        ,1,0,54,1
+FACTORY ,        ,0,2,60,1
+FACTORY ,        ,1,2,61,1
+FACTORY ,        ,2,2,62,1
+FACTORY ,        ,3,2,63,1
+FACTORY ,        ,4,2,64,1
+FACTORY ,        ,5,2,65,1
+FACTORY ,        ,6,2,66,1
+FACTORY ,        ,7,2,67,1
+FACTORY ,        ,8,2,68,1
+FARM    ,        ,0,0,71,2
+FARM    ,        ,1,2,73,1
+FARM    ,        ,2,2,74,1
+FARM    ,        ,3,2,75,1
+FARM    ,        ,4,2,76,1
+FARM    ,        ,5,2,77,1
+FARM    ,        ,6,2,78,1
+INN     ,        ,1,0,82,1
+MARKET  ,        ,1,0,86,1
+MINE    ,        ,1,10,91,1
+MINE    ,        ,2,10,92,1
+RESEARCH,        ,0,2,97,1
+RESEARCH,        ,1,2,98,1
+RESEARCH,        ,2,2,99,1
+RESEARCH,        ,3,2,100,1
+RESEARCH,        ,4,2,101,1
+RESEARCH,        ,5,2,102,1
+RESEARCH,        ,6,2,103,1
+RESEARCH,        ,7,2,104,1
+RESEARCH,        ,8,2,105,1
+RESEARCH,        ,9,2,106,1
+RESEARCH,        ,10,2,107,1
+WAR     ,        ,1,2,112,1
+WAR     ,        ,2,2,113,1
+WAR     ,        ,3,2,114,1
+WAR     ,        ,4,2,115,1
+HARBOR  ,N       ,0,0,120,1
+HARBOR  ,N       ,1,2,121,1
+HARBOR  ,N       ,2,2,122,1
+HARBOR  ,N       ,3,2,123,1
+HARBOR  ,E       ,0,0,127,1
+HARBOR  ,E       ,1,2,128,1
+HARBOR  ,E       ,2,2,129,1
+HARBOR  ,E       ,3,2,130,1
+HARBOR  ,S       ,0,0,134,1
+HARBOR  ,S       ,1,2,135,1
+HARBOR  ,S       ,2,2,136,1
+HARBOR  ,S       ,3,2,137,1
+HARBOR  ,W       ,0,0,141,1
+HARBOR  ,W       ,1,2,142,1
+HARBOR  ,W       ,2,2,143,1
+HARBOR  ,W       ,3,2,144,1
+GUARD   ,        ,0,3,145,1
+GUARD   ,        ,1,3,146,1
+GUARD   ,        ,2,3,147,1
+GUARD   ,        ,3,3,148,1
+GUARD   ,        ,4,3,149,1
+GUARD   ,        ,5,3,150,1
+GUARD   ,        ,6,3,151,1
+GUARD   ,        ,7,3,152,1
+GUARD   ,        ,8,3,153,1
+MONSTER ,SKELETON,1,0,154,1
+MONSTER ,LYW     ,1,0,156,1
+MONSTER ,HOBGLOB ,1,0,158,1
+MONSTER ,GIANTET ,1,0,160,1
+MONSTER ,GITH    ,1,0,162,1
+MONSTER ,ROCKMAN ,1,0,164,1
+MONSTER ,GREMJERM,1,0,166,1
+MONSTER ,FIREKIN ,1,0,168,1
+MONSTER ,GNOLL   ,1,0,170,1
+MONSTER ,GOBLIN  ,1,0,172,1
+MONSTER ,LIZARD  ,1,0,174,1
+MONSTER ,MAN     ,1,0,176,1
+MONSTER ,HEADLESS,1,0,178,1

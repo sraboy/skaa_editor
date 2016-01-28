@@ -1,0 +1,11 @@
+CODE,NAME,SHORTNAME,OVERTITLE,WORKTITLE,TERA_TYPE,ALLKNOW,LIVEINTOWN,HITPOINTS,LINKTOTOWN,SETUP_COST,YEAR_COST,FIRSTBUILD,BUILDCOUNT,MONSTER_ID
+BASE    ,Seat of Power       ,            ,General   ,Prayer    ,1,1, ,400, ,800,400,1,10,0
+FACTORY ,Factory             ,Factory     ,          ,Worker    ,1,1,1,200,1,100,100,12,1,0
+INN     ,Inn                 ,            ,          ,          ,1,1, ,200, ,60,60,17,1,0
+MARKET  ,Market              ,Market      ,          ,          ,1,1, ,200,1,60,30,18,1,0
+CAMP    ,Fort                ,            ,General   ,Solider   ,1,1, ,200,1,60,60,11,1,0
+MINE    ,Mine                ,Mine        ,          ,Miner     ,1,1,1,200,1,600,600,19,1,0
+RESEARCH,Tower of Science    ,            ,          ,Scientist ,1,1,1,200,1,200,200,33,1,0
+WAR     ,War Factory         ,            ,          ,Worker    ,1,1,1,200,1,200,200,34,1,0
+HARBOR  ,Harbor              ,            ,          ,          ,4,1, ,200, ,100,100,13,4,0
+MONSTER ,Fryhtan Lair        ,            ,          ,          ,1, , ,800, ,0,0,20,13,0

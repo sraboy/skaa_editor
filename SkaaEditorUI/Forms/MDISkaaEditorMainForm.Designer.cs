@@ -59,6 +59,7 @@
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openSpriteSprToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSpriteResIdxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openGameSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -83,7 +84,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsStatusLblImageStats = new System.Windows.Forms.ToolStripStatusLabel();
-            this.spriteResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gameSetCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -294,6 +295,13 @@
             this.openSpriteSprToolStripMenuItem.ToolTipText = "A *.spr file with frame data stored in 7KAA\'s custom RLE encoding";
             this.openSpriteSprToolStripMenuItem.Click += new System.EventHandler(this.openSpriteSprToolStripMenuItem_Click);
             // 
+            // spriteResToolStripMenuItem
+            // 
+            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
+            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
+            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.spriteResToolStripMenuItem_Click);
+            // 
             // openSpriteResIdxToolStripMenuItem
             // 
             this.openSpriteResIdxToolStripMenuItem.Name = "openSpriteResIdxToolStripMenuItem";
@@ -369,7 +377,7 @@
             // addFrameToolStripMenuItem
             // 
             this.addFrameToolStripMenuItem.Name = "addFrameToolStripMenuItem";
-            this.addFrameToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.addFrameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.addFrameToolStripMenuItem.Text = "Add Frame";
             this.addFrameToolStripMenuItem.Click += new System.EventHandler(this.addFrameToolStripMenuItem_Click);
             // 
@@ -377,7 +385,8 @@
             // 
             this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportSpriteFrameToolStripMenuItem,
-            this.exportSpriteSheetToolStripMenuItem});
+            this.exportSpriteSheetToolStripMenuItem,
+            this.gameSetCSVToolStripMenuItem});
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.exportToolStripMenuItem.Text = "Export";
@@ -479,12 +488,12 @@
             this.tsStatusLblImageStats.Size = new System.Drawing.Size(122, 17);
             this.tsStatusLblImageStats.Text = "Image Height x Width";
             // 
-            // spriteResToolStripMenuItem
+            // gameSetCSVToolStripMenuItem
             // 
-            this.spriteResToolStripMenuItem.Name = "spriteResToolStripMenuItem";
-            this.spriteResToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.spriteResToolStripMenuItem.Text = "Sprite (Res)";
-            this.spriteResToolStripMenuItem.Click += new System.EventHandler(this.spriteResToolStripMenuItem_Click);
+            this.gameSetCSVToolStripMenuItem.Name = "gameSetCSVToolStripMenuItem";
+            this.gameSetCSVToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.gameSetCSVToolStripMenuItem.Text = "GameSet (CSV)";
+            this.gameSetCSVToolStripMenuItem.Click += new System.EventHandler(this.exportGameSetToCSVToolStripMenuItem_Click);
             // 
             // MDISkaaEditorMainForm
             // 
@@ -553,5 +562,6 @@
         private System.Windows.Forms.ToolStripMenuItem addFrameToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblImageStats;
         private System.Windows.Forms.ToolStripMenuItem spriteResToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gameSetCSVToolStripMenuItem;
     }
 }
