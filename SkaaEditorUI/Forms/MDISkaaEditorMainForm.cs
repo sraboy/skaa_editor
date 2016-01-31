@@ -157,7 +157,6 @@ namespace SkaaEditorUI.Forms
         #endregion
 
         #region Save/Export File Menu Item Clicks
-
         private void saveSpriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
@@ -184,7 +183,6 @@ namespace SkaaEditorUI.Forms
         {
             ProjectManager.Save(this._gameSetViewerContainer.GameSetPresenter);
         }
-
         private void exportGameSetToCSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this._gameSetViewerContainer.GameSetPresenter.ExportToCSV();
@@ -480,6 +478,7 @@ namespace SkaaEditorUI.Forms
         internal void ToggleUISaveEditOptions()
         {
             //user has loaded the game set or a ResIdx file has made a DataSet for its header data
+            this.exportGameSetCSVToolStripMenuItem.Enabled = this._gameSetViewerContainer?.GameSetPresenter?.GameObject != null;
             this.saveGameSetToolStripMenuItem.Enabled =
                 this._gameSetViewerContainer?.GameSetPresenter?.GameObject != null &&
                 this._gameSetViewerContainer.GameSetPresenter.GameObject.GetDataSources().Contains("std.set");

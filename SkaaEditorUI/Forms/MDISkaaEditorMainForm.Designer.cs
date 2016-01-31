@@ -84,7 +84,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsStatusLblImageStats = new System.Windows.Forms.ToolStripStatusLabel();
-            this.gameSetCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportGameSetCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -386,7 +386,7 @@
             this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportSpriteFrameToolStripMenuItem,
             this.exportSpriteSheetToolStripMenuItem,
-            this.gameSetCSVToolStripMenuItem});
+            this.exportGameSetCSVToolStripMenuItem});
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.exportToolStripMenuItem.Text = "Export";
@@ -490,10 +490,10 @@
             // 
             // gameSetCSVToolStripMenuItem
             // 
-            this.gameSetCSVToolStripMenuItem.Name = "gameSetCSVToolStripMenuItem";
-            this.gameSetCSVToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.gameSetCSVToolStripMenuItem.Text = "GameSet (CSV)";
-            this.gameSetCSVToolStripMenuItem.Click += new System.EventHandler(this.exportGameSetToCSVToolStripMenuItem_Click);
+            this.exportGameSetCSVToolStripMenuItem.Name = "gameSetCSVToolStripMenuItem";
+            this.exportGameSetCSVToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.exportGameSetCSVToolStripMenuItem.Text = "GameSet (CSV)";
+            this.exportGameSetCSVToolStripMenuItem.Click += new System.EventHandler(this.exportGameSetToCSVToolStripMenuItem_Click);
             // 
             // MDISkaaEditorMainForm
             // 
@@ -562,6 +562,6 @@
         private System.Windows.Forms.ToolStripMenuItem addFrameToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblImageStats;
         private System.Windows.Forms.ToolStripMenuItem spriteResToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem gameSetCSVToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportGameSetCSVToolStripMenuItem;
     }
 }
