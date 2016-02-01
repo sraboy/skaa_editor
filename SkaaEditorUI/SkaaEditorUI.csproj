@@ -56,7 +56,8 @@
     <AssemblyVersionSettings>None.None.Increment.Increment</AssemblyVersionSettings>
     <AssemblyFileVersionSettings>None.None.Increment.Increment</AssemblyFileVersionSettings>
     <AssemblyInfoVersionSettings>None.None.Increment.Increment</AssemblyInfoVersionSettings>
-    <DocumentationFile>XmlDoc\SkaaEditorUI.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -203,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AddNewFrame.resx">
       <DependentUpon>AddNewFrame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DockContentControls\GameSetViewerContainer.resx">
+      <DependentUpon>GameSetViewerContainer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DockContentControls\SpriteViewerContainer.resx">
       <DependentUpon>SpriteViewerContainer.cs</DependentUpon>
