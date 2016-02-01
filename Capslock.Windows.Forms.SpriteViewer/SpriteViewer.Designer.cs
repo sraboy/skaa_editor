@@ -30,37 +30,65 @@
         {
             this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
+            this.trackBar = new System.Windows.Forms.TrackBar();
             this.objectListView = new BrightIdeasSoftware.ObjectListView();
             this.colName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.colOffset = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.colImage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.pictureBox = new System.Windows.Forms.PictureBox();
-            this.trackBar = new System.Windows.Forms.TrackBar();
+            this.txtSpriteId = new System.Windows.Forms.TextBox();
             this.animationTimer = new System.Windows.Forms.Timer(this.components);
             this._updateTimer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.objectListView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectListView)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.objectListView, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.pictureBox, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.trackBar, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.objectListView, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtSpriteId, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(272, 689);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // pictureBox
+            // 
+            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Size = new System.Drawing.Size(272, 260);
+            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox.TabIndex = 6;
+            this.pictureBox.TabStop = false;
+            this.pictureBox.Click += new System.EventHandler(this.pictureBox_Click);
+            this.pictureBox.DoubleClick += new System.EventHandler(this.pictureBox_DoubleClick);
+            // 
+            // trackBar
+            // 
+            this.trackBar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.trackBar.LargeChange = 4;
+            this.trackBar.Location = new System.Drawing.Point(0, 260);
+            this.trackBar.Margin = new System.Windows.Forms.Padding(0);
+            this.trackBar.Name = "trackBar";
+            this.trackBar.Size = new System.Drawing.Size(272, 45);
+            this.trackBar.TabIndex = 8;
+            this.trackBar.ValueChanged += new System.EventHandler(this.trackBar_ValueChanged);
             // 
             // objectListView
             // 
@@ -82,7 +110,7 @@
             this.objectListView.FullRowSelect = true;
             this.objectListView.HighlightBackgroundColor = System.Drawing.Color.Empty;
             this.objectListView.HighlightForegroundColor = System.Drawing.Color.Empty;
-            this.objectListView.Location = new System.Drawing.Point(3, 308);
+            this.objectListView.Location = new System.Drawing.Point(3, 334);
             this.objectListView.Name = "objectListView";
             this.objectListView.Size = new System.Drawing.Size(266, 378);
             this.objectListView.TabIndex = 9;
@@ -111,29 +139,14 @@
             this.colImage.Text = "Image";
             this.colImage.Width = 86;
             // 
-            // pictureBox
+            // txtSpriteId
             // 
-            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(272, 260);
-            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBox.TabIndex = 6;
-            this.pictureBox.TabStop = false;
-            this.pictureBox.Click += new System.EventHandler(this.pictureBox_Click);
-            this.pictureBox.DoubleClick += new System.EventHandler(this.pictureBox_DoubleClick);
-            // 
-            // trackBar
-            // 
-            this.trackBar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.trackBar.LargeChange = 4;
-            this.trackBar.Location = new System.Drawing.Point(0, 260);
-            this.trackBar.Margin = new System.Windows.Forms.Padding(0);
-            this.trackBar.Name = "trackBar";
-            this.trackBar.Size = new System.Drawing.Size(272, 45);
-            this.trackBar.TabIndex = 8;
-            this.trackBar.ValueChanged += new System.EventHandler(this.trackBar_ValueChanged);
+            this.txtSpriteId.Location = new System.Drawing.Point(3, 308);
+            this.txtSpriteId.Name = "txtSpriteId";
+            this.txtSpriteId.Size = new System.Drawing.Size(266, 20);
+            this.txtSpriteId.TabIndex = 10;
+            this.txtSpriteId.Text = "SpriteId";
+            this.txtSpriteId.Leave += new System.EventHandler(this.txtSpriteId_Leave);
             // 
             // animationTimer
             // 
@@ -149,9 +162,9 @@
             this.Size = new System.Drawing.Size(272, 689);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.objectListView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectListView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -167,5 +180,6 @@
         private BrightIdeasSoftware.OLVColumn colImage;
         private System.Windows.Forms.Timer animationTimer;
         private System.Windows.Forms.Timer _updateTimer;
+        private System.Windows.Forms.TextBox txtSpriteId;
     }
 }

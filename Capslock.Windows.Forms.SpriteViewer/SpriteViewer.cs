@@ -131,6 +131,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
         public void SetActiveSprite(IMultiImagePresenter spr)
         {
             this._activeSprite = spr;
+            this.txtSpriteId.Text = this.ActiveSprite?.SpriteId;
 
             this.objectListView.SetObjects(this.ActiveSprite?.Frames);
 
@@ -266,5 +267,10 @@ namespace Capslock.Windows.Forms.SpriteViewer
                 this.pictureBox.Image = (sender as IFrame).Bitmap;
         }
         #endregion
+
+        private void txtSpriteId_Leave(object sender, EventArgs e)
+        {
+            this.ActiveSprite.SpriteId = this.txtSpriteId.Text;
+        }
     }
 }
