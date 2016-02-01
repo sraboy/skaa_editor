@@ -73,6 +73,7 @@
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportSpriteFrameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportSpriteSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportGameSetCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,7 +85,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsStatusLblImageStats = new System.Windows.Forms.ToolStripStatusLabel();
-            this.exportGameSetCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gameSetBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -210,6 +212,7 @@
             this.editToolStripMenuItem,
             this.exportToolStripMenuItem,
             this.viewToolStripMenuItem,
+            this.windowToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
@@ -377,7 +380,7 @@
             // addFrameToolStripMenuItem
             // 
             this.addFrameToolStripMenuItem.Name = "addFrameToolStripMenuItem";
-            this.addFrameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addFrameToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.addFrameToolStripMenuItem.Text = "Add Frame";
             this.addFrameToolStripMenuItem.Click += new System.EventHandler(this.addFrameToolStripMenuItem_Click);
             // 
@@ -405,6 +408,13 @@
             this.exportSpriteSheetToolStripMenuItem.Text = "Sprite Sheet";
             this.exportSpriteSheetToolStripMenuItem.Click += new System.EventHandler(this.exportSpriteSheetToolStripMenuItem_Click);
             // 
+            // exportGameSetCSVToolStripMenuItem
+            // 
+            this.exportGameSetCSVToolStripMenuItem.Name = "exportGameSetCSVToolStripMenuItem";
+            this.exportGameSetCSVToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.exportGameSetCSVToolStripMenuItem.Text = "GameSet (CSV)";
+            this.exportGameSetCSVToolStripMenuItem.Click += new System.EventHandler(this.exportGameSetToCSVToolStripMenuItem_Click);
+            // 
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -416,7 +426,7 @@
             // showGridToolStripMenuItem
             // 
             this.showGridToolStripMenuItem.Name = "showGridToolStripMenuItem";
-            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.showGridToolStripMenuItem.Text = "Show Grid";
             // 
             // helpToolStripMenuItem
@@ -488,12 +498,20 @@
             this.tsStatusLblImageStats.Size = new System.Drawing.Size(122, 17);
             this.tsStatusLblImageStats.Text = "Image Height x Width";
             // 
-            // gameSetCSVToolStripMenuItem
+            // windowToolStripMenuItem
             // 
-            this.exportGameSetCSVToolStripMenuItem.Name = "gameSetCSVToolStripMenuItem";
-            this.exportGameSetCSVToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.exportGameSetCSVToolStripMenuItem.Text = "GameSet (CSV)";
-            this.exportGameSetCSVToolStripMenuItem.Click += new System.EventHandler(this.exportGameSetToCSVToolStripMenuItem_Click);
+            this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gameSetBrowserToolStripMenuItem});
+            this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
+            this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.windowToolStripMenuItem.Text = "Window";
+            // 
+            // gameSetBrowserToolStripMenuItem
+            // 
+            this.gameSetBrowserToolStripMenuItem.Name = "gameSetBrowserToolStripMenuItem";
+            this.gameSetBrowserToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.gameSetBrowserToolStripMenuItem.Text = "GameSet Browser";
+            this.gameSetBrowserToolStripMenuItem.Click += new System.EventHandler(this.gameSetBrowserToolStripMenuItem_Click);
             // 
             // MDISkaaEditorMainForm
             // 
@@ -563,5 +581,7 @@
         private System.Windows.Forms.ToolStripStatusLabel tsStatusLblImageStats;
         private System.Windows.Forms.ToolStripMenuItem spriteResToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportGameSetCSVToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gameSetBrowserToolStripMenuItem;
     }
 }

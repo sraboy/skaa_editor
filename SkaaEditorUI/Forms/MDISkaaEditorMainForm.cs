@@ -243,6 +243,10 @@ namespace SkaaEditorUI.Forms
                 dlg.ShowDialog();
             }
         }
+        private void gameSetBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
+        }
         #endregion
 
         #region Other Events
@@ -339,8 +343,8 @@ namespace SkaaEditorUI.Forms
         }
         private void RecalculateFrameOffsetsTimer_Tick(object sender, EventArgs e)
         {
-            foreach (ImageEditorContainer iec in this._dockPanel.Documents)
-                iec.ActiveSprite?.RecalculateFrameOffsets();
+            foreach (var iec in this._dockPanel.Documents)
+                (iec as ImageEditorContainer)?.ActiveSprite?.RecalculateFrameOffsets();
         }
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {

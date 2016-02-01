@@ -64,21 +64,15 @@ namespace SkaaEditorUI.Presenters
 
             return this.GameObject;
         }
-
+        public void Merge(GameSetPresenter gsp)
+        {
+            this.GameObject.Merge(gsp.GameObject);
+            OnPropertyChanged("GameObject");
+        }
         public override bool Save(string filePath, params object[] param)
         {
             this.GameObject.SaveStandardGameSet(filePath);
             return true;
-        }
-
-        public void ExportToCSV() => this.GameObject.ExportGameSetToCSV();
-
-        public void Merge(GameSetPresenter gsp)
-        {
-            this.GameObject = this.GameObject ?? new DataSet();
-            gsp.GameObject = gsp.GameObject ?? new DataSet();
-
-            this.GameObject.Merge(gsp.GameObject);
         }
 
         protected override void SetupFileDialog(FileDialog dlg)
