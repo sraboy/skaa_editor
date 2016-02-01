@@ -188,18 +188,17 @@ namespace SkaaGameDataLib.GameObjects
                 int offset = Convert.ToInt32(drv.Row[frameOffsetColName]);
                 string name = (string)drv.Row[frameNameColName];
                 SkaaFrame sf = this.Frames.Find(f => f.BitmapOffset == offset) ?? this.Frames.Find(f => f.Name == name);
-                sf.Name = name;
-                sf.BitmapOffset = offset;
 
                 if (sf == null)
                 {
-                    //this should only happen when creating new sprites. 
+                    //this should only happen when creating new sprites or loading a sprite with a filename that doesn't match anything in std.set. 
                     Trace.WriteLine(($"Unable to find matching offset in Sprite.Frames for {this.SpriteId} and offset: {offset.ToString()}. nDid you forget to load the proper SET file for this sprite?"));
                     return false;
                 }
 
-                if (sf != null)
-                    (sf as SkaaSpriteFrame).GameSetDataRows.Add(drv.Row);
+                sf.Name = name;
+                sf.BitmapOffset = offset;
+                (sf as SkaaSpriteFrame).GameSetDataRows.Add(drv.Row);
             }
 
             return true;
