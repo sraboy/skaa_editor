@@ -38,6 +38,11 @@ namespace SkaaGameDataLib.Util
         private static readonly string StandardGameSetDefaultName = "std.set";
         public static readonly string DataSourcesPropertyName = "DataSources";
 
+        public static void AddDataTableFromNewSource(this DataSet ds, DataTable dt)
+        {
+            ds.AddDataSource(dt.GetDataSource());
+            ds.Tables.Add(dt);
+        }
         /// <summary>
         /// Returns a <see cref="List{T}"/> of all data sources in the <see cref="DataSet.ExtendedProperties"/> element with the name of <see cref="DataSourcesPropertyName"/>
         /// </summary>
@@ -47,7 +52,7 @@ namespace SkaaGameDataLib.Util
         /// </summary>
         /// <param name="datasource">The name of the data source to add</param>
         /// <remarks>If <see cref="DataSet.ExtendedProperties"/> does not contain <see cref="DataSourcesPropertyName"/>, it will be created.</remarks>
-        public static void AddDataSource(this DataSet ds, string datasource)
+        internal static void AddDataSource(this DataSet ds, string datasource)
         {
             List<string> dataSources = ds.ExtendedProperties[DataSourcesPropertyName] as List<string> ?? new List<string>();
             dataSources.Add(datasource);
@@ -98,7 +103,7 @@ namespace SkaaGameDataLib.Util
                         if (file.ReadStream(fs) != true)
                             return false;
                         file.DataTable.TableName = Path.GetFileNameWithoutExtension(kv.Key);
-                        file.DataTable.ExtendedProperties.Add(SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName, Path.GetFileName((fs as FileStream)?.Name));
+                        file.DataTable.AddDataSource(Path.GetFileName((fs as FileStream)?.Name));
 
                         if (ds.Tables.Contains(file.DataTable.TableName))
                         {
@@ -209,7 +214,7 @@ namespace SkaaGameDataLib.Util
                     //get the record count for (number of tables in) the specified set
                     short record_count = 0;// = (short)ds.Tables.Count;
                     foreach (DataTable dt in ds.Tables)
-                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName]) == set)
+                        if (dt.GetDataSource() == set)
                             record_count++;
                     //write the record_count
                     headerStream.Write(BitConverter.GetBytes(record_count), 0, sizeof(short));
@@ -220,7 +225,7 @@ namespace SkaaGameDataLib.Util
                     foreach (DataTable dt in ds.Tables)
                     {
                         //ignore DataTables not part of the Standard Game Set
-                        if (Path.GetFileName((string)dt.ExtendedProperties[SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName]) != set)
+                        if (dt.GetDataSource() != set)
                             continue;
 
                         //write SET header's record definitions

@@ -311,8 +311,9 @@ namespace SkaaEditorUI.Forms
                             file.ReadStream(fs);
                             this._gameSetViewerContainer.GameSetPresenter.GameObject = this._gameSetViewerContainer.GameSetPresenter.GameObject ?? new DataSet();
                             file.DataTable.TableName = Path.GetFileNameWithoutExtension(fs.Name);
-                            this._gameSetViewerContainer.GameSetPresenter.GameObject.Tables.Add(file.DataTable);
-                            this._gameSetViewerContainer.GameSetPresenter.GameObject.AddDataSource(file.DataTable.TableName);
+                            this._gameSetViewerContainer.GameSetPresenter.AddTable(file.DataTable);
+                            //this._gameSetViewerContainer.GameSetPresenter.GameObject.Tables.Add(file.DataTable);
+                            //this._gameSetViewerContainer.GameSetPresenter.GameObject.AddDataSource(file.DataTable.TableName);
                         }
                         break;
                     case FileFormats.ResIdxDbf:
@@ -478,10 +479,11 @@ namespace SkaaEditorUI.Forms
         internal void ToggleUISaveEditOptions()
         {
             //user has loaded the game set or a ResIdx file has made a DataSet for its header data
-            this.exportGameSetCSVToolStripMenuItem.Enabled = this._gameSetViewerContainer?.GameSetPresenter?.GameObject != null;
-            this.saveGameSetToolStripMenuItem.Enabled =
-                this._gameSetViewerContainer?.GameSetPresenter?.GameObject != null &&
-                this._gameSetViewerContainer.GameSetPresenter.GameObject.GetDataSources().Contains("std.set");
+            var tableCount = this._gameSetViewerContainer?.GameSetPresenter?.GameObject?.Tables.Count;
+            var hasStdSet = this._gameSetViewerContainer.GameSetPresenter.GameObject?.GetDataSources()?.Contains("std.set") != null;
+
+            this.exportGameSetCSVToolStripMenuItem.Enabled = tableCount > 0;
+            this.saveGameSetToolStripMenuItem.Enabled = tableCount > 0 && hasStdSet;
 
             if (this._dockPanel.ActiveDocument is ImageEditorContainer)       //user is viewing an image
             {

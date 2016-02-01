@@ -30,6 +30,23 @@ namespace SkaaEditorUI.Presenters
 {
     public class GameSetPresenter : PresenterBase<DataSet>
     {
+        public GameSetPresenter()
+        {
+            this.GameObject = new DataSet();
+        }
+
+        /// <summary>
+        /// Adds the specified <see cref="DataTable"/> to the <see cref="DataSet"/> (<see cref="PresenterBase{T}.GameObject"/>)
+        /// and adds its data source to the DataSet's <see cref="DataSet.ExtendedProperties"/>. It then raises the <see cref="PresenterBase.PropertyChanged"/>
+        /// event on "GameObject".
+        /// </summary>
+        /// <param name="dt"></param>
+        public void AddTable(DataTable dt)
+        {
+            this.GameObject.AddDataTableFromNewSource(dt);
+            OnPropertyChanged("GameObject");
+        }
+        public void ExportToCSV() => this.GameObject.ExportGameSetToCSV();
         /// <summary>
         /// Loads a 7KAA-format SET file (e.g., std.set)
         /// </summary>

@@ -57,7 +57,7 @@ namespace SkaaEditorUI.Presenters
         {
             SkaaSprite spr = new SkaaSprite();
             DataTable dt = new DataTable();
-            dt.ExtendedProperties.Add(SkaaGameDataLib.Util.DataTableExtensions.DataSourcePropertyName, filepath);
+            dt.AddDataSource(Path.GetFileName(filepath));
             dt.Columns.Add(new DataColumn() { DataType = typeof(string), ColumnName = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn });
             dt.Columns.Add(new DataColumn() { DataType = typeof(uint), ColumnName = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn });
 
@@ -138,8 +138,8 @@ namespace SkaaEditorUI.Presenters
                 tup.Item2.TableName = newName;
             }
 
-            ds.Tables.Add(tup.Item2);
-            ds.AddDataSource(Path.GetFileName(filePath));
+            gsp.AddTable(tup.Item2);
+
             this.GameObject = tup.Item1;
             this.SpriteId = this.GameObject.SpriteId;
 

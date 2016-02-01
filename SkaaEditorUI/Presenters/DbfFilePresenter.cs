@@ -44,7 +44,7 @@ namespace SkaaEditorUI.Presenters
                     throw new Exception("Failed to read DBF file.");
 
                 file.DataTable.TableName = Path.GetFileNameWithoutExtension(filePath);
-                file.DataTable.ExtendedProperties.Add("FileName", filePath);
+                file.DataTable.AddDataSource(Path.GetFileName(filePath));
                 dt = file.DataTable;
             }
 

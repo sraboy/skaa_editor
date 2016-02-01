@@ -33,8 +33,16 @@ namespace SkaaGameDataLib.Util
     public static class DataTableExtensions
     {
         public static readonly TraceSource Logger = new TraceSource($"{typeof(DataTableExtensions)}", SourceLevels.All);
-        public static readonly string DataSourcePropertyName = "DataSource";
+        private static readonly string DataSourcePropertyName = "DataSource";
 
+        public static void AddDataSource(this DataTable dt, string dataSource)
+        {
+            dt.ExtendedProperties[DataSourcePropertyName] = dataSource;
+        }
+        public static string GetDataSource(this DataTable dt)
+        {
+            return dt.ExtendedProperties[DataSourcePropertyName].ToString();
+        }
         /// <summary>
         /// Writes a <see cref="ResourceDefinitionReader"/> header for this <see cref="DataTable"/> to the <see cref="Stream"/>
         /// </summary>
