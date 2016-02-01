@@ -23,6 +23,7 @@
 ***************************************************************************/
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -36,7 +37,7 @@ namespace SkaaGameDataLib.Util
         public static readonly TraceSource Logger = new TraceSource($"{typeof(DataSetExtensions)}", SourceLevels.All);
 
         private static readonly string StandardGameSetDefaultName = "std.set";
-        public static readonly string DataSourcesPropertyName = "DataSources";
+        private static readonly string DataSourcesPropertyName = "DataSource";
 
         public static void AddDataTableFromNewSource(this DataSet ds, DataTable dt)
         {
@@ -46,7 +47,21 @@ namespace SkaaGameDataLib.Util
         /// <summary>
         /// Returns a <see cref="List{T}"/> of all data sources in the <see cref="DataSet.ExtendedProperties"/> element with the name of <see cref="DataSourcesPropertyName"/>
         /// </summary>
-        public static List<string> GetDataSources(this DataSet ds) { return ds.ExtendedProperties[DataSourcesPropertyName] as List<string>; }
+        public static List<string> GetDataSourceList(this DataSet ds)
+        {
+            if (ds.ExtendedProperties.Count == 0 || !ds.ExtendedProperties.ContainsValue(DataSourcesPropertyName))
+                return null;
+
+            List<string> list = new List<string>();
+
+            foreach (DictionaryEntry ent in ds.ExtendedProperties)
+            {
+                if (ent.Value.ToString() == DataSourcesPropertyName)
+                    list.Add(ent.Key.ToString());
+            }
+
+            return list;
+        }
         /// <summary>
         /// Adds a new "data source" string to the <see cref="DataSet.ExtendedProperties"/> <see cref="List{T}"/> named <see cref="DataSourcesPropertyName"/>
         /// </summary>
@@ -54,9 +69,7 @@ namespace SkaaGameDataLib.Util
         /// <remarks>If <see cref="DataSet.ExtendedProperties"/> does not contain <see cref="DataSourcesPropertyName"/>, it will be created.</remarks>
         internal static void AddDataSource(this DataSet ds, string datasource)
         {
-            List<string> dataSources = ds.ExtendedProperties[DataSourcesPropertyName] as List<string> ?? new List<string>();
-            dataSources.Add(datasource);
-            ds.ExtendedProperties[DataSourcesPropertyName] = dataSources;
+            ds.ExtendedProperties.Add(datasource, DataSourcesPropertyName);
             Logger.TraceInformation($"Added data source: {datasource}");
         }
         /// <summary>

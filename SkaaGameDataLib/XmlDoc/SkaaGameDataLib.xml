@@ -38,7 +38,7 @@
             <param name="dt">The DataTable to save</param>
             <param name="filepath">The fully-qualified path of the file to write to</param>
         </member>
-        <member name="M:SkaaGameDataLib.Util.DataSetExtensions.GetDataSources(System.Data.DataSet)">
+        <member name="M:SkaaGameDataLib.Util.DataSetExtensions.GetDataSourceList(System.Data.DataSet)">
             <summary>
             Returns a <see cref="T:System.Collections.Generic.List`1"/> of all data sources in the <see cref="P:System.Data.DataSet.ExtendedProperties"/> element with the name of <see cref="F:SkaaGameDataLib.Util.DataSetExtensions.DataSourcesPropertyName"/>
             </summary>

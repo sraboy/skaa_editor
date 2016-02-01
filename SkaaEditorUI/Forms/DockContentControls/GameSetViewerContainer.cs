@@ -67,7 +67,11 @@ namespace SkaaEditorUI.Forms.DockContentControls
         private void GameSetPresenter_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "GameObject")
+            {
+                PopulateComboBoxDataSourcesList();
+                PopulateComboBoxTablesList(this.cbDataSources.SelectedItem.ToString());
                 SetDataSource();
+            }
         }
         private void CbDataSources_SelectedIndexChanged(object sender, System.EventArgs e)
         {
@@ -109,7 +113,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
             DataSet ds = this._gameSetPresenter.GameObject;
             List<string> list = new List<string>();
 
-            var sources = ds.GetDataSources();
+            var sources = ds.GetDataSourceList();
 
             if (sources != null)    //AddRange() blows up if passed null
             {

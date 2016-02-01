@@ -484,7 +484,7 @@ namespace SkaaEditorUI.Forms
         {
             //user has loaded the game set or a ResIdx file has made a DataSet for its header data
             var tableCount = this._gameSetViewerContainer?.GameSetPresenter?.GameObject?.Tables.Count;
-            var hasStdSet = this._gameSetViewerContainer.GameSetPresenter.GameObject?.GetDataSources()?.Contains("std.set") != null;
+            var hasStdSet = this._gameSetViewerContainer.GameSetPresenter.GameObject?.GetDataSourceList()?.Contains("std.set") != null;
 
             this.exportGameSetCSVToolStripMenuItem.Enabled = tableCount > 0;
             this.saveGameSetToolStripMenuItem.Enabled = tableCount > 0 && hasStdSet;

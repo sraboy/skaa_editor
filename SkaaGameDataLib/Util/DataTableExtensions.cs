@@ -41,6 +41,9 @@ namespace SkaaGameDataLib.Util
         }
         public static string GetDataSource(this DataTable dt)
         {
+            if (dt.ExtendedProperties.Count == 0 || !dt.ExtendedProperties.Contains(DataSourcePropertyName))
+                return null;
+
             return dt.ExtendedProperties[DataSourcePropertyName].ToString();
         }
         /// <summary>
