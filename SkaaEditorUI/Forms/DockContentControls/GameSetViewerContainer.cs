@@ -26,7 +26,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Windows.Forms;
 using SkaaEditorUI.Presenters;
 using SkaaGameDataLib.Util;
 using WeifenLuo.WinFormsUI.Docking;
@@ -35,8 +34,6 @@ namespace SkaaEditorUI.Forms.DockContentControls
 {
     public partial class GameSetViewerContainer : DockContent
     {
-        private bool _updateRequired = false;
-
         private GameSetPresenter _gameSetPresenter;
         public GameSetPresenter GameSetPresenter
         {
@@ -54,21 +51,17 @@ namespace SkaaEditorUI.Forms.DockContentControls
             }
         }
 
+        #region Constructor
         public GameSetViewerContainer()
         {
             InitializeComponent();
             this._gameSetPresenter = new GameSetPresenter();
 
-            this.dataListView1.ItemChecked += DataListView1_ItemChecked;
             this.cbTables.SelectedIndexChanged += CbTables_SelectedIndexChanged;
             this.cbDataSources.SelectedIndexChanged += CbDataSources_SelectedIndexChanged;
             this.GameSetPresenter.PropertyChanged += GameSetPresenter_PropertyChanged;
         }
-
-        //public void UpdateDataSources()
-        //{
-        //    PopulateComboBoxDataSourcesList();
-        //}
+        #endregion
 
         #region Event Handlers
         private void GameSetPresenter_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -78,32 +71,30 @@ namespace SkaaEditorUI.Forms.DockContentControls
         }
         private void CbDataSources_SelectedIndexChanged(object sender, System.EventArgs e)
         {
+            // No need to call SetDataSource() since the PopulateComboBoxTablesList() 
+            // will trigger cbTables' SelectedIndexChanged event, which calls SetDataSource()
             PopulateComboBoxTablesList(this.cbDataSources.SelectedItem.ToString());
-            // No need to call SetDataSource() since the above line will trigger
-            // cbTables' SelectedIndexChanged event, which calls SetDataSource()
         }
         private void CbTables_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             /*
-             * SetDataSource() will call PopulateComboxTablesList() if cbTables hasn't
+             * SetDataSource() will call PopulateComboBoxTablesList() if cbTables hasn't
              * been set up yet. When that's the case, dataListView1.DataSource is still 
-             * null. If we don't return, we'd end up calling SetDataSource() in the middle
-             * of a call to SetDataSource()
+             * null so we can use this to skip making a second call to SetDataSource().
              */
             if (this.dataListView1.DataSource == null)
                 return;
 
             SetDataSource();
         }
-        private void DataListView1_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-        }
         #endregion
 
+        #region Private Methods
         private string PopulateComboBoxTablesList(string dataSource)
         {
             DataSet ds = this._gameSetPresenter.GameObject;
             IList list;
+
             if (dataSource == "All")
                 list = ds.Tables.Cast<DataTable>().ToList();
             else
@@ -116,12 +107,17 @@ namespace SkaaEditorUI.Forms.DockContentControls
         private string PopulateComboBoxDataSourcesList()
         {
             DataSet ds = this._gameSetPresenter.GameObject;
-            List<string> list = new List<string>() { "All" };
+            List<string> list = new List<string>();
 
-            //AddRange() blows up if passed null
             var sources = ds.GetDataSources();
-            if (sources != null)
+
+            if (sources != null)    //AddRange() blows up if passed null
+            {
+                if (sources.Count > 1)
+                    list.Add("All");
+
                 list.AddRange(sources);
+            }
 
             this.cbDataSources.DataSource = list;
             return this.cbDataSources.SelectedItem.ToString();
@@ -132,24 +128,13 @@ namespace SkaaEditorUI.Forms.DockContentControls
             string dataSource = this.cbDataSources.SelectedItem?.ToString() ?? PopulateComboBoxDataSourcesList();
             string tableName = this.cbTables.SelectedItem?.ToString() ?? PopulateComboBoxTablesList(dataSource);
 
-            ///* tableName is set from this.cbTables.SelectedItem?.ToString(). There may not 
-            // * be a SelectedItem if Merge() was called when there was no DataSet to merge to.
-            // * This could happen if merging is just the default behavior from the UI since 
-            // * GameSetPresenter.Merge() will just automatically create the new DataSet if needed.
-            // */
-            //if (tableName == null)
-            //    tableName = PopulateComboBoxTablesList(null);
-
             DataSet ds = this._gameSetPresenter.GameObject;
             DataView dv = new DataView(ds.Tables[tableName]);
-
             this.dataListView1.DataSource = dv;
             this.dataListView1.AutoResizeColumns();
-            //can't use the below when using FastDataListView
-            //re-enable if using DataListView
-            //this.dataListView1.ShowGroups = true;
 
             this.TabText = tableName;
         }
+        #endregion
     }
 }
