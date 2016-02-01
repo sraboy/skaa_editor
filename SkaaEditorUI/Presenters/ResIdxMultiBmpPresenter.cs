@@ -187,14 +187,14 @@ namespace SkaaEditorUI.Presenters
 
             return true;
         }
-        public override void SetSpriteDataView(GameSetPresenter gsp)
+        public override bool SetSpriteDataView(GameSetPresenter gsp)
         {
             DataView dv;
 
             dv = new DataView(gsp.GameObject?.Tables?[this.SpriteId]);
             this.DataView = dv;
 
-            this.GameObject.SetSpriteDataView(dv);
+            return this.GameObject.SetSpriteDataView(dv);
         }
         public override void RecalculateFrameOffsets()
         {

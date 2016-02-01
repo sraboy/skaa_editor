@@ -476,7 +476,20 @@ namespace SkaaEditorUI.Forms
             throw new NotImplementedException();
         }
 
-        internal void SetSpriteDataViews(GameSetPresenter gsp) => ProjectManager.SetSpriteDataViews(gsp);
+        internal void SetSpriteDataViews(GameSetPresenter gsp)
+        {
+            if (gsp == null)
+                return;
+
+            foreach (var spr in this.ProjectManager.OpenSprites)
+            {
+                if (!spr.SetSpriteDataView(gsp))
+                {
+                    //ask the user which table to duplicate and then update the names/offsets from that
+                    //offsets from the currently-open sprite and names matched after those are fixed
+                }
+            }
+        }
         /// <summary>
         /// Enables or disables various file saving-related UI options based on the current status of the application
         /// </summary>

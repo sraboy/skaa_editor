@@ -179,7 +179,7 @@ namespace SkaaEditorUI.Presenters
         protected abstract void AddNewFrameDataRow(FramePresenter fr);
         public abstract void RecalculateFrameOffsets();
 
-        public abstract void SetSpriteDataView(GameSetPresenter gsp);
+        public abstract bool SetSpriteDataView(GameSetPresenter gsp);
 
         /// <summary>
         /// Builds a <see cref="Bitmap"/> sprite sheet containing all of this object's frames. There is 

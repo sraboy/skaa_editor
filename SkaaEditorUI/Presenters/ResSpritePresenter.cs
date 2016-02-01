@@ -42,16 +42,20 @@ namespace SkaaEditorUI.Presenters
             }
         }
 
-        public override void SetSpriteDataView(GameSetPresenter gsp)
+        public override bool SetSpriteDataView(GameSetPresenter gsp)
         {
             if (this.SpriteId == "i_town")
                 this.StandardSetTableName = "TOWNBULD";
             else
-                return;
+                return true;
 
             this.DataView = new DataView(gsp.GameObject?.Tables?[this.StandardSetTableName]);
-            this.GameObject.SetSpriteDataView(this.DataView);
-            UpdateFrameNamesAndOffsets();
+
+            var result = this.GameObject.SetSpriteDataView(this.DataView);
+
+            if (result)
+                UpdateFrameNamesAndOffsets();
+            return result;
         }
     }
 }

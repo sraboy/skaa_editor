@@ -64,7 +64,7 @@ namespace SkaaEditorUI.Presenters
 
             return true;
         }
-        public override void SetSpriteDataView(GameSetPresenter gsp)
+        public override bool SetSpriteDataView(GameSetPresenter gsp)
         {
             DataView dv;
 
@@ -72,9 +72,11 @@ namespace SkaaEditorUI.Presenters
             dv.RowFilter = $"SPRITE = '{this.SpriteId.ToUpper()}'";
 
             this.DataView = dv;
-            this.GameObject.SetSpriteDataView(dv);
 
-            UpdateFrameNamesAndOffsets();
+            var result = this.GameObject.SetSpriteDataView(dv);
+            if (result)
+                UpdateFrameNamesAndOffsets();
+            return result;
         }
         public override void RecalculateFrameOffsets()
         {
