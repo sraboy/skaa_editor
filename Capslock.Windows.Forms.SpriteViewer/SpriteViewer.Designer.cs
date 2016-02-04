@@ -112,7 +112,7 @@
             this.objectListView.HighlightForegroundColor = System.Drawing.Color.Empty;
             this.objectListView.Location = new System.Drawing.Point(3, 334);
             this.objectListView.Name = "objectListView";
-            this.objectListView.Size = new System.Drawing.Size(266, 378);
+            this.objectListView.Size = new System.Drawing.Size(266, 352);
             this.objectListView.TabIndex = 9;
             this.objectListView.UseCompatibleStateImageBehavior = false;
             this.objectListView.View = System.Windows.Forms.View.Details;
