@@ -232,6 +232,18 @@ namespace SkaaEditorUI.Forms
                 }
             }
         }
+        private void deleteFrameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var iec = this._dockPanel.ActiveDocument as ImageEditorContainer;
+            if (iec == null)
+                return;
+
+            iec.ActiveSprite.Frames.Remove(iec.ActiveSprite.ActiveFrame);
+            SetActiveSprite(iec.ActiveSprite);
+            iec.ActiveSprite.ActiveFrame = iec.ActiveSprite.Frames[0];
+            iec.ActiveSprite.BitmapHasChanges = true;
+            iec.ActiveSprite.RecalculateFrameOffsets();
+        }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();

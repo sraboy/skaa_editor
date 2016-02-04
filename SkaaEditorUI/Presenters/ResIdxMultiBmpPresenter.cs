@@ -198,7 +198,7 @@ namespace SkaaEditorUI.Presenters
         }
         public override void RecalculateFrameOffsets()
         {
-            if (this.DataView?.Table == null || !this.BitmapHasChanges)
+            if (this.DataView?.Table == null && !this.BitmapHasChanges)
                 return;
 
             //calculate offset after file header
@@ -214,9 +214,12 @@ namespace SkaaEditorUI.Presenters
                 fp.BitmapOffset = offset;
 
                 //update the DataView
-                this.DataView.Sort = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn;
-                var dr = this.DataView[this.DataView.Find(fp.Name)];
-                dr[SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn] = fp.BitmapOffset;
+                if (this.DataView?.Table != null)
+                {
+                    this.DataView.Sort = SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameNameColumn;
+                    var dr = this.DataView[this.DataView.Find(fp.Name)];
+                    dr[SkaaGameDataLib.Util.DataRowExtensions.ResIdxFrameOffsetColumn] = fp.BitmapOffset;
+                }
 
                 //ResIdxMultiBmp doesn't include the four-byte size header that IndexedBitmap.GetRleBytesFromBitmap() includes for SPR files
                 offset += bytes.Length - 4;

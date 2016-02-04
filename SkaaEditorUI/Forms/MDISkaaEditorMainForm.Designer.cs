@@ -76,6 +76,8 @@
             this.exportGameSetCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gameSetBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportPngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,8 +87,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatusLblFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsStatusLblImageStats = new System.Windows.Forms.ToolStripStatusLabel();
-            this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.gameSetBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsDeleteFrame = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteFrameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -372,7 +374,8 @@
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addFrameToolStripMenuItem});
+            this.addFrameToolStripMenuItem,
+            this.deleteFrameToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -380,7 +383,7 @@
             // addFrameToolStripMenuItem
             // 
             this.addFrameToolStripMenuItem.Name = "addFrameToolStripMenuItem";
-            this.addFrameToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.addFrameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.addFrameToolStripMenuItem.Text = "Add Frame";
             this.addFrameToolStripMenuItem.Click += new System.EventHandler(this.addFrameToolStripMenuItem_Click);
             // 
@@ -426,8 +429,23 @@
             // showGridToolStripMenuItem
             // 
             this.showGridToolStripMenuItem.Name = "showGridToolStripMenuItem";
-            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.showGridToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.showGridToolStripMenuItem.Text = "Show Grid";
+            // 
+            // windowToolStripMenuItem
+            // 
+            this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gameSetBrowserToolStripMenuItem});
+            this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
+            this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.windowToolStripMenuItem.Text = "Window";
+            // 
+            // gameSetBrowserToolStripMenuItem
+            // 
+            this.gameSetBrowserToolStripMenuItem.Name = "gameSetBrowserToolStripMenuItem";
+            this.gameSetBrowserToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.gameSetBrowserToolStripMenuItem.Text = "GameSet Browser";
+            this.gameSetBrowserToolStripMenuItem.Click += new System.EventHandler(this.gameSetBrowserToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -498,20 +516,17 @@
             this.tsStatusLblImageStats.Size = new System.Drawing.Size(122, 17);
             this.tsStatusLblImageStats.Text = "Image Height x Width";
             // 
-            // windowToolStripMenuItem
+            // tsDeleteFrame
             // 
-            this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.gameSetBrowserToolStripMenuItem});
-            this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
-            this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
-            this.windowToolStripMenuItem.Text = "Window";
+            this.tsDeleteFrame.Name = "tsDeleteFrame";
+            this.tsDeleteFrame.Size = new System.Drawing.Size(32, 19);
             // 
-            // gameSetBrowserToolStripMenuItem
+            // deleteFrameToolStripMenuItem
             // 
-            this.gameSetBrowserToolStripMenuItem.Name = "gameSetBrowserToolStripMenuItem";
-            this.gameSetBrowserToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.gameSetBrowserToolStripMenuItem.Text = "GameSet Browser";
-            this.gameSetBrowserToolStripMenuItem.Click += new System.EventHandler(this.gameSetBrowserToolStripMenuItem_Click);
+            this.deleteFrameToolStripMenuItem.Name = "deleteFrameToolStripMenuItem";
+            this.deleteFrameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteFrameToolStripMenuItem.Text = "Delete Frame";
+            this.deleteFrameToolStripMenuItem.Click += new System.EventHandler(this.deleteFrameToolStripMenuItem_Click);
             // 
             // MDISkaaEditorMainForm
             // 
@@ -583,5 +598,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportGameSetCSVToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gameSetBrowserToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsDeleteFrame;
+        private System.Windows.Forms.ToolStripMenuItem deleteFrameToolStripMenuItem;
     }
 }

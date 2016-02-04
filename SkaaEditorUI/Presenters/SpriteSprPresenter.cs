@@ -80,7 +80,7 @@ namespace SkaaEditorUI.Presenters
         }
         public override void RecalculateFrameOffsets()
         {
-            if (this.DataView?.Table == null || !this.BitmapHasChanges)
+            if (this.DataView?.Table == null && !this.BitmapHasChanges)
                 return;
 
             long offset = 0;
@@ -93,15 +93,18 @@ namespace SkaaEditorUI.Presenters
                 offset += bytes.LongLength;
 
                 //update the DataView
-                this.DataView.Sort = SkaaGameDataLib.Util.DataRowExtensions.SprFrameNameColumn;
-
-                var drv = this.DataView.FindRows(fp.Name);
-
-                for (int i = 0; i < drv.Length; i++)
+                if (this.DataView?.Table != null)
                 {
-                    drv[i].BeginEdit();
-                    drv[i][SkaaGameDataLib.Util.DataRowExtensions.SprFrameOffsetColumn] = fp.BitmapOffset;
-                    drv[i].EndEdit();
+                    this.DataView.Sort = SkaaGameDataLib.Util.DataRowExtensions.SprFrameNameColumn;
+
+                    var drv = this.DataView.FindRows(fp.Name);
+
+                    for (int i = 0; i < drv.Length; i++)
+                    {
+                        drv[i].BeginEdit();
+                        drv[i][SkaaGameDataLib.Util.DataRowExtensions.SprFrameOffsetColumn] = fp.BitmapOffset;
+                        drv[i].EndEdit();
+                    }
                 }
 
             }
