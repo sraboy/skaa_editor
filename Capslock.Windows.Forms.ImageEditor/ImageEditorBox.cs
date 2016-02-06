@@ -265,9 +265,7 @@ namespace Capslock.Windows.Forms.ImageEditor
                     case DrawingTools.SelectRectangle:
                         if (this.SnapSelectionToGrid)
                         {
-                            bool snapToGrid = true;
-
-                            if (snapToGrid)
+                            if (this.SnapSelectionToGrid)
                             {
                                 var oldRegion = this.SelectionRegion;
                                 this.SelectionRegion = new RectangleF(
@@ -598,6 +596,7 @@ namespace Capslock.Windows.Forms.ImageEditor
                     }
 
                     this.Image = final;
+                    this.SelectionRegion = new RectangleF(pt, bmp.Size);
                 }
             }
         }
