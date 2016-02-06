@@ -54,7 +54,8 @@ namespace Capslock.Windows.Forms.ImageEditor
         private Queue<Point> _linePoints;
         private bool _isPanning;
         private bool _snapSelectionToGrid;
-        private bool _isDrawing;
+        private bool _isDrawing = false;
+        private bool _isDragging = false;
         #endregion
 
         #region Public Properties
@@ -175,6 +176,30 @@ namespace Capslock.Windows.Forms.ImageEditor
                 this._snapSelectionToGrid = value;
             }
         }
+        public bool IsDragging
+        {
+            get
+            {
+                return this._isDragging;
+            }
+
+            set
+            {
+                this._isDragging = value;
+            }
+        }
+        public bool IsDrawing
+        {
+            get
+            {
+                return this._isDrawing;
+            }
+
+            set
+            {
+                this._isDrawing = value;
+            }
+        }
         #endregion
 
         #region Events
@@ -241,7 +266,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (!this._isDrawing)
+            if (!this.IsDrawing)
                 base.OnMouseDown(e);
 
             this._startMousePosition = e.Location; //used for panning and for a location to paste an image
@@ -313,9 +338,9 @@ namespace Capslock.Windows.Forms.ImageEditor
             // cleaner than worrying about where it's set within which methods. Also, Draw() can handle
             // calling Invalidate(). The drawing methods should simply manipulate the image; though LineDraw
             // will still need to Invalidate the control once the real-time line is drawn.
-            if (this._isDrawing)
+            if (this.IsDrawing)
             {
-                this._isDrawing = false;
+                this.IsDrawing = false;
                 OnImageChanged(EventArgs.Empty);
             }
         }
@@ -407,7 +432,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         #region Editing Methods
         protected virtual void LineDraw(MouseEventArgs e)
         {
-            this._isDrawing = true;
+            this.IsDrawing = true;
 
             Color col;
 
@@ -444,13 +469,13 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected virtual void PencilDraw(MouseEventArgs e)
         {
-            this._isDrawing = true;
+            this.IsDrawing = true;
 
             Point currentPixel = this.PointToImage(e.X, e.Y);
 
             if ((currentPixel.X < Image.Width && currentPixel.Y < Image.Height) && (currentPixel.X >= 0 && currentPixel.Y >= 0))
             {
-                this._isDrawing = true;
+                this.IsDrawing = true;
 
                 Color col = Color.Empty;
 
@@ -475,7 +500,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         protected virtual void PaintBucketFill(MouseEventArgs e)
         {
-            this._isDrawing = true;
+            this.IsDrawing = true;
 
             Point currentPoint = this.PointToImage(e.X, e.Y);
 
