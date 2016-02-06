@@ -87,6 +87,9 @@ namespace SkaaEditorUI.Presenters
 
             foreach (FramePresenter fp in this.Frames)
             {
+                //sometimes, it gets lost due to working with 32-bit bitmaps
+                fp.GameObject.IndexedBitmap.Bitmap.Palette = this.PalettePresenter.GameObject;
+
                 //recalculate offset
                 var bytes = fp.GameObject.GetSprBytes();
                 fp.BitmapOffset = offset;

@@ -36,6 +36,7 @@ using SkaaEditorUI.Presenters;
 using SkaaGameDataLib.GameObjects;
 using SkaaGameDataLib.Util;
 using WeifenLuo.WinFormsUI.Docking;
+using System.Linq;
 
 namespace SkaaEditorUI.Forms
 {
@@ -409,11 +410,6 @@ namespace SkaaEditorUI.Forms
         {
             var iec = (sender as ImageEditorContainer);
             Debug.Assert(iec != null, "ImageEditorContainer.Image has changed but ImageEditorContainer is now null!");
-
-            //We reset the palette because it's treated as a 32-bit
-            //image in ImageEditorBox, so it loses its palette during
-            //some operations.
-            iec.Image.Palette = this._toolBoxContainer.ActivePalette;
 
             //If the image was resized, ToolBoxContainer needs its new dimensions
             //in order to display them if it is resized again.
