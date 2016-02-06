@@ -575,7 +575,7 @@ namespace Capslock.Windows.Forms.ImageEditor
             //We can't use SetImage() because the alpha channel is lost
             //so we use a DataObject that just stores the bits as-is
             var obj = new DataObject();
-            var bmp = GetSelectedImage() as Bitmap;
+            var bmp = GetSelectedImage();
 
             //We also specify our own format or Windows will bogart
             //the object and save it as a Bitmap with no transparency.
