@@ -40,7 +40,8 @@ namespace Capslock.Windows.Forms.ImageEditor
     public partial class ImageEditorBox : ImageBox
     {
         #region Private Fields
-        private bool _isPanning;
+        private static readonly string ClipboardFormat = System.Drawing.Imaging.ImageFormat.Png.ToString();//"PortableNetworkGraphics";
+
         private Color _activePrimaryColor;
         private Color _activeSecondaryColor;
         private FastBitmap fbmp;
@@ -51,6 +52,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         private Point _startMousePosition;
         private Point _startScrollPosition;
         private Queue<Point> _linePoints;
+        private bool _isPanning;
         private bool _snapSelectionToGrid;
         private bool _isDrawing;
         #endregion
@@ -161,7 +163,6 @@ namespace Capslock.Windows.Forms.ImageEditor
                 }
             }
         }
-
         public bool SnapSelectionToGrid
         {
             get
@@ -329,7 +330,7 @@ namespace Capslock.Windows.Forms.ImageEditor
                 CutSelectionToClipboard();
             }
             else if (e.KeyData == (Keys.Control | Keys.V) && //Ctrl-V for paste
-                     Clipboard.ContainsImage() &&
+                     Clipboard.ContainsData(ClipboardFormat) &&
                      this.IsPointInImage(this._startMousePosition))
             {
                 PasteImageFromClipboard();
@@ -567,45 +568,70 @@ namespace Capslock.Windows.Forms.ImageEditor
 
         private void PutSelectionToClipboard()
         {
-            Clipboard.SetImage(GetSelectedImage());
+            //We can't use SetImage() because the alpha channel is lost
+            //so we use a DataObject that just stores the bits as-is
+            var obj = new DataObject();
+            var bmp = GetSelectedImage() as Bitmap;
+
+            //We also specify our own format or Windows will bogart
+            //the object and save it as a Bitmap with no transparency.
+            obj.SetData(ClipboardFormat, bmp);
+
+            Clipboard.Clear();
+            Clipboard.SetDataObject(obj);
         }
         private void PasteImageFromClipboard()
         {
-            using (Bitmap bmp = new Bitmap(Clipboard.GetImage()))
+            if (Clipboard.ContainsData(ClipboardFormat))
             {
-                Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
-                var pt = this.PointToImage(_startMousePosition);
+                var bmp = Clipboard.GetData(ClipboardFormat) as Bitmap;
 
-                using (Graphics g = Graphics.FromImage(final))
+                if (bmp != null)
                 {
-                    g.DrawImage(this.Image, 0, 0);
-                    g.DrawImage(bmp, pt);
-                }
+                    Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
+                    var pt = this.PointToImage(_startMousePosition);
 
-                this.Image = final;
+                    using (Graphics g = Graphics.FromImage(final))
+                    {
+                        g.DrawImage(this.Image, 0, 0);
+                        g.DrawImage(bmp, pt);
+                    }
+
+                    this.Image = final;
+                }
             }
         }
         private void CutSelectionToClipboard()
         {
-            //todo: instead of using Color.Aqua, we should identify a color known not to be in the palette or ask the user to specify a background color
-
             PutSelectionToClipboard();
-
-            using (Bitmap bmp = new Bitmap(Clipboard.GetImage()))
+            CutImage();
+        }
+        private void CutImage()
+        {
+            //todo: add Delete Section option, accept rect from SelectionRegion to delete that region
+            if (Clipboard.ContainsData(ClipboardFormat))
             {
-                Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
+                var bmp = Clipboard.GetData(ClipboardFormat) as Bitmap;
 
-                using (Graphics g = Graphics.FromImage(this.Image))
+                if (bmp != null)
                 {
-                    using (var br = new SolidBrush(Color.Aqua))
+                    Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
+
+                    using (Graphics g = Graphics.FromImage(this.Image))
                     {
-                        g.FillRectangle(br, new RectangleF(this.SelectionRegion.Location, this.SelectionRegion.Size));
-                        (this.Image as Bitmap).MakeTransparent(Color.Aqua);
+                        //todo: should use a color KNOWN not to be in the palette
+                        //with this, we'll end up making any other Aqua pixels transparent
+
+                        using (var br = new SolidBrush(Color.Aqua))
+                        {
+                            g.FillRectangle(br, new RectangleF(this.SelectionRegion.Location, this.SelectionRegion.Size));
+                            (this.Image as Bitmap).MakeTransparent(Color.Aqua);
+                        }
                     }
+
+                    this.Refresh();
                 }
             }
-
-            this.Refresh();
         }
         #endregion
 
