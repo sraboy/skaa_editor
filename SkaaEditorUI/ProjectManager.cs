@@ -166,10 +166,6 @@ namespace SkaaEditorUI
                 }
             }
         }
-        public static FileFormats CheckFileType(string filePath)
-        {
-            return FileTypeChecks.CheckFileType(filePath);
-        }
 
         /////////////////////////////////// Project Management ///////////////////////////////////
 
