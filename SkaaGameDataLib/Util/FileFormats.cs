@@ -127,7 +127,7 @@ namespace SkaaGameDataLib.Util
         /// <seealso cref="ResourceDefinitionReader.ReadDefinitions(Stream, bool)"/>
         /// <see cref="IndexedBitmap"/>
         ResIdxMultiBmp,
-        ResIdxText,
+        ResText,
         ResIdxAudio,
         /// <summary>
         /// A dBaseIII table
