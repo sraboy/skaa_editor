@@ -704,7 +704,6 @@ namespace Capslock.Windows.Forms.ImageEditor
 
             this.Image = final;
         }
-
         private void CutRectangleFromImage(PointF location, SizeF size)
         {
             Bitmap final = new Bitmap(this.Image.Width, this.Image.Height, this.Image.PixelFormat);
