@@ -38,14 +38,17 @@ namespace SkaaGameDataLib.Util
     {
         //todo: Inherit from Image and/or implement the methods as Extension Methods to Bitmap
         public static readonly TraceSource Logger = new TraceSource("IndexedBitmap", SourceLevels.All);
-        public static readonly int MaxByteSize = 6000000;
-        public static readonly int MaxPixelHeight = 2000;
-        public static readonly int MaxPixelWidth = 2000;
+
+        #region Private Static Fields
+        private static readonly int MaxByteSize = 6000000;
+        private static readonly int MaxPixelHeight = 2000;
+        private static readonly int MaxPixelWidth = 2000;
         /// <summary>
         /// Used in <see cref="Bitmap.MakeTransparent(Color)"/>. "White transparent" is used in 7KAA's 
         /// sprites and the opacity is set to 0% as needed.
         /// </summary>
         private static readonly Color _skaaTransparentColor = Color.FromArgb(0, 255, 255, 255);
+        #endregion
 
         #region Event Handlers
         [NonSerialized]
@@ -74,8 +77,6 @@ namespace SkaaGameDataLib.Util
             }
         }
         #endregion
-
-        private byte[] _rleBytes;
 
         #region Public Members
         public Bitmap Bitmap;
@@ -126,11 +127,8 @@ namespace SkaaGameDataLib.Util
                 throw new Exception(msg);
             }
 
-            List<Color> Palette = new List<Color>();
-            foreach (Color c in bmp.Palette.Entries)
-            {
-                Palette.Add(c);
-            }
+            //todo:performance:cache this list
+            List<Color> Palette = bmp.Palette.Entries.ToList();
 
             //This provides a significant speed increase for large images
             //due to the GetPixel() call in the loop below
