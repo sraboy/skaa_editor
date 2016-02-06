@@ -118,17 +118,30 @@ namespace SkaaGameDataLib.Util
             Buffer.BlockCopy(height, 0, indexedData, seek_pos, height.Length);
             seek_pos += height.Length;
 
+            if (bmp.Palette.Entries.Count() < 1)
+            {
+                string msg = "Bitmap palette has no entries!";
+                Logger.TraceEvent(TraceEventType.Error, 0, msg);
+                Debugger.Break();
+                throw new Exception(msg);
+            }
+
             List<Color> Palette = new List<Color>();
             foreach (Color c in bmp.Palette.Entries)
             {
                 Palette.Add(c);
             }
 
+            //This provides a significant speed increase for large images
+            //due to the GetPixel() call in the loop below
+            FastBitmap fbmp = new FastBitmap(bmp);
+            fbmp.LockImage();
+
             for (int y = 0; y < bmp.Height; ++y)
             {
                 for (int x = 0; x < bmp.Width; ++x)
                 {
-                    Color pixel = bmp.GetPixel(x, y);
+                    Color pixel = fbmp.GetPixel(x, y);
                     int pixARGB = pixel.ToArgb();
 
                     if (pixARGB == 0x00 && transparentByteFound)
@@ -177,7 +190,14 @@ namespace SkaaGameDataLib.Util
 
                     if (idx == -1)
                     {
-                        throw new Exception($"Unknown color: {pixARGB}");
+                        string rgb = pixARGB.ToString("X");
+                        Logger.TraceEvent(TraceEventType.Error, 0, $"Unknown color: {rgb}");
+                        Debugger.Break();
+                        //default to black
+                        idx = Palette.FindIndex(c => c == Color.Black);
+                        //but if that's missing too, just take whatever color is first
+                        if (idx == -1)
+                            idx = 0;
                     }
 
                     //allows us to see the exception's message
@@ -197,6 +217,8 @@ namespace SkaaGameDataLib.Util
 
                 }//end inner for
             }//end outer for
+
+            fbmp.UnlockImage();
 
             //the two continue statements above would cause us to miss any
             //transparent bytes at the very end (bottom-right of image)
