@@ -274,6 +274,8 @@ namespace SkaaGameDataLib.Util
         /// <returns>A new <see cref="System.Drawing.Bitmap"/> with a <see cref="PixelFormat"/> of <see cref="PixelFormat.Format8bppIndexed"/></returns>
         public static Bitmap GetBitmapFromRleBytes(byte[] bitmapBytes, ColorPalette pal, int height, int width)
         {
+            //~28ms on large images in i_menu.res
+
             int idx;
             Bitmap bmp = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
             bmp.MakeTransparent(_skaaTransparentColor);
@@ -309,6 +311,11 @@ namespace SkaaGameDataLib.Util
         /// <param name="stream">A stream with its <see cref="Stream.Position"/> set to the first byte of the header, which is two int16 values for width and height.</param>
         private Bitmap DecodeRleStream(Stream stream, FileFormats form)
         {
+            //~600ms on large images in i_menu.res
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             byte[] frame_size_bytes;
             int width,     //width in pixels, as read from the stream
                 height,    //height in pixels, as read from the stream
@@ -393,6 +400,8 @@ namespace SkaaGameDataLib.Util
                     }
                 }//end inner for
             }//end outer for
+
+            sw.Stop();
 
             return GetBitmapFromRleBytes(resBmpData, this.Bitmap.Palette, height, width);
         }
