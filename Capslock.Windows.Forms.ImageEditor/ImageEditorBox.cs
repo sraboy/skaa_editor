@@ -229,6 +229,12 @@ namespace Capslock.Windows.Forms.ImageEditor
                 case DrawingTools.Pencil:
                     this.PencilDraw(e);
                     break;
+                case DrawingTools.SelectRectangle:
+                    if (e.Button == MouseButtons.Right && !IsPointInSelectionRegion(e.Location))
+                    {
+                        this.SelectionRegion = RectangleF.Empty;
+                    }
+                    break;
             }
 
             base.OnMouseClick(e);
@@ -634,6 +640,18 @@ namespace Capslock.Windows.Forms.ImageEditor
         }
         #endregion
 
+        protected virtual bool IsPointInSelectionRegion(Point p)
+        {
+            bool inX = false;
+            bool inY = false;
+
+            if (p.X > this.SelectionRegion.X && p.X < (this.SelectionRegion.X + this.SelectionRegion.Width))
+                inX = true;
+            if (p.Y > this.SelectionRegion.Y && p.Y < (this.SelectionRegion.Y + this.SelectionRegion.Height))
+                inY = true;
+
+            return inX & inY;
+        }
         protected virtual void ChangeDrawingToolCursor(DrawingTools tool)
         {
             switch (tool)
