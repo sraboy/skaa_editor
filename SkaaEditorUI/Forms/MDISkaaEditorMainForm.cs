@@ -24,7 +24,9 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
@@ -356,7 +358,21 @@ namespace SkaaEditorUI.Forms
         private void RecalculateFrameOffsetsTimer_Tick(object sender, EventArgs e)
         {
             foreach (var iec in this._dockPanel.Documents)
-                (iec as ImageEditorContainer)?.ActiveSprite?.RecalculateFrameOffsets();
+            {
+                if ((iec as ImageEditorContainer)?.ActiveSprite == null)
+                    continue;
+
+                if ((iec as ImageEditorContainer).ActiveSprite.BitmapHasChanges)
+                {
+                    BackgroundWorker bw = new BackgroundWorker();
+                    bw.DoWork += (object s, DoWorkEventArgs dwe) =>
+                    {
+                        (iec as ImageEditorContainer).ActiveSprite.RecalculateFrameOffsets();
+                    };
+
+                    bw.RunWorkerAsync();
+                }
+            }
         }
         private void DockPanel_ActiveDocumentChanged(object sender, EventArgs e)
         {
@@ -392,13 +408,19 @@ namespace SkaaEditorUI.Forms
         private void ImageEditorContainer_ImageChanged(object sender, EventArgs e)
         {
             var iec = (sender as ImageEditorContainer);
+            Debug.Assert(iec != null, "ImageEditorContainer.Image has changed but ImageEditorContainer is now null!");
+
+            //We reset the palette because it's treated as a 32-bit
+            //image in ImageEditorBox, so it loses its palette during
+            //some operations.
+            iec.Image.Palette = this._toolBoxContainer.ActivePalette;
 
             //If the image was resized, ToolBoxContainer needs its new dimensions
             //in order to display them if it is resized again.
-            this._toolBoxContainer.SetImageToEdit(iec?.Image);
+            this._toolBoxContainer.SetImageToEdit(iec.Image);
 
             //We also need to display those new dimensions.
-            SetStatusStrip(iec?.ActiveSprite);
+            SetStatusStrip(iec.ActiveSprite);
         }
         private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e)
         {
