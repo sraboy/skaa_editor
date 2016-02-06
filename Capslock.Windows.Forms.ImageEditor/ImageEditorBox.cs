@@ -42,6 +42,8 @@ namespace Capslock.Windows.Forms.ImageEditor
         #region Private Fields
         private static readonly string ClipboardFormat = System.Drawing.Imaging.ImageFormat.Png.ToString();//"PortableNetworkGraphics";
 
+        private Bitmap _dragTempSelectedImage;
+        private Image _layerOneImage;
         private Color _activePrimaryColor;
         private Color _activeSecondaryColor;
         private FastBitmap fbmp;
@@ -50,6 +52,7 @@ namespace Capslock.Windows.Forms.ImageEditor
         private Cursor _pencilCursor;
         private Cursor _paintBucketCursor;
         private Point _startMousePosition;
+        private Point _dragStartAnchor;
         private Point _startScrollPosition;
         private Queue<Point> _linePoints;
         private bool _isPanning;
@@ -258,6 +261,8 @@ namespace Capslock.Windows.Forms.ImageEditor
                     if (e.Button == MouseButtons.Right && !IsPointInSelectionRegion(e.Location))
                     {
                         this.SelectionRegion = RectangleF.Empty;
+                        //remove the old saved copy of our background image
+                        this._layerOneImage = null;
                     }
                     break;
             }
@@ -279,12 +284,33 @@ namespace Capslock.Windows.Forms.ImageEditor
                 case DrawingTools.Pencil:
                     this.PencilDraw(e);
                     break;
+                case DrawingTools.SelectRectangle:
+                    if (!this.IsSelecting
+                        && !this.IsDragging
+                        && this.SelectionRegion != RectangleF.Empty
+                        && IsPointInSelectionRegion(PointToImage(e.Location)))
+                    {
+                        this.IsDragging = true;
+                        //save this so we can click & drag using this point as the anchor
+                        this._startMousePosition = new Point((int)this.SelectionRegion.X, (int)this.SelectionRegion.Y);
+                        this._dragStartAnchor = PointToImage(e.Location);
+                        //save the selected image
+                        this._dragTempSelectedImage = GetSelectedImage() as Bitmap;
+                        //cut out the selection
+                        CutRectangleFromImage(this.SelectionRegion.Location, this.SelectionRegion.Size);
+                        //save the cut image for drawing the background while dragging
+                        this._layerOneImage = this._layerOneImage ?? this.Image.Clone() as Image;
+                    }
+                    break;
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
             //todo: Implement a real-time drawn line for the line tool. It should match the zoom level and pixelation of the image.
             base.OnMouseMove(e);
+
+            if (this.IsDragging)
+                this.IsSelecting = false; //because base.OnMouseMove() will end up resetting it to true in StartDrag()
 
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
@@ -294,16 +320,32 @@ namespace Capslock.Windows.Forms.ImageEditor
                         this.PencilDraw(e);
                         break;
                     case DrawingTools.SelectRectangle:
-                        if (this.SnapSelectionToGrid)
+                        if (this.IsDragging)
                         {
-                            if (this.SnapSelectionToGrid)
+                            var curPos = PointToImage(e.Location);
+                            Point offset = new Point();
+                            offset.X = this._startMousePosition.X + (curPos.X - this._dragStartAnchor.X);
+                            offset.Y = this._startMousePosition.Y + (curPos.Y - this._dragStartAnchor.Y);
+
+                            //draw selected image as mouse moves
+                            OverlayBitmap(this._dragTempSelectedImage, offset);
+                        }
+                        else if (this.SnapSelectionToGrid && e.Button == MouseButtons.Left)
+                        {
+                            //remove the old saved copy of our background image
+                            this._layerOneImage = null;
+
+                            if (this.IsSelecting)
                             {
-                                var oldRegion = this.SelectionRegion;
-                                this.SelectionRegion = new RectangleF(
-                                    (int)oldRegion.X,
-                                    (int)oldRegion.Y,
-                                    (int)oldRegion.Width + 1,
-                                    (int)oldRegion.Height + 1);
+                                if (this.SelectionRegion != RectangleF.Empty)
+                                {
+                                    var oldRegion = this.SelectionRegion;
+                                    this.SelectionRegion = new RectangleF(
+                                        (int)oldRegion.X,
+                                        (int)oldRegion.Y,
+                                        (int)oldRegion.Width + 1,
+                                        (int)oldRegion.Height + 1);
+                                }
                             }
                         }
                         break;
@@ -338,6 +380,18 @@ namespace Capslock.Windows.Forms.ImageEditor
             // cleaner than worrying about where it's set within which methods. Also, Draw() can handle
             // calling Invalidate(). The drawing methods should simply manipulate the image; though LineDraw
             // will still need to Invalidate the control once the real-time line is drawn.
+            if (this.IsDragging)
+            {
+                var curPos = PointToImage(e.Location);
+                Point offset = new Point();
+                offset.X = this._startMousePosition.X + (curPos.X - this._dragStartAnchor.X);
+                offset.Y = this._startMousePosition.Y + (curPos.Y - this._dragStartAnchor.Y);
+                this.SelectionRegion = new RectangleF(offset, this._dragTempSelectedImage.Size);
+                this.IsDragging = false;
+                this._dragTempSelectedImage = null;
+                OnImageChanged(EventArgs.Empty);
+            }
+
             if (this.IsDrawing)
             {
                 this.IsDrawing = false;
@@ -610,7 +664,13 @@ namespace Capslock.Windows.Forms.ImageEditor
             if (Clipboard.ContainsData(ClipboardFormat))
             {
                 var bmp = Clipboard.GetData(ClipboardFormat) as Bitmap;
-                OverlayBitmap(bmp, this.PointToImage(_startMousePosition));
+                var location = this.PointToImage(_startMousePosition);
+
+                //saves our background image so we can drag this part around
+                this._layerOneImage = this.Image.Clone() as Image;
+
+                OverlayBitmap(bmp, location);
+                this.SelectionRegion = new RectangleF(location, bmp.Size);
             }
         }
         private void CutSelectionToClipboard()
@@ -625,20 +685,20 @@ namespace Capslock.Windows.Forms.ImageEditor
         /// <param name="location">The top-left point, in image coordinates, at which to start drawing</param>
         private void OverlayBitmap(Bitmap bmp, Point location)
         {
-            if (bmp != null)
+            if (this.IsDragging)
+                this.Image = this._layerOneImage.Clone() as Image;
+
+            Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
+
+            using (Graphics g = Graphics.FromImage(final))
             {
-                Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
-
-                using (Graphics g = Graphics.FromImage(final))
-                {
-                    g.DrawImage(this.Image, 0, 0);
-                    g.DrawImage(bmp, location);
-                }
-
-                this.Image = final;
-                this.SelectionRegion = new RectangleF(location, bmp.Size);
+                g.DrawImage(this.Image, 0, 0);
+                g.DrawImage(bmp, location);
             }
+
+            this.Image = final;
         }
+
         private void CutRectangleFromImage(PointF location, SizeF size)
         {
             Bitmap final = new Bitmap(this.Image.Width, this.Image.Height, this.Image.PixelFormat);
@@ -656,7 +716,6 @@ namespace Capslock.Windows.Forms.ImageEditor
             }
 
             this.Refresh();
-
         }
         #endregion
 
