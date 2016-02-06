@@ -302,8 +302,8 @@ namespace SkaaEditorUI.Forms
                     files.Add(filename);
             }
 
-            foreach (string filename in files)
-                filesAndFormats.Add(new KeyValuePair<string, FileFormats>(filename, FileTypeChecks.CheckFileType(filename)));
+            foreach (string filename in files)  //todo: expose UI option for quickCheckByFileName in CheckFileType()
+                filesAndFormats.Add(new KeyValuePair<string, FileFormats>(filename, FileTypeChecks.CheckFileType(filename, true)));
 
             //open the palette first so the user is presented with an OpenFileDialog
             //if a SpritePresenter is first

@@ -322,12 +322,13 @@
             </summary>
             <returns>The new DataTable</returns>
         </member>
-        <member name="M:SkaaGameDataLib.Util.FileTypeChecks.CheckFileType(System.String)">
+        <member name="M:SkaaGameDataLib.Util.FileTypeChecks.CheckFileType(System.String,System.Boolean)">
             <summary>
             Verifies the file's type by extension. *.res files are passed to <see cref="M:SkaaGameDataLib.Util.FileTypeChecks.CheckResFileType(System.String)"/> for 
-            separate tests.
+            separate tests. Palettes, Audio and Fonts are simply identified by their prefixes: "pal_", "a_" and "fon_".
             </summary>
             <param name="filePath">The full path of the file to check</param>
+            <param name="quickCheckByName">When set to true, uses a pre-set list of RES filenames from 7KAA and their known types.</param>
             <returns>
             The recognized <see cref="T:SkaaGameDataLib.Util.FileFormats"/> format or 
             <see cref="F:SkaaGameDataLib.Util.FileFormats._Unknown"/> if the file could not be recognized

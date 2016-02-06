@@ -37,14 +37,15 @@ namespace SkaaGameDataLib.Util
 
         /// <summary>
         /// Verifies the file's type by extension. *.res files are passed to <see cref="CheckResFileType(string)"/> for 
-        /// separate tests.
+        /// separate tests. Palettes, Audio and Fonts are simply identified by their prefixes: "pal_", "a_" and "fon_".
         /// </summary>
         /// <param name="filePath">The full path of the file to check</param>
+        /// <param name="quickCheckByName">When set to true, uses a pre-set list of RES filenames from 7KAA and their known types.</param>
         /// <returns>
         /// The recognized <see cref="FileFormats"/> format or 
         /// <see cref="FileFormats._Unknown"/> if the file could not be recognized
         /// </returns>
-        public static FileFormats CheckFileType(string filePath)
+        public static FileFormats CheckFileType(string filePath, bool quickCheckByName)
         {
             string file_ext = Path.GetExtension(filePath);
             //string filename = Path.GetFileNameWithoutExtension(path);
@@ -52,7 +53,9 @@ namespace SkaaGameDataLib.Util
             switch (file_ext)
             {
                 case ".res":
-                    return CheckResFileType(filePath);
+                    return quickCheckByName == true
+                        ? CheckResFileName(filePath)
+                        : CheckResFileType(filePath);
                 case ".icn":
                     return FileFormats.SpriteFrameSpr;
                 case ".spr":
@@ -74,7 +77,99 @@ namespace SkaaGameDataLib.Util
             }
         }
 
-        /*********************Individual File Type Checkers*********************/
+        private static FileFormats CheckResFileName(string filePath)
+        {
+            string fileName = Path.GetFileName(filePath);
+
+            switch (fileName)
+            {
+                case "i_button.res":
+                case "i_encyc.res":
+                case "i_icon.res":
+                case "i_if.res":
+                case "i_menu.res":
+                case "i_menu2.res":
+                case "i_spict.res":
+                case "i_tech.res":
+                case "i_tpict1.res":
+                case "i_tpict2.res":
+                case "i_tpict3.res":
+                case "tut_pict.res":
+                case "tut_intr.res":
+                case "tut_text.res":
+                    return FileFormats.ResIdxMultiBmp;
+
+                case "cursor.res":
+                case "hill1.res":
+                case "hill2.res":
+                case "hill3.res":
+                case "plant1.res":
+                case "plant2.res":
+                case "plant3.res":
+                case "plantbm1.res":
+                case "plantbm2.res":
+                case "plantbm3.res":
+                case "rock1.res":
+                case "rock2.res":
+                case "rock3.res":
+                case "rockani1.res":
+                case "rockani2.res":
+                case "rockani3.res":
+                case "rockblk1.res":
+                case "rockblk2.res":
+                case "rockblk3.res":
+                case "rockbmp1.res":
+                case "rockbmp2.res":
+                case "rockbmp3.res":
+                case "teranm1.res":
+                case "teranm2.res":
+                case "teranm3.res":
+                case "terrain1.res":
+                case "terrain2.res":
+                case "terrain3.res":
+                case "tersub.res":
+                case "tut_list.res":
+                    return FileFormats.DbaseIII;
+
+                case "i_cursor.res":
+                case "i_firm.res":
+                case "i_firmdi.res":
+                case "i_hill1.res":
+                case "i_hill2.res":
+                case "i_hill3.res":
+                case "i_plant1.res":
+                case "i_plant2.res":
+                case "i_plant3.res":
+                case "i_race.res":
+                case "i_rock1.res":
+                case "i_rock2.res":
+                case "i_rock3.res":
+                case "i_snow.res":
+                case "i_tera1.res":
+                case "i_tera2.res":
+                case "i_tera3.res":
+                case "i_tern1.res":
+                case "i_tern2.res":
+                case "i_tern3.res":
+                case "i_town.res":
+                case "i_unitgi.res":
+                case "i_unitki.res":
+                case "i_unitli.res":
+                case "i_unitsi.res":
+                case "i_unitti.res":
+                case "i_unitui.res":
+                case "i_wall.res":
+                    return FileFormats.SpriteSpr;
+
+                case "help.res":
+                    return FileFormats.ResText;
+
+                case "i_raw.res":
+                    return FileFormats.SpriteFrameSpr;
+                default:
+                    return FileFormats._Unknown;
+            }
+        }
         /// <summary>
         /// First checks for a filename prefix identifying the file as a palette, font or audio. If it
         /// doesn't match, the file is passed to more in-depth file type checks that attempt to read the
