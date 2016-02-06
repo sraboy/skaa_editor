@@ -589,54 +589,53 @@ namespace Capslock.Windows.Forms.ImageEditor
             if (Clipboard.ContainsData(ClipboardFormat))
             {
                 var bmp = Clipboard.GetData(ClipboardFormat) as Bitmap;
-
-                if (bmp != null)
-                {
-                    Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
-                    var pt = this.PointToImage(_startMousePosition);
-
-                    using (Graphics g = Graphics.FromImage(final))
-                    {
-                        g.DrawImage(this.Image, 0, 0);
-                        g.DrawImage(bmp, pt);
-                    }
-
-                    this.Image = final;
-                    this.SelectionRegion = new RectangleF(pt, bmp.Size);
-                }
+                OverlayBitmap(bmp, this.PointToImage(_startMousePosition));
             }
         }
         private void CutSelectionToClipboard()
         {
             PutSelectionToClipboard();
-            CutImage();
+            CutRectangleFromImage(this.SelectionRegion.Location, this.SelectionRegion.Size);
         }
-        private void CutImage()
+        /// <summary>
+        /// Draws the specified bitmap on top of the current image
+        /// </summary>
+        /// <param name="bmp">The new bitmap to draw</param>
+        /// <param name="location">The top-left point, in image coordinates, at which to start drawing</param>
+        private void OverlayBitmap(Bitmap bmp, Point location)
         {
-            //todo: add Delete Section option, accept rect from SelectionRegion to delete that region
-            if (Clipboard.ContainsData(ClipboardFormat))
+            if (bmp != null)
             {
-                var bmp = Clipboard.GetData(ClipboardFormat) as Bitmap;
+                Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
 
-                if (bmp != null)
+                using (Graphics g = Graphics.FromImage(final))
                 {
-                    Bitmap final = new Bitmap(Math.Max(bmp.Width, this.Image.Width), Math.Max(bmp.Height, this.Image.Height), this.Image.PixelFormat);
+                    g.DrawImage(this.Image, 0, 0);
+                    g.DrawImage(bmp, location);
+                }
 
-                    using (Graphics g = Graphics.FromImage(this.Image))
-                    {
-                        //todo: should use a color KNOWN not to be in the palette
-                        //with this, we'll end up making any other Aqua pixels transparent
+                this.Image = final;
+                this.SelectionRegion = new RectangleF(location, bmp.Size);
+            }
+        }
+        private void CutRectangleFromImage(PointF location, SizeF size)
+        {
+            Bitmap final = new Bitmap(this.Image.Width, this.Image.Height, this.Image.PixelFormat);
 
-                        using (var br = new SolidBrush(Color.Aqua))
-                        {
-                            g.FillRectangle(br, new RectangleF(this.SelectionRegion.Location, this.SelectionRegion.Size));
-                            (this.Image as Bitmap).MakeTransparent(Color.Aqua);
-                        }
-                    }
+            using (Graphics g = Graphics.FromImage(this.Image))
+            {
+                //todo: should use a color KNOWN not to be in the palette
+                //with this, we'll end up making any other Aqua pixels transparent
 
-                    this.Refresh();
+                using (var br = new SolidBrush(Color.Aqua))
+                {
+                    g.FillRectangle(br, new RectangleF(location, size));
+                    (this.Image as Bitmap).MakeTransparent(Color.Aqua);
                 }
             }
+
+            this.Refresh();
+
         }
         #endregion
 

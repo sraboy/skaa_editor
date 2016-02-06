@@ -163,6 +163,13 @@
             The <see cref="T:System.Windows.Forms.MouseEventArgs" /> instance containing the event data.
             </param>
         </member>
+        <member name="M:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.OverlayBitmap(System.Drawing.Bitmap,System.Drawing.Point)">
+            <summary>
+            Draws the specified bitmap on top of the current image
+            </summary>
+            <param name="bmp">The new bitmap to draw</param>
+            <param name="location">The top-left point, in image coordinates, at which to start drawing</param>
+        </member>
         <member name="F:Capslock.Windows.Forms.ImageEditor.ImageEditorBox.components">
             <summary> 
             Required designer variable.
