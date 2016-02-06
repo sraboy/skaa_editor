@@ -451,8 +451,6 @@ namespace Capslock.Windows.Forms.ImageEditor
             if ((currentPixel.X < Image.Width && currentPixel.Y < Image.Height) && (currentPixel.X >= 0 && currentPixel.Y >= 0))
             {
                 this._isDrawing = true;
-                this.IsSelecting = false;
-                this.IsPanning = false;
 
                 Color col = Color.Empty;
 
@@ -478,8 +476,6 @@ namespace Capslock.Windows.Forms.ImageEditor
         protected virtual void PaintBucketFill(MouseEventArgs e)
         {
             this._isDrawing = true;
-            this.IsSelecting = false;
-            this.IsPanning = false;
 
             Point currentPoint = this.PointToImage(e.X, e.Y);
 
