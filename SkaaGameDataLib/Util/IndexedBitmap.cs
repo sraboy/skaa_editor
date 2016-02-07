@@ -329,7 +329,7 @@ namespace SkaaGameDataLib.Util
                 height = BitConverter.ToUInt16(frame_size_bytes, 6);
                 calcSize = height * width;
             }
-            else if (form == FileFormats.SpriteFrameSpr)
+            else if (form == FileFormats.ResIdxFramesSpr)
             {
                 frame_size_bytes = new byte[4];
                 stream.Read(frame_size_bytes, 0, 4);

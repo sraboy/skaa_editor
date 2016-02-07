@@ -53,7 +53,7 @@ namespace SkaaEditorUI.Presenters
         /// <see cref="DataTable"/> only has fields for FrameName and FrameOffset; any other data is stored 
         /// elsewhere, generally in DBF (dBaseIII) files that may or may not be in the standard game set.
         /// </remarks>
-        private static Tuple<SkaaSprite, DataTable> ReadFrames(string filepath, ColorPalette pal)
+        private static Tuple<SkaaSprite, DataTable> ReadFrames(string filepath, ColorPalette pal, bool offsetsOnly)
         {
             SkaaSprite spr = new SkaaSprite();
             DataTable dt = new DataTable();
@@ -64,7 +64,7 @@ namespace SkaaEditorUI.Presenters
             using (FileStream fs = new FileStream(filepath, FileMode.Open))
             {
                 //Read the file definitions from the ResIdx header.
-                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs);
+                Dictionary<string, uint> dic = ResourceDefinitionReader.ReadDefinitions(fs, offsetsOnly);
                 spr.SpriteId = Path.GetFileNameWithoutExtension(filepath);
                 dt.TableName = spr.SpriteId;
 
@@ -76,7 +76,7 @@ namespace SkaaEditorUI.Presenters
                     sf.Name = key;
                     IndexedBitmap iBmp = new IndexedBitmap(pal);
                     sf.IndexedBitmap = iBmp;
-                    iBmp.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
+                    iBmp.SetBitmapFromRleStream(fs, FileFormats.ResIdxFramesSpr);
 
                     spr.Frames.Add(sf);
 
@@ -126,7 +126,17 @@ namespace SkaaEditorUI.Presenters
                 }
             }
 
-            Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject);
+            //hack: This is for files like i_raw.res which are just like normal ResIdx files, 
+            //except they have no name records, just offsets. We end up getting another params
+            //array that was passed in to this params.
+            bool offsetsOnly = false;
+            if (param.Length >= 2)
+            {
+                var arr = (object[])param[1];
+                offsetsOnly = (bool)arr[0];
+            }
+
+            Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject, offsetsOnly);
 
             gsp.GameObject = gsp.GameObject ?? new DataSet();
             DataSet ds = gsp.GameObject;

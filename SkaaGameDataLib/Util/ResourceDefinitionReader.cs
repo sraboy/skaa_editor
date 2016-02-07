@@ -78,7 +78,7 @@ namespace SkaaGameDataLib.Util
         /// <see cref="KeyValuePair{TKey, TValue}.Key"/> set to the ASCII name of the record and 
         /// <see cref="KeyValuePair{TKey, TValue}.Value"/> set to that record's offset in a file.
         /// </returns>
-        public static Dictionary<string, uint> ReadDefinitions(Stream str)
+        public static Dictionary<string, uint> ReadDefinitions(Stream str, bool offsetsOnly)
         {
             byte[] recCount = new byte[2];
             str.Read(recCount, 0, 2);
@@ -91,18 +91,26 @@ namespace SkaaGameDataLib.Util
 
             Dictionary<string, uint> nameOffsetPairs = new Dictionary<string, uint>(recordCount);
 
-            while (str.Position < (recordCount) * ResIdxDefinitionSize)
+            int definitionSize = offsetsOnly == true ? 4 : ResIdxDefinitionSize;
+
+            while (str.Position < (recordCount) * definitionSize)
             {
-                byte[] b_name = new byte[ResIdxNameSize];
-                byte[] b_offset = new byte[ResIdxOffsetSize];
                 string name = string.Empty;
                 uint offset;
 
-                str.Read(b_name, 0, ResIdxNameSize); //offset is 0 from ms.Position
-                str.Read(b_offset, 0, ResIdxOffsetSize);
+                if (!offsetsOnly)
+                {
+                    byte[] b_name = new byte[ResIdxNameSize];
+                    str.Read(b_name, 0, ResIdxNameSize); //offset is 0 from ms.Position
+                    name = Encoding.GetEncoding(1252).GetString(b_name).Trim('\0');
+                }
 
-                name = Encoding.GetEncoding(1252).GetString(b_name).Trim('\0');
+                byte[] b_offset = new byte[ResIdxOffsetSize];
+                str.Read(b_offset, 0, ResIdxOffsetSize);
                 offset = BitConverter.ToUInt32(b_offset, 0);
+
+                if (offsetsOnly)
+                    name = offset.ToString();
 
                 if (offset > str.Length) //note: i_raw.res has only 12 records but will still hit on this one
                 {

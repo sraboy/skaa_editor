@@ -157,6 +157,11 @@ namespace SkaaEditorUI.Forms
             else
                 ToggleUISaveEditOptions(); //hack: while we don't have a gamesetviewercontainer.gamesetchanged event
         }
+        private void openResIdxSpriteFrameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (OpenSprite<ResIdxMultiBmpPresenter>(null, true) == false)
+                MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)})!");
+        }
         #endregion
 
         #region Save/Export File Menu Item Clicks
@@ -339,6 +344,10 @@ namespace SkaaEditorUI.Forms
                         if (OpenGameSet(kvp.Key) == false)
                             MessageBox.Show($"Failed to load game set: {kvp.Key}");
                         break;
+                    case FileFormats.ResIdxFramesSpr:
+                        if (OpenSprite<ResIdxMultiBmpPresenter>(kvp.Key, true) == false)
+                            MessageBox.Show($"Failed to load sprite ({typeof(ResIdxMultiBmpPresenter)}): {kvp.Key}");
+                        break;
                     case FileFormats.SpriteSpr:
                         if (OpenSprite<SpriteSprPresenter>(kvp.Key) == false)
                             MessageBox.Show($"Failed to load sprite ({typeof(SpriteSprPresenter)}): {kvp.Key}");
@@ -429,7 +438,7 @@ namespace SkaaEditorUI.Forms
         /// </summary>
         /// <typeparam name="T">A presenter class that implements <see cref="MultiImagePresenterBase"/></typeparam>
         /// <returns>The new presenter of type <paramref name="T"/> if successfull, <c>null</c> otherwise</returns>
-        internal bool OpenSprite<T>(string filePath = null) where T : MultiImagePresenterBase, new()
+        internal bool OpenSprite<T>(string filePath = null, params object[] param) where T : MultiImagePresenterBase, new()
         {
             //check for a palette first
             //if not loaded, set it
@@ -439,9 +448,9 @@ namespace SkaaEditorUI.Forms
             T spr;
 
             if (filePath == null)
-                spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter);
+                spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter, param);
             else
-                spr = (T)ProjectManager.Open<SkaaSprite, T>(filePath, this._gameSetViewerContainer.GameSetPresenter);
+                spr = (T)ProjectManager.Open<SkaaSprite, T>(filePath, this._gameSetViewerContainer.GameSetPresenter, param);
 
             if (spr == null) //user canceled or loading failed
                 return false;

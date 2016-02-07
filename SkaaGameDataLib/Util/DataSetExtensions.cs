@@ -100,7 +100,7 @@ namespace SkaaGameDataLib.Util
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Open))
             {
-                var defs = ResourceDefinitionReader.ReadDefinitions(fs);
+                var defs = ResourceDefinitionReader.ReadDefinitions(fs, false);
 
                 // Create a backup copy in the event Tables.Add() succeeds for one or more tables before 
                 // failing. This will allow us to just return false without mucking up the DataSet with 

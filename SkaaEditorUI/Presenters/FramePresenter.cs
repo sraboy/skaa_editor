@@ -143,7 +143,7 @@ namespace SkaaEditorUI.Presenters
 
             using (FileStream fs = new FileStream(filePath, FileMode.Open))
             {
-                frame.IndexedBitmap.SetBitmapFromRleStream(fs, FileFormats.SpriteFrameSpr);
+                frame.IndexedBitmap.SetBitmapFromRleStream(fs, FileFormats.ResIdxFramesSpr);
             }
 
             return frame;

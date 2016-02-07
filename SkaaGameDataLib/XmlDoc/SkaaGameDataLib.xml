@@ -225,6 +225,15 @@
             </summary>
             <seealso cref="M:SkaaGameDataLib.Util.DataSetExtensions.OpenStandardGameSet(System.Data.DataSet,System.String)"/>
         </member>
+        <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader._maxAcceptableRecordCount">
+            <summary>
+            Arbitrary number that isn't necessary for the game but, since the record count
+            is read from the file, it could be any 16-bit value. Since *.res files have no
+            header by which to identify the file, we assume a file claiming more than 150
+            records is not a valid resource file. This is only relevant when trying to read
+            arbitrary files, for example, when attempting to identify a file's type.
+            </summary>
+        </member>
         <member name="F:SkaaGameDataLib.Util.ResourceDefinitionReader.ResIdxNameSize">
             <summary>
             The number of characters, including a null terminator, that is used as the unique name of a piece of data
@@ -243,14 +252,19 @@
             The total size of a record definition in a <see cref="F:SkaaGameDataLib.Util.FileFormats._ResIdxFile"/>
             </summary>
         </member>
-        <member name="M:SkaaGameDataLib.Util.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream)">
+        <member name="M:SkaaGameDataLib.Util.ResourceDefinitionReader.ReadDefinitions(System.IO.Stream,System.Boolean)">
             <summary>
-            Arbitrary number that isn't necessary for the game but, since the record count
-            is read from the file, it could be any 16-bit value. Since *.res files have no
-            header by which to identify the file, we assume a file claiming more than 150
-            records is not a valid resource file. This is only relevant when trying to read
-            arbitrary files, for example, when attempting to identify a file's type.
+            Reads the header of a stream containing definitions of a piece of data's name and its offset in a file.
             </summary>
+            <param name="str">
+            The stream from which to read. The first two bytes at <see cref="P:System.IO.Stream.Position"/>
+            must be a uint16 containing the number of definitions to be read.
+            </param>
+            <returns>
+            A <see cref="T:System.Collections.Generic.Dictionary`2"/> of Name-Offset pairs, with  
+            <see cref="P:System.Collections.Generic.KeyValuePair`2.Key"/> set to the ASCII name of the record and 
+            <see cref="P:System.Collections.Generic.KeyValuePair`2.Value"/> set to that record's offset in a file.
+            </returns>
         </member>
         <member name="F:SkaaGameDataLib.Util.IndexedBitmap._skaaTransparentColor">
             <summary>

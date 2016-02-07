@@ -57,7 +57,7 @@ namespace SkaaGameDataLib.Util
                         ? CheckResFileName(filePath)
                         : CheckResFileType(filePath);
                 case ".icn":
-                    return FileFormats.SpriteFrameSpr;
+                    return FileFormats.ResIdxFramesSpr;
                 case ".spr":
                     return FileFormats.SpriteSpr;
                 case ".col":
@@ -165,7 +165,7 @@ namespace SkaaGameDataLib.Util
                     return FileFormats.ResText;
 
                 case "i_raw.res":
-                    return FileFormats.SpriteFrameSpr;
+                    return FileFormats.ResIdxFramesSpr;
                 default:
                     return CheckResFileType(filePath);
             }
@@ -224,7 +224,7 @@ namespace SkaaGameDataLib.Util
             FileFormats format;
             long oldPos = str.Position;
 
-            var dic = ResourceDefinitionReader.ReadDefinitions(str);
+            var dic = ResourceDefinitionReader.ReadDefinitions(str, false);
             if (dic == null)
                 format = FileFormats._Unknown;
             else
@@ -270,8 +270,8 @@ namespace SkaaGameDataLib.Util
             {
                 str.Position = oldPos;
                 ibmp = new IndexedBitmap(pal);
-                if (ibmp.SetBitmapFromRleStream(str, FileFormats.SpriteFrameSpr) != null)
-                    format = FileFormats.SpriteFrameSpr;
+                if (ibmp.SetBitmapFromRleStream(str, FileFormats.ResIdxFramesSpr) != null)
+                    format = FileFormats.ResIdxFramesSpr;
                 else
                     format = FileFormats._Unknown;
             }

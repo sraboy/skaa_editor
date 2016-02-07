@@ -104,9 +104,9 @@ namespace SkaaGameDataLib.Util
         /// <seealso cref="SkaaSpriteFrame"/>
         /// <see cref="SkaaFrame"/>
         /// <see cref="IndexedBitmap"/>
-        SpriteFrameSpr,
+        ResIdxFramesSpr,
         /// <summary>
-        /// A file which has a format matching that off <see cref="FileFormats.SpriteFrameSpr"/> but which
+        /// A file which has a format matching that off <see cref="FileFormats.ResIdxFramesSpr"/> but which
         /// references a different table in std.set.
         /// </summary>
         /// <remarks>
