@@ -165,7 +165,7 @@ namespace Capslock.Windows.Forms.SpriteViewer
         private void objectListView_SelectionChanged(object sender, EventArgs e)
         {
             var olv = sender as ObjectListView;
-            this.ActiveSprite.ActiveFrame = olv.SelectedObject as IFrame;
+            this.ActiveSprite.ActiveFrame = olv.SelectedObject == null ? null : olv.SelectedObject as IFrame;
             SetTrackBarActiveFrame();
             SetPictureBoxActiveFrame();
         }
