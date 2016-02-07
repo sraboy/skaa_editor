@@ -342,7 +342,7 @@
             The failure to identify a type is identified through the generation of exceptions in the 
             various methods.
             </summary>
-            <param name="path"></param>
+            <param name="filePath"></param>
             <returns>
             <see cref="F:SkaaGameDataLib.Util.FileFormats._Unknown"/> if the file can't be identified. Otherwise,
             the identified file type.

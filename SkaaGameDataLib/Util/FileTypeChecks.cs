@@ -167,7 +167,7 @@ namespace SkaaGameDataLib.Util
                 case "i_raw.res":
                     return FileFormats.SpriteFrameSpr;
                 default:
-                    return FileFormats._Unknown;
+                    return CheckResFileType(filePath);
             }
         }
         /// <summary>
@@ -177,14 +177,14 @@ namespace SkaaGameDataLib.Util
         /// The failure to identify a type is identified through the generation of exceptions in the 
         /// various methods.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="filePath"></param>
         /// <returns>
         /// <see cref="FileFormats._Unknown"/> if the file can't be identified. Otherwise,
         /// the identified file type.
         /// </returns>
-        private static FileFormats CheckResFileType(string path)
+        private static FileFormats CheckResFileType(string filePath)
         {
-            string filename = Path.GetFileNameWithoutExtension(path);
+            string filename = Path.GetFileNameWithoutExtension(filePath);
             string prefix = filename.Substring(0, 4);
             FileFormats format = FileFormats._Unknown;
 
@@ -204,7 +204,7 @@ namespace SkaaGameDataLib.Util
 
             if (format == FileFormats._Unknown)
             {
-                using (FileStream fs = new FileStream(path, FileMode.Open))
+                using (FileStream fs = new FileStream(filePath, FileMode.Open))
                 {
                     format = CheckResIdxFormats(fs);
 
