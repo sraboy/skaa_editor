@@ -40,6 +40,14 @@ namespace SkaaGameDataLib.Util
     public static class ResourceDefinitionReader
     {
         public static readonly TraceSource Logger = new TraceSource($"{typeof(ResourceDefinitionReader)}", SourceLevels.All);
+        /// <summary>
+        /// Arbitrary number that isn't necessary for the game but, since the record count
+        /// is read from the file, it could be any 16-bit value. Since *.res files have no
+        /// header by which to identify the file, we assume a file claiming more than 150
+        /// records is not a valid resource file. This is only relevant when trying to read
+        /// arbitrary files, for example, when attempting to identify a file's type.
+        /// </summary>
+        [Obsolete("This value is only used for file identification purposes.")]
         private static readonly int _maxAcceptableRecordCount = 150;
 
         /// <summary>
@@ -57,14 +65,6 @@ namespace SkaaGameDataLib.Util
         /// The total size of a record definition in a <see cref="FileFormats._ResIdxFile"/>
         /// </summary>
         public static readonly int ResIdxDefinitionSize = ResIdxNameSize + ResIdxOffsetSize;
-        /// <summary>
-        /// Arbitrary number that isn't necessary for the game but, since the record count
-        /// is read from the file, it could be any 16-bit value. Since *.res files have no
-        /// header by which to identify the file, we assume a file claiming more than 150
-        /// records is not a valid resource file. This is only relevant when trying to read
-        /// arbitrary files, for example, when attempting to identify a file's type.
-        /// </summary>
-        [Obsolete("This value is only used for file identification purposes.")]
 
         /// <summary>
         /// Reads the header of a stream containing definitions of a piece of data's name and its offset in a file.
