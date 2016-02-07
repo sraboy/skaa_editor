@@ -146,7 +146,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
             if (this._imageEditorBox.SelectedTool != DrawingTools.Pan &&
                 this._imageEditorBox.SelectedTool != DrawingTools.None)
             {
-                this.ActiveSprite.ActiveFrame.Bitmap = this._imageEditorBox.Image as Bitmap;
+                this.ActiveSprite.ActiveFrame.Bitmap = this._imageEditorBox.Image == null ? null : this._imageEditorBox.Image as Bitmap;
                 OnImagedChanged(EventArgs.Empty);
             }
         }
