@@ -434,6 +434,15 @@ namespace SkaaEditorUI.Forms
             //We also need to display those new dimensions.
             SetStatusStrip(iec.ActiveSprite);
         }
+        private void ImageEditorContainer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            var spr = (sender as ImageEditorContainer).ActiveSprite;
+
+            this._gameSetViewerContainer.GameSetPresenter.RemoveTable(spr.SpriteId);
+
+            spr.ActiveFrameChanged -= MultiImagePresenterBase_ActiveFrameChanged;
+            this.ProjectManager.OpenSprites.Remove(spr);
+        }
         private void MultiImagePresenterBase_ActiveFrameChanged(object sender, EventArgs e)
         {
             SetStatusStrip(sender as MultiImagePresenterBase);
@@ -622,7 +631,7 @@ namespace SkaaEditorUI.Forms
             iec.Show(_dockPanel, DockState.Document);
             iec.ActiveSpriteChanged += ImageEditorContainer_ActiveSpriteChanged;
             iec.ImageChanged += ImageEditorContainer_ImageChanged;
-
+            iec.FormClosing += ImageEditorContainer_FormClosing;
             //Because ImageEditorContainer.ResizeImageMethod refers to an instance method
             //set in it's non-static constructor, we can't set this until an ImageEditorContainer
             //has been created.

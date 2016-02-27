@@ -77,17 +77,10 @@ namespace SkaaGameDataLib.Util
         /// </summary>
         /// <param name="datasource">The name of the data source to remove</param>
         /// <returns>false if the specified data source does not exist, true otherwise</returns>
-        public static bool RemoveDataSource(this DataSet ds, string datasource)
+        public static void RemoveDataSource(this DataSet ds, string datasource)
         {
-            List<string> dataSources = ds.ExtendedProperties[DataSourcesPropertyName] as List<string>;
-            if (dataSources == null || !dataSources.Contains(datasource))
-                return false;
-            else
-                dataSources.Remove(datasource);
-
-            ds.ExtendedProperties[DataSourcesPropertyName] = dataSources;
+            ds.ExtendedProperties.Remove(datasource);
             Logger.TraceInformation($"Removed data source: {datasource}");
-            return true;
         }
 
         /// <summary>

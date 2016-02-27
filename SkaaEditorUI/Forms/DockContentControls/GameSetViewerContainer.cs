@@ -69,7 +69,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
             if (e.PropertyName == "GameObject")
             {
                 PopulateComboBoxDataSourcesList();
-                PopulateComboBoxTablesList(this.cbDataSources.SelectedItem.ToString());
+                PopulateComboBoxTablesList(this.cbDataSources.SelectedItem?.ToString());
                 SetDataSource();
             }
         }
@@ -77,7 +77,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
         {
             // No need to call SetDataSource() since the PopulateComboBoxTablesList() 
             // will trigger cbTables' SelectedIndexChanged event, which calls SetDataSource()
-            PopulateComboBoxTablesList(this.cbDataSources.SelectedItem.ToString());
+            PopulateComboBoxTablesList(this.cbDataSources.SelectedItem?.ToString());
         }
         private void CbTables_SelectedIndexChanged(object sender, System.EventArgs e)
         {
@@ -106,7 +106,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
 
             this.cbTables.DataSource = list;
             this.cbTables.DisplayMember = "TableName";
-            return this.cbTables.SelectedItem.ToString();
+            return this.cbTables.SelectedItem?.ToString();
         }
         private string PopulateComboBoxDataSourcesList()
         {
@@ -124,7 +124,7 @@ namespace SkaaEditorUI.Forms.DockContentControls
             }
 
             this.cbDataSources.DataSource = list;
-            return this.cbDataSources.SelectedItem.ToString();
+            return this.cbDataSources.SelectedItem?.ToString();
         }
         private void SetDataSource()
         {

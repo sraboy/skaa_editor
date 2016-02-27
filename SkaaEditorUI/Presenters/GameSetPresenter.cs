@@ -22,6 +22,8 @@
 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
 #endregion
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using SkaaGameDataLib.Util;
@@ -45,6 +47,23 @@ namespace SkaaEditorUI.Presenters
         {
             this.GameObject.AddDataTableFromNewSource(dt);
             OnPropertyChanged("GameObject");
+        }
+        public bool RemoveTable(string tableName)
+        {
+            var t = this.GameObject.Tables[tableName];
+            if (t != null)
+            {
+                List<string> datasources = new List<string>();
+
+                foreach (DictionaryEntry p in t.ExtendedProperties)
+                    this.GameObject.RemoveDataSource(p.Value.ToString());
+
+                this.GameObject.Tables.Remove(t);
+                OnPropertyChanged("GameObject");
+                return true;
+            }
+
+            return false;
         }
         public void ExportToCSV() => this.GameObject.ExportGameSetToCSV();
         /// <summary>
