@@ -7,6 +7,7 @@ This project mixes and matches many licenses. Obviously, everything is "open sou
 | Capslock          |   [MIT](https://opensource.org/licenses/MIT)                              |
 | Cyotek            |   [MIT](https://opensource.org/licenses/MIT)                              |
 | 7KAA (game)       |   [GPLv3](http://www.gnu.org/licenses/gpl-3.0.en.html)                    |
+| GameSetExporter   |   [GPLv3](http://www.gnu.org/licenses/gpl-3.0.en.html)                    |
 | FastBitmap        |   [VCSKicks](http://www.vcskicks.com/license.php)                         |
 | Paint.NET*        |   [CC-by-NC-ND 2.5](http://creativecommons.org/licenses/by-nc-nd/2.5/)    |
 | FloodFill         |   [GNU FDL](http://www.gnu.org/licenses/fdl-1.3.en.html)                  |
@@ -32,6 +33,10 @@ My email is provided in multiple locations below; it is obscured to keep from ge
 ---
 
 - **7KAA (game)** refers to the Seven Kingdoms: Ancient Adversaries game (www.7kfans.com). The entire game, except for the music, has been released by its creator, Enlight Software (http://www.enlight.com), under the GPLv3.
+
+---
+
+- **GameSetExporter** refers to the Visual Studio solution and application in other/util/GameSetExporter. This is simply a utility to dump all the game set data (std.set) to a CSV. This sub-project is released under the GPLv3.
 
 ---
 
