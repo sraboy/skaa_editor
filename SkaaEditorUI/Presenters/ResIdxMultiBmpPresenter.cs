@@ -133,7 +133,8 @@ namespace SkaaEditorUI.Presenters
             if (param.Length >= 2)
             {
                 var arr = (object[])param[1];
-                offsetsOnly = (bool)arr[0];
+                if(arr.Length > 0)
+                    offsetsOnly = (bool)arr[0];
             }
 
             Tuple<SkaaSprite, DataTable> tup = ReadFrames(filePath, this.PalettePresenter.GameObject, offsetsOnly);

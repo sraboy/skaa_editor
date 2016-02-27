@@ -171,7 +171,7 @@
             </summary>
             <see cref="T:SkaaGameDataLib.Util.IndexedBitmap"/>
         </member>
-        <member name="F:SkaaGameDataLib.Util.FileFormats.SpriteFrameSpr">
+        <member name="F:SkaaGameDataLib.Util.FileFormats.ResIdxFramesSpr">
             <summary>
             Describes image data, generally within a file with an extension of SPR or RES. The data contains a <see cref="T:System.UInt32"/> value describing
             its size, in bytes, followed by two <see cref="T:System.UInt16"/> values describing its width and height, in pixels.
@@ -182,7 +182,7 @@
         </member>
         <member name="F:SkaaGameDataLib.Util.FileFormats.ResSpriteSpr">
             <summary>
-            A file which has a format matching that off <see cref="F:SkaaGameDataLib.Util.FileFormats.SpriteFrameSpr"/> but which
+            A file which has a format matching that off <see cref="F:SkaaGameDataLib.Util.FileFormats.ResIdxFramesSpr"/> but which
             references a different table in std.set.
             </summary>
             <remarks>

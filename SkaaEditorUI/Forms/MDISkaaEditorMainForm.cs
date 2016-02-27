@@ -36,7 +36,6 @@ using SkaaEditorUI.Presenters;
 using SkaaGameDataLib.GameObjects;
 using SkaaGameDataLib.Util;
 using WeifenLuo.WinFormsUI.Docking;
-using System.Linq;
 
 namespace SkaaEditorUI.Forms
 {
@@ -266,6 +265,14 @@ namespace SkaaEditorUI.Forms
         private void gameSetBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this._gameSetViewerContainer.Show(_dockPanel, DockState.Document);
+        }
+        private void toolBoxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this._toolBoxContainer.Show(_dockPanel, DockState.DockLeft);
+        }
+        private void spriteViewerPaneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this._spriteViewerContainer.Show(_dockPanel, DockState.DockRight);
         }
         #endregion
 
