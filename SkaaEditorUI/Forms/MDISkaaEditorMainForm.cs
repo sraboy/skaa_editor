@@ -454,9 +454,9 @@ namespace SkaaEditorUI.Forms
                     return false;
             T spr;
 
-            if (filePath == null)
+            if (filePath == null) //User used menus so we need an OpenFileDialog
                 spr = (T)ProjectManager.Open<SkaaSprite, T>(this._gameSetViewerContainer.GameSetPresenter, param);
-            else
+            else                  //User used drag & drop so we have a file path
                 spr = (T)ProjectManager.Open<SkaaSprite, T>(filePath, this._gameSetViewerContainer.GameSetPresenter, param);
 
             if (spr == null) //user canceled or loading failed
@@ -484,9 +484,9 @@ namespace SkaaEditorUI.Forms
         {
             ColorPalettePresenter pal;
 
-            if (filePath == null)
+            if (filePath == null) //User used menus so we need an OpenFileDialog
                 pal = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>();
-            else
+            else                  //User used drag & drop so we have a file path
                 pal = (ColorPalettePresenter)ProjectManager.Open<ColorPalette, ColorPalettePresenter>(filePath);
 
             if (pal?.GameObject == null)
@@ -500,9 +500,9 @@ namespace SkaaEditorUI.Forms
         {
             GameSetPresenter gsp;
 
-            if (filePath == null)
+            if (filePath == null) //User used menus so we need an OpenFileDialog
                 gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>();
-            else
+            else                  //User used drag & drop so we have a file path
                 gsp = (GameSetPresenter)ProjectManager.Open<DataSet, GameSetPresenter>(filePath);
 
             if (gsp.GameObject == null)
